@@ -1,0 +1,12 @@
+*.DS_Store
+.idea
+*.pyc
+build
+.gradle
+*.pdf
+*.dvi
+*.aux
+*.log
+*.log
+*.gz
+

@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{bertin:psn}
+M.~J.~Bertin et~al.
+\newblock {\em Pisot and Salem Numbers}.
+\newblock user Verlag, Berlin, 1992.
+
+\bibitem{knuth:tb}
+Donald~K. Knuth.
+\newblock {\em The \TeX book}.
+\newblock Addison-Wesley, 1984.
+
+\bibitem{leslie:dps}
+Leslie Lamport.
+\newblock {\em \LaTeX: A document preparation system}.
+\newblock Addison-Wesley, 2nd edition, 1994.
+
+\bibitem{gms:tlc}
+F~Mittelbach M~Goosens and A~Samarin.
+\newblock {\em The \LaTeX Companion}.
+\newblock Addison-Wesley, 1994.
+
+\bibitem{spivak:jot}
+Michael Spivak.
+\newblock {\em The joy of \TeX}.
+\newblock American Mathematical Society, Providence, R.I., 2nd edition, 1990.
+
+\bibitem{poorten:sp}
+Alf~J. van~der Poorten.
+\newblock Some problems of recurrent interest.
+\newblock Technical Report 81-0037, School of Mathematics and Physics,
+  Macquarie University, North Ryde, Australia 2113, August 1981.
+
+\end{thebibliography}

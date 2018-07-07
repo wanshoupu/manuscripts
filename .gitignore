@@ -9,4 +9,6 @@ build
 *.log
 *.log
 *.gz
-
+*.aux
+*.dvi
+out

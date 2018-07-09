@@ -1,19 +1,2 @@
 \contentsline {part}{I\hspace {1em}The Pseudoscience}{5}{part.1}
-\contentsline {chapter}{\numberline {1}How to insert source code}{6}{chapter.1}
-\contentsline {chapter}{\numberline {2}Introduction}{8}{chapter.2}
-\contentsline {section}{\numberline {2.1}History of This Package}{8}{section.2.1}
-\contentsline {section}{\numberline {2.2}Revised Philosophy for This Package}{9}{section.2.2}
-\contentsline {chapter}{\numberline {3}Instructions for Preparing Dissertations, Theses, and Reports}{10}{chapter.3}
-\contentsline {section}{\numberline {3.1}Arrangement of Dissertation}{11}{section.3.1}
-\contentsline {section}{\numberline {3.2}Other Requirements}{12}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Margins}{12}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Spacing and Page Arrangement}{13}{subsection.3.2.2}
-\contentsline {section}{\numberline {3.3}Master's Theses and Reports}{13}{section.3.3}
-\contentsline {chapter}{\numberline {4}Making the Bibliography with BiBT\kern -.1667em\lower .5ex\hbox {E}\kern -.125emX\spacefactor \@m {}{}}{14}{chapter.4}
-\contentsline {chapter}{\numberline {5}An Example of Mathematical Writing}{16}{chapter.5}
-\contentsline {section}{\numberline {5.1}Generalized Fatou's Lemma}{16}{section.5.1}
-\contentsline {section}{\numberline {5.2}Other Examples of Mathematical Writing}{18}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}An Example of a Commutative Diagram}{18}{subsection.5.2.1}
-\contentsline {subsection}{\numberline {5.2.2}Using AMS Fonts}{18}{subsection.5.2.2}
-\contentsline {chapter}{\numberline {6}Making Tables and Including Figures}{20}{chapter.6}
-\contentsline {part}{II\hspace {1em}The Fairy Tales}{24}{part.2}
+\contentsline {part}{II\hspace {1em}The Fairy Tales}{6}{part.2}

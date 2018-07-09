@@ -13,3 +13,6 @@ build
 *.dvi
 out
 *.out
+*.bbl
+*.blg
+*.brf

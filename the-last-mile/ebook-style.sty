@@ -1,0 +1,43 @@
+%%
+%% PACKAGE_NAME package
+%% Author: shoupu_wan
+%% %7/8/18
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{PACKAGE_NAME}[shoupu_wan's Package]
+
+
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+
+\usepackage[osf]{libertine} % Use the Libertine font
+\usepackage{microtype} % Improves character and word spacing
+
+\usepackage{tikz} % Required for drawing custom shapes
+\usepackage{wallpaper} % Required for setting background images (title page)
+
+\usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
+
+
+
+\lstset{frame=tb,
+language=Java,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=none,
+numberstyle=\tiny\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{dkgreen},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}

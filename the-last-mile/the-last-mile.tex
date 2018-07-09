@@ -20,41 +20,13 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[oneside,11pt]{book} % Font size
+\usepackage{ebook-style}  		% Dissertation package style file.
 
 %\input{ebook-style.tex} % Include the file that specifies the document structure and layout
 
 \title{Grimms' Fairy Tales} % Book title
 \author{The Brothers Grimm} % Author
 \newcommand{\edition}{Second Edition} % Book edition
-
-\usepackage{hyperref}
-\usepackage{listings}
-\usepackage{color}
-\usepackage{textcomp}
-\usepackage{watermark}
-\usepackage{wallpaper}
-
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\lstset{frame=tb,
-language=Java,
-aboveskip=3mm,
-belowskip=3mm,
-showstringspaces=false,
-columns=flexible,
-basicstyle={\small\ttfamily},
-numbers=none,
-numberstyle=\tiny\color{gray},
-keywordstyle=\color{blue},
-commentstyle=\color{dkgreen},
-stringstyle=\color{mauve},
-breaklines=true,
-breakatwhitespace=true,
-tabsize=3,
-upquote=true
-}
 
 %----------------------------------------------------------------------------------------
 
@@ -114,17 +86,17 @@ upquote=true
     %	BOOK PART
     %----------------------------------------------------------------------------------------
     \part{The Pseudoscience}
-    \include{chapters/insert-source-code}
-    \include{chapters/chapter-introduction}
-    \include{chapters/chapter-instructions}
-    \include{chapters/chapter-makingbib}
-    \include{chapters/chapter-math}
-    \include{chapters/chapter-tables+figs}
+%    \include{chapters/insert-source-code}
+%    \include{chapters/chapter-introduction}
+%    \include{chapters/chapter-instructions}
     %----------------------------------------------------------------------------------------
     %	BOOK PART
     %----------------------------------------------------------------------------------------
 
     \part{The Fairy Tales}
+%    \include{chapters/chapter-makingbib}
+%    \include{chapters/chapter-math}
+%    \include{chapters/chapter-tables+figs}
 
     %----------------------------------------------------------------------------------------
 
@@ -134,10 +106,9 @@ upquote=true
     % explicitly cited in the text. 		     %
     %						     %
     \bibliographystyle{plain}  % Here the bibliography 		     %
-    \bibliography{diss}        % is inserted.			     %
+    \bibliography{the-last-mile}        % is inserted.			     %
     \index{Bibliography@\emph{Bibliography}}%			     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Generate the index.						     %
@@ -148,7 +119,7 @@ upquote=true
     %	to generate the index (if used) MUST be moved to before      %
     %	the bibliography section.				     %
     %								     %
-    \printindex%    % Include the index here. Comment out this line      %
+%    \printindex%    % Include the index here. Comment out this line      %
     %		% with a percent sign if you do not want an index.   %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -157,24 +128,5 @@ upquote=true
     % Vita page.							     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    \begin{vita}
-        Craig William McCluskey
-        was born in Minneapolis, Minnesota on 20 May 1950, the son of
-        Dr. William R. McCluskey and Lucilla W. McCluskey. He received the Bachelor
-        of Science degree in Engineering from the California Institute of Technology
-        and was commissioned an Officer in the United States Air Force in 1971.
-        He entered active duty in October, 1971, and was stationed in Denver, Colorado,
-        Colorado Springs, Colorado, Panama City, Florida, and Sacramento, California.
-        He separated from the USAF in 1975 and worked as an engineer for several small
-        electronics companies in California before moving to Colorado Springs, Colorado
-        to work for Hewlett-Packard in 1979. He left Hewlett-Packard in 1989 and joined
-        a small company based in Herndon, Virginia, working out of his house as a
-        ``remote'' engineer designing parts of the Alexis satellite for Los Alamos
-        National Laboratories. Laid off when his portion of the satellite was
-        completed, he applied to the University of Texas at Austin for enrollment
-        in their physics program. He was accepted and started graduate studies in
-        August, 1991.
-
-    \end{vita}
 
 \end{document}

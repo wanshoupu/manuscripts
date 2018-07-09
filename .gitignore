@@ -12,3 +12,4 @@ build
 *.aux
 *.dvi
 out
+*.out

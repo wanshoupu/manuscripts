@@ -1,0 +1,180 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% eBook 
+% LaTeX Template
+% Version 1.0 (29/12/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Luis Cobo (luiscobogutierrez@gmail.com) with extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT CONFIGURATIONS AND INFORMATION
+%----------------------------------------------------------------------------------------
+
+\documentclass[oneside,11pt]{book} % Font size
+
+%\input{ebook-style.tex} % Include the file that specifies the document structure and layout
+
+\title{Grimms' Fairy Tales} % Book title
+\author{The Brothers Grimm} % Author
+\newcommand{\edition}{Second Edition} % Book edition
+
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{watermark}
+\usepackage{wallpaper}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+language=Java,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=none,
+numberstyle=\tiny\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{dkgreen},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+    %----------------------------------------------------------------------------------------
+    %	TITLE PAGE
+    %----------------------------------------------------------------------------------------
+
+    \thispagestyle{empty} % Suppress page numbering
+    \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
+
+%    \begin{tikzpicture}[remember picture,overlay]
+%        \node [rectangle, rounded corners, fill=white, opacity=0.75, anchor=south west, minimum width=3cm, minimum height=6cm] (box) at (-0.5,-10) (box){}; % White rectangle - "minimum width/height" adjust the width and height of the box; "(-0.5,-10)" adjusts the position on the page
+%        \node[anchor=west, color01, xshift=-1.5cm, yshift=-0.4cm, text width=2.9cm, font=\sffamily\scriptsize] at (box.north){\edition}; % "Text width" adjusts the wrapping width, "xshift/yshift" adjust the position relative to the white rectangle
+%        \node[anchor=west, color01, xshift=-1.5cm, yshift=-2cm, text width=2.9cm, font=\sffamily\bfseries\scshape\Large] at (box.north){\thetitle}; % "Text width" adjusts the wrapping width, "xshift/yshift" adjust the position relative to the white rectangle
+%        \node[anchor=west, color01, xshift=-1.5cm, yshift=-5cm, text width=2.9cm, font=\sffamily\bfseries] at (box.north){\theauthor};
+%        % "Text width" adjusts the wrapping width, "xshift/yshift" adjust the position relative to the white rectangle
+%    \end{tikzpicture}
+
+    \titlepage              % Produces the title page.
+
+    \newpage
+    \thispagestyle{plain}
+    \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
+
+    \chapter*{Acknowledgements}
+    A lot of people helped me.
+
+    %    \begin{dedication}
+    %        \index{Dedication@\emph{Dedication}}%
+    %        Dedicated to my wife Shirley.
+    %    \end{dedication}
+
+    \newpage % Make sure the following content is on a new page
+
+    %----------------------------------------------------------------------------------------
+    %	TABLE OF CONTENTS
+    %----------------------------------------------------------------------------------------
+
+    \tableofcontents % Prints the table of contents
+
+    %----------------------------------------------------------------------------------------
+    %	INTRODUCTION SECTION
+    %----------------------------------------------------------------------------------------
+
+    \chapter*{Introduction/Prologue} % Introduction chapter suppressed from the table of contents
+
+    \begin{quote}
+        This is one of my finer quotations.\\
+        --John Smith
+    \end{quote}
+
+    This is a great place to write an introduction or prologue\footnote{You can even use a footnote to seem smarter}.
+
+    %----------------------------------------------------------------------------------------
+    %	BOOK PART
+    %----------------------------------------------------------------------------------------
+    \part{The Pseudoscience}
+    \include{chapters/insert-source-code}
+    \include{chapters/chapter-introduction}
+    \include{chapters/chapter-instructions}
+    \include{chapters/chapter-makingbib}
+    \include{chapters/chapter-math}
+    \include{chapters/chapter-tables+figs}
+    %----------------------------------------------------------------------------------------
+    %	BOOK PART
+    %----------------------------------------------------------------------------------------
+
+    \part{The Fairy Tales}
+
+    %----------------------------------------------------------------------------------------
+
+    \nocite{*}      % This command causes all items in the 		     %
+    % bibliographic database to be added to 	     %
+    % the bibliography, even if they are not 	     %
+    % explicitly cited in the text. 		     %
+    %						     %
+    \bibliographystyle{plain}  % Here the bibliography 		     %
+    \bibliography{diss}        % is inserted.			     %
+    \index{Bibliography@\emph{Bibliography}}%			     %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Generate the index.						     %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %								     %
+    % NOTE: For master's theses and reports, NOTHING is permitted to     %
+    %	come between the bibliography and the vita. This section     %
+    %	to generate the index (if used) MUST be moved to before      %
+    %	the bibliography section.				     %
+    %								     %
+    \printindex%    % Include the index here. Comment out this line      %
+    %		% with a percent sign if you do not want an index.   %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Vita page.							     %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    \begin{vita}
+        Craig William McCluskey
+        was born in Minneapolis, Minnesota on 20 May 1950, the son of
+        Dr. William R. McCluskey and Lucilla W. McCluskey. He received the Bachelor
+        of Science degree in Engineering from the California Institute of Technology
+        and was commissioned an Officer in the United States Air Force in 1971.
+        He entered active duty in October, 1971, and was stationed in Denver, Colorado,
+        Colorado Springs, Colorado, Panama City, Florida, and Sacramento, California.
+        He separated from the USAF in 1975 and worked as an engineer for several small
+        electronics companies in California before moving to Colorado Springs, Colorado
+        to work for Hewlett-Packard in 1979. He left Hewlett-Packard in 1989 and joined
+        a small company based in Herndon, Virginia, working out of his house as a
+        ``remote'' engineer designing parts of the Alexis satellite for Los Alamos
+        National Laboratories. Laid off when his portion of the satellite was
+        completed, he applied to the University of Texas at Austin for enrollment
+        in their physics program. He was accepted and started graduate studies in
+        August, 1991.
+
+    \end{vita}
+
+\end{document}

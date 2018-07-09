@@ -20,17 +20,83 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[oneside,11pt]{book} % Font size
-\usepackage{ebook-style}  		% Dissertation package style file.
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+
+\usepackage[osf]{libertine} % Use the Libertine font
+\usepackage{microtype} % Improves character and word spacing
+
+\usepackage{tikz} % Required for drawing custom shapes
+\usepackage{wallpaper} % Required for setting background images (title page)
+
+\usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
 
 %\input{ebook-style.tex} % Include the file that specifies the document structure and layout
 
-\title{Grimms' Fairy Tales} % Book title
-\author{The Brothers Grimm} % Author
+\title{The Last Mile of Programming} % Book title
+\author{Shoupu Wan} % Author
+
 \newcommand{\edition}{Second Edition} % Book edition
+\chardef\bslash=`\\	% \bslash makes a backslash (in tt fonts)
+			%	p. 424, TeXbook
+\newcommand{\cn}[1]{\texttt{\bslash #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Some math support.					     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{amsmath}
+\usepackage{mathtools}
+%
+%	Theorem environments (these need the amsthm package)
+%
+%% \theoremstyle{plain} %% This is the default
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{ax}{Axiom}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}[section]
+\newtheorem*{notation}{Notation}
 
 %----------------------------------------------------------------------------------------
 
 \begin{document}
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+language=Java,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=none,
+numberstyle=\tiny\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{dkgreen},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}
 
     %----------------------------------------------------------------------------------------
     %	TITLE PAGE
@@ -86,16 +152,15 @@
     %	BOOK PART
     %----------------------------------------------------------------------------------------
     \part{The Pseudoscience}
-%    \include{chapters/insert-source-code}
-%    \include{chapters/chapter-introduction}
-%    \include{chapters/chapter-instructions}
+    \include{chapters/insert-source-code}
+    \include{chapters/chapter-introduction}
     %----------------------------------------------------------------------------------------
     %	BOOK PART
     %----------------------------------------------------------------------------------------
 
     \part{The Fairy Tales}
-%    \include{chapters/chapter-makingbib}
-%    \include{chapters/chapter-math}
+    \include{chapters/chapter-makingbib}
+    \include{chapters/chapter-math}
 %    \include{chapters/chapter-tables+figs}
 
     %----------------------------------------------------------------------------------------
@@ -108,25 +173,4 @@
     \bibliographystyle{plain}  % Here the bibliography 		     %
     \bibliography{the-last-mile}        % is inserted.			     %
     \index{Bibliography@\emph{Bibliography}}%			     %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Generate the index.						     %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %								     %
-    % NOTE: For master's theses and reports, NOTHING is permitted to     %
-    %	come between the bibliography and the vita. This section     %
-    %	to generate the index (if used) MUST be moved to before      %
-    %	the bibliography section.				     %
-    %								     %
-%    \printindex%    % Include the index here. Comment out this line      %
-    %		% with a percent sign if you do not want an index.   %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Vita page.							     %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 \end{document}

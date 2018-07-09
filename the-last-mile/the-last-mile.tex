@@ -26,6 +26,10 @@
 \usepackage{color}
 \usepackage{textcomp}
 
+\usepackage{graphicx}
+\usepackage{psfig}         	% Allows inclusion of eps files.
+\usepackage{epsfig}         	% Allows inclusion of eps files.
+
 \usepackage[osf]{libertine} % Use the Libertine font
 \usepackage{microtype} % Improves character and word spacing
 
@@ -33,6 +37,8 @@
 \usepackage{wallpaper} % Required for setting background images (title page)
 
 \usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
+\usepackage{makeidx}
+%\usepackage{showidx}
 
 %\input{ebook-style.tex} % Include the file that specifies the document structure and layout
 
@@ -72,9 +78,9 @@
 \newtheorem*{notation}{Notation}
 
 %----------------------------------------------------------------------------------------
+\makeindex
 
 \begin{document}
-
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -119,7 +125,7 @@ upquote=true
     \thispagestyle{plain}
     \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
 
-    \chapter*{Acknowledgements}
+    \chapter{Acknowledgements}
     A lot of people helped me.
 
     %    \begin{dedication}
@@ -153,15 +159,15 @@ upquote=true
     %----------------------------------------------------------------------------------------
     \part{The Pseudoscience}
     \include{chapters/insert-source-code}
-    \include{chapters/chapter-introduction}
+    \include{chapters/introduction}
     %----------------------------------------------------------------------------------------
     %	BOOK PART
     %----------------------------------------------------------------------------------------
 
     \part{The Fairy Tales}
-    \include{chapters/chapter-makingbib}
-    \include{chapters/chapter-math}
-%    \include{chapters/chapter-tables+figs}
+    \include{chapters/makingbib}
+    \include{chapters/math}
+    \include{chapters/tables+figs}
 
     %----------------------------------------------------------------------------------------
 

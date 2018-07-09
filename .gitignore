@@ -17,3 +17,6 @@ out
 *.blg
 *.brf
 *.toc
+*.idx
+*.ilg
+*.ind

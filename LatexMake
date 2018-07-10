@@ -7,9 +7,8 @@
 # times before the shell script ends).
 #
 
-#bin=$(cd $(dirname "$0") > /dev/null; pwd)
-#PATH="$PATH:bin"
-#
+DIR="$(dirname "$(readlink "$0")")"
+
 if [ $# -ge 1 ]; then
     MAIN_SRC="${1%.*}"
 elif [ `ls -l *.tex|wc -l` -eq 1 ]; then
@@ -20,24 +19,7 @@ else
     exit 11
 fi
 
-# Remove working files from last run.
-#
-rm -f $MAIN_SRC.log \
-	*.aux \
-	$MAIN_SRC.bbl \
-	$MAIN_SRC.blg \
-	$MAIN_SRC.dvi \
-	$MAIN_SRC.idx \
-	$MAIN_SRC.ilg \
-	$MAIN_SRC.ind \
-	$MAIN_SRC.lof \
-	$MAIN_SRC.lot \
-	$MAIN_SRC.ps \
-	$MAIN_SRC.out \
-	$MAIN_SRC.brf \
-	$MAIN_SRC.pdf \
-	$MAIN_SRC.toc	2>/dev/null
-
+DIR/LatexClean
 # Clear the screen.
 #
 clear
@@ -115,5 +97,6 @@ exitcode="$?"
 	fi
 
 if [ -e $MAIN_SRC.pdf ]; then
-    open $MAIN_SRC.pdf
+ # This is Mac specific command
+    open -a Preview $MAIN_SRC.pdf
 fi

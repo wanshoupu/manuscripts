@@ -1,0 +1,18 @@
+#!/bin/sh
+# Remove working files from last run.
+#
+rm -f $MAIN_SRC.log \
+       *.aux \
+       $MAIN_SRC.bbl \
+       $MAIN_SRC.blg \
+       $MAIN_SRC.dvi \
+       $MAIN_SRC.idx \
+       $MAIN_SRC.ilg \
+       $MAIN_SRC.ind \
+       $MAIN_SRC.lof \
+       $MAIN_SRC.lot \
+       $MAIN_SRC.ps \
+       $MAIN_SRC.out \
+       $MAIN_SRC.brf \
+       $MAIN_SRC.pdf \
+       $MAIN_SRC.toc   2>/dev/null

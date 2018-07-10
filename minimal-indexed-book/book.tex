@@ -1,0 +1,33 @@
+%\title{Creating an index with the makeidx package}
+% Example from http://www.dickimaw-books.com/latex/thesis/html/makeidx.html
+
+\documentclass[12pt,oneside]{book}
+
+\usepackage{makeidx}
+
+\makeindex
+
+\title{Sample Document}
+\author{Me}
+\date{\today}
+
+\begin{document}
+\maketitle
+\printindex
+
+
+\chapter{Sample}
+\index{abc}
+Stuff about eigenvectors\index{eigenvector} and
+eigenvalues\index{eigenvalue}.
+
+\chapter{Another Sample}
+
+\index{shoupu}
+Some more stuff about eigenvectors\index{eigenvector} and
+eigenvalues\index{eigenvalue}. Something about
+eigen-decomposition\index{eigen-decomposition}.
+
+\backmatter
+
+\end{document}

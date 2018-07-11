@@ -1,15 +1,30 @@
 #!/bin/sh
 # Remove working files from last run.
 #
-
+USAGE="
+# USAGE ############## USAGE ############## USAGE ############## USAGE ##############
+# Clean up all the outputs of latex commands.
+# Two scenarios: given a dir or given a file                                        #
+# If a dir is given, all the outputs with certain extension will be cleaned out     #
+# If a file name is given, all the files with certain extensions will be cleaned out#
+#####################################################################################
+"
 if [ $# -gt 0 ]; then
-    MAIN_SRC=${1%.*}
+    input="$1"
 else
-    echo "specify the main source file name"
+    input='.'
+fi
+
+if [ -d "$input" ]; then
+    MAIN_SRC="$input/*"
+elif [ -f "$input" -o -f "$input.tex" ]; then
+    MAIN_SRC=${input%.*}
+else
+    echo "specify the main source file name or dir name"
     exit 1
 fi
 
-echo "Removing all the latex output files with the base of $MAIN_SRC"
+echo "Cleaning up latex output files: $MAIN_SRC.log etc..."
 
 rm -f $MAIN_SRC.log \
        $MAIN_SRC.aux \

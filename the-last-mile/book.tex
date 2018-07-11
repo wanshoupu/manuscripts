@@ -86,8 +86,8 @@
     \thispagestyle{plain}
     \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
 
-    \chapter{Acknowledgements}
-    A lot of people helped me.
+    \chapter*{Acknowledgements}
+    A lot of people to thank...
 
     \newpage % Make sure the following content is on a new page
 
@@ -101,37 +101,10 @@
     %	INTRODUCTION SECTION
     %----------------------------------------------------------------------------------------
 
-    \chapter*{Introduction/Prologue} % Introduction chapter suppressed from the table of contents
+    \include{introduction/chapter}
 
-    \begin{quote}
-        This is one of my finer quotations.\\
-        --John Smith
-    \end{quote}
-
-    This is a great place to write an introduction or prologue\footnote{You can even use a footnote to seem smarter}.
-
-    %----------------------------------------------------------------------------------------
-    %	BOOK PART
-    %----------------------------------------------------------------------------------------
     \part{The Pseudoscience}
     \include{ch1/insert-source-code}
-    \include{ch2/introduction}
-    %----------------------------------------------------------------------------------------
-    %	BOOK PART
-    %----------------------------------------------------------------------------------------
-
-    \chapter{Sample}
-    \index{abc}
-    Stuff about eigenvectors\index{eigenvector} and
-    eigenvalues\index{eigenvalue}.
-
-    \chapter{Another Sample}
-
-    \index{shoupu}
-    Some more stuff about eigenvectors\index{eigenvector} and
-    eigenvalues\index{eigenvalue}. Something about
-    eigen-decomposition\index{eigen-decomposition}.
-
 
     \part{The Fairy Tales}
     \include{ch3/math}

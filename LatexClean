@@ -10,36 +10,53 @@ USAGE="
 # LIMITATIONS: the file names cannot contain space and must has extension names     #
 #####################################################################################
 "
+clean(){
+    if [ -d "$input" ]; then
+        mainsrc="$input/*"
+    elif [ -f "$input" ]; then
+        mainsrc=${input%.*}
+    elif [ -f "$input.tex" ]; then
+        mainsrc=${input}
+    else
+        echo "Specify valid source file or directory"
+        exit 1
+    fi
+
+    echo "Cleaning latex outputs '$mainsrc...'"
+    rm -f $mainsrc.log \
+           $mainsrc.aux \
+           $mainsrc.bbl \
+           $mainsrc.blg \
+           $mainsrc.dvi \
+           $mainsrc.idx \
+           $mainsrc.ilg \
+           $mainsrc.ind \
+           $mainsrc.lof \
+           $mainsrc.lot \
+           $mainsrc.ps \
+           $mainsrc.out \
+           $mainsrc.brf \
+           $mainsrc.pdf \
+           $mainsrc.toc   2>/dev/null
+}
+
+cleanall(){
+  input=$1
+#  echo "$input"
+  clean "$input"
+  if [ -d "$input" ]; then
+    for f in $input/*/; do
+      cleanall ${f%/}
+    done
+  fi
+}
+
 if [ $# -gt 0 ]; then
-    input="${BASH_ARGV[0]}"
+  input="${BASH_ARGV[0]}"
+  if [ ${input: -1} == / ]; then
+    input=${input%?}
+  fi
 else
-    input='.'
+  input='.'
 fi
-
-if [ -d "$input" ]; then
-    MAIN_SRC="$input/*"
-elif [ -f "$input" ]; then
-    MAIN_SRC=${input%.*}
-elif [ -f "$input.tex" ]; then
-    MAIN_SRC=${input}
-else
-    echo "Specify valid source file or directory"
-    exit 1
-fi
-
-echo "Cleaning up latex output files: $MAIN_SRC.log etc..."
-rm -f $MAIN_SRC.log \
-       $MAIN_SRC.aux \
-       $MAIN_SRC.bbl \
-       $MAIN_SRC.blg \
-       $MAIN_SRC.dvi \
-       $MAIN_SRC.idx \
-       $MAIN_SRC.ilg \
-       $MAIN_SRC.ind \
-       $MAIN_SRC.lof \
-       $MAIN_SRC.lot \
-       $MAIN_SRC.ps \
-       $MAIN_SRC.out \
-       $MAIN_SRC.brf \
-       $MAIN_SRC.pdf \
-       $MAIN_SRC.toc   2>/dev/null
+cleanall "$input"

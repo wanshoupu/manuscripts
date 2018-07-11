@@ -19,7 +19,10 @@ else
     exit 11
 fi
 
-DIR/LatexClean
+echo "$DIR/LatexClean"
+
+$DIR/LatexClean
+
 # Clear the screen.
 #
 clear

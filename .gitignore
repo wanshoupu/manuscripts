@@ -20,3 +20,5 @@ out
 *.idx
 *.ilg
 *.ind
+*.lof
+*.lot

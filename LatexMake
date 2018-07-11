@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# A Bourne shell script file to compile the latex template.
-# The test of exit code after the first latex command causes
-# execution of the shell script to stop if there were unresolved
-# errors (so one will not have to repeat the same steps four more
-# times before the shell script ends).
-#
+USAGE="
+# USAGE ############## USAGE ############## USAGE ############## USAGE ##############
+# A Bourne shell script file to compile the latex template.                         #
+# LIMITATIONS: the file names cannot contain space and must has extension names     #
+#####################################################################################
+"
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }

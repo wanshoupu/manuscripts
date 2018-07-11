@@ -7,6 +7,7 @@ USAGE="
 # Two scenarios: given a dir or given a file                                        #
 # If a dir is given, all the outputs with certain extension will be cleaned out     #
 # If a file name is given, all the files with certain extensions will be cleaned out#
+# LIMITATIONS: the file names cannot contain space and must has extension names     #
 #####################################################################################
 "
 if [ $# -gt 0 ]; then
@@ -27,19 +28,18 @@ else
 fi
 
 echo "Cleaning up latex output files: $MAIN_SRC.log etc..."
-
-rm -f "$MAIN_SRC.log" \
-       "$MAIN_SRC.aux" \
-       "$MAIN_SRC.bbl" \
-       "$MAIN_SRC.blg" \
-       "$MAIN_SRC.dvi" \
-       "$MAIN_SRC.idx" \
-       "$MAIN_SRC.ilg" \
-       "$MAIN_SRC.ind" \
-       "$MAIN_SRC.lof" \
-       "$MAIN_SRC.lot" \
-       "$MAIN_SRC.ps" \
-       "$MAIN_SRC.out" \
-       "$MAIN_SRC.brf" \
-       "$MAIN_SRC.pdf" \
-       "$MAIN_SRC.toc"   2>/dev/null
+rm -f $MAIN_SRC.log \
+       $MAIN_SRC.aux \
+       $MAIN_SRC.bbl \
+       $MAIN_SRC.blg \
+       $MAIN_SRC.dvi \
+       $MAIN_SRC.idx \
+       $MAIN_SRC.ilg \
+       $MAIN_SRC.ind \
+       $MAIN_SRC.lof \
+       $MAIN_SRC.lot \
+       $MAIN_SRC.ps \
+       $MAIN_SRC.out \
+       $MAIN_SRC.brf \
+       $MAIN_SRC.pdf \
+       $MAIN_SRC.toc   2>/dev/null

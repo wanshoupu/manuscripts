@@ -6,9 +6,11 @@
 # errors (so one will not have to repeat the same steps four more
 # times before the shell script ends).
 #
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
 
-DIR="$(dirname "$(readlink "$0")")"
-
+SCRIPT_DIR=$(realpath "$(dirname "$0")")
 if [ $# -ge 1 ]; then
     MAIN_SRC="${1%.*}"
 elif [ `ls -l *.tex|wc -l` -eq 1 ]; then
@@ -19,9 +21,9 @@ else
     exit 11
 fi
 
-echo "$DIR/LatexClean"
+echo "$SCRIPT_DIR/LatexClean $MAIN_SRC"
 
-$DIR/LatexClean
+$SCRIPT_DIR/LatexClean
 
 # Clear the screen.
 #

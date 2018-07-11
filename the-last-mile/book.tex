@@ -1,0 +1,154 @@
+\documentclass[oneside,11pt]{book} % Font size
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+
+\usepackage{graphicx}
+\usepackage{psfig}            % Allows inclusion of eps files.
+\usepackage{epsfig} % Allows inclusion of eps files.
+
+\usepackage[osf]{libertine} % Use the Libertine font
+\usepackage{microtype} % Improves character and word spacing
+
+\usepackage{tikz} % Required for drawing custom shapes
+\usepackage{wallpaper} % Required for setting background images (title page)
+
+\usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
+\usepackage{makeidx}
+\usepackage{showidx}
+
+\title{The Last Mile of Programming} % Book title
+\author{Shoupu Wan} % Author
+
+\newcommand{\edition}{Second Edition} % Book edition
+\chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
+\newcommand{\cn}[1]{\texttt{\bslash #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Some math support.					     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{amsmath}
+\usepackage{mathtools}
+%	Theorem environments (these need the amsthm package)
+%% \theoremstyle{plain} %% This is the default
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{ax}{Axiom}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}[section]
+\newtheorem*{notation}{Notation}
+
+\makeindex
+
+\begin{document}
+    \maketitle
+    \definecolor{dkgreen}{rgb}{0,0.6,0}
+    \definecolor{gray}{rgb}{0.5,0.5,0.5}
+    \definecolor{mauve}{rgb}{0.58,0,0.82}
+
+    \lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3,
+    upquote=true
+    }
+
+    \thispagestyle{empty} % Suppress page numbering
+    \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
+
+    \titlepage % Produces the title page.
+
+    \newpage
+    \thispagestyle{plain}
+    \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
+
+    \chapter{Acknowledgements}
+    A lot of people helped me.
+
+    \newpage % Make sure the following content is on a new page
+
+    %----------------------------------------------------------------------------------------
+    %	TABLE OF CONTENTS
+    %----------------------------------------------------------------------------------------
+
+    \tableofcontents % Prints the table of contents
+
+    %----------------------------------------------------------------------------------------
+    %	INTRODUCTION SECTION
+    %----------------------------------------------------------------------------------------
+
+    \chapter*{Introduction/Prologue} % Introduction chapter suppressed from the table of contents
+
+    \begin{quote}
+        This is one of my finer quotations.\\
+        --John Smith
+    \end{quote}
+
+    This is a great place to write an introduction or prologue\footnote{You can even use a footnote to seem smarter}.
+
+    %----------------------------------------------------------------------------------------
+    %	BOOK PART
+    %----------------------------------------------------------------------------------------
+    \part{The Pseudoscience}
+    \include{ch1/insert-source-code}
+    \include{ch2/introduction}
+    %----------------------------------------------------------------------------------------
+    %	BOOK PART
+    %----------------------------------------------------------------------------------------
+
+    \chapter{Sample}
+    \index{abc}
+    Stuff about eigenvectors\index{eigenvector} and
+    eigenvalues\index{eigenvalue}.
+
+    \chapter{Another Sample}
+
+    \index{shoupu}
+    Some more stuff about eigenvectors\index{eigenvector} and
+    eigenvalues\index{eigenvalue}. Something about
+    eigen-decomposition\index{eigen-decomposition}.
+
+
+    \part{The Fairy Tales}
+    \include{ch3/math}
+    \include{ch4/makingbib}
+    \include{ch5/tables+figs}
+
+    %----------------------------------------------------------------------------------------
+    \backmatter
+
+    \printindex
+
+    \nocite{*} % This command causes all items in the
+    % bibliographic database to be added to
+    % the bibliography, even if they are not
+    % explicitly cited in the text.
+    \bibliographystyle{plain}  % Here the bibliography
+    \bibliography{book}        % is inserted.
+    \index{Bibliography@\emph{Bibliography}}
+
+\end{document}

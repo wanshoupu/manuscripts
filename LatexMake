@@ -12,7 +12,7 @@ realpath() {
 
 SCRIPT_DIR=$(realpath "$(dirname "$0")")
 if [ $# -ge 1 ]; then
-    MAIN_SRC="${1%.*}"
+    MAIN_SRC="${BASH_ARGV[0]%.*}"
 elif [ `ls -l *.tex|wc -l` -eq 1 ]; then
     filename=`ls *.tex`
     MAIN_SRC="${filename%.*}"

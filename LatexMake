@@ -11,14 +11,23 @@ realpath() {
 }
 
 SCRIPT_DIR=$(realpath "$(dirname "$0")")
-if [ $# -ge 1 ]; then
-    MAIN_SRC="${BASH_ARGV[0]%.*}"
+if [ $# -gt 0 ]; then
+    MAIN_SRC="${BASH_ARGV[0]}"
 elif [ `ls -l *.tex|wc -l` -eq 1 ]; then
     filename=`ls *.tex`
     MAIN_SRC="${filename%.*}"
 else
     echo "You have to specify the main source file '*.tex'"
     exit 11
+fi
+
+if [ -f "$MAIN_SRC" ]; then
+    MAIN_SRC=${MAIN_SRC%.*}
+elif [ -f "$MAIN_SRC.tex" ]; then
+    MAIN_SRC="$MAIN_SRC"
+else
+    echo "Specify a valid source file name"
+    exit 1
 fi
 
 echo "$SCRIPT_DIR/LatexClean $MAIN_SRC"

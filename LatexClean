@@ -10,34 +10,36 @@ USAGE="
 #####################################################################################
 "
 if [ $# -gt 0 ]; then
-    input="$1"
+    input="${BASH_ARGV[0]}"
 else
     input='.'
 fi
 
 if [ -d "$input" ]; then
     MAIN_SRC="$input/*"
-elif [ -f "$input" -o -f "$input.tex" ]; then
+elif [ -f "$input" ]; then
     MAIN_SRC=${input%.*}
+elif [ -f "$input.tex" ]; then
+    MAIN_SRC=${input}
 else
-    echo "specify the main source file name or dir name"
+    echo "Specify valid source file or directory"
     exit 1
 fi
 
 echo "Cleaning up latex output files: $MAIN_SRC.log etc..."
 
-rm -f $MAIN_SRC.log \
-       $MAIN_SRC.aux \
-       $MAIN_SRC.bbl \
-       $MAIN_SRC.blg \
-       $MAIN_SRC.dvi \
-       $MAIN_SRC.idx \
-       $MAIN_SRC.ilg \
-       $MAIN_SRC.ind \
-       $MAIN_SRC.lof \
-       $MAIN_SRC.lot \
-       $MAIN_SRC.ps \
-       $MAIN_SRC.out \
-       $MAIN_SRC.brf \
-       $MAIN_SRC.pdf \
-       $MAIN_SRC.toc   2>/dev/null
+rm -f "$MAIN_SRC.log" \
+       "$MAIN_SRC.aux" \
+       "$MAIN_SRC.bbl" \
+       "$MAIN_SRC.blg" \
+       "$MAIN_SRC.dvi" \
+       "$MAIN_SRC.idx" \
+       "$MAIN_SRC.ilg" \
+       "$MAIN_SRC.ind" \
+       "$MAIN_SRC.lof" \
+       "$MAIN_SRC.lot" \
+       "$MAIN_SRC.ps" \
+       "$MAIN_SRC.out" \
+       "$MAIN_SRC.brf" \
+       "$MAIN_SRC.pdf" \
+       "$MAIN_SRC.toc"   2>/dev/null

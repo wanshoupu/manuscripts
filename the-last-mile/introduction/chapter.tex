@@ -3,12 +3,25 @@
 
 I'm nobody. But I've got something to tell you.
 
+New book thoughts quotes.
+I like what Steve McConnell in his book code complete “the primary subject of communication is
+not computer but other humans”. My primary goal of design and coding is not bug free, but to have
+fewer places for bug to hide. This book is a zoomed-in view of the chapter in code complete.
+
 \section{What's last mile in software development}
 Design is largely done. I'm not saying that the design is water-tight and written in a concrete
 slab. It's about implementing functions.
 \section{Structure}
 
 Why do I want to write this book?
+
+\section{How to do abstract thinking?}
+Short answer is ``Learn to think concrete first.'' Thinking in high
+level requires familiarity with the subject. Before one can master designing the high-level
+architecture, abstract modules, one need experience with instantiation, experience with how each
+module would work in the system. thinking design Abstract reasoning is based on making up details
+beneath the high level concepts. Value discovery needs the sense of foresight.
+
 \section{Science vs. Engineering}
 Science is about beating the wall. Engineering is about cushioning the wall.
 
@@ -26,3 +39,88 @@ Science is about beating the wall. Engineering is about cushioning the wall.
     \item Binary tree pattern
     \item
 \end{itemize}
+
+\section{Variational method for optimal design and implementation}
+
+How I came to a better design by introducing a method called isEmpty()
+
+When handling the visitation of repeated fields of protobuf during a design of visitor pattern,
+my brained was twisted several rounds.
+A repeated field is a field where a list of elements may be recorded in one place. In general,
+The significances of repeated fields are the size of the list, the positional indexes, and the
+elements themselves. On the one hand, the repeated field itself may be of interest, even elements
+are empty messages. On the other the elements themselves are often more important. But under
+certain circumstances, not all of the info is desirable. For example when counting for the
+presence of fields, we want just a Boolean per field. More info is simply a burden. But my
+visitor pattern is designed for general use.
+I tried with more complex design of the element classes. I also tried with more complex algorithm
+how to avoid recording empty messages. All go no avail.
+Finally, I approached the problem from another perspective. Treat head for headache and treat
+foot for footache. Because the problem
+is with the specific use case of field presence tally, I put a special logic to count the
+presence of the total elements in the repeated field. Then I put a recursive algorithm to remove
+the ancestors of nodes where count = 0. It worked! For this specific case!
+Then I abstracted the concept to represent the count = 0 condition as isEmpty and put this in the
+base class. Now my visitor pattern design and implementation is more flexible and general
+purposed. It allowed user to specify if repeated field significance is of importance while shift
+away the task of removing the unimportant parts from the overall result. That is by tuning the isEmpty method.
+A good design takes away much of the weight lifting things that’s common and known while leaving
+the variable parts and use case specifics to client to make a call. The balance may be subtle and
+the solution may be scarce, but there seems always a good design somewhere. It clicks with your
+brain when you found it.
+Principle of Variational Method
+My experience of implementing visitor pattern for protobuf translation and iteration for the
+purpose of schema mapping
+I have to admit by now that I’m no genius. I’m quite clumsy, witless, and ordinary. My way of
+working is not genius like at all. Nevertheless I can produce something of quality with hard
+work, long-time thinking, perseverance, and Godly inspiration, and a good sense of judgement.
+Most importantly, I used variational methods to approach the desirable result. Hard work. With
+any idea of any quality, you need to put it to experiment. Start with an implementation and see
+its result. No idea should go untested. That requires hard work. Long-time thinking. You cannot
+work for long without thinking. Take a walk away from your desk to help you concentrate. More
+often than not, ideas will be like rain pour over you while you are walking after a long
+struggling work at no avail. Perseverance. You can be passionate but that state won’t last
+without perseverance. Many times i observed myself become impatient, desperate, depressed in that
+order. But I kept going on anyway. At various stages, I was almost convinced that there is no way
+out or I cannot find a way out. But due to a trace of belief and perseverance, I didn’t give up.
+For example, I am not happy with a design of template interface at some point. My gut feeling
+tells me that there got to be a better way to arrange the types, algorithms, interfaces such that
+the template has minimum implementation required. I believe it’s a suboptimal design. But I’ve
+been trying for several times with no hope of seeing this process converging anywhere. Godly
+inspiration. I prayed, a lot. I take breaks by prayers and Bible study. It’s not for profit that
+I turn to our Lord Jesus. I just enjoy being around of Him. His presence comforts me. God is my
+Shepherd I shall not be in want. I depend on Gods inspiration. And He never let me down. When I
+walk or on train, ideas pour on me like rain drops. I have to hurry to write them down before
+they dry out on my! A sense of good judgement. This tells me when to keep working, keep
+searching, keep experimenting. This also tells me when to pause and accept what I got. Quality of
+work does not come into being all of a sudden. It’s a process of improvement. It’s like the
+learning curve. It’s nonlinear. Sometimes the quality of work doesn’t improve for a long time.
+Some times it regresses. On rare occasions, it improves with a good idea by a great amount. Good
+judgement is like eyes guides you through the paths of a maze. Good work is like a ‘click’. You
+can sense the imperfect. You can feel the problems underlying because you have the discomfort
+right there. Your gut feeling even tells you how big the problem is.
+Lastly let’s talk about the method-variational method. It’s bit by bit. It’s convergence oriented
+. It’s detail go last. Variational method requires a goal in mind in the first place. Then
+approach the goal from a starting point. There are generally two phases. In phase one, You
+experiment with various approaches. It’s explorational. Don’t try to pin on too much details.
+After evaluation of the approaches, choose one and plug through it. If you can reach the goal,
+that means it’s a viable approaches. Second phase is converge bit by bit. You vary some steps and
+by good judgement, you can feel the improvement or regression. Also you nitpick on some flaws.
+You keep improve. You try various ways to get rid of the flaw. Don’t let go if it’s still there.
+The wonderful thing is that as you strive to get rid of the uneasiness in you, you often can find
+out much much better ways to do it. And this proves your gut feeling is real!
+Attached plz find the variational improvements I made during my implementation of the visitor
+pattern for protobuf schema.
+
+\begin{figure}[htb] % Imported eps example.
+    \begin{center}
+        \includegraphics[height=6cm]{variational-commits.jpg}.
+        \caption{An example of applying variational methods to improve an implementation of protobuf
+        message visitor pattern.}
+        \label{image:variational-commits.jpg}
+    \end{center}
+\end{figure}
+\index{commands!environments!figure}%
+You can see the commands that generated this
+figure in the source file. Look for the line
+\cn{begin\{figure\}[htb] \% Imported eps example. }

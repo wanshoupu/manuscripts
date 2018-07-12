@@ -32,7 +32,9 @@ fi
 
 echo "$SCRIPT_DIR/LatexClean $MAIN_SRC"
 
-$SCRIPT_DIR/LatexClean
+cmd="'tell app \"Preview\" to close document \"$MAIN_SRC.pdf\"'"
+echo $cmd| xargs osascript -e
+$SCRIPT_DIR/LatexClean $MAIN_SRC
 
 # Clear the screen.
 #

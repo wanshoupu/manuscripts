@@ -6,89 +6,40 @@
 \chapter{Organize your \ilcode{if-elif-else} statements}
 \section{\ilcode{if-else}-condition}
 (Evernte:if-else-if-else vs. continue in a loop)
-The following two side-by-side code sections are equivalent. But each has their own problem.
-The left column do redundant condition testing (condition1), whereas the right column has repeated code (statement2).
+The following two side-by-side code sections are equivalent.
+But each has their own problem.
+The left column do redundant condition testing (condition1), whereas the right column harepeated
+code (statement2).
 
-%\begin{table}[h]
-\begin{center}
-    %\caption{An example of a table.}
-    \vskip 10pt
-    \begin{tabular}{|p{4cm}|p{4cm}|}
-        \hline
-        \lstinputlisting{introduction/meeting_rooms.py}
-        \begin{lstlisting}
-            while(condition_overall){
-            if(condition1 || condition2){
-            if( condition1){
-            statement1
-            }
-            statement2
-            }else{
-            statement3
-            }
-            }
-        \end{lstlisting} &
-        \begin{lstlisting}
-            while(condition_overall){
-            if(condition1){
-            statement1
-            statement2
-            }else if(condition2){
-            statement2
-            }else{
-            statement3
-            }
-            }
-        \end{lstlisting}
-        \\
-        \hline
-    \end{tabular}
-\end{center}
-%\end{table}
+Let's think of the logic in terms of a real-world example.
+Suppose you need to check schedule and weather before making a plan.
+\begin{itemize}
+    \item Condition C1: schedule permits
+    \item Condition C2: weather permits
+\end{itemize}
+
+\begin{itemize}
+    \item Action A1: Meet a friend
+    \item Action A2: Have a walk
+    \item Action A3: Call a friend
+\end{itemize}
+
+The conditions for action A1 is \code{C1 == True && C2 == True};
+The conditions for action A2 is \code{C1 == True};
+The conditions for action A3 is \code{C1 == False && C2 == False}.
+
+\begin{table}[b]
+    \begin{center}
+        \caption{An example of a table.}
+        \vskip 10pt
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Option 1 & Option 2  \\
+            \lstinputlisting{if-else/redundant_testing.java}
+            &
+            \lstinputlisting{if-else/repeated_block.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}
 
 The simplification of both lies in the smart use of continue:
-\begin{lstlisting}
-
-    while(condition_overall){
-    if( !condition1 ){
-    statement3
-    continue;
-    }
-    //assert condition1
-    if( condition2 ){
-    statement1
-    }
-    statement2
-    }
-\end{lstlisting}
-
-
-\noindent
-\begin{tabular}{|p{6cm}|p{6cm}|}
-    Option 1 & Option 2  \\
-    \begin{lstlisting}[boxpos=t]
-        while(condition_overall){
-        if(condition1 || condition2){
-        if( condition1){
-        statement1
-        }
-        statement2
-        }else{
-        statement3
-        }
-        }
-    \end{lstlisting}
-    &
-    \begin{lstlisting}[boxpos=t]
-        while(condition_overall){
-        if(condition1){
-        statement1
-        statement2
-        }else if(condition2){
-        statement2
-        }else{
-        statement3
-        }
-        }
-    \end{lstlisting}
-\end{tabular}
+\lstinputlisting{if-else/no_redundancy.java}

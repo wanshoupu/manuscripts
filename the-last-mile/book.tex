@@ -83,6 +83,9 @@
 
     \titlepage % Produces the title page.
 
+    %----------------------------------------------------------------------------------------
+    %	DEDICATION
+    %----------------------------------------------------------------------------------------
     \newpage
     \thispagestyle{plain}
     \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
@@ -96,25 +99,25 @@
     \tableofcontents % Prints the table of contents
 
     %----------------------------------------------------------------------------------------
-    %	INTRODUCTION SECTION
+    %	CHAPTERS
     %----------------------------------------------------------------------------------------
 
     \include{introduction/intro}
-    \part{The Pseudoscience}
-    \include{DP/DP}
-    \include{embedded-loops/loop-push-up}
     \include{example/insert-source-code}
+
+    \part{The Pseudoscience}
     \include{functions/functions}
     \include{if-else/elif}
     \include{loop/loop}
     \include{loop/recursion}
-    \include{OOD/OOD}
+    \include{embedded-loops/loop-push-up}
     \include{sentinels/sentinels}
+    \include{DP/DP}
+    \include{OOD/OOD}
     \include{variation-method/varmethod}
 
     \part{The Fairy Tales}
 
-    %----------------------------------------------------------------------------------------
     \backmatter
 
     \printindex

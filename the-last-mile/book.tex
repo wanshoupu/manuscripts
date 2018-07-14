@@ -51,6 +51,7 @@
 \newtheorem{rem}{Remark}[section]
 \newtheorem*{notation}{Notation}
 \def\code#1{\lstinline|#1|}
+\def\ilcode#1{\texttt{#1}}
 \makeindex
 
 \begin{document}
@@ -86,10 +87,7 @@
     \thispagestyle{plain}
     \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
 
-    \chapter*{Acknowledgements}
-    A lot of people to thank...
-
-    \newpage % Make sure the following content is on a new page
+    \include{acknowledgement/ack}
 
     %----------------------------------------------------------------------------------------
     %	TABLE OF CONTENTS
@@ -103,14 +101,14 @@
 
     \include{introduction/intro}
     \part{The Pseudoscience}
-    \include{dp/dp}
+    \include{DP/DP}
     \include{embedded-loops/loop-push-up}
     \include{example/insert-source-code}
     \include{functions/functions}
     \include{if-else/elif}
     \include{loop/loop}
     \include{loop/recursion}
-    \include{OOD/ood}
+    \include{OOD/OOD}
     \include{sentinels/sentinels}
     \include{variation-method/varmethod}
 

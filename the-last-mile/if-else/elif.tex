@@ -1,0 +1,94 @@
+%%
+%% Author: shoupu_wan
+%% 7/14/18
+%%
+
+\chapter{Organize your \code{if-elif-else} statements}
+\section{If-else-condition}
+(Evernte:if-else-if-else vs. continue in a loop)
+The following two side-by-side code sections are equivalent. But each has their own problem.
+The left column do redundant condition testing (condition1), whereas the right column has repeated code (statement2).
+
+%\begin{table}[h]
+\begin{center}
+    %\caption{An example of a table.}
+    \vskip 10pt
+    \begin{tabular}{|p{4cm}|p{4cm}|}
+        \hline
+        \lstinputlisting{introduction/meeting_rooms.py}
+        \begin{lstlisting}
+            while(condition_overall){
+            if(condition1 || condition2){
+            if( condition1){
+            statement1
+            }
+            statement2
+            }else{
+            statement3
+            }
+            }
+        \end{lstlisting} &
+        \begin{lstlisting}
+            while(condition_overall){
+            if(condition1){
+            statement1
+            statement2
+            }else if(condition2){
+            statement2
+            }else{
+            statement3
+            }
+            }
+        \end{lstlisting}
+        \\
+        \hline
+    \end{tabular}
+\end{center}
+%\end{table}
+
+The simplification of both lies in the smart use of continue:
+\begin{lstlisting}
+
+    while(condition_overall){
+    if( !condition1 ){
+    statement3
+    continue;
+    }
+    //assert condition1
+    if( condition2 ){
+    statement1
+    }
+    statement2
+    }
+\end{lstlisting}
+
+
+\noindent
+\begin{tabular}{|p{6cm}|p{6cm}|}
+    Option 1 & Option 2  \\
+    \begin{lstlisting}[boxpos=t]
+        while(condition_overall){
+        if(condition1 || condition2){
+        if( condition1){
+        statement1
+        }
+        statement2
+        }else{
+        statement3
+        }
+        }
+    \end{lstlisting}
+    &
+    \begin{lstlisting}[boxpos=t]
+        while(condition_overall){
+        if(condition1){
+        statement1
+        statement2
+        }else if(condition2){
+        statement2
+        }else{
+        statement3
+        }
+        }
+    \end{lstlisting}
+\end{tabular}

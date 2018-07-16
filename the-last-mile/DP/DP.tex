@@ -10,3 +10,35 @@ It seems what DP requires is a power of magic that creates multiple things at on
 have enough hands to handle all that at once.
 DP needs a split of me doing one part of the thing and a split of me doing tightly coupled another
 while the two splits coordinate closely.
+
+\section{Algorithm Refactor}
+
+\begin{defn}
+    When a formula is too complicated, it may be refactored into several formalae, with auxiliary
+    formulae which may make formulation of the problem simpler and the concept easier to understand.
+    We call this strategy \emph{formula refactoring}.
+\end{defn}
+
+\begin{defn}
+    When a dynamic programming formulation for a problem becomes too complicated, one may
+    introduce a vector variable for each subproblem.
+    Each component of the vector variable has a dedicated and meaningful purpose.
+    The subproblem is to be solved to obtain the vector variable.
+\end{defn}
+
+\section{Two ways of dynamic programming}
+
+The problem is asking for dynamic programming.
+There are generally two ways of attacking dynamic programming.
+Think of what's the optimal solution for subproblems and then grow the subproblem into the
+full-sized problem;
+think of what's the suboptimal solution for the same problem with certain
+constraints and then seek to remove the constraints to obtain the optimal solution.
+The first approach is 'problem-oriented' and the second is 'solution-oriented'.
+
+There are a row of houses, each house can be painted with three colors red, blue and green
+\label{Evernote:Paint House (I and II)}
+\begin{itemize}
+    \item Problem-oriented
+    \item Solution-oriented
+\end{itemize}

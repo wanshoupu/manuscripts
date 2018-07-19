@@ -62,55 +62,55 @@ if [ -e $MAIN_SRC.bib ]; then
       then
         exit 3
     fi
-else
-    echo "Skip running BibTeX."
-fi
 
-echo ""
-echo "	Second run of LaTeX ..."
-echo ""
-pdflatex $MAIN_SRC
-exitcode="$?"
-	if test $exitcode -ne 0
-	  then
-	    exit 4
-	fi
-echo ""
-echo "	Third run of LaTeX ..."
-echo ""
-pdflatex $MAIN_SRC
-exitcode="$?"
-	if test $exitcode -ne 0
-	  then
-	    exit 5
-	fi
-echo ""
-echo "	Run of makeindex ..."
-echo ""
-makeindex $MAIN_SRC
-exitcode="$?"
-	if test $exitcode -ne 0
-	  then
-	    exit 6
-	fi
-echo ""
-echo "	Fourth run of LaTeX ..."
-echo ""
-pdflatex $MAIN_SRC
-exitcode="$?"
-	if test $exitcode -ne 0
-	  then
-	    exit 7
-	fi
-echo ""
-echo "	Fifth and last run of LaTeX ..."
-echo ""
-pdflatex $MAIN_SRC
-exitcode="$?"
-	if test $exitcode -ne 0
-	  then
-	    exit 8
-	fi
+    echo ""
+    echo "	Second run of LaTeX ..."
+    echo ""
+    pdflatex $MAIN_SRC
+    exitcode="$?"
+    if test $exitcode -ne 0
+      then
+        exit 4
+    fi
+    echo ""
+    echo "	Third run of LaTeX ..."
+    echo ""
+    pdflatex $MAIN_SRC
+    exitcode="$?"
+    if test $exitcode -ne 0
+      then
+        exit 5
+    fi
+fi
+if [ -e $MAIN_SRC.idx ]; then
+    echo ""
+    echo "	Run of makeindex ..."
+    echo ""
+    makeindex $MAIN_SRC
+    exitcode="$?"
+    if test $exitcode -ne 0
+      then
+        exit 6
+    fi
+    echo ""
+    echo "	Fourth run of LaTeX ..."
+    echo ""
+    pdflatex $MAIN_SRC
+    exitcode="$?"
+    if test $exitcode -ne 0
+      then
+        exit 7
+    fi
+    echo ""
+    echo "	Fifth and last run of LaTeX ..."
+    echo ""
+    pdflatex $MAIN_SRC
+    exitcode="$?"
+    if test $exitcode -ne 0
+      then
+        exit 8
+    fi
+fi
 
 if [ -e $MAIN_SRC.pdf ]; then
  # This is Mac specific command

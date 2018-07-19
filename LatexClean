@@ -11,6 +11,7 @@ USAGE="
 #####################################################################################
 "
 clean(){
+    input=$1
     if [ -d "$input" ]; then
         mainsrc="$input/*"
     elif [ -f "$input" ]; then
@@ -18,7 +19,7 @@ clean(){
     elif [ -f "$input.tex" ]; then
         mainsrc=${input}
     else
-        echo "Specify valid source file or directory"
+        echo "Specify valid source file or directory: $input"
         exit 1
     fi
 
@@ -42,9 +43,8 @@ clean(){
 
 cleanall(){
   input=$1
-#  echo "$input"
   clean "$input"
-  if [ -d "$input" ]; then
+  if [ -d "$input" ] && ! [ -z "$(ls -A "$input")" ]; then
     for f in $input/*/; do
       cleanall ${f%/}
     done

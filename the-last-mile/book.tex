@@ -1,30 +1,21 @@
 \documentclass[oneside,11pt]{book} % Font size
+
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 \usepackage{listings}
 \usepackage{color}
 \usepackage{textcomp}
-
 \usepackage{graphicx}
 \usepackage{psfig}            % Allows inclusion of eps files.
 \usepackage{epsfig} % Allows inclusion of eps files.
-
 \usepackage[osf]{libertine} % Use the Libertine font
 \usepackage{microtype} % Improves character and word spacing
-
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage{wallpaper} % Required for setting background images (title page)
-
+\usepackage{nameref}
 \usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
 \usepackage{makeidx}
 \usepackage{showidx} % for debug only--remove before printing book
-
-\title{The Last Mile of Programming} % Book title
-\author{Shoupu Wan} % Author
-
-\newcommand{\edition}{Second Edition} % Book edition
-\chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
-\newcommand{\cn}[1]{\texttt{\bslash #1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Some math support.					     %
@@ -35,8 +26,13 @@
 \usepackage{amscd}
 \usepackage{amsmath}
 \usepackage{mathtools}
+
 %	Theorem environments (these need the amsthm package)
 %% \theoremstyle{plain} %% This is the default
+
+\newcommand{\edition}{Second Edition} % Book edition
+\chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
+\newcommand{\cn}[1]{\texttt{\bslash #1}}
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{cor}[thm]{Corollary}
@@ -53,6 +49,9 @@
 \def\code#1{\lstinline|#1|}
 \def\ilcode#1{\texttt{#1}}
 \makeindex
+
+\title{The Last Mile of Programming} % Book title
+\author{Shoupu Wan} % Author
 
 \begin{document}
     \maketitle

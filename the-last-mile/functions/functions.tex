@@ -4,6 +4,9 @@
 %%
 \chapter{Reusable Functions}
 
+For simplicity, I refer to standalone functions as well as member methods of a class as
+\emph{functions}.
+
 \section{Create easy to reuse modules or functions}
 
 \label{Evernote:Rotate array by k times}
@@ -17,7 +20,7 @@ Our brains are small.
 So we have to reduce the complexity of code to understand the symantics.
 Abstract the implementation with the name of a function enables us to do works with more complexity.
 More importantly, think of coding as building pyramids.
-Firstly we make  the building blocks-bricks, carve stones, etc..
+Firstly we make the building blocks-bricks, carve stones, etc..
 Then we build structures with these blocks.
 Finally, we assemble structures into pyramid.
 Higher level constructions depends on lower level constructions.
@@ -29,3 +32,21 @@ Higher level constructions depends on lower level constructions.
 \section{Spiral printing of matrix elements}
 
 Spiral Printing of an 2D matrix. See EverNote
+
+\section{Modularity}
+
+Just breaking up a 100-line of function into five 20-line function does not create modularity.
+That only makes it worse.
+
+Here are some tips about you should break out a chunk of code into a separate function
+\begin{itemize}
+    \item In retrospective, understanding the code you just typed is beyond a glimpse.
+    \item You are embedding a subtask $B$ within the body of your main function
+    $A$.
+    \item Obtaining certain information is so lengthy that it obstructs the main flow of control.
+    \item A squad of certain lines are needed in more than two places, near or far, in your codebase.
+    \item A sequence of operations appears again and once more.
+    \item You encounter difficulty to create effective tests for a function.
+\end{itemize}
+
+These are low-hanging fruits of signals

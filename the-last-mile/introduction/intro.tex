@@ -45,11 +45,45 @@ Below is just a list of things that I usually spend time for meditation:
     \item
 \end{itemize}
 
-\section{What's last mile in software development}
+\section{Hierarchical Software System}
+A fact about majority modern software system consists a tall hierarchy of many components-from
+screen displays down to silicon substrates.
+Many software programmer even not realized is that our understanding of what happens beneath the
+execution of your familiar code is quite shallow.
+If one peeks under the hood, he will come to realize that the little cute function one implemented
+actually invokes a great deal of open-source libraries, frameworks, compilers, interpreters,
+virtual machines, operating systems, ROM-bore middlewares, network protocols, etc.
+The a simple transaction you initiate were handled by a myriad of components among the
+hierarchy in a coordinated way.
+With this relevation, one should be in a better position to write his own functions, classes,
+APIs, and be fully motivated to make their as modular, reusable as possible.
+Your functions should be built upon one another.
+Together they tell a complex and complete story, with outlines as well as details at the right place.
+Our world is run on a conglomeration of hierarchical, systems built on top one another, made of
+various code of all varieties, large or small, open source and proprietary.
+Bugs can hide at all the levels in the hierarchy.
+It’s a miracle that our world runs at all this very moment.
+
+The idea of remove all the bugs is ridiculous.
+Because some of the bug is burnt into the chips you are using.
+Since electrons follow principle of quantum mechanics, uncertainty principles
+guarantees you that your programs works only probabilistically.
+That is to say, some bugs are intrinsic to the computing hardware we are using today.
+
+My book only outlines heuristics that hopefully inspires other minds with equal, if not more,
+desire for constant improvement.
+It’s not a recipe to craft bug free code.
+A machine wouldn’t be able to learn from my book to produce better quality code in the
+foreseeable future.
+But it outlines a formula for like minded programmers to strive for ever better-quality code.
+It is a recipe for self-improvement.
+
+\section{What's last mile in software development}\label{sec:what'sLastMileInSoftwareDevelopment}
 Design is largely done.
-I'm not saying that the design is water-tight and written in a concrete
-slab. It's about implementing functions.
-\section{Structure}
+I'm not saying that the design is water-tight and written in a concrete slab.
+It's about implementing functions.
+
+\section{Structure}\label{sec:structure}
 
 Why do I want to write this book?
 
@@ -84,7 +118,6 @@ Engineering is about cushioning the wall.
 
 \begin{itemize}
     \item Know the features of your language and take advantage of them
-    \item \label{Evernote:Print two binary search trees in ascending order}
     \item
 \end{itemize}
 
@@ -94,3 +127,5 @@ Engineering is about cushioning the wall.
     \item Minimum Unique World \url{https://leetcode.com/problems/minimum-unique-word-abbreviation/description/}
     \item
 \end{itemize}
+
+\section{Add a chapter for Test coverage}

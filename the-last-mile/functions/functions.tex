@@ -2,10 +2,36 @@
 %% Author: shoupu_wan
 %% 7/14/18
 %%
-\chapter{Reusable Functions}
+\chapter{Reusable Functions}\label{ch:reusableFunctions}
+Before we get to the meat of this chapter, I feel obligated to touch base on functions.
+When one starts implementing a class, \textit{e.g.}  one that implements an interface, one is
+responsible to fulfill the requirements of the interface, \textit{i.e.}, implement all the public
+methods listed in the interface.
 
-For simplicity, I refer to standalone functions as well as member methods of a class as
-\emph{functions}.
+I've seen too many times that developers, my former self included, treat each public method as
+isolated island and implement them from head to toe in one monolithic block as the following:
+
+\lstinputlisting[language=Java]{functions/foo.java}
+
+``What else can we do when the interface contains remotely related methods?'' you may being
+protesting by now.
+You are right, methods in an interface may `share-nothing'.
+So let's back off a little bit and suppose we are talking about an interface with totally
+unrelated methods.
+In this case, we can still do something to factor out the complicated conditions and flow control.
+Firstly, apparently the main flow consists of two blocks-the \code{while}-loop and the
+\code{if-else} block and each does a separate check of its own.
+So let's refactor them into two private functions.
+Of course we should adopt a meaning name for each of them.
+But since everything here is for illustration, we will give them \code{barForIllustration} and
+\code{ForIllustration}
+
+Note that for simplicity, I refer to both standalone functions as well as member methods of a
+class as \emph{functions}.
+
+There are more things to improve in this illustrative block of code. But I will stop here and
+lend the explanition of how to optimize and simplify the flow control conditions to Chapter
+\ref{ch:organizeYourIfElse} to promote readability and maintainability.
 
 \section{Create easy to reuse modules or functions}
 

@@ -33,7 +33,6 @@
 \newcommand{\edition}{Second Edition} % Book edition
 \chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
 \newcommand{\cn}[1]{\texttt{\bslash #1}}
-
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{cor}[thm]{Corollary}
 \newtheorem{lem}[thm]{Lemma}
@@ -46,8 +45,9 @@
 \theoremstyle{remark}
 \newtheorem{rem}{Remark}[section]
 \newtheorem*{notation}{Notation}
-\def\code#1{\lstinline|#1|}
-\def\ilcode#1{\texttt{#1}}
+\newcommand{\code}[1]{\mbox{\lstinline{#1}}}
+\newcommand{\ilcode}[1]{\mbox{\texttt{#1}}}
+\newcommand{\Java}{\code{Java}}
 \makeindex
 
 \title{The Last Mile of Programming} % Book title
@@ -130,10 +130,10 @@
     \include{afterword/aw}
     \printindex
 
-    \nocite{*} % This command causes all items in the
-    % bibliographic database to be added to
-    % the bibliography, even if they are not
-    % explicitly cited in the text.
+    % This command causes all items in the bibliographic database to be added to
+    % the bibliography, even if they are not explicitly cited in the text.
+    \nocite{*}
+
     \bibliographystyle{plain}  % Here the bibliography
     \bibliography{book}        % is inserted.
     \index{Bibliography@\emph{Bibliography}}

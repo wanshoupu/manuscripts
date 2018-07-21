@@ -29,3 +29,13 @@ Binary search may be implemented highly structured
     \item Reusable binary search functions \ref{Evernote:Search for start and end of a target in a sorted array} on page \pageref{Evernote:Search for start and end of a target in a sorted array}
     \item Post-processing in binary search \label{Evernote:Find median of two sorted arrays}
 \end{itemize}
+
+\section{Case Study-Hadoop}
+As a real-world case, let's dive into the depth of \code{Hadoop} source code and take a look at
+the two utility methods in package \ilcode{org.apache.hadoop.io.file.tfile.Utils}
+\ilcode{\#lowerBound(..)} and \ilcode{\#upperBound(..)} \footnote{\url{https://github
+.com/apache/hadoop/blob/a0da1ec01051108b77f86799dd5e97563b2a3962/hadoop-common-project/hadoop
+-common/src/main/java/org/apache/hadoop/io/file/tfile/Utils.java}}.
+
+This is an example where the two binary search implementations could be reduced to one with
+little bit structural change.

@@ -2,19 +2,72 @@
 \index{Introduction@\emph{Introduction}}
 
 \section{Science vs. Engineering}
-Years ago, my research work fell in a complete stall.
-I was convinced that I have no future in the field as an unachieved scientist.
-All of a sudden, I was delighted to find that I may be able to make a living if only I
-put up a different mindset and switch track from hard-science research to computer programming industry.
+Years ago, when my research work came to a complete stall, I was convinced that I have no future
+in my field of research as an unachieved physicist.
+Digging my dreams of youth time, I was delighted to find that I may be able to make a living if
+only I put up a different mindset and switch track from physics research to computer programming.
+Now after these many years of pursuance in software engineering career, one thing becomes clearer
+and clearer.
+
 In a way, scientists are doomed from the very beginning-they are hopelessly bound by natural law and
 the best they can do is to map out where the limits are.
-The studies of engineering, on the other hand, is a lot more relenting.
-Among all that's forbidden, there is what's allowed.
-Though curvy, the the solution space is much smoother, which leaves huge opportunity for
-considerable optimization.
+The studies of engineering, however, is a lot more relenting-there seems to be no stark boundary
+between what is forbidden and what is allowed, there is no crispy right or wrong to the naked
+eyes.
+Everything is negotiable.
+Moreover, there is no timely causality, at least at time of design or implementation.
+It is in a way reminiscent to the so-called `soft sciences'-whose evaluation is probabilistic
+and time consuming.
 
-Today, ten years later, I once again find that I may be able to make a living if only I can write
-up a comparison of science and engineering based on my personal experience.
+The lack of stark, timely feedback in software engineering leaves best practices and mediocre
+practices come blended.
+This is also a huge opportunity for considerable optimization.
+Once again find I suddenly realized that I may be able to make a living if only I can write up a
+comparison of science and engineering based on my personal experience.
+
+\section{Who am I?}\label{sec:whoAmI}
+Honestly, I'm nobody.
+I wish someone else could have authored this book instead of me.
+But I waited for a long time, searched the corners of libraries and bookstores.
+I just don't seem to see a book with similar coverage.
+
+If you demand, I admit that I am a self-taught software engineer, converted from a little
+bit of scientific research background.
+You guessed right!
+I didn't make ground-breaking discoveries in my research.
+I have no glaring publications on Science, Nature, or Cells.
+So that little research background doesn't lend me much credentials for what I~am doing here.
+
+However I~am not sharing my credentials here.
+Instead, I want to spend large paragraphs to share my struggles.
+I struggled for the past ten years to get to the bottom of everything that bothers me, ever since
+I began to seriously consider computer programming as a career, the very first moment of my
+attempt to understand the basics of algorithms, data structures, \textit{etc.}.
+I spent hours and hours of focused time on comprehend the mechanisms, relationships, and analogies.
+I built new learning on top of what I already mastered.
+For instance, I managed to gain a personal, multi-dimensional understanding of why
+pairwise-comparison-based sorting algorithms are bound by $Nlog(N)$ time complexity through long
+time back-and-forth reflection.
+While on it, I pondered on the similarity between the time complexity of sorting algorithms and
+entropy of an $N$-particle isolated system.
+I tracked it to Shannon's information entropy\cite{Shannon-mathematical-1948}, and from there
+further up, all the way back to Boltzmann's development in statistical mechanics\cite{landau:1980}.
+
+My immersion in this field was materialized in thousands of pages of notes, $40k$
+lines of coding problems practices that I can find online\footnote{\textit{e.g.},
+\url{https://projecteuler.net}, \url{https://leetcode.com}} or offline, and $100k+$ lines of
+deployed production code at top-tier tech firms.
+Many of the problems that I worked on were revisited for four to five times over a period of
+several years and each time I was able to gain new understandings regarding why my code worked or
+not worked and how to redo it in a cleaner way than before.
+I believe the stumbles, the struggles, the lessons, and the learning is worth sharing by a book.
+My learned experience shared here may not not eliminate bugs from your code.
+But they will help eliminate hiding places for potential bugs.
+
+I like what Steve McConnell in his book code complete ``The primary subject of communication is
+not computer but other humans''\cite{Mcconnell.2004}.
+So it's my primary goal to communicate my code to my colleagues and successors in clear, succinct
+language.
 
 \section{Why this book?}\label{sec:whyThisBook}
 I worked in tech field for 10 years, starting as an amateur dilettante, gradually building up my
@@ -110,50 +163,6 @@ Below is just a list of things that I usually spend time for meditation:
     \item
 \end{itemize}
 
-\section{Who am I?}\label{sec:whoAmI}
-Honestly, I'm nobody.
-I wish someone else could have authored this book instead of me.
-But I waited for a long time, searched the corners of libraries and bookstores.
-I just don't seem to see a book with similar coverage.
-
-If you demand, I admit that I am a self-taught software engineer, converted from a little
-bit of scientific research background.
-You guessed right!
-I didn't make ground-breaking discoveries in my research.
-I have no glaring publications on Science, Nature, or Cells.
-So that little research background doesn't lend me much credentials for what I~am doing here.
-
-However I~am not sharing my credentials here.
-Instead, I want to spend large paragraphs to share my struggles.
-I struggled for the past ten years to get to the bottom of everything that bothers me, ever since
-I began to seriously consider computer programming as a career, the very first moment of my
-attempt to understand the basics of algorithms, data structures, \textit{etc.}.
-I spent hours and hours of focused time on comprehend the mechanisms, relationships, and analogies.
-I built new learning on top of what I already mastered.
-For instance, I managed to gain a personal, multi-dimensional understanding of why
-pairwise-comparison-based sorting algorithms are bound by $Nlog(N)$ time complexity through long
-time back-and-forth reflection.
-While on it, I pondered on the similarity between the time complexity of sorting algorithms and
-entropy of an $N$-particle isolated system.
-I tracked it to Shannon's information entropy\cite{Shannon-mathematical-1948}, and from there
-further up, all the way back to Boltzmann's development in statistical mechanics\cite{landau:1980}.
-
-My immersion in this field was materialized in thousands of pages of notes, $40k$
-lines of coding problems practices that I can find online\footnote{\textit{e.g.},
-\url{https://projecteuler.net}, \url{https://leetcode.com}} or offline, and $100k+$ lines of
-deployed production code at top-tier tech firms.
-Many of the problems that I worked on were revisited for four to five times over a period of
-several years and each time I was able to gain new understandings regarding why my code worked or
-not worked and how to redo it in a cleaner way than before.
-I believe the stumbles, the struggles, the lessons, and the learning is worth sharing by a book.
-My learned experience shared here may not not eliminate bugs from your code.
-But they will help eliminate hiding places for potential bugs.
-
-I like what Steve McConnell in his book code complete ``The primary subject of communication is
-not computer but other humans''\cite{Mcconnell.2004}.
-So it's my primary goal to communicate my code to my colleagues and successors in clear, succinct
-language.
-
 \section{Hierarchical Software System}\label{sec:hierarchicalSoftwareSystem}
 A fact about majority modern software system consists a tall hierarchy of many components-from
 screen displays down to silicon substrates.
@@ -186,10 +195,10 @@ foreseeable future.
 But it outlines a formula for like minded programmers to strive for ever better-quality code.
 It is a recipe for self-improvement.
 
-\section{What's last mile in software development}\label{sec:whatsLastMileInSoftwareDevelopment}
-Design is largely done.
-I'm not saying that the design is water-tight and written in a concrete slab.
-It's about implementing functions.
+%\section{What's last mile in software development}\label{sec:whatsLastMileInSoftwareDevelopment}
+%Design is largely done.
+%I'm not saying that the design is water-tight and written in a concrete slab.
+%It's about implementing functions.
 
 \section{What this book is not about}\label{sec:thisBookIsNotAbout}
 What I am sharing instead is first-hand personal experience as a programmer in the past decade.

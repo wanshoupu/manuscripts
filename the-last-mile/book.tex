@@ -48,7 +48,7 @@
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \newcommand{\ilcode}[1]{\mbox{\texttt{#1}}}
 \newcommand{\Java}{\code{Java}}
-\makeindex
+%\makeindex
 
 \title{The Last Mile of Programming} % Book title
 \author{Shoupu Wan} % Author
@@ -76,20 +76,21 @@
     tabsize=3,
     upquote=true
     }
-
-    \thispagestyle{empty} % Suppress page numbering
-    \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
-
-    \titlepage % Produces the title page.
-
-    %----------------------------------------------------------------------------------------
-    %	DEDICATION
-    %----------------------------------------------------------------------------------------
-    \newpage
-    \thispagestyle{plain}
-    \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
-
-    \include{acknowledgement/ack}
+% temporarily comment these pages out for development
+%
+%    \thispagestyle{empty} % Suppress page numbering
+%    \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
+%
+%    \titlepage % Produces the title page.
+%
+%    %----------------------------------------------------------------------------------------
+%    %	DEDICATION
+%    %----------------------------------------------------------------------------------------
+%    \newpage
+%    \thispagestyle{plain}
+%    \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
+%
+%    \include{acknowledgement/ack}
 
     %----------------------------------------------------------------------------------------
     %	TABLE OF CONTENTS
@@ -127,8 +128,8 @@
     \include{variation-method/varmethod}
 
     \backmatter
-    \include{afterword/aw}
-    \printindex
+%    \include{afterword/aw}
+%    \printindex
 
     % This command causes all items in the bibliographic database to be added to
     % the bibliography, even if they are not explicitly cited in the text.

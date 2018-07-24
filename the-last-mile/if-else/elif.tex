@@ -5,8 +5,12 @@
 
 \chapter{Organize your \ilcode{if-elif-else}
 statements}\label{ch:organizeYourIfElse}
-\section{\ilcode{if-else}-condition}
-(Evernte:if-else-if-else vs. continue in a loop)
+
+The explanition of how to optimize and simplify the flow control conditions to promote
+readability and maintainability.
+
+\section{\ilcode{if-else}-condition}\label{sec:if-else-condition}
+
 The following two side-by-side code sections are equivalent.
 But each has their own problem.
 The left column do redundant condition testing (condition1), whereas the right column harepeated
@@ -14,6 +18,7 @@ code (statement2).
 
 Let's think of the logic in terms of a real-world example.
 Suppose you need to check schedule and weather before making a plan.
+\label{Evernte:if-else-if-else vs. continue in a loop}
 \begin{itemize}
     \item Condition C1: schedule permits
     \item Condition C2: weather permits

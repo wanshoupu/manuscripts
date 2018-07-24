@@ -48,6 +48,7 @@
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \newcommand{\ilcode}[1]{\mbox{\texttt{#1}}}
 \newcommand{\Java}{\code{Java}}
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} ``\nameref*{#1}''}}
 %\makeindex
 
 \title{The Last Mile of Programming} % Book title
@@ -105,7 +106,7 @@
     \include{introduction/intro}
     \include{example/insert-source-code}
 
-    \part{Flow Control}\label{prt:flowControl}
+    \part{Functions and Flow of Control}\label{prt:flowControl}
     \include{functions/functions}
     \include{functions/binary-search}
     \include{if-else/elif}
@@ -120,7 +121,7 @@
     \include{data-structure/queue-stack}
     \include{lang-feature/lang}
 
-    \part{Blasting Off}\label{prt:blastOff}
+    \part{Blastoff}\label{prt:blastOff}
     \include{embedded-loops/loop-push-up}
     \include{sentinels/sentinels}
     \include{dynamic-programming/dp}
@@ -135,7 +136,7 @@
     % the bibliography, even if they are not explicitly cited in the text.
     %\nocite{*}
 
-    \bibliographystyle{plain}  % Here the bibliography
+    \bibliographystyle{apalike}  % Here the bibliography
     \bibliography{book}        % is inserted.
     \index{Bibliography@\emph{Bibliography}}
 

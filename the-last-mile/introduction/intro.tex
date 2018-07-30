@@ -2,8 +2,8 @@
 \index{Introduction@\emph{Introduction}}
 
 \section{Science vs. Engineering}
-Years ago, when my research work came to a complete stall, I was convinced that I have no future
-in my field of research as an unachieved physicist.
+Years ago, when my research work came to a complete stall, I was convinced that I had no future
+as an unachieved physicist.
 Digging my dreams of youth time, I was delighted to find that I may be able to make a living if
 only I put up a different mindset and switch track from physics research to computer programming.
 Today after a decade of pursuance in software engineering career, I have had a considerable
@@ -162,15 +162,31 @@ Below is just a list of things that I usually spend time for meditation:
 \end{itemize}
 
 \section{Hierarchical Software System}\label{sec:hierarchicalSoftwareSystem}
-A fact about majority modern software system consists a tall hierarchy of many components-from
-screen displays down to silicon substrates.
-Many software programmer even not realized is that our understanding of what happens beneath the
-execution of your familiar code is quite shallow.
-If one peeks under the hood, he will come to realize that the little cute function one implemented
-actually invokes a great deal of open-source libraries, frameworks, compilers, interpreters,
-virtual machines, operating systems, network protocols, ROM-bore firmwares, etc.
-The a simple transaction you initiate were handled by a myriad of components among the
-hierarchy in a coordinated way.
+Modern computing system is made of a hierarchy of myriad components-assembled together from visible
+buttons down to silicon chips.
+To gain a detailed understanding of everything that happens beneath the execution of a simple RPC
+call is beyond an individual's capability, even the top-notch professionals.
+If directly looking down the call stack from a program of our own, it will certainly
+cause acrophobia in us.
+The little cute function we implemented shockingly invokes a great deal of libraries,
+frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
+firmwares, \textit{etc.}
+In just the network protocol stack there are five layers.
+
+That's overly complicated, isn't it?
+Is that necessary?
+Why are they the way they are?
+
+We can come to some understanding on this through a simple game.
+You are provided 3 sheets of blank paper and a pen.
+Each time you pick a blank paper and start drawing a line without lifting your pen.
+So you have 3 tries.
+The rules are do not cross a line and do not lift up the pen.
+Your goal is to fill the paper as much as possible.
+
+At the very beginning, there is no system-a blank paper is provided to a developer team.
+We quickly added the first, primitive, monolithic system.
+
 With this revelation, one should be in a better position to write his own functions, classes,
 APIs, and be fully motivated to make their as modular, reusable as possible.
 Your functions should be built upon one another.
@@ -224,22 +240,21 @@ for an interview, but more so in routine software development.
 \section{Structure of the Book}\label{sec:structureOfTheBook}
 The book is divided into three parts.
 
-In \fullref{prt:flowControl}, we go in length talking about the
-foundations for concise and readable flow controls.
-We first talk about well-structured, modular, and reusable functions.
-We then dash to the meat of the essence of readable and succinct flow control technologies.
+In \fullref{prt:flowControl}, we lay the foundations of implementation level concise and readable
+modular designs.
+We first touch base on well-structured, modular, and reusable functions.
+Then we go to the meat of readable and succinct flow of control technologies.
 
 In \fullref{prt:dataStructure}, we will explain the usage
 patterns of common data structures such as maps, linked lists, binary trees, stacks, and queues.
 For each of these data structures, I assume you already have a solid understanding of what they
 are.
-With a plenty of examples, I will explain how I come to realize the many usage patterns that can
-help you write reliable, easily maintainable code.
+With a plenty of examples, I will explain how I come to realize a handful of usage patterns that can
+help you write reliable, maintainable code.
 
-With the foundations laid, We will touch base on a few advanced topics in \fullref{prt:blastOff}.
+With the foundations laid, We will go at length on a few advanced topics in \fullref{prt:blastOff}.
 We will start with how to simplify embedded loops by introducing a term ``loop thinning''.
-Next we will talk about sentinels and their application to reduce redundant and / or
-duplicate code.
+Next we will talk about sentinels and their application to reduce redundant and / or duplicate code.
 Another topic I'd like to elaborate on is dynamic programming.
 I will show you how the right mindset can help you psychologically.
 I will also explain the two common approaches to crack a complex dynamic programming problem.
@@ -253,22 +268,22 @@ design and implementation by taking advantage of the interplay between the two.
 Finally, I will dedicate a section to explain a variational method to gradually approach an optimal
 design and implementation of a complex software system.
 
-\section{How to do abstract thinking?}
-Short answer is ``Learn to think concrete first.'' Thinking in high
-level requires familiarity with the subject.
-Before one can master designing the high-level
-architecture, abstract modules, one need experience with instantiation, experience with how each
-module would work in the system.
-Thinking design Abstract reasoning is based on making up details
-beneath the high level concepts.
-Value discovery needs the sense of foresight.
-
-
-\section{Coding examples}
-
-\begin{itemize}
-    \item Minimum Unique World \url{https://leetcode.com/problems/minimum-unique-word-abbreviation/description/}
-    \item
-\end{itemize}
-
-\section{Add a chapter for Test coverage}
+%\section{How to do abstract thinking?}
+%Short answer is ``Learn to think concrete first.'' Thinking in high
+%level requires familiarity with the subject.
+%Before one can master designing the high-level
+%architecture, abstract modules, one need experience with instantiation, experience with how each
+%module would work in the system.
+%Thinking design Abstract reasoning is based on making up details
+%beneath the high level concepts.
+%Value discovery needs the sense of foresight.
+%
+%
+%\section{Coding examples}
+%
+%\begin{itemize}
+%    \item Minimum Unique World \url{https://leetcode.com/problems/minimum-unique-word-abbreviation/description/}
+%    \item
+%\end{itemize}
+%
+%\section{Add a chapter for Test coverage}

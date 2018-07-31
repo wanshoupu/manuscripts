@@ -58,8 +58,6 @@
 
 \begin{document}
 \frontmatter
-    \cfoot{\normalsize\thepage}% Show only page number in footer
-    \pagenumbering{roman}% Roman-numbered pages (start from i)
 
     \maketitle
     \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -109,15 +107,12 @@
     %	CHAPTERS
     %----------------------------------------------------------------------------------------
 
-    \include{introduction/intro}
+    \include{introduction/preface}
 %    \include{example/insert-source-code}
-
-    \clearpage
-    \cfoot{\normalsize\thepage~/~\pageref{LastPage}}% Show page / LastPage in footer
-    \pagenumbering{arabic}% Arabic-numbered pages (start from 1)
 
 \mainmatter
     \part{Modular Design}\label{prt:flowControl}
+    \include{introduction/intro}
     \include{functions/functions}
     \include{functions/binary-search}
     \include{if-else/elif}

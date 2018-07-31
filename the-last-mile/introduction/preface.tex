@@ -1,0 +1,258 @@
+\chapter{Preface} \label{ch:preface}
+\index{Preface@\emph{Preface}}
+
+Years ago, when my research work came to a complete stall, I was convinced that I had no future
+as an unachieved physicist.
+Digging dreams of my youth time, I was delighted to find that I may be able to make a living if I
+put up a different mindset and switch track from physics research to computer programming.
+Through a prolonged, self-guided learning, I incrementally acquired higher and higher proficiency
+in software engineering skills.
+From a mere dilettante to an experienced professional it took me one decade.
+Today my understanding in various aspects of software development is on a
+commensurable standing with that of physics.
+Furthermore, I have aggregated considerable comparative understandings between science and
+engineering.
+
+Upon these thoughts, I have long wondered if it is worthwhile to write up my personal
+experience into a book to help those who are entrusted with the difficult task of engineering.
+
+\section{Who am I?}\label{sec:whoAmI}
+
+I'm a physics dropout who broke into software engineering field a decade ago.
+%Unlike other physics dropouts, I decently spent enough time to finish my PhD thesis.
+I didn't make ground-breaking discoveries in my research.
+I have no dazzling publications on Science, Nature, or Cells.
+Miraculously, I managed to close a page and flipped to the next.
+
+So that little research background doesn't lend me much credentials for what I~am doing here.
+However sharing my credentials is not my focus here here.
+Share my struggles is.
+As it came to pass, I am a self-taught software engineer and
+I struggled for the past ten years to get to the bottom of everything that bothers me, ever since
+I began to seriously consider computer programming as a career, the very first moment of my
+attempt to understand the basics of algorithms, data structures, \textit{etc.}.
+I spent hours and hours of focused time on comprehend the mechanisms, relationships, and analogies.
+I built new learning on top of what I already mastered.
+For instance, I managed to gain a personal, multi-dimensional understanding of why
+pairwise-comparison-based sorting algorithms are bound by $Nlog(N)$ time complexity through long
+time back-and-forth reflection.
+While on it, I pondered on the similarity between the time complexity of sorting algorithms and
+entropy of an $N$-particle isolated system.
+I tracked it to Shannon's information entropy\cite{Shannon-mathematical-1948}, and from there
+further up, all the way back to Boltzmann's development in statistical mechanics\cite{landau:1980}.
+
+My immersion in this field was materialized in thousands of pages of notes, $40k$
+lines of coding problems practices that I can find online\footnote{\textit{e.g.},
+\url{https://projecteuler.net}, \url{https://leetcode.com}} or offline, and $100k+$ lines of
+deployed production code at top-tier tech firms.
+Many of the problems that I worked on were revisited for four to five times over a period of
+several years and each time I was able to gain new understandings regarding why my code worked or
+not worked and how to redo it in a cleaner way than before.
+I believe the stumbles, the struggles, the lessons, and the learning is worth sharing by a book.
+My learned experience shared here may not not eliminate bugs from your code.
+But they will help eliminate hiding places for potential bugs.
+
+I'd like to quote Steve McConnell: ``The primary subject of communication is not computer but
+other humans''\cite{Mcconnell.2004}.
+Communicate clear, succinct code to colleagues and successors are much more efficient.
+
+\section{Why this book?}\label{sec:whyThisBook}
+
+I didn't take this seriously until fairly recently when
+I came to realize high-end software developers
+have remained rare a commodity through so many years of tech hypes.
+This anecdotal observation seems to be silently confirmed by repositories at
+Github\footnote{\url{github.com}}.
+Take a look at the source code of projects which are the bread and butter and are
+depended by millions such as Hadoop, Spark, Apache Common Libraries, \textit{etc}.
+Except the getters, setters and other boilerplate code, in any fairly dense implementation of
+class, a method, it is almost guaranteed to contain one or more of the numerous `smells' as listed
+in Martin Fowler's seminal book `Refactor'~\cite{Fowler1999}.
+
+and convince yourself that many of these great project came with a great design but were
+implemented with mediocrity.
+
+You will see that they came with a great design but were implemented with mediocrity.
+
+Personally, I've worked with graduates and post-graduates from top-tier schools.
+They come with latest theories in computer sciences.
+Their resumes are full of buzz words and eye-catching GPA\@.
+But at the end of the day when it's time to code up ideas, the incompetence betrays them
+glaringly.
+
+It is revealed in design reviews, code reviews, technical interviews in top-tier tech companies.
+
+These plain facts convey the crying signal that there is a lack of supply of quality engineers.
+As news has it, since software industry became an industry,
+the gap between supply and demand for qualified professionals has been steadily growing.
+This shortage nowadays takes a new form, \textit{e.g.}, a shortage of quality.
+
+This means it is not a mere lack of ``engineers'', but the rarity of experienced engineers with a
+deep understanding of software engineering.
+This observation is simultaneously corroborated by authoritative research firms.
+According to a 2018 research by Forrester\footnote{\url{https://go.forrester
+.com/research/predictions}},
+it cites that the prolonged software engineering talent shortage has turned from lack-of-quantity
+to lack-of-quality and employers may end up paying $20\%$ above market for quality engineering
+talent.
+
+Therefore, the following pattern forms in working: a few top-notch minds conceive a project and
+come up with a high-level design.
+Over time, a mediocre, often faulty, smelly implementation is done by whatever resource they may
+find with varying code and documentation styles.
+
+This, in turn, leads to a fallacious classification of both minds and work into tiers-
+top tier minds do top tier work, \textit{etc}.
+While there is nothing wrong with maximizing return of one's capabilities, I want to cast doubt
+over what is bigger return.
+Is it conceiving of projects, drawing the blueprint designs for architecture and interface, or
+completing the `dirtier' work of implementations?
+It is not at all clear that certain tasks are above others such
+that architecture and interface designs would take precedence;
+that implementations can be put off and delegated to less-qualified engineers.
+
+But I would argue that
+the division between requirements, design, and implementation are only
+representatives of stages of work rather than signifying the importance.
+%those beliefs that emphasize design over implementation are superficial speculations rather than
+%data-backed conclusions.
+%Implementations are the key deciding factor for the success of a project.
+%They can be equally, if not more, important as design.
+%It's the lack of quality engineers that cause this division of works.
+Most people would mistake stages with importance.
+
+Each stage of work would require qualified top-tier engineers to complete.
+As pointed out above, it is unfortunate that there are simply not enough quality engineers to
+complete all work.
+It is therefore a do-or-die makeshift to find complete a world-class project with mediocre
+implementations.
+%than willful choice-There are just not enough top-tier engineers working on the projects.
+
+Formal computer science education is a foundation but not the commodity of trade.
+The application of education to problem solving is a skill that is learned by experience and
+mentorship.
+It is the main focus of this book to spread the insights I gained on my way toward sharpening my
+software development and problem-solving skills.
+
+What I want to achieve through this book is that through repeated retrospection and
+self-criticism, one immerse in a learning mindset to achieve a progressively higher
+level of proficiency.
+%Through this book, I hope to do my part in narrowing the gap between demand and supply of quality
+%talents.
+%I rightly believe readers share the aspiration as mine and are working hard to realize their
+%potential to become better programming talents.
+%Also I encourage readers to form the habit of summing up their work regularly and share with
+%each other their learning often.
+
+\section{Structure of the book}\label{sec:structureOfTheBook}
+The book is divided into three parts.
+
+In \fullref{prt:flowControl}, we lay the foundations of concise and readable
+modular designs and implementations.
+In \fullref{ch:reusableFunctions} we touch base on well-structured, modular, and reusable
+functions.
+Then we spend \fullref{ch:organizeYourIfElse} to discuss the meat of readable and succinct flow of
+control pros and cons.
+We conclude this part of the book by \fullref{ch:loops} and \fullref{ch:recursion} where some
+insights of loops and recursions are presented. We will talk about the ``Loop and a half''
+problem and possible solutions.
+
+I dedicate \fullref{prt:dataStructure} to explain how I settled
+with a handful of usage patterns that can also help you write reliable, maintainable code.
+With a plenty of examples, we will take look at the usage
+patterns of common data structures such as maps, linked lists, binary trees, stacks, and queues
+(\fullref{ch:ds}).
+For each of these data structures, I assume you already have a solid understanding of what they
+are.
+\fullref{ch:knowTheLanguageFeatures} talks about specific language features that may help
+you write concise and readable code.
+But we will maintain the practical purpose of readability instead of showing off tricky, enigmatic
+esoteric `language features'.
+
+
+With the foundations laid, We will go at length on a few advanced topics in \fullref{prt:blastOff}.
+We will start with \fullref{ch:loop-thinning} where we explain how to simplify embedded loops by
+introducing a technology dubbed as ``loop thinning''\index{Loop Thinning\emph{Loop Thinning}}.
+In the next \fullref{ch:sentinels}, we will talk about sentinels and their application to reduce
+redundant and / or duplicate code.
+Another topic I'd like to elaborate on is dynamic programming and this will be done in \fullref{ch:dp}.
+I will show you how putting on the right mindset can help you make friend with dynamic programming.
+I will also explain the two common approaches to crack a complex dynamic programming problem.
+Furthermore, I go into details to explain a multi-variate dynamic programming techniques for
+solving complicated dynamic programming problems.
+Searching through the literature, I haven't found obvious sources lecturing on iterative approach to
+object-oriented design (OOD) during implementation stage of software development cycles.
+When a conventional book talks about OOD, it is often done in an isolated way.
+Seldom any book has touched the interaction between designs and implementations.
+This is exactly my focus in \fullref{ch:ood}.
+In a section, I will attempt to explain how an iterative approach can bring a near optimal
+design and implementation by taking advantage of the interplay between the two.
+Finally, I will dedicate a section to explain a methodology that uses variational principle to
+approach an optimal design and implementation of a complex piece of software.
+
+\section{Who should read this book?} \label{sec:whoshouldread}
+This book is intended for professionals who already have a solid command on
+algorithms, data structures, operating systems, and programming languages of their choice.
+However applying these to a complex coding practice on a daily basis remains a challenging task.
+toward their software engineering career goal.
+
+This book is rather a summary of 10 years software engineering experience of the author.
+The author believes and have proved through personal experience the effectiveness of constant
+learning.
+Undeniably, a lot of activities help one improve on programming skills.
+Coding up a great deal of problems will get you familiar with various algorithms, a command of
+data structures, and brush up on your coding skills.
+However, an often ignored activity is to contemplate on algorithms and your implementations of them.
+From time to time, one need to look back on the works they did before and pause on
+anything that may catch one's eyes.
+Trying new things that ranges from mundane variable renaming to systematic code overhaul.
+
+But the beauty of this kind of activities lies in the gifts that come with practice.
+The more you explore, the more there is to discover.
+If you make this a habit, you will unearth many gems in the depth of your ability.
+You will be a perpetual generator of innovations, a powerhouse of self-sustained improvement.
+
+Below is just a list of things that I usually spend time for meditation:
+\begin{itemize}
+    \item Bugs made previously
+    \item Bugs fixed previously
+    \item Why a particular implementation works
+    \item Why a particular implementation does not work
+    \item Refactor redundant code
+    \item
+\end{itemize}
+
+%\section{How to use this book?}\label{sec:howToUseThisBook?}
+
+\section{What this book is not about}\label{sec:thisBookIsNotAbout}
+
+What I am sharing instead is first-hand personal experience as a programmer in the past decade.
+They shouldn't be viewed as rules to be accepted but to be felt and verified in your own practice.
+Please provide me your feedback as you read and I'd love to hear from you.
+
+Other than that, this book does not teach you any specific programming language.
+It assumes readers have familiarity with the popular programming languages such as \python, \java,
+C++ \textit{etc.}.
+Neither does this book focus on algorithms or data structures, at least not systematically.
+Where needed, the workings of an algorithms are outlined for reader's convenience.
+That should be taken as the focus of the book.
+This book is not about recipe or cookbook for any specific framework or system.
+Rather, it's a general guideline for development with all frameworks and systems.
+Last but not least, this book is not just about technical interviews.
+Those who are preparing for technical interviews will benefit by reading this book.
+But the main target of this book are those who are determined for long-term investment
+of improving their programming skills.
+Nevertheless, here and there, I use interview problems to illustrate the strategy of
+implementation of certain algorithms.
+But neither coding questions nor their solutions are the focus of this book.
+The strategy of implementing functions and classes is not only applicable to coding questions
+for an interview, but more so in routine software development.
+
+Last but not least, it takes years of combat training in real battle fields to achieve a higher
+level of proficiency.
+It is, therefore, not my pursuance to help you cut short the path.
+This book serves as an inspiration for endeavors of achievement.
+
+\begin{flushright}
+    S.~W. @ S.~M\@.
+\end{flushright}

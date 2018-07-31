@@ -16,6 +16,7 @@
 \usepackage[unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]{hyperref} % PDF meta-information specification
 \usepackage{makeidx}
 \usepackage{showidx} % for debug only--remove before printing book
+\usepackage{fancyhdr}% http://ctan.org/pkg/fancyhdr
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Some math support.					     %
@@ -55,6 +56,9 @@
 \author{Shoupu Wan} % Author
 
 \begin{document}
+    \cfoot{\normalsize\thepage}% Show only page number in footer
+    \pagenumbering{roman}% Roman-numbered pages (start from i)
+
     \maketitle
     \definecolor{dkgreen}{rgb}{0,0.6,0}
     \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -104,7 +108,11 @@
     %----------------------------------------------------------------------------------------
 
     \include{introduction/intro}
-    \include{example/insert-source-code}
+%    \include{example/insert-source-code}
+
+    \clearpage
+    \cfoot{\normalsize\thepage~/~\pageref{LastPage}}% Show page / LastPage in footer
+    \pagenumbering{arabic}% Arabic-numbered pages (start from 1)
 
     \part{Modular Design}\label{prt:flowControl}
     \include{functions/functions}

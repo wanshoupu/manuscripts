@@ -182,33 +182,48 @@ Communicate clear, succinct code to colleagues and successors are much more effi
 \section{Structure of the book}\label{sec:structureOfTheBook}
 The book is divided into three parts.
 
-In \fullref{prt:flowControl}, we lay the foundations of implementation level concise and readable
-modular designs.
-We first touch base on well-structured, modular, and reusable functions.
-Then we go to the meat of readable and succinct flow of control technologies.
+In \fullref{prt:flowControl}, we lay the foundations of concise and readable
+modular designs and implementations.
+In \fullref{ch:reusableFunctions} we touch base on well-structured, modular, and reusable
+functions.
+Then we spend \fullref{ch:organizeYourIfElse} to discuss the meat of readable and succinct flow of
+control pros and cons.
+We conclude this part of the book by \fullref{ch:loops} and \fullref{ch:recursion} where some
+insights of loops and recursions are presented. We will talk about the ``Loop and a half''
+problem and possible solutions.
 
-In \fullref{prt:dataStructure}, we will explain the usage
-patterns of common data structures such as maps, linked lists, binary trees, stacks, and queues.
+I dedicate \fullref{prt:dataStructure} to explain how I settled
+with a handful of usage patterns that can also help you write reliable, maintainable code.
+With a plenty of examples, we will take look at the usage
+patterns of common data structures such as maps, linked lists, binary trees, stacks, and queues
+(\fullref{ch:ds}).
 For each of these data structures, I assume you already have a solid understanding of what they
 are.
-With a plenty of examples, I will explain how I come to realize a handful of usage patterns that can
-help you write reliable, maintainable code.
+\fullref{ch:knowTheLanguageFeatures} talks about specific language features that may help
+you write concise and readable code.
+But we will maintain the practical purpose of readability instead of showing off tricky, enigmatic
+esoteric `language features'.
+
 
 With the foundations laid, We will go at length on a few advanced topics in \fullref{prt:blastOff}.
-We will start with how to simplify embedded loops by introducing a term ``loop thinning''.
-Next we will talk about sentinels and their application to reduce redundant and / or duplicate code.
-Another topic I'd like to elaborate on is dynamic programming.
-I will show you how the right mindset can help you psychologically.
+We will start with \fullref{ch:loop-thinning} where we explain how to simplify embedded loops by
+introducing a technology dubbed as ``loop thinning''\index{Loop Thinning\emph{Loop Thinning}}.
+In the next \fullref{ch:sentinels}, we will talk about sentinels and their application to reduce
+redundant and / or duplicate code.
+Another topic I'd like to elaborate on is dynamic programming and this will be done in \fullref{ch:dp}.
+I will show you how putting on the right mindset can help you make friend with dynamic programming.
 I will also explain the two common approaches to crack a complex dynamic programming problem.
 Furthermore, I go into details to explain a multi-variate dynamic programming techniques for
 solving complicated dynamic programming problems.
-Yet another important topic I'd like to elaborate is object-oriented design (OOD).
-When a conventional book talks about OOD, it is often done in a detached way.
+Searching through the literature, I haven't found obvious sources lecturing on iterative approach to
+object-oriented design (OOD) during implementation stage of software development cycles.
+When a conventional book talks about OOD, it is often done in an isolated way.
 Seldom any book has touched the interaction between designs and implementations.
+This is exactly my focus in \fullref{ch:ood}.
 In a section, I will attempt to explain how an iterative approach can bring a near optimal
 design and implementation by taking advantage of the interplay between the two.
-Finally, I will dedicate a section to explain a variational method to gradually approach an optimal
-design and implementation of a complex software system.
+Finally, I will dedicate a section to explain a methodology that uses variational principle to
+approach an optimal design and implementation of a complex piece of software.
 
 %\section{How to do abstract thinking?}
 %Short answer is ``Learn to think concrete first.'' Thinking in high
@@ -229,7 +244,7 @@ design and implementation of a complex software system.
 %\end{itemize}
 %
 %\section{Add a chapter for Test coverage}
-Hierarchical Software System
+%Hierarchical Software System
 
 \section{Who should read this book?} \label{sec:whoshouldread}
 This book is intended for professionals who already have a solid command on

@@ -3,4 +3,48 @@
 %% 7/19/18
 %%
 
-\subsection{Hashmap pattern - Cache}
+\subsection{Hashmap pattern - Cache}\label{subsec:hashmapPattern-Cache}
+
+When using hashmap as a cache, one may be split between checking the existence first or try to
+get the object first.
+As one can see \java has
+In the particular language of one's choice, one may not have the feature as \java and \python.
+
+
+A proven, reliable pattern make your implementation of similar function a no-brainer and bug-free.
+
+\begin{lstlisting}
+    if (cache.contains(key)) {
+        return cache.get(key);
+    } else {
+        Object val = calc(key);
+        cache.put(key, val);
+        return val;
+    }
+\end{lstlisting}
+
+\begin{lstlisting}
+    if (cache.contains(key)) {
+        return cache.get(key);
+    }
+    Object val = calc(key);
+    cache.put(key, val);
+    return val;
+\end{lstlisting}
+
+\begin{lstlisting}
+    Object cached = cache.get(key);
+    if (cached == null) {
+        Object val = calc(key);
+        cache.put(key, val);
+        cached = cache.get(key);
+    }
+    return cached;
+\end{lstlisting}
+
+\begin{lstlisting}
+    if (!cache.contains(key)) {
+        cache.put(key, calc(key));
+    }
+    return cache.get(key);
+\end{lstlisting}

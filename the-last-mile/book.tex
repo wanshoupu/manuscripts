@@ -56,6 +56,7 @@
 \author{Shoupu Wan} % Author
 
 \begin{document}
+\frontmatter
     \cfoot{\normalsize\thepage}% Show only page number in footer
     \pagenumbering{roman}% Roman-numbered pages (start from i)
 
@@ -114,6 +115,7 @@
     \cfoot{\normalsize\thepage~/~\pageref{LastPage}}% Show page / LastPage in footer
     \pagenumbering{arabic}% Arabic-numbered pages (start from 1)
 
+\mainmatter
     \part{Modular Design}\label{prt:flowControl}
     \include{functions/functions}
     \include{functions/binary-search}
@@ -136,7 +138,7 @@
     \include{object-oriented-design/ood}
     \include{variation-method/varmethod}
 
-    \backmatter
+\backmatter
 %    \include{afterword/aw}
 %    \printindex
 

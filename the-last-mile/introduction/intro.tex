@@ -13,39 +13,55 @@ I feel obligated to share my learning experience as a thesis.
 
 I'd like to make an analogous comparison between sciences and engineering to begin with,
 which I believe is both amusing and useful for later discussion.
+In his book, ``The Sciences of the Artificial'', Nobel laureate Herbert A.
+Simon characterized a comparison between science and engineering as `` The natural sciences are concerned
+with how things are \ldots Design, on the other hand,
+is concerned with how things ought to be''~\cite{Herbert-Simon-1996}.
 As two major domains of studies, science and engineering are built on common ground-mathematics.
 Science is a crude, intricate cavern-stony, uncushioned, undecorated inside and out.
-Engineering, on the other hand, is a mansion, developed dwelling place for human, for better or
+Engineering, on the other hand, is a mansion, developed modern dwelling place, for better or
 worse.
 
 The cavern of science permits only law-abiding visitors-no alteration is allowed or possible-and
 visitors are bound to the open space amid rocks.
 The mansion of engineering is permissive, open to changes.
-If so desired, windows can be broken in, holes can be bored, walls can be torn, albeit at a price
-. % with a consequence
-The sole purpose of scientists is to map out where the limits are.
-Engineers can do just about anything-they can repurpose, expand, remodel, or even rebuild the
-mansion, in part or in total, as needed.
+If so desired, windows can be broken in, holes can be bored, walls can be torn, albeit at a price.
+% with a consequence
+The sole mission of scientists is to map out the limits, no human artifacts.
+The mansion of engineering, however, is relenting.
+Engineers enjoy the freedom of designing and creating artifacts-they can repurpose, expand,
+remodel, or even rebuild the mansion, in part or in whole, as needed.
 There is no stark boundary between forbidden and allowed.
-There is no sheer right or wrong at time of design.
-The mansion of engineering is relenting and negotiable.
-But the consequences of changes are often foundational and take long to manifest.
+There is no sheer right or wrong.
+Everything is negotiable.
+Everything has a price tag.
 
-As a branch of engineering, software engineering is even more so.
-The vast amount of possibilities, boring holes, opening windows, building walls, leave a vast
-space for optimization.
+But not every changes are created equal.
+Some changes are implausible by natural laws, some changes are non-viable due to practical reasons,
+some changes cause severe problems years later, \textit{etc}.
+The consequences are unknown at time of design, take long to manifest, and when they do, cause
+long-lasting effect.
+Engineering is, in a way, like parking a locomotive with no brake.
+
+The vast amount of engineering possibilities, \textit{e.g.}, boring holes, opening windows,
+building walls, leave a vast optimization space.
+
+
+As a branch of engineering, software development is of no exception.
+The solution space of software design is humongous.
 The evaluation of design and implementation of software is probabilistic and time consuming.
 The lack of stark, timely feedback in software engineering leaves best practices and mediocre
 practices blended.
 This characteristics of software development presents both challenges and opportunities for
-programming practitioners.
-
-Upon these thoughts, I suddenly realized that I may be able to make a living if only I can write
-up my personal experience.
+practitioners.
 
 \section{Why this book?}\label{sec:whyThisBook}
 
-It is fairly recently that I came to realize high-end software developers
+Upon these thoughts, I have long wondered if it is worthwhile to write up my personal
+experience into a book to help those who are entrusted with the difficult task of engineering.
+
+I didn't take this seriously until fairly recently.
+I came to realize high-end software developers
 have remained rare a commodity through so many years of tech hypes.
 This seemingly anecdotal conclusion is firmly supported by the end-products checked into
 repositories at \url{github.com}.
@@ -75,46 +91,65 @@ it cites that the prolonged software engineering talent shortage has turned from
 to lack-of-quality and employers may end up paying $20\%$ above market for quality engineering
 talent.
 
-Therefore, the following pattern forms: the few top-notch minds conceive a project with a
-high-level design and struggle to find resources to give it a mediocre implementation.
+Therefore, the following pattern forms in working: a few top-notch minds conceive a project and
+come up with a high-level design.
+Over time, a mediocre, often faulty, smelly implementation is done by whatever resource they may
+find with varying code and documentation styles.
 
-There are beliefs flowing around that emphasizes top-level designs than low-level implementation;
-that architecture design, interface designs take precedence;
+This, in turn, leads to a fallacious classification of both minds and work into tiers-
+top tier minds do top tier work, \textit{etc}.
+While there is nothing wrong with maximizing return of one's capabilities, I want to cast doubt
+over what is bigger return.
+Is it conceiving of projects, drawing the blueprint designs for architecture and interface, or
+completing the `dirtier' work of implementations?
+It is not at all clear that certain tasks are above others such
+that architecture and interface designs would take precedence;
 that implementations can be put off and delegated to less-qualified engineers.
+
 But I would argue that
-those beliefs that emphasize design over implementation are superficial observations rather than
-insights.
-Implementations are the key deciding factor for the success of a project.
-They are just equally, if not more, important as design.
+the division between requirements, design, and implementation are only
+representatives of stages of work rather than signifying the importance.
+%those beliefs that emphasize design over implementation are superficial speculations rather than
+%data-backed conclusions.
+%Implementations are the key deciding factor for the success of a project.
+%They can be equally, if not more, important as design.
 %It's the lack of quality engineers that cause this division of works.
-It is more a do-or-die makeshift than willful choice-There are just not enough top-tier engineers
-working on the projects.
+Most people would mistake stages with importance.
+
+Each stage of work would require qualified top-tier engineers to complete.
+As pointed out above, it is unfortunate that there are simply not enough quality engineers to
+complete all work.
+It is therefore a do-or-die makeshift to find complete a world-class project with mediocre
+implementations.
+%than willful choice-There are just not enough top-tier engineers working on the projects.
 
 Formal computer science education is a foundation but not the commodity of trade.
 The application of education to problem solving is a skill that is learned by experience and
 mentorship.
-It takes years of real-world combat training to achieve this level of proficiency.
-This book would not and is never my pursuance to help you cut short the path.
+It is the main focus of this book to spread the insights I gained on my way toward sharpening my
+software development and problem-solving skills.
 
-What I want to achieve through this book is that one may be inspired to immerse oneself in a
-learning mindset from one's own coding exercise.
-Through this book, I hope to do my part in narrowing the gap between demand and supply of quality
-talents.
-I rightly believe readers share the aspiration as mine and are working hard to realize their
-potential to become better programming talents.
-Also I encourage readers to form the habit of summing up their work regularly and share with
-each other their learning often.
+What I want to achieve through this book is that through repeated retrospection and
+self-criticism, one immerse in a learning mindset to achieve a progressively higher
+level of proficiency.
+%Through this book, I hope to do my part in narrowing the gap between demand and supply of quality
+%talents.
+%I rightly believe readers share the aspiration as mine and are working hard to realize their
+%potential to become better programming talents.
+%Also I encourage readers to form the habit of summing up their work regularly and share with
+%each other their learning often.
 
 \section{Who am I?}\label{sec:whoAmI}
-I'm a physics dropout who adventured into software engineering field for a decade or so.
-Unlike other physics dropout genius, I decently spent enough time to finish my PhD thesis.
+
+I'm a physics dropout who broke into software engineering field a decade ago.
+%Unlike other physics dropouts, I decently spent enough time to finish my PhD thesis.
 I didn't make ground-breaking discoveries in my research.
-I have no glaring publications on Science, Nature, or Cells.
-By miracle, I successfully close one page and flipped to a clean next one.
+I have no dazzling publications on Science, Nature, or Cells.
+Miraculously, I managed to close a page and flipped to the next.
 
 So that little research background doesn't lend me much credentials for what I~am doing here.
-However I~am not sharing my credentials here.
-Instead, I want to spend large paragraphs to share my struggles.
+However sharing my credentials is not my focus here here.
+Share my struggles is.
 As it came to pass, I am a self-taught software engineer and
 I struggled for the past ten years to get to the bottom of everything that bothers me, ever since
 I began to seriously consider computer programming as a career, the very first moment of my
@@ -140,10 +175,9 @@ I believe the stumbles, the struggles, the lessons, and the learning is worth sh
 My learned experience shared here may not not eliminate bugs from your code.
 But they will help eliminate hiding places for potential bugs.
 
-I like what Steve McConnell in his book code complete ``The primary subject of communication is
-not computer but other humans''\cite{Mcconnell.2004}.
-So it's my primary goal to communicate my code to my colleagues and successors in clear, succinct
-language.
+I'd like to quote Steve McConnell: ``The primary subject of communication is not computer but
+other humans''\cite{Mcconnell.2004}.
+Communicate clear, succinct code to colleagues and successors are much more efficient.
 
 \section{Structure of the book}\label{sec:structureOfTheBook}
 The book is divided into three parts.
@@ -232,6 +266,7 @@ Below is just a list of things that I usually spend time for meditation:
 \section{How to use this book?}\label{sec:howToUseThisBook?}
 
 \section{What this book is not about}\label{sec:thisBookIsNotAbout}
+
 What I am sharing instead is first-hand personal experience as a programmer in the past decade.
 They shouldn't be viewed as rules to be accepted but to be felt and verified in your own practice.
 Please provide me your feedback as you read and I'd love to hear from you.
@@ -253,3 +288,8 @@ implementation of certain algorithms.
 But neither coding questions nor their solutions are the focus of this book.
 The strategy of implementing functions and classes is not only applicable to coding questions
 for an interview, but more so in routine software development.
+
+Last but not least, it takes years of combat training in real battle fields to achieve a higher
+level of proficiency.
+It is, therefore, not my pursuance to help you cut short the path.
+This book serves as an inspiration for endeavors of achievement.

@@ -19,3 +19,69 @@ The relevant parts of a loop of generic construct are:
 Depending on the situation, a loop may or may not have certain parts as mentioned above.
 
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+
+\section{For-loop}
+
+\begin{lstlisting}
+    for(<init> ; <pre-stmt> ; <post-stmt> )
+\end{lstlisting}
+Think of \ilcode{<pre-stmt>} as the first statement of each iteration of for-body.
+Think of \ilcode{<post-stmt>} as the last statement of each iteration of for-body.
+
+\section{Precondition loop, midcondition loop, and postcondition loop}
+
+How to choose the right loop for concise code?
+\begin{itemize}
+    \item Firstly use a generic (infinite loop) with break statements as exit points
+    \item in the body such as for(;;) or while(true). After the structural
+    \item statements are clear, one can choose a suitable, concise loop statements
+\end{itemize}
+
+What are the important parts when using a for-loop?
+     Questions to ask and answer
+\begin{itemize}
+    \item
+           what's the initialization?
+               Initialization is the starting points. To iterate over an array, for example,
+               should the initialization be i = -1 or i = 0?
+    \item
+           when and where increment/decrement should happen?
+               in the 3rd part of the for statement? or in the body?
+               It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
+               if the increment/decrement is in the body. But it's more concise to put in the for-statement
+    \item
+           What's the termination condition and How many termination points?
+               Often, infinite loop is resulted when incorrect assumption is made about the termination condition
+\end{itemize}
+
+1. Pre-condition loop
+\begin{lstlisting}
+while (condition) {
+   statements;
+}
+\end{lstlisting}
+and
+\begin{lstlisting}
+for ( ; condition; ) {
+   statements;
+}
+\end{lstlisting}
+
+2. Mid-condition loop
+
+\begin{lstlisting}
+while (true)
+{
+   statements;
+   if (!condition) break;
+   statements;
+}
+\end{lstlisting}
+
+3. Post-condition loop
+
+\begin{lstlisting}
+do {
+   statements;
+}while(condition);
+\end{lstlisting}

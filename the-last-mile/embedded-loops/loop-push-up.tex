@@ -8,3 +8,93 @@
 Embedded loop thinning \label{Evernote:Max area under histogram}
 \label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
 \label{Evernote:Server peak load problem}
+\label{Evernote:for-loop Loop compactification examples}
+
+\begin{lstlisting}
+    Sometimes embedded loops can be combined into a single loop + if-else inside the loop body.
+for example, the quick sort algorithm may be implemented as
+
+for (...){
+     while(){
+          loop until no smaller element
+     }
+     while(){
+          loop until no larger element
+     }
+     swap element
+     update boundary
+}
+
+The for condition and the while condition bear some similarity, so we can combined them into one
+
+for(...){
+     if(...){
+          ...
+     }
+     swap element
+     update boundary
+}
+
+Example
+
+    public String intToRoman(int num) {
+        StringBuilder sb = new StringBuilder();
+        int d = 0;
+        while (num != 0){
+            int t = num / ds[d];
+            num %= ds[d];
+            for(int j = 0; j < t; ++j){
+                sb.append(cs[d]);
+            }
+            ++d;
+        }
+        return sb.toString();
+    }
+
+May be made more compact using the above technique as
+
+    public String intToRoman(int num) {
+        StringBuilder sb = new StringBuilder();
+        for(int d = 0;num > 0;){
+            if(num >= ds[d]){
+                num -= ds[d];
+                sb.append(cs[d]);
+            }else{
+                ++d;
+            }
+        }
+        return sb.toString();
+    }
+\end{lstlisting}
+
+\begin{lstlisting}
+    Uncompact
+        for(int i = 0; i + pattern.length() <= text.length(); ++i){
+            for(int j = 0; ; ++j){
+                if(j == pattern.length()){
+                    return i;
+                }
+                if(pattern.charAt(j) != text.charAt(i+j)){
+                    break;
+                }
+            }
+        }
+        return -1;
+
+Compact:
+        for(int i = 0,j=0; ; ){
+            //The order of the following two if...return blocks MATTERS!
+            if(j == pattern.length()) {
+                return i;
+            }
+            if(i+j == text.length()){
+                return -1;
+            }
+            if(pattern.charAt(j) == text.charAt(i+j)){
+                ++j;
+            }else{
+                ++i;
+                j = 0;
+            }
+        }
+\end{lstlisting}

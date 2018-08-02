@@ -5,32 +5,47 @@
 \chapter{Reusable Functions}\label{ch:reusableFunctions}
 
 \section{Hierarchical Software System}\label{sec:hierarchicalSoftwareSystem}
-Modern computing system is made of a hierarchy of myriad components-assembled together from visible
-buttons down to silicon chips.
-To gain a detailed understanding of everything that happens beneath the execution of a simple RPC
-call is beyond an individual's capability, even the top-notch professionals.
-If directly looking down the call stack from a program of our own, it will certainly
-cause acrophobia in us.
-The little cute function we implemented shockingly invokes a great deal of libraries,
+Modern computing systems are hierarchical.
+Myriad components, built on top of one another, are assembled together from visible buttons down
+to silicon chips.
+To understand every detail taking place beneath the execution of a simple ``Hello, world''
+program is beyond anyone's capability.
+If one looks down the full call stack of a remote procedure call (RPC), it may cause
+acrophobia in many.
+A cute little function may invoke a shocking number of libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
 firmwares, \textit{etc.}
-In just the network protocol stack there are five layers.
 
-That's overly complicated, isn't it?
-Is that necessary?
-Why are they the way they are?
+%In just the network protocol stack there are five layers.
+%
+%That's overly complicated, isn't it?
+%Is that necessary?
+%Why are they the way they are?
 
-We can come to some understanding on this through a simple game.
-You are provided 3 sheets of blank paper and a pen.
-Each time you pick a blank paper and start drawing a line without lifting your pen.
-So you have 3 tries.
-The rules are do not cross a line and do not lift up the pen.
-Your goal is to fill the paper as much as possible.
+Fortunately, no one needs to understand all the details at once, thanks to abstraction and modular
+design.
+Abstract thinking is one of the key traits of modern human beings and it is also the
+bread-n-butter of software engineers in every aspect of their daily practice.
+When we develop a piece of software, we seldom do it from ground up but utilizing existing,
+pre-built modules-frameworks, libraries, APIs, \textit{etc}.
+When one uses these pre-built modules, one is only concerned by how to use it by reading the
+documentations much like recognizing a bottle of pills by its label and following the
+directions of usage.
+We never need to know the chemical ingredients or the molecular structure.
 
-At the very beginning, there is no system-a blank paper is provided to a developer team.
-We quickly added the first, primitive, monolithic system.
+Abstraction and encapsulation in software starts with functions.
 
-With this revelation, one should be in a better position to write his own functions, classes,
+\begin{figure}[htb] % Imported eps example.
+\begin{center}
+\includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}.
+
+\caption{Encapsulation everywhere on the hierarchy of software system}
+\label{fig:hierarchy}
+\end{center}
+\end{figure}
+
+
+With this in mind, one should be in a better position to write his own functions, classes,
 APIs, and be fully motivated to make their as modular, reusable as possible.
 Your functions should be built upon one another.
 Together they tell a complex and complete story, with outlines as well as details at the right place.
@@ -39,7 +54,7 @@ various code of all varieties, large or small, open source and proprietary.
 Bugs can hide at all the levels in the hierarchy.
 It's truly a miracle that our software world runs at all this very moment.
 
-If your program works on the first run, you immediately should be suspecious.
+If your program works on the first run, you should be immediately suspicious.
 The idea of remove all the bugs is ridiculously unrealistic.
 Because some of the bug is burnt into the chips you are using.
 Since electrons follow principle of quantum mechanics, uncertainty principles

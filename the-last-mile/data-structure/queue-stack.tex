@@ -8,3 +8,19 @@
     \item DFS \textit{vs.} BFS \label{Evernote:DFS vs BFS}
     \item Graph exploring patterns
 \end{itemize}
+
+
+\label{Evernote:Versioned Stack algorithm}
+You need to implement a versioned stack, i.e. version of stack will increment after each push/pop. Apart from push/pop, implement a method print(n) which would print stack state corresponding to version 'n'. For example:
+-> initially stack is empty.
+-> Version 1: 11 is pushed
+-> Version 2: 8 is pushed
+-> version 3: pop. only 11 left
+-> Version 4: 15 is pushed
+....
+And so on.
+
+Print(n) should print state at version 'n'.
+
+Here 1 should print 11, 2 should print 8, 11...
+All methods should be as efficient as possible.

@@ -47,33 +47,103 @@ larger pieces.
 
 \section{Function anatomy}\label{sec:functionAnatomy}
 
-In all mainstream programming languages, a function may comprise of one or more of the following
-parts: name, arguments (input), return spec (output), exception spec, and body.
+In all mainstream programming languages, a fully implemented function must have a name, an argument
+list, and a body.
+\java and \cpp also requires a return type.
+We will omit all other language-specific features of function in the current
+discussion\footnote{for \cpp, it is possible to omit return type
+if it's an \code{int} type as a legacy support for backward compatibility with C;
+\java may optionally have a \code{throws} exception list which we omit in the current discussion.}.
 
-\begin{itemize}
-    \item Name: unique identifier for the function within certain scope or namespace
-    \item argument specification: specifying what input(s) are needed and / or accepted
-    \item return specification: specifying what output(s) are produced at return of function
-    \item exception declaration: what checked exception(s) caller need to handle (\java only)
-    \item body: The main body of implementation
-\end{itemize}
+%\begin{itemize}
+%    \item Name: unique identifier for the function within certain scope or namespace
+%    \item argument specification: specifying what input(s) are needed and / or accepted
+%    \item return specification: specifying what output(s) are produced at return of function
+%    \item exception declaration: what checked exception(s) caller need to handle (\java only)
+%    \item body: The main body of implementation
+%\end{itemize}
+%
+%\begin{table}[h]
+%    \begin{center}
+%        \caption{Function anatomy\label{tbl:function-part-supported-lang}}
+%        \begin{tabular}{|l|l|l|l|}
+%            \hline
+%            item & \python & \java & \cpp \\
+%            \hline
+%            name & \checkmark & \checkmark & \checkmark \\
+%            argument spec & \checkmark & \checkmark & \checkmark \\
+%            return spec & & \checkmark & \checkmark \\
+%            body & \checkmark  & \checkmark & \checkmark \\
+%            \hline
+%        \end{tabular}
+%    \end{center}
+%\end{table}
+
+Above all, naming a function plays a pivotal role in software development.
+Computer programming is about naming.
+Many books has talked about the best practices of naming, including function naming
+\cite{Martin-R-2009, Mcconnell.2004}.
+As a rule-of-thumb, function names should be clear and concise, in that order, to serve as an
+abstract for what it does.
+Functions in test code may be lengthier than its production counterpart as test cases may be
+combinatorial and that may be reflected in names.
 
 \begin{table}[h]
     \begin{center}
-        \caption{Function anatomy}
-        \begin{tabular}{|l|l|l|l|}
+        \caption{Function argument shortening techniques.\label{tbl:arg-shorten-tech}}
+        \begin{tabular}{|l|p{5cm}|p{3cm}|}
             \hline
-            item & \python & \java & \cpp \\
+            Name & Description & Notes \\
             \hline
-            name & \checkmark & \checkmark & \checkmark \\
-            argument spec & \checkmark & \checkmark & \checkmark \\
-            return spec & & \checkmark & \checkmark \\
-            exception dcl & & \checkmark & \\
-            body & \checkmark  & \checkmark & \checkmark \\
+            Create a class
+            & If you find yourself needing a bunch of arguments, you
+            probably need a class instead of a function
+            & Provided your programming language supports OOD \\
+            \hline
+            Function refactor
+            & Long list of arguments sometimes signals you are doing
+            too much in a function (violation of the single responsibility principle)
+            & \\
+            \hline
+            Eliminate redundancy
+            & Some argument(s) may be derivable from other(s)
+            & \\
+            \hline
+            Use field variable
+            & If one argument occurs in multiple methods, it's probably a
+            crying signal for your to promote it to a field variable of the class
+            & \\
+            \hline
+            Variable argument
+            & If you need a list of similar arguments, you may create an array
+            and pass that array in as one variable
+            & For PL's that supports it, variable argument list may be an alternative \\
+            \hline
+            Pass an object
+            & Declare a `bean' class to contain the arguments to be pased in your function.
+            & You may create a more readable solution \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
+
+Secondly, I have something to say about the cardinality of argument list.
+My only advice is `Beat all the odds to keep it no more than 2'.
+Sometimes you may have an urge to create a function with $>2$ arguments.
+Please refrain from it and refer to \autoref{tbl:arg-shortening-tech} for techniques that may
+help you create more beautiful and readable solution.
+In the extreme case where you seem to run out of all wit and have to do or die,
+you should leave a comment reminding/challenging yourself to revisit it later.
+
+
+Finally, a word on function return values.
+Usually a function returns a single value.
+But sometimes you wish to return a bunch of values.
+There are ways to do so.
+Some languages, \textit{e.g.}, \python, you can simply return multiple values by implicitly
+returning a \code{tuple}, thanks to language support for convenient packing/unpacking.
+For other languages that do not support this, you can return \code{Pair}, \code{Tuple}, or
+objects of a user-defined type.
 
 \section{Function tree}\label{sec:functionFamilies}
 

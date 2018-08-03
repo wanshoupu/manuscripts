@@ -61,22 +61,51 @@ parts: name, arguments (input), return spec (output), exception spec, and body.
 \begin{table}[h]
     \begin{center}
         \caption{Function anatomy}
-        \begin{tabular}{|l|l|l|l|l|}
+        \begin{tabular}{|l|l|l|l|}
             \hline
-            item &  \python & \java &  \cpp \\
+            item & \python & \java & \cpp \\
             \hline
             name & \checkmark & \checkmark & \checkmark \\
             argument spec & \checkmark & \checkmark & \checkmark \\
             return spec & & \checkmark & \checkmark \\
-            exception declaration & & \checkmark & \\
+            exception dcl & & \checkmark & \\
             body & \checkmark  & \checkmark & \checkmark \\
             \hline
         \end{tabular}
-
     \end{center}
 \end{table}
 
-\section{Function families}\label{sec:functionFamilies}
+\section{Function tree}\label{sec:functionFamilies}
+
+According to the Single responsibility principle, every module should take care of one and only
+one aspect of the whole.
+Robert C. Martin put it as, ``A class should have only one reason to change.''\cite{Martin-R-2003}.
+I am extending that to ``A function should have only one reason to change.''
+In practice, one still need to define what oneness means.
+I tend to interpret the oneness as ``A single task or a tightly coupled group of tasks''.
+Therefore, to solve a fairly complicated problem, one should construct a `function tree' much as an
+expression tree\footnote{\url{https://en.wikipedia.org/wiki/Binary_expression_tree}}.
+
+\autoref{fig:functree} illustrates the idea with a tree structure and the code is shown in
+\autoref{lst:functree}
+
+\begin{figure}[htb] % Imported eps example.
+    \begin{center}
+        \includegraphics[height=8cm]{functions/functree.jpg}
+        \caption{
+        Function tree diagram.
+        The function \code{main} delegates certain parts of
+        the calculation to \code{foo}, \code{bar}, and \code{baz};
+        Function \code{foo}, in turn, delegates to function \code{xIsTrue} and
+        \code{bar} to \code{getY} and \code{invokeRPC}.}
+        \label{fig:functree}
+    \end{center}
+\end{figure}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:functree},caption={Illustrative function tree.}]
+    {functions/functree.py}
+\end{minipage}
 
 Your functions should be built upon one another.
 Together they tell a complex and complete story, with outlines as well as details at the right place.

@@ -4,17 +4,13 @@
 %%
 \chapter{Reusable Functions}\label{ch:reusableFunctions}
 
-\section{Hierarchical Software System}\label{sec:hierarchicalSoftwareSystem}
-Modern computing systems are hierarchical.
-Myriad components, built on top of one another, are assembled together from visible buttons down
-to silicon chips.
+Modern computing systems are hierarchical and modular, with various components such as libraries,
+frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
+firmwares, \textit{etc.}.
 To understand every detail taking place beneath the execution of a simple ``Hello, world''
 program is beyond anyone's capability.
-If one looks down the full call stack of a remote procedure call (RPC), it may cause
-acrophobia in many.
-A cute little function may invoke a shocking number of libraries,
-frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
-firmwares, \textit{etc.}
+%If one looks down the full call stack of a remote procedure call (RPC), it may cause
+%acrophobia in many.
 
 %In just the network protocol stack there are five layers.
 %
@@ -22,31 +18,66 @@ firmwares, \textit{etc.}
 %Is that necessary?
 %Why are they the way they are?
 
-Fortunately, no one needs to understand all the details at once, thanks to abstraction and modular
-design.
-Abstract thinking is one of the key traits of modern human beings and it is also the
-bread-n-butter of software engineers in every aspect of their daily practice.
-When we develop a piece of software, we seldom do it from ground up but utilizing existing,
-pre-built modules-frameworks, libraries, APIs, \textit{etc}.
-When one uses these pre-built modules, one is only concerned by how to use it by reading the
-documentations much like recognizing a bottle of pills by its label and following the
-directions of usage.
-We never need to know the chemical ingredients or the molecular structure.
-
-Abstraction and encapsulation in software starts with functions.
+Fortunately, no one needs to understand that amount of details all at once.
+When one takes medicine, one does not need to study the chemical ingredients or the molecular
+structure of the pills.
+The label on the bottle provides pretty much all that is needed.
+This is an example of abstraction, a key trait of human knowledge.
+In the same way, abstraction and encapsulation is the key in software design-a fairly complex
+application is made up of a number of components.
+The whole process is recursive-the components used by an application
+may, in turn, be encapsulations of components at yet another level of abstraction.
+\autoref{fig:hierarchy-of-encap} illustrates the idea of recursive abstraction.
 
 \begin{figure}[htb] % Imported eps example.
-\begin{center}
-\includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}.
-
-\caption{Encapsulation everywhere on the hierarchy of software system}
-\label{fig:hierarchy}
-\end{center}
+    \begin{center}
+        \includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}
+        \caption{Encapsulation everywhere on the hierarchy of software system}
+        \label{fig:hierarchy-of-encap}
+    \end{center}
 \end{figure}
 
+When we develop a piece of software, we seldom do it from ground up but utilizing existing,
+pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
+when one uses these pre-built modules, one doesn't need to know anything more than the
+documentations of the API of the module.
 
-With this in mind, one should be in a better position to write his own functions, classes,
-APIs, and be fully motivated to make their as modular, reusable as possible.
+In this chapter, we are to study how to write clean, reusable functions as the building blocks of
+larger pieces.
+
+\section{Function anatomy}\label{sec:functionAnatomy}
+
+In all mainstream programming languages, a function may comprise of one or more of the following
+parts: name, arguments (input), return spec (output), exception spec, and body.
+
+\begin{itemize}
+    \item Name: unique identifier for the function within certain scope or namespace
+    \item argument specification: specifying what input(s) are needed and / or accepted
+    \item return specification: specifying what output(s) are produced at return of function
+    \item exception declaration: what checked exception(s) caller need to handle (\java only)
+    \item body: The main body of implementation
+\end{itemize}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Function anatomy}
+        \begin{tabular}{|l|l|l|l|l|}
+            \hline
+            item &  \python & \java &  \cpp \\
+            \hline
+            name & \checkmark & \checkmark & \checkmark \\
+            argument spec & \checkmark & \checkmark & \checkmark \\
+            return spec & & \checkmark & \checkmark \\
+            exception declaration & & \checkmark & \\
+            body & \checkmark  & \checkmark & \checkmark \\
+            \hline
+        \end{tabular}
+
+    \end{center}
+\end{table}
+
+\section{Function families}\label{sec:functionFamilies}
+
 Your functions should be built upon one another.
 Together they tell a complex and complete story, with outlines as well as details at the right place.
 Our world is run on a conglomeration of hierarchical, systems built on top one another, made of
@@ -54,7 +85,8 @@ various code of all varieties, large or small, open source and proprietary.
 Bugs can hide at all the levels in the hierarchy.
 It's truly a miracle that our software world runs at all this very moment.
 
-If your program works on the first run, you should be immediately suspicious.
+A modern piece of program is so complicated that if it works on the first run, you should
+be immediately suspicious.
 The idea of remove all the bugs is ridiculously unrealistic.
 Because some of the bug is burnt into the chips you are using.
 Since electrons follow principle of quantum mechanics, uncertainty principles

@@ -85,8 +85,16 @@ Many books has talked about the best practices of naming, including function nam
 \cite{Martin-R-2009, Mcconnell.2004}.
 As a rule-of-thumb, function names should be clear and concise, in that order, to serve as an
 abstract for what it does.
-Functions in test code may be lengthier than its production counterpart as test cases may be
-combinatorial and that may be reflected in names.
+But clarity and conciseness are conflicting requirements.
+Therefore skill of naming is a balancing art.
+So another rule I follow in practice is ``The length of a variable name is proportional to its
+scope.''
+A short-living variable names may have shorter names or even an acronym, \textit{e.g.}, \code{temp},
+\code{t}, \code{tmptr}.
+A field variable, on the opposite, should have a fully qualified name, \textit{e.g.},
+\code{temperatureOfLivingRoom}.
+Also, function names in test code may be lengthier than its production counterpart as test cases
+may be combinatorial and that may be reflected in names.
 
 \begin{table}[h]
     \begin{center}
@@ -127,16 +135,19 @@ combinatorial and that may be reflected in names.
     \end{center}
 \end{table}
 
-Secondly, I have something to say about the cardinality of argument list.
-My only advice is `Beat all the odds to keep it no more than 2'.
+I would like discuss about the argument list of a function.
+Beside variable naming,
+the rules regarding arguments are mostly concerned with its size.
+My take of the rules of argument list size is much stricter than , the shorter, the better.
+My advice is `Beat all the odds to keep it no more than 2'.
 Sometimes you may have an urge to create a function with $>2$ arguments.
-Please refrain from it and refer to \autoref{tbl:arg-shortening-tech} for techniques that may
+Please resist the from it and refer to \autoref{tbl:arg-shortening-tech} for techniques that may
 help you create more beautiful and readable solution.
 In the extreme case where you seem to run out of all wit and have to do or die,
 you should leave a comment reminding/challenging yourself to revisit it later.
 
 
-Finally, a word on function return values.
+Finally, a word on return values.
 Usually a function returns a single value.
 But sometimes you wish to return a bunch of values.
 There are ways to do so.
@@ -153,11 +164,21 @@ Robert C. Martin put it as, ``A class should have only one reason to change.''\c
 I am extending that to ``A function should have only one reason to change.''
 In practice, one still need to define what oneness means.
 I tend to interpret the oneness as ``A single task or a tightly coupled group of tasks''.
-Therefore, to solve a fairly complicated problem, one should construct a `function tree' much as an
-expression tree\footnote{\url{https://en.wikipedia.org/wiki/Binary_expression_tree}}.
+Therefore, to solve a fairly complicated problem, one should construct a `function tree'
+\footnote{Please note that strictly speaking, recursive functions do not fit in this picture as
+it will turn the function tree to a function graph.
+But we may apply a special treatment to recursive function(s) and maintain the validity of the
+above argument.
+For more information, see \fullref{ch:recursion}.
+} much as the construction of an
+expression tree for evaluation\footnote{\url{https://en.wikipedia
+.org/wiki/Binary_expression_tree}}.
 
-\autoref{fig:functree} illustrates the idea with a tree structure and the code is shown in
-\autoref{lst:functree}
+Your functions should be built upon one another.
+Together they tell a complex and complete story, with outlines as well as details at the right place.
+
+\autoref{fig:functree} illustrates the idea with a fictitious tree structure and the pseudocode
+is shown in \autoref{lst:functree}.
 
 \begin{figure}[htb] % Imported eps example.
     \begin{center}
@@ -177,8 +198,22 @@ expression tree\footnote{\url{https://en.wikipedia.org/wiki/Binary_expression_tr
     {functions/functree.py}
 \end{minipage}
 
-Your functions should be built upon one another.
-Together they tell a complex and complete story, with outlines as well as details at the right place.
+It's a common problem among beginners to stuff all the logic into a monolithic function.
+But it is a fairly subtle mistake for intermediate professionals to arbitrarily chop
+up a function into pieces to ``promote modularity''.
+True modularity comes from coherence and coherence is beautiful.
+Much like making the cut of final scores into `A', `B', `C', \textit{etc.}, a skillful programmer
+looks for certain signals to determine if a new function (or class) is to break off the main one.
+These signals include but are not limited to
+\begin{itemize}
+    \item Lengthy logic to obtain certain an intermediate value or object
+    \item A code snippet whose runtime complexity may be drastically different from the main
+    \item A portion of the code need concurrent control such as entering a critical section
+    \item Certain portion but not all of the code need error handling as a \code{try .. catch}
+    \item Occurrences of a squad of statements at multiple places
+    \item Auxiliary concerns such as counting or logging of certain operations
+    \item
+\end{itemize}
 Our world is run on a conglomeration of hierarchical, systems built on top one another, made of
 various code of all varieties, large or small, open source and proprietary.
 Bugs can hide at all the levels in the hierarchy.

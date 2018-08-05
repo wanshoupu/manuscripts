@@ -3,11 +3,15 @@
 %% 7/14/18
 %%
 
-\chapter{Do not think recursions as an infinite loop} \label{ch:recursion}
+\chapter{Recursive functions} \label{ch:recursion}
+
+Do not think recursions as an infinite loop.
+Instead, recursive function execution is a spiral.
 
 Like a sourdough recipe calling for some dough left over from the last time the same recipe was
 made.
 
+Like a spiral maze, recursive function execution will
 Recursions are a special kind of loop.
 Ordinary loop such as \code{for}, \code{while} or \code{do-while} relies on local variables to
 control the execution.
@@ -22,3 +26,24 @@ How to convert recursive solution to iterative?
 Choose a base case that's both small and with an obvious solution.
 The choice of a base case contains an aesthetic sense, is reflective to one's
 engineering taste, and thus needs some training.
+
+\section{Simple recursive function}\label{sec:simpleRecursiveFunction}
+
+\begin{defn}
+    A simple recursive function is defined to be a function that only recursively call itself.
+\end{defn}
+
+\section{Multivariate recursive functions}\label{sec:multivariateRecursiveFunctions}
+\begin{defn}
+    A group of multivariate functions are recursive iff the invocation graph is not a directed
+    acyclic graph.
+\end{defn}
+
+\section{Tail Recursion}\label{sec:tailRecursion}
+
+If last action of a function is an invocation of itself, then this recursive function is called a
+tail recursive function\footnote{\url{https://en.wikipedia.org/wiki/Tail_call}}.
+
+\section{Recursion and mathematical induction}\label{sec:recursionAndMathematicalInduction}
+Mathematical induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}}
+

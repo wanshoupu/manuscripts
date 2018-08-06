@@ -3,25 +3,66 @@
 %% 7/14/18
 %%
 
-\chapter{View \code{for} and \code{while} loops as a carousel} \label{ch:loops}
+\chapter{Loops} \label{ch:loops}
 
-You get on a carousel at entrance post, go for $n$ rounds, and get out at exit post.
-Sometimes the entrance and the exit are located at the same place.
+View \code{for} and \code{while} loops as a carousel.
 
-Loops are the powerhouse, the amplifier of computer works.
-Using loop can boost productivity $n$-times by coding up the loop-block once and execute it
-$n$-times.
-The relevant parts of a loop of generic construct are:
-\begin{itemize}
-    \item Pre-loop section
-    \item Termination condition
-    \item Loop body
-    \item \code{break} logic \& \code{continue} logic
-    \item Post-loop section
-\end{itemize}
+Loop is one of the basic building blocks in flow of control.
+With all but a few changing variables, loop is the power amplifier in computer programming.
+Using a loop can boost productivity $n$-times by executing it $n$-times.
+
+\code{for}-loop and \code{while}-loop are the most common looping flow of control that almost all
+languages support.
+\code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C,
+\textit{etc}.
+
+Although the varieties are many, the basic constructs of a loop are similar.
+\autoref{tbl:loop-construct} describes the parts of basic constructs of loops.
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Function anatomy\label{tbl:loop-construct}}
+        \begin{tabular}{l|p{10cm}}
+            \hline
+            construct & description \\
+            \hline
+            Pre-loop initialization &
+            This is the preparation section in \code{for}-loop where variables declared there are
+            usually hidden from subsequent code\footnote{This is is true for \java, \cpp, C,
+            \textit{etc.}, but is not true for, \textit{e.g.}, bash}.
+            Note that \code{while}-loop does not have a similar construct. \\
+            Continuation condition &
+            The condition for control to enter (or continue) the loop. \\
+            Body &
+            The block of statements to be executed in the loop. \\
+            \code{break} statement &
+            A statement in the loop body that breaks the loop and pass control to the next statement
+            following the loop. \\
+            \code{continue} statement &
+            A statement in the loop body that interrupt the execution of the remaining statements in the loop.
+            Note that this doesn't break the loop or pass control out of the loop. \\
+            Post-loop processing &
+            This is a rare construct in loop, supported by languages such as \python as
+            \code{while-else} and \code{for-else}. \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
 Depending on the situation, a loop may or may not have certain parts as mentioned above.
 
+One way to visualize a loop control flow is to think of it as a carousel-
+you get on it at the entrance post, go for certain number of rounds, and get out at the exit post.
+
+
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+
+
+I like for-loop for the limited scope of its loop-variables.
+But I like to start with \code{while ( true )} or \code{for (; ; )}.
+Once I get to the bottom of the algorithm, I will have a better idea as to what is the best
+construct for the current problem.
+
 
 \section{For-loop}
 
@@ -41,20 +82,20 @@ How to choose the right loop for concise code?
 \end{itemize}
 
 What are the important parts when using a for-loop?
-     Questions to ask and answer
+Questions to ask and answer
 \begin{itemize}
     \item
-           what's the initialization?
-               Initialization is the starting points. To iterate over an array, for example,
-               should the initialization be i = -1 or i = 0?
+    what's the initialization?
+    Initialization is the starting points. To iterate over an array, for example,
+    should the initialization be i = -1 or i = 0?
     \item
-           when and where increment/decrement should happen?
-               in the 3rd part of the for statement? or in the body?
-               It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
-               if the increment/decrement is in the body. But it's more concise to put in the for-statement
+    when and where increment/decrement should happen?
+    in the 3rd part of the for statement? or in the body?
+    It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
+    if the increment/decrement is in the body. But it's more concise to put in the for-statement
     \item
-           What's the termination condition and How many termination points?
-               Often, infinite loop is resulted when incorrect assumption is made about the termination condition
+    What's the termination condition and How many termination points?
+    Often, infinite loop is resulted when incorrect assumption is made about the termination condition
 \end{itemize}
 
 1. Pre-condition loop

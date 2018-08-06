@@ -111,17 +111,21 @@
 
     \include{introduction/preface}
 %    \include{example/insert-source-code}
+    \include{introduction/mini-toc}
 
 \mainmatter
-    \part{Modular Design}\label{prt:flowControl}
+
     \include{introduction/intro}
-    \include{functions/functions}
-    \include{functions/binary-search}
+
+    \part{Flow of Control}\label{prt:flowControl}
+
     \include{if-else/elif}
     \include{loop/loop}
+    \include{embedded-loops/loop-push-up}
     \include{recursion/recursion}
 
     \part{Data Structures and Language Features}\label{prt:dataStructure}
+
     \include{data-structure/ds}
     \include{data-structure/hashmap}
     \include{data-structure/linked-list}
@@ -129,11 +133,16 @@
     \include{data-structure/queue-stack}
     \include{lang-feature/lang}
 
-    \part{Blastoff}\label{prt:blastOff}
-    \include{embedded-loops/loop-push-up}
-    \include{sentinels/sentinels}
-    \include{dynamic-programming/dp}
+    \part{Modular Construct}\label{prt:modularDesign}
+
+    \include{functions/functions}
     \include{object-oriented-design/ood}
+
+    \part{Advanced Topics}\label{prt:advanced}
+
+    \include{sentinels/sentinels}
+    \include{functions/binary-search}
+    \include{dynamic-programming/dp}
     \include{variation-method/varmethod}
 
 \backmatter

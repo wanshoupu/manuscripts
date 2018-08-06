@@ -3,13 +3,33 @@
 %% 7/14/18
 %%
 
-\chapter{Organize your \ilcode{if-elif-else}
-statements}\label{ch:organizeYourIfElse}
+\chapter{Organize your \ilcode{if-else} statements}\label{ch:organizeYourIfElse}
 
-The explanition of how to optimize and simplify the flow control conditions to promote
-readability and maintainability.
+\code{if-else} is a flow control that branches control depending on a condition.
+Many books and articles already give \code{if-else} flow control comprehensive discussions,
+\textit{e.g.},
+Wikipedia\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
 
-\section{\ilcode{if-else}-condition}\label{sec:if-else-condition}
+It may be strange that I am actually spending a full chapter on this.
+Believe me that this is so basic and so important only willful endeavor can bring an experienced
+developer to the beautiful, succinct solution.
+
+Based on my interaction with many developers at top-tier tech companies,
+every minute spent on studying the basics like \code{if-else} is worth the time before we do code
+reviews on their pull requests in production code.
+
+When I see twisted logic in code that attempts to branch between $A$, $B$, and $C$, I see through
+it a fierce battle that the author has undergone to get the logic working.
+
+The author has my sympathy for his or her unprepared struggle.
+
+In this chapter, I'm going to share my experience of how to balance out your \code{if elseif
+else} switching statements and reduce redundancy condition checks and duplicate code.
+
+Moreover, I'm going to review basic Boole algebra such as logical equivalences, normal
+forms, \textit{etc.}, to help programmers better prepared for the battle of simplifying logic.
+
+\section{\code{if-else}-condition}\label{sec:if-else-condition}
 
 The following two side-by-side code sections are equivalent.
 But each has their own problem.
@@ -88,10 +108,10 @@ The following generic code on the left and right are equivalent
     \end{center}
 \end{table}
 
-This illustrates the main difference between \ilcode{if-else-if-else} and multiple-\ilcode{if}.
-Firstly note that exactly one of the statements in a \ilcode{if-else-if-else} block is executed
+This illustrates the main difference between \code{if-else-if-else} and multiple-\code{if}.
+Firstly note that exactly one of the statements in a \code{if-else-if-else} block is executed
 (or no more than one when there is no final else statement).
-Secondly, note that \ilcode{if-else-if-else} and multiple-\ilcode{if} can be rewritten with one
+Secondly, note that \code{if-else-if-else} and multiple-\code{if} can be rewritten with one
 another.
 This is the foundation of simplifying a block if statements.
 
@@ -106,7 +126,7 @@ With little effort one can achieve the following
 
 Use of logical equivalences: double negation elimination, De Morgan's laws, distributive law,
 and normal forms such as disjunctive normal form (DNF) or conjunctive normal form (CNF), one can
-simplify the logic conditions to achieve the most simplified \ilcode{if-else} blocks.
+simplify the logic conditions to achieve the most simplified \code{if-else} blocks.
 
 \lstinputlisting{if-else/composite_condition_simplified2.java}
 

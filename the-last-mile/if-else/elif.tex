@@ -3,71 +3,129 @@
 %% 7/14/18
 %%
 
-\chapter{Organize your \ilcode{if-else} statements}\label{ch:organizeYourIfElse}
+\chapter{Organize your Conditional Statements}\label{ch:organizeYourIfElse}
 
-\code{if-else} is a flow control that branches control depending on a condition.
-Many books and articles already give \code{if-else} flow control comprehensive discussions,
+Conditional statement is a switch of control flow to alter code execution path at runtime,
+conditioned by one or more boolean conditions.
+This is a basic feature of almost all programming languages.
+It may be strange that I am actually spending a full chapter on this as
+many books and articles have already given this comprehensive discussions,
 \textit{e.g.},
 Wikipedia\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
 
-It may be strange that I am actually spending a full chapter on this.
-Believe me that this is so basic and so important only willful endeavor can bring an experienced
-developer to the beautiful, succinct solution.
+But just because it is basic and widely discussed does not mean that many people can do it right
+or bother their willpower to do it right.
+Seldom the first version of implementation of complicated logic is the optimal solution.
+But based on my observation working in top-tier tech companies,
+the very first version of intertwined logic often makes its way to production code that is
+depended by millions.
 
-Based on my interaction with many developers at top-tier tech companies,
-every minute spent on studying the basics like \code{if-else} is worth the time before we do code
-reviews on their pull requests in production code.
+``As long as it works, why should one bother to simplify the logic?'', you may argue.
+I'd like to quote Steve McConnell to respond: ``The primary subject of communication is not computer
+but other humans''\cite{Mcconnell.2004}.
+Intertwined logic, even though it works, are hard to read, understand, debug, and modify.
+It fails the primary purpose of communicating to other humans.
+Worse, it often results in redundant/duplicate code.
 
-When I see twisted logic in code that attempts to branch between $A$, $B$, and $C$, I see through
-it a fierce battle that the author has undergone to get the logic working.
+Twisted logic in code often reveals a fierce battle that the author struggles to make something
+that works.
 
-The author has my sympathy for his or her unprepared struggle.
+I believe every minute spent with the basics is worthwhile before making publish pull requests on
+production code.
 
-In this chapter, I'm going to share my experience of how to balance out \code{if elseif
-else} switching statements to reduce redundancy condition checks on the one hand and duplicate
-code on the other.
+%Communicate clear, succinct code to colleagues and successors are much more efficient.
 
-The techniques I employ is of math origin.
-I'm going to review basic Boolean algebra such as logical equivalences, normal
-forms, \textit{etc.}, and demonstrate how to apply these in logic simplification.
+In this chapter, I'm going to share my experience of how to polish complicated logic into simple,
+beautiful, and succinct code.
+out \code{if elseif else} switching statements to reduce redundancy condition checks on the one
+hand and duplicate code on the other.
 
-In doing so, I hope programmers would be inspired how to fight the battle of logic simplification.
+Some of the techniques I employ is of math origin, especially basic Boolean algebra such as logical
+equivalences, normal forms, \textit{etc.}
+Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
+In doing so, I hope programmers would be inspired to the beautiful, succinct conditional statements.
 
 \section{\code{if-else}-condition}\label{sec:if-else-condition}
 
 A boolean variable has two values-\code{true} and \code{false}.
-A simple condition in a \code{if-else} test has two branches-that in the \code{if}-block or that
-of the \code{else}-block;
-A composite condition of two boolean variables connected by logic operators \code{or} and
-\code{and} will has 4 branches;
+A simple condition in a \code{if-else} test has two execution alternatives-the \code{if}-block or
+the \code{else}-block;
+A composite condition of two boolean variables and a logical connective, such as
+\code{or}/\code{and}, may have up to 4 alternatives;
 and so on.
-But when disguised in real problems, especially when some combinations are omitted, logic
-simplification will not be so straightforward.
 
-Show in How to simplify the following logic?
+But when disguised in real problems, especially when some alternatives are omitted or no-op,
+optimal coding may not be so straightforward.
 
 \lstinputlisting[label={lst:embeddedBranching},
 caption={Code with embedded branching and redudant
 statements.}]{if-else/composite_condition_tobe_simplified.java}
 
-This code snippet contains \code{if-else} with in another \code{if-else} and is called embedded
-branching.
-It is not straightforward to figure out what condition leads to which execution path of the code.
-This is smelly code in reference \cite{Fowler1999}.
+Take a look at \autoref{lst:embeddedBranching}.
+This code snippet has the following ``smell''\cite{Fowler1999}:
+\begin{itemize}
+    \item Complicated conditional statements
+    \item Duplicate code
+\end{itemize}
+As a result,
+it is hard to figure out what condition would lead to each execution path without a mental twist.
+%This logic can be simplified if one observe that out of the total $4$ combinations of the two
+%conditions, ...
+This is a real implementation of my own.
+% TODO
+\begin{table}[h]
+    \begin{center}
+        \caption{Normal forms for conditions of execution of each statement.
+        \label{tbl:breakdown-of-conditions}}
+        \begin{tabular}{|l|l|}
+            \hline
+            code & condition to execute \\
+            \hline
+            statement1 & condition1 $AND$ condition2 \\
+            statement2 & condition1 $AND$ !condition2 $OR$ !condition1 \\
+            statement3 & condition1 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
-This logic can be simplified if one observe that out of the total $4$ combinations of the two
-conditions, ...
+\begin{table}[h]
+    \begin{center}
+        \caption{True value table for \code{condition1} and \code{condition2}.
+        \label{tbl:true-value-table}}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \code{condition1} & \code{condition2} & execution \\
+            \hline
+            \code{false} & \code{false} & \code{statement2}\\
+            \code{false} & \code{true} & \\
+            \code{true} & \code{false} & \code{statement2}, \code{statement3}\\
+            \code{true} & \code{true} & \code{statement1}, \code{statement3}\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
-With some effort, it's not hard to refactor it to \autoref{lst:simpleBranching}.
 
+Then I spent time to eliminated the embedded conditional statement and the resultant code
+is shown in\autoref{lst:simpleBranching}.
+Note that the first condition was negated so that the \code{if\{..\}else if\{..\}else\{\}} can be
+sequentially built on top of one another.
+But this implementation still contains `duplication code' smell.
+It is still not the simplest.
+So let's find a piece of draft paper and write down the breakdown of conditions for the execution
+of each statement as shown in \autoref{tbl:breakdown-of-conditions}.
+Obviously the key to simplify the logic is to simplify the condition for \code{statement2}.
+
+\begin{align}
+    \label{eq:boolean-expression-simplify}
+    c &= a \land \lnot b \lor \lnot a \nonumber \\
+    &= a \land \lnot b \lor \lnot a \land (b \lor \lnot b) \nonumber \\
+    &= a \land \lnot b \lor \lnot a \land b \lor \lnot a \land \lnot b
+\end{align}
 \lstinputlisting[label={lst:simpleBranching},
 caption={Equivalent code snippet as \autoref{lst:embeddedBranching} with simple condition checking
 }]{if-else/composite_condition_simplified1.java}
-
-Note that the first condition was negated for a reason.
-Even though the condition checking is simple and straightforward, the code still contains
-some level of redundancy.
-it is still not the simplest.
 
 Use of logical equivalences: double negation elimination, De Morgan's laws, distributive law,
 and normal forms such as disjunctive normal form (DNF) or conjunctive normal form (CNF), one can

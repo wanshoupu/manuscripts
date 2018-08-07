@@ -23,17 +23,82 @@ it a fierce battle that the author has undergone to get the logic working.
 
 The author has my sympathy for his or her unprepared struggle.
 
-In this chapter, I'm going to share my experience of how to balance out your \code{if elseif
-else} switching statements and reduce redundancy condition checks and duplicate code.
+In this chapter, I'm going to share my experience of how to balance out \code{if elseif
+else} switching statements to reduce redundancy condition checks on the one hand and duplicate
+code on the other.
 
-Moreover, I'm going to review basic Boole algebra such as logical equivalences, normal
-forms, \textit{etc.}, to help programmers better prepared for the battle of simplifying logic.
+The techniques I employ is of math origin.
+I'm going to review basic Boolean algebra such as logical equivalences, normal
+forms, \textit{etc.}, and demonstrate how to apply these in logic simplification.
+
+In doing so, I hope programmers would be inspired how to fight the battle of logic simplification.
 
 \section{\code{if-else}-condition}\label{sec:if-else-condition}
 
-The following two side-by-side code sections are equivalent.
+A boolean variable has two values-\code{true} and \code{false}.
+A simple condition in a \code{if-else} test has two branches-that in the \code{if}-block or that
+of the \code{else}-block;
+A composite condition of two boolean variables connected by logic operators \code{or} and
+\code{and} will has 4 branches;
+and so on.
+But when disguised in real problems, especially when some combinations are omitted, logic
+simplification will not be so straightforward.
+
+Show in How to simplify the following logic?
+
+\lstinputlisting[label={lst:embeddedBranching},
+caption={Code with embedded branching and redudant
+statements.}]{if-else/composite_condition_tobe_simplified.java}
+
+This code snippet contains \code{if-else} with in another \code{if-else} and is called embedded
+branching.
+It is not straightforward to figure out what condition leads to which execution path of the code.
+This is smelly code in reference \cite{Fowler1999}.
+
+This logic can be simplified if one observe that out of the total $4$ combinations of the two
+conditions, ...
+
+With some effort, it's not hard to refactor it to \autoref{lst:simpleBranching}.
+
+\lstinputlisting[label={lst:simpleBranching},
+caption={Equivalent code snippet as \autoref{lst:embeddedBranching} with simple condition checking
+}]{if-else/composite_condition_simplified1.java}
+
+Note that the first condition was negated for a reason.
+Even though the condition checking is simple and straightforward, the code still contains
+some level of redundancy.
+it is still not the simplest.
+
+Use of logical equivalences: double negation elimination, De Morgan's laws, distributive law,
+and normal forms such as disjunctive normal form (DNF) or conjunctive normal form (CNF), one can
+simplify the logic conditions to achieve the most simplified \code{if-else} blocks.
+
+One can eliminate duplicate code altogether as shown in \autoref{}
+\lstinputlisting{if-else/composite_condition_simplified2.java}
+
+
+\section{Branching in a loop}\label{sec:branchingInLoop}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Equivalent code side-by-side.
+        On the left, is unsimplified code.
+        On the right, is simplified code.
+        \label{tbl:equivalent-code}
+        }
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Option 1 & Option 2  \\
+            \lstinputlisting{if-else/redundant_testing.java}
+            &
+            \lstinputlisting{if-else/repeated_block.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Shown in \autoref{tbl:equivalent-code} side-by-side are equivalent code snippets.
+
 But each has their own problem.
-The left column do redundant condition testing (condition1), whereas the right column harepeated
+The left column do redundant condition testing (condition1), whereas the right column has repeated
 code (statement2).
 
 Let's think of the logic in terms of a real-world example.
@@ -53,18 +118,6 @@ Suppose you need to check schedule and weather before making a plan.
 The conditions for action A1 is \code{C1 == True && C2 == True};
 The conditions for action A2 is \code{C1 == True};
 The conditions for action A3 is \code{C1 == False && C2 == False}.
-
-\begin{table}[b]
-    \begin{center}
-        \caption{An example of a table.}
-        \begin{tabular}{p{7cm}|p{7cm}}
-            Option 1 & Option 2  \\
-            \lstinputlisting{if-else/redundant_testing.java}
-            &
-            \lstinputlisting{if-else/repeated_block.java} \\
-        \end{tabular}
-    \end{center}
-\end{table}
 
 The simplification of both lies in the smart use of continue:
 \lstinputlisting{if-else/no_redundancy.java}
@@ -114,22 +167,6 @@ Firstly note that exactly one of the statements in a \code{if-else-if-else} bloc
 Secondly, note that \code{if-else-if-else} and multiple-\code{if} can be rewritten with one
 another.
 This is the foundation of simplifying a block if statements.
-
-
-How to simplify the following logic?
-
-\lstinputlisting{if-else/composite_condition_tobe_simplified.java}
-
-With little effort one can achieve the following
-
-\lstinputlisting{if-else/composite_condition_simplified1.java}
-
-Use of logical equivalences: double negation elimination, De Morgan's laws, distributive law,
-and normal forms such as disjunctive normal form (DNF) or conjunctive normal form (CNF), one can
-simplify the logic conditions to achieve the most simplified \code{if-else} blocks.
-
-\lstinputlisting{if-else/composite_condition_simplified2.java}
-
 
 \section{Build up your case step-by-step}
 

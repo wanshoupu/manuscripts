@@ -41,7 +41,9 @@ out \code{if elseif else} switching statements to reduce redundancy condition ch
 hand and duplicate code on the other.
 
 Some of the techniques I employ is of math origin, especially basic Boolean algebra such as logical
-equivalences, normal forms, \textit{etc.}
+equivalences: double negation elimination, De Morgan's laws, distributive law, \textit{etc.}
+and normal forms: disjunctive normal form (DNF) or conjunctive normal form (CNF).
+
 Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
 In doing so, I hope programmers would be inspired to the beautiful, succinct conditional statements.
 
@@ -56,23 +58,17 @@ and so on.
 
 But when disguised in real problems, especially when some alternatives are omitted or no-op,
 optimal coding may not be so straightforward.
+Show in \autoref{lst:embeddedBranching} is my own code.
 
 \lstinputlisting[label={lst:embeddedBranching},
 caption={Code with embedded branching and redudant
 statements.}]{if-else/composite_condition_tobe_simplified.java}
 
-Take a look at \autoref{lst:embeddedBranching}.
-This code snippet has the following ``smell''\cite{Fowler1999}:
-\begin{itemize}
-    \item Complicated conditional statements
-    \item Duplicate code
-\end{itemize}
-As a result,
-it is hard to figure out what condition would lead to each execution path without a mental twist.
-%This logic can be simplified if one observe that out of the total $4$ combinations of the two
-%conditions, ...
-This is a real implementation of my own.
-% TODO
+It is the very first version after I figured out the requirement from a real problem and, as
+usual, it 'smells'- it has complicated conditional statements and duplicate code\cite{Fowler1999}.
+Because of these problems, one can hardly figure out which statement is executed under what
+condition without a mental twist.
+
 \begin{table}[h]
     \begin{center}
         \caption{Normal forms for conditions of execution of each statement.
@@ -89,6 +85,60 @@ This is a real implementation of my own.
     \end{center}
 \end{table}
 
+But still it's a good starting point for simplification.
+I decided to eliminate the embedding conditional statements first.
+Observing that the \code{else} block of \code{if (condition1)} is much simpler, I decided to flip
+the logic by negating \code{condition1}.
+
+Then I promoted the embedded \code{if (condition2)} up to the first-level so that overall they
+become sequential conditional statements comprised of \code{if\{..\}else if\{..\}else\{\}} blocks
+that are built on top of one another.
+The resulting code is as shown in\autoref{lst:simpleBranching}.
+
+\lstinputlisting[label={lst:simpleBranching},
+caption={Equivalent code snippet as \autoref{lst:embeddedBranching} with simple condition checking
+}]{if-else/composite_condition_simplified1.java}
+
+Now the conditional statements are streamlined and can be understood at a glance.
+Comparing with \autoref{lst:embeddedBranching}, it is a big improvement.
+
+But still it has duplication code.
+
+So I found a piece of paper and for each of the three statements, I wrote down the condition to
+be satisfied in order for it to be executed.
+My table is shown in \autoref{tbl:breakdown-of-conditions}.
+Clearly simplifying the condition for the execution of \code{statement2} is the key and let us do
+the math now.
+Let $c$ be the condition for \code{statement2} to be executed and
+\begin{align*}
+    a &= \text{\code{condition1}}, \\
+    b &= \text{\code{condition2}}. \\
+\end{align*}
+Then
+\begin{align}
+    c &= a \land \lnot b \lor \lnot a  \nonumber \\
+    &= a \land \lnot b \lor (\lnot a \land \lnot b \lor \lnot a \nonumber) & \text{// absorption law
+    }\\
+    &= (a \land \lnot b \lor \lnot a \land \lnot b) \lor \lnot a \nonumber & \text{// associativity
+    law}\\
+    &= \lnot b \lor \lnot a & \text{// distributivity law} \nonumber \\
+    &=\lnot (a \land b) & \text{// De Morgan's law} \label{eq:boolean-expression-simplify}
+\end{align}
+
+\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
+\code{statement2} is \code{!(condition1 && condition2)} and this can be an \code{else} clause of
+\code{if (condition1 && condition2)} which is the condition for the execution of \code{statement1}.
+
+With this piece of wit, it is straightforward to implement much simple code such as
+\autoref{lst:final-simplified-conditional-statement}.
+
+\lstinputlisting[label={lst:final-simplified-conditional-statement}, caption={Simplified logic that
+is equivalent to \autoref{lst:embeddedBranching}}]{if-else/composite_condition_simplified2.java}
+
+Of course the above process is not the only process to simplify logic.
+Another possible way to achieve this is to use truth table.
+let's look at this in detail.
+
 \begin{table}[h]
     \begin{center}
         \caption{True value table for \code{condition1} and \code{condition2}.
@@ -98,7 +148,7 @@ This is a real implementation of my own.
             \code{condition1} & \code{condition2} & execution \\
             \hline
             \code{false} & \code{false} & \code{statement2}\\
-            \code{false} & \code{true} & \\
+            \code{false} & \code{true} & \code{statement2}\\
             \code{true} & \code{false} & \code{statement2}, \code{statement3}\\
             \code{true} & \code{true} & \code{statement1}, \code{statement3}\\
             \hline
@@ -106,34 +156,25 @@ This is a real implementation of my own.
     \end{center}
 \end{table}
 
+I constructed truth table as \autoref{tbl:true-value-table}.
+Since there are two conditional variables \code{condition1} and \code{condition2}, there are
+total four entries in the table.
+The third column shows the statements executed if the condition of the entry is true.
 
-Then I spent time to eliminated the embedded conditional statement and the resultant code
-is shown in\autoref{lst:simpleBranching}.
-Note that the first condition was negated so that the \code{if\{..\}else if\{..\}else\{\}} can be
-sequentially built on top of one another.
-But this implementation still contains `duplication code' smell.
-It is still not the simplest.
-So let's find a piece of draft paper and write down the breakdown of conditions for the execution
-of each statement as shown in \autoref{tbl:breakdown-of-conditions}.
-Obviously the key to simplify the logic is to simplify the condition for \code{statement2}.
+Now we can summarize the table and arrive at the following conclusions
+\begin{enumerate}[label={\roman*:}]
+    \item \code{statement1} is executed iff both \code{true};
+    \item \code{statement2} is executed iff not both \code{true};
+    \item \code{statement3} is executed iff \code{condition1=true}, regardless of
+    \code{condition2}.
+\end{enumerate}
 
-\begin{align}
-    \label{eq:boolean-expression-simplify}
-    c &= a \land \lnot b \lor \lnot a \nonumber \\
-    &= a \land \lnot b \lor \lnot a \land (b \lor \lnot b) \nonumber \\
-    &= a \land \lnot b \lor \lnot a \land b \lor \lnot a \land \lnot b
-\end{align}
-\lstinputlisting[label={lst:simpleBranching},
-caption={Equivalent code snippet as \autoref{lst:embeddedBranching} with simple condition checking
-}]{if-else/composite_condition_simplified1.java}
+With these in mind, implementation of something like
+\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
-Use of logical equivalences: double negation elimination, De Morgan's laws, distributive law,
-and normal forms such as disjunctive normal form (DNF) or conjunctive normal form (CNF), one can
-simplify the logic conditions to achieve the most simplified \code{if-else} blocks.
-
-One can eliminate duplicate code altogether as shown in \autoref{}
-\lstinputlisting{if-else/composite_condition_simplified2.java}
-
+So here two simplifying logic processes are presented.
+In practice, one may find one out of the two to be more useful under certain circumstances.
+So one may try one or the other or both, depending on which one is more convenient.
 
 \section{Branching in a loop}\label{sec:branchingInLoop}
 

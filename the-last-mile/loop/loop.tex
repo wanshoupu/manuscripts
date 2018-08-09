@@ -171,7 +171,7 @@ In the following sections, we will study how to programming techniques that alle
 
 \section{How to choose the right loop for concise program?}\label{sec:chooseTheRightLoop}
 
-\subsection{\code{for} over \code{while} loops}
+\subsection{\code{for} \textit{vs.} \code{while} loops}\label{subsec:for-vs-while}
 
 I like for-loop for the limited scope of its loop-variables.
 But sometimes limited scope may be a hinder for post-processing with \code{for}-loop.
@@ -184,7 +184,7 @@ post-procesing outside of the loop.
 Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
 to final answer.
 
-\subsection{Collection iteration \code{foreach} loop}
+\subsection{Collection iteration \code{foreach} loop}\label{subsec:collection-iteration-for-loop}
 
 Associated with collections and \code{iterable} containers, there is a new type of \code{foreach}
 or a disguised \code{for} loop in \java.
@@ -226,7 +226,8 @@ should go to one that charges first.
 A case for \code{do-while} loop is as follows.
 
 
-\subsection{Use of \code{continue} to simplify conditional statements}
+\subsection{Use of \code{continue} to simplify conditional
+statements}\label{subsec:continue-in-loop}
 
 In a program where several cases are treated discriminatorily in a loop, the organization of
 conditional statements is critical to its readability and simplicity.
@@ -251,8 +252,8 @@ Questions to ask and answer
     Initialization is the starting points. To iterate over an array, for example,
     should the initialization be i = -1 or i = 0?
     \item
-    when and where increment/decrement should happen?
-    in the 3rd part of the for statement? or in the body?
+    when and where should state updates, \textit{e.g.}, variable increment/decrement, happen?
+    in the 3rd part of the \code{for} statement? or in the body?
     It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
     if the increment/decrement is in the body. But it's more concise to put in the for-statement
     \item

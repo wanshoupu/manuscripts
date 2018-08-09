@@ -5,19 +5,33 @@
 
 \chapter{Loops} \label{ch:loops}
 
-View \code{for} and \code{while} loops as a carousel.
+All major programming languages features one or more loop as a type of control flow.
+You can visualize a loop construct as a carousel or a Ferris wheel, with an
+entrance, a number of turns and an exit.
+Loop is a powerhouse, a productivity amplifier for programing-with a static loop body,
+one or a few loop variable(s), and nominal overhead code, the loop may be executed as many
+times as needed.
 
-Loop is one of the basic building blocks in flow of control.
-With all but a few changing variables, loop is the power amplifier in computer programming.
-Using a loop can boost productivity $n$-times by executing it $n$-times.
+To developers, much of the coding work is spent on choosing the right loop construct, choosing
+loop variable(s), and designing the loop body.
+
+Construction wise, loop is like an embedded machine inside computer programs-one prepares
+input, feed it to the loop, and collect the output at the end.
 
 \code{for}-loop and \code{while}-loop are the most common looping flow of control that almost all
 languages support.
-\code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C,
-\textit{etc}.
+\code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C, and
+others but not \python.
 
-Although the varieties are many, the basic constructs of a loop are similar.
-\autoref{tbl:loop-construct} describes the parts of basic constructs of loops.
+``Why!'', you say, ``What makes you talking about loops as a language feature without a
+language context?''
+As in in \fullref{ch:organizeYourIfElse}, I want to share some of my coding experience which
+address many beginner's problems and most importantly may be an inspiration to other enterprising
+programmers.
+
+\section{Loop anatomy}\label{sec:loopAnatomy}
+Although there are some variations, the basic constructs of a loop are the same.
+\autoref{tbl:loop-construct} describes the coding parts of a loop.
 
 \begin{table}[h]
     \begin{center}
@@ -50,13 +64,6 @@ Although the varieties are many, the basic constructs of a loop are similar.
 \end{table}
 
 Depending on the situation, a loop may or may not have certain parts as mentioned above.
-
-One way to visualize a loop control flow is to think of it as a carousel-
-you get on it at the entrance post, go for certain number of rounds, and get out at the exit post.
-
-
-This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
-
 
 I like for-loop for the limited scope of its loop-variables.
 But I like to start with \code{while ( true )} or \code{for (; ; )}.
@@ -100,32 +107,35 @@ Questions to ask and answer
 
 1. Pre-condition loop
 \begin{lstlisting}
-while (condition) {
-   statements;
-}
+    while (condition) {
+        statements;
+    }
 \end{lstlisting}
 and
 \begin{lstlisting}
-for ( ; condition; ) {
-   statements;
-}
+    for ( ; condition; ) {
+        statements;
+    }
 \end{lstlisting}
 
 2. Mid-condition loop
 
 \begin{lstlisting}
-while (true)
-{
-   statements;
-   if (!condition) break;
-   statements;
-}
+    while (true) {
+        statements;
+        if (!condition) break;
+        statements;
+    }
 \end{lstlisting}
 
 3. Post-condition loop
 
 \begin{lstlisting}
-do {
-   statements;
-}while(condition);
+    do {
+        statements;
+    } while (condition);
 \end{lstlisting}
+
+\section{The Loop-and-a-half problem}\label{sec:Loop-and-a-halfProblem}
+
+This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.

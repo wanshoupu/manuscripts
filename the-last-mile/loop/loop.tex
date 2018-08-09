@@ -25,9 +25,20 @@ others but not \python.
 
 ``Why!'', you say, ``What makes you talking about loops as a language feature with no
 language context?''
+While loop is the one of the most basic building block for coding, beginners and intermediate
+developers often haphazardly stumble on one loop and found that it works for them and settle.
+Seldom anyone thinks about the difference between the varieties of loops.
+Especially, many are unaware of the fact that conscious choice of loop types can make a marked
+difference in the readability and conciseness your code.
+
 As in in \fullref{ch:organizeYourIfElse}, I am sharing my first-hand coding experiences which
-address many beginner's problems.
-But most importantly may be an inspiration to other enterprising programmers.
+address this beginner's problems.
+Also later discussions about the interplay between conditional statements and loop is built on
+top of a good understanding of the various types of loops.
+So this chapter is also presented for completeness.
+
+But most importantly, I intend this chapter to serve as an inspiration to other enterprising
+programmers to reflect on why they code the way they do and find out ways to improve.
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
 Although there are some variations, the basic constructs of a loop are the same.
@@ -68,28 +79,29 @@ Depending on the situation, a loop may or may not have certain parts as mentione
 
 \section{Loop classification}\label{sec:loopClassification}
 
-As mentioned at beginning of this chapter, a loop may be viewed as a turntable. Depending on the
-location of the \code{<condition>} statement, there are three possible classes: pre-condition
-loop, mid-condition loop, and post-condition loop.
+As mentioned at beginning of this chapter, a loop may be viewed as a `Lazy Susan' turntable.
+Depending on the location of the \code{<condition>} statement, there are three possible classes:
+pre-condition loop, mid-condition loop, and post-condition loop.
 
 \subsection{Pre-condition loop}\label{subsec:pre-conditionLoop}
 
-Pre-condition loop is the simplest loop and \code{while} loop is the simplest pre-condition loop.
-\begin{lstlisting}
-    while (<condition>) {
-    <body>
-    }
-\end{lstlisting}
+Pre-condition loop is the simplest loop and amongst them, \code{while} loop is the simplest (see
+\autoref{lst:while-loop}).
 
-Another form of pre-condition loop is the conventional C-like for-loop.
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:while-loop},
+    caption={Pre-condition while loop structure.}]{loop/while_loop.java}
+\end{minipage}
 
-\begin{lstlisting}
-    for (<init>; <condition>; <post-stmt>) {
-    <body>
-    }
-\end{lstlisting}
+Another form of pre-condition loop is the conventional C-like \code{for}-loop as in
+\autoref{lst:for-loop}.
 
-There are some very interesting aspects about for-loop.
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:for-loop},
+    caption={For loop structure as a pre-condition.}]{loop/for_loop.java}
+\end{minipage}
+
+There are some interesting aspects about for-loop.
 The \code{<init>} is a statement to be executed only once before control enters the loop.
 The \code{<condition>} may be regarded as the \emph{first} statement of loop body.
 The \code{<condition>} are always executed one more time than the rest of loop body
@@ -107,40 +119,51 @@ Once I get a better idea for the implementation, I will settle down to the best 
 \subsection{Mid-condition loop}\label{subsec:mid-conditionLoop}
 
 There is rarely any construct that directly support mid-condition loop \textit{per se}.
-\autoref{lst:mid-condition-loop} is the closest approximation of a mid-condition loop.
+Combining a \code{while (true)} with a conditional \code{break} is the closest approximation of a
+mid-condition loop (\autoref{lst:mid-condition-loop}).
 
-\begin{lstlisting}
-    \label{lst:mid-condition-loop}
-    while (true) { // an otherwise a perpetual loop
-    <body-part1> // first part of the body
-    if (<condition>)
-        break // condition for termination
-    <body-part2> // second part of the body
-    }
-\end{lstlisting}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:mid-condition-loop},
+    caption={Mid-condition loop structure.}]{loop/mid_condition_loop.java}
+\end{minipage}
 
 \subsection{Post-condition loop}\label{subsec:post-conditionLoop}
 
-In C or \cpp, the \code{do-while} loop falls in post-condition loop.
-\begin{lstlisting}
-    do {
-    <body>
-    } while (<condition>);
-\end{lstlisting}
+The \code{do-while} loop featured in C, \cpp, or \java, but not \python, is a good example of
+post-condition loop (\autoref{lst:post-condition-loop}).
 
-Abeit duplicate code, this is equivalent to
-
-\begin{lstlisting}
-    <body>
-    while (<condition>) {
-    <body>
-    }
-\end{lstlisting}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:post-condition-loop},
+    caption={Post-condition loop structure.}]{loop/post_condition_loop.java}
+    This is equivalent to
+    \lstinputlisting{loop/post_condition_loop_equivalent.java}
+    albeit duplicate code.
+\end{minipage}
 
 \section{The Loop-and-a-half problem}\label{sec:Loop-and-a-halfProblem}
 
+``Why do we need so these varieties of loops?'' you say.
+
+In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
+unnecessary and programs containing them can be transformed to use only conditional statements
+and loops\cite{Bohm:1966}.
+Along that line of thought, more researches which might have gone too far, attempted to remove
+other `nuances' in computer programming such as \code{break} and \code{return} in the middle of a
+loop to reduce control flow complexity and promote code composability.
+But doing so are with prices.
+More local variables are needed.
+Even worse, it may require duplicate code before or after a loop.
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
 
+In summary, the loop-and-a-half problem is the problem of partial code duplication of a loop
+body caused by unnecessarily restricting in-between termination of a loop.
+In the following sections, we will study how to avoid loop-and-a-half problems with a few case
+studies.
+
+\begin{itemize}
+    \item Pre-loop duplicate
+    \item post-loop duplicate
+\end{itemize}
 \section{How to choose the right loop for concise code?}\label{sec:chooseTheRightLoop}
 
 I like for-loop for the limited scope of its loop-variables.
@@ -169,4 +192,3 @@ Questions to ask and answer
     What's the termination condition and How many termination points?
     Often, infinite loop is resulted when incorrect assumption is made about the termination condition
 \end{itemize}
-

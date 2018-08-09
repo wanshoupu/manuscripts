@@ -140,10 +140,11 @@ post-condition loop (\autoref{lst:post-condition-loop}).
     albeit duplicate code.
 \end{minipage}
 
-\section{The Loop-and-a-half problem}\label{sec:Loop-and-a-halfProblem}
+\section{The \textit{loop-and-a-half} problem}\label{sec:\textit{loop-and-a-half}Problem}
 
 ``Why do we need so these varieties of loops?'' you say.
 
+To answer your question, we need to start with research dated back 1966.
 In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
 unnecessary and programs containing them can be transformed to use only conditional statements
 and loops\cite{Bohm:1966}.
@@ -155,18 +156,84 @@ More local variables are needed.
 Even worse, it may require duplicate code before or after a loop.
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
 
-In summary, the loop-and-a-half problem is the problem of partial code duplication of a loop
-body caused by unnecessarily restricting in-between termination of a loop.
-In the following sections, we will study how to avoid loop-and-a-half problems with a few case
-studies.
+In summary, the \textit{loop-and-a-half} problem is the problem of partial code duplication of a
+loop body caused by unnecessarily restricting in-between termination of a loop.
+The variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
+problem.
+In the following sections, we will study how to programming techniques that alleviate
+\textit{loop-and-a-half} problems with a few case studies.
 
+% TODO find examples that will illustrate:
 \begin{itemize}
     \item Pre-loop duplicate
     \item post-loop duplicate
 \end{itemize}
-\section{How to choose the right loop for concise code?}\label{sec:chooseTheRightLoop}
+
+\section{How to choose the right loop for concise program?}\label{sec:chooseTheRightLoop}
+
+\subsection{\code{for} over \code{while} loops}
 
 I like for-loop for the limited scope of its loop-variables.
+But sometimes limited scope may be a hinder for post-processing with \code{for}-loop.
+I will often balance out the trade-offs and if I choose \code{for}-loop, I will use
+`one-more-loop' technique (see \autoref{subsec:one-more-loop} for more details) to beat
+post-procesing outside of the loop.
+
+\subsection{One-more-loop with in-loop \code{return} solution}\label{subsec:one-more-loop}
+
+Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
+to final answer.
+
+\subsection{Collection iteration \code{foreach} loop}
+
+Associated with collections and \code{iterable} containers, there is a new type of \code{foreach}
+or a disguised \code{for} loop in \java.
+
+
+
+\subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
+
+Often in a loop a number of cases are treated on a case-by-case basis and the termination case is
+distinct from all others but poses as a symmetry breaking factor.
+
+To have uniform treatment overall, one may introduce artifact, the `missing part' to complete
+the pattern.
+
+This artifact is called `sentinel'.
+The benefit is
+\begin{itemize}
+    \item Avoidance of duplicate code
+    \item Improved performance
+\end{itemize}
+%Some heavily executed loops may be the `hot spot' whose performance is the bottleneck of the
+%entire system.
+
+
+\subsection{\code{do-while} loop to execute first loop without checking
+condition}\label{subsec:do-while-loop}
+
+\code{do-while} loop attempts to execute the loop body at least once no matter what because it
+only checks the condition at the end of one round of loop execution.
+This is useful sometimes to combine an initialization section with loop body.
+Choosing pre-condition and post-condition loops is like choosing restaurants that charge
+first versus ones that serve first.
+If you are sure you you have enough money and you need a meal no matter what, you can go to a
+restaurant that serves first.
+But if you want to make sure you have enough money to pay for what you eat before you do it, you
+should go to one that charges first.
+
+%TODO find one case that best use do-while
+A case for \code{do-while} loop is as follows.
+
+
+\subsection{Use of \code{continue} to simplify conditional statements}
+
+In a program where several cases are treated discriminatorily in a loop, the organization of
+conditional statements is critical to its readability and simplicity.
+Under certain circumstances, use of \code{continue} can have magical power to simplify the logic.
+
+\subsection{Noname section}
+
 But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
 Once I get a better idea for the implementation, I will settle down to the best fit.
 

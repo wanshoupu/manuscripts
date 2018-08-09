@@ -23,15 +23,15 @@ languages support.
 \code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C, and
 others but not \python.
 
-``Why!'', you say, ``What makes you talking about loops as a language feature without a
+``Why!'', you say, ``What makes you talking about loops as a language feature with no
 language context?''
-As in in \fullref{ch:organizeYourIfElse}, I want to share some of my coding experience which
-address many beginner's problems and most importantly may be an inspiration to other enterprising
-programmers.
+As in in \fullref{ch:organizeYourIfElse}, I am sharing my first-hand coding experiences which
+address many beginner's problems.
+But most importantly may be an inspiration to other enterprising programmers.
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
 Although there are some variations, the basic constructs of a loop are the same.
-\autoref{tbl:loop-construct} describes the coding parts of a loop.
+\autoref{tbl:loop-construct} describes the parts of a loop in high-level languages.
 
 \begin{table}[h]
     \begin{center}
@@ -50,14 +50,15 @@ Although there are some variations, the basic constructs of a loop are the same.
             Body &
             The block of statements to be executed in the loop. \\
             \code{break} statement &
-            A statement in the loop body that breaks the loop and pass control to the next statement
+            A statement in loop body that breaks the loop and pass control to the next statement
             following the loop. \\
             \code{continue} statement &
-            A statement in the loop body that interrupt the execution of the remaining statements in the loop.
+            A statement in loop body that interrupt the execution of the remaining statements in the loop.
             Note that this doesn't break the loop or pass control out of the loop. \\
             Post-loop processing &
             This is a rare construct in loop, supported by languages such as \python as
-            \code{while-else} and \code{for-else}. \\
+            \code{while-else} and \code{for-else}.
+            This part will not be discussed in the rest of this chapter. \\
             \hline
         \end{tabular}
     \end{center}
@@ -65,23 +66,87 @@ Although there are some variations, the basic constructs of a loop are the same.
 
 Depending on the situation, a loop may or may not have certain parts as mentioned above.
 
-I like for-loop for the limited scope of its loop-variables.
-But I like to start with \code{while ( true )} or \code{for (; ; )}.
-Once I get to the bottom of the algorithm, I will have a better idea as to what is the best
-construct for the current problem.
+\section{Loop classification}\label{sec:loopClassification}
 
+As mentioned at beginning of this chapter, a loop may be viewed as a turntable. Depending on the
+location of the \code{<condition>} statement, there are three possible classes: pre-condition
+loop, mid-condition loop, and post-condition loop.
 
-\section{For-loop}
+\subsection{Pre-condition loop}\label{subsec:pre-conditionLoop}
+
+Pre-condition loop is the simplest loop and \code{while} loop is the simplest pre-condition loop.
+\begin{lstlisting}
+    while (<condition>) {
+    <body>
+    }
+\end{lstlisting}
+
+Another form of pre-condition loop is the conventional C-like for-loop.
 
 \begin{lstlisting}
-    for(<init> ; <pre-stmt> ; <post-stmt> )
+    for (<init>; <condition>; <post-stmt>) {
+    <body>
+    }
 \end{lstlisting}
-Think of \code{<pre-stmt>} as the first statement of each iteration of for-body.
-Think of \code{<post-stmt>} as the last statement of each iteration of for-body.
 
-\section{Precondition loop, midcondition loop, and postcondition loop}
+There are some very interesting aspects about for-loop.
+The \code{<init>} is a statement to be executed only once before control enters the loop.
+The \code{<condition>} may be regarded as the \emph{first} statement of loop body.
+The \code{<condition>} are always executed one more time than the rest of loop body
+unless there are break or continue statements inside.
+The \code{<post-stmt>} is the \emph{last} statement of for-loop body.
+and
+The \code{<post-stmt>} is always executed as many times as the rest of loop body
+unless there are break or continue statements inside.
 
-How to choose the right loop for concise code?
+I like for-loop for the limited scope of its loop-variables.
+But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
+Once I get a better idea for the implementation, I will settle down to the best fit.
+
+
+\subsection{Mid-condition loop}\label{subsec:mid-conditionLoop}
+
+There is rarely any construct that directly support mid-condition loop \textit{per se}.
+\autoref{lst:mid-condition-loop} is the closest approximation of a mid-condition loop.
+
+\begin{lstlisting}
+    \label{lst:mid-condition-loop}
+    while (true) { // an otherwise a perpetual loop
+    <body-part1> // first part of the body
+    if (<condition>)
+        break // condition for termination
+    <body-part2> // second part of the body
+    }
+\end{lstlisting}
+
+\subsection{Post-condition loop}\label{subsec:post-conditionLoop}
+
+In C or \cpp, the \code{do-while} loop falls in post-condition loop.
+\begin{lstlisting}
+    do {
+    <body>
+    } while (<condition>);
+\end{lstlisting}
+
+Abeit duplicate code, this is equivalent to
+
+\begin{lstlisting}
+    <body>
+    while (<condition>) {
+    <body>
+    }
+\end{lstlisting}
+
+\section{The Loop-and-a-half problem}\label{sec:Loop-and-a-halfProblem}
+
+This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+
+\section{How to choose the right loop for concise code?}\label{sec:chooseTheRightLoop}
+
+I like for-loop for the limited scope of its loop-variables.
+But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
+Once I get a better idea for the implementation, I will settle down to the best fit.
+
 \begin{itemize}
     \item Firstly use a generic (infinite loop) with break statements as exit points
     \item in the body such as for(;;) or while(true). After the structural
@@ -105,37 +170,3 @@ Questions to ask and answer
     Often, infinite loop is resulted when incorrect assumption is made about the termination condition
 \end{itemize}
 
-1. Pre-condition loop
-\begin{lstlisting}
-    while (condition) {
-        statements;
-    }
-\end{lstlisting}
-and
-\begin{lstlisting}
-    for ( ; condition; ) {
-        statements;
-    }
-\end{lstlisting}
-
-2. Mid-condition loop
-
-\begin{lstlisting}
-    while (true) {
-        statements;
-        if (!condition) break;
-        statements;
-    }
-\end{lstlisting}
-
-3. Post-condition loop
-
-\begin{lstlisting}
-    do {
-        statements;
-    } while (condition);
-\end{lstlisting}
-
-\section{The Loop-and-a-half problem}\label{sec:Loop-and-a-halfProblem}
-
-This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.

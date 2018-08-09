@@ -10,91 +10,46 @@ Nested loop thinning \label{Evernote:Max area under histogram}
 \label{Evernote:Server peak load problem}
 \label{Evernote:for-loop Loop compactification examples}
 
-\begin{lstlisting}
-    Sometimes nested loops can be combined into a single loop + if-else inside the loop body.
+Sometimes nested loops can be combined into a single loop + if-else inside the loop body.
 for example, the quick sort algorithm may be implemented as
 
-for (...){
-     while(){
-          loop until no smaller element
-     }
-     while(){
-          loop until no larger element
-     }
-     swap element
-     update boundary
-}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with nested for loops.}]{embedded-loops/for_loop_nested.java}
+\end{minipage}
 
 The for condition and the while condition bear some similarity, so we can combined them into one
 
-for(...){
-     if(...){
-          ...
-     }
-     swap element
-     update boundary
-}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
+\end{minipage}
 
 Example
 
-    public String intToRoman(int num) {
-        StringBuilder sb = new StringBuilder();
-        int d = 0;
-        while (num != 0){
-            int t = num / ds[d];
-            num %= ds[d];
-            for(int j = 0; j < t; ++j){
-                sb.append(cs[d]);
-            }
-            ++d;
-        }
-        return sb.toString();
-    }
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_nested.java}
+\end{minipage}
 
 May be made more compact using the above technique as
 
-    public String intToRoman(int num) {
-        StringBuilder sb = new StringBuilder();
-        for(int d = 0;num > 0;){
-            if(num >= ds[d]){
-                num -= ds[d];
-                sb.append(cs[d]);
-            }else{
-                ++d;
-            }
-        }
-        return sb.toString();
-    }
-\end{lstlisting}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
+\end{minipage}
 
-\begin{lstlisting}
-    Uncompact
-        for(int i = 0; i + pattern.length() <= text.length(); ++i){
-            for(int j = 0; ; ++j){
-                if(j == pattern.length()){
-                    return i;
-                }
-                if(pattern.charAt(j) != text.charAt(i+j)){
-                    break;
-                }
-            }
-        }
-        return -1;
+
+Uncompact:
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedLoop},
+    caption={Code snippet with nested loops.}]{embedded-loops/nested_loop_uncompact.java}
+\end{minipage}
 
 Compact:
-        for(int i = 0,j=0; ; ){
-            //The order of the following two if...return blocks MATTERS!
-            if(j == pattern.length()) {
-                return i;
-            }
-            if(i+j == text.length()){
-                return -1;
-            }
-            if(pattern.charAt(j) == text.charAt(i+j)){
-                ++j;
-            }else{
-                ++i;
-                j = 0;
-            }
-        }
-\end{lstlisting}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:thinnedLoop},
+    caption={Code snippet with nested loops.}]{embedded-loops/thinned_loop.java}
+\end{minipage}

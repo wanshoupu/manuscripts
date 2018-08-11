@@ -281,3 +281,54 @@ Case 2: determining the lowest common ancestor of two values in a BST:
 \lstinputlisting{if-else/lca.java}
 
 Often there are so many cases to test, if not designed properly, your code can blow out like crazy.
+
+\section{Logic equivalences}
+
+\begin{enumerate}
+\item  \begin{lstlisting}
+leftShift[j] = (j + speed >= leftShift.length ? false : leftShift[j + \item speed]);
+\end{lstlisting}
+\begin{lstlisting}
+leftShift[j] = (j + speed < leftShift.length && leftShift[j + speed]);
+\end{lstlisting}
+
+\item \begin{lstlisting}
+rightShift[j] = (j - speed < 0 ? false : rightShift[j - speed]);
+\end{lstlisting}
+\begin{lstlisting}
+rightShift[j] = (j - speed >= 0 && rightShift[j - speed]);
+\end{lstlisting}
+\item \begin{lstlisting}
+boolean check(int[] board, int s, int d) {
+return board[s] == board[d]
+|| board[s] - board[d] == d - s
+|| board[d] - board[s] == d - s;
+}
+\end{lstlisting}
+\item \begin{lstlisting}
+boolean check(int[] board, int s, int d) {
+if (board[s] == board[d]
+|| board[s] - board[d] == d - s
+|| board[d] - board[s] == d - s)
+return true;
+return false;
+}
+\end{lstlisting}
+\item \begin{lstlisting}
+if (existing.contains(candidate))
+return false;
+return true;
+\end{lstlisting}
+\item \code{return !existing.contains(candidate);}
+\item \begin{lstlisting}
+- if (x == -1 || x == n || matrix[x / matrix[0].length][x \% matrix[0].length] != target) {
+- return false;
+-        }
+- return true;
++ return x != -1 && x != n && matrix[x / matrix[0].length][x \% matrix[0].length] == target;
+\end{lstlisting}
+    \item \code{str.substring(i, str.length()} is equivalent to \code{str.substring(i)}
+    \item \code{sb.append(str.substring(i, j + 1));} is eqivalent to \code{sb.append(str, i, j + 1);}
+    \item \code{Arrays.asList(new String\[\]\{"a", "an", "em", "fir", "fire", "ire", "ma", "man"\})} is eqivalent to
+    \item \code{Arrays.asList("a", "an", "em", "fir", "fire", "ire", "ma", "man")}
+\end{enumerate}

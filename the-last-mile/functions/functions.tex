@@ -139,7 +139,32 @@ I would like discuss about the argument list of a function.
 Beside variable naming,
 the rules regarding arguments are mostly concerned with its size.
 My take of the rules of argument list size is much stricter than , the shorter, the better.
-My advice is `Beat all the odds to keep it no more than 2'.
+As to how many parameters a function should have there are varying advice given and many magic
+numbers occur: some advises `Beat all the odds to keep it no more than 2', some shook their head
+saying that's too strick make it $<5$, still some other say $8$ as they claim that some Linux
+kernel functions has up to that number of parameters.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:allocate_resource},caption={A Linux kernel function
+    allocating resources for the purpose of illustrating parameter size.},language=C]
+    {functions/allocate_resource.c}
+\end{minipage}
+
+For me, I've seen functions on both end of the spectrum: majority of functions have $0$, $1$, $2$,
+parameters and some extremely rare but real-world applications, functions with up to $8$
+parameters were created just to make use of a legacy C library.
+
+So what rule should we apply?
+My short answer is to use an exponential weighing scheme, namely, for a function
+with $N$ parameter,
+\begin{equation}
+    \mbox{cost}~\sim O(\exp(N)).
+\end{equation}
+This cost represents a rough estimation for the cost of the development, debugging, and maintaining
+the source code.
+So instead of putting a hard limit over the size of parameters of functions, we use a significant
+weighing scheme to scale the cost up.
+
 Sometimes you may have an urge to create a function with $>2$ arguments.
 Please resist the from it and refer to \autoref{tbl:arg-shortening-tech} for techniques that may
 help you create more beautiful and readable solution.

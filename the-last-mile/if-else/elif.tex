@@ -21,8 +21,14 @@ the very first version of intertwined logic often makes its way to production co
 depended by millions.
 
 ``As long as it works, why should one bother to simplify the logic?'', you may argue.
-I'd like to quote Steve McConnell to respond: ``The primary subject of communication is not computer
-but other humans''\cite{Mcconnell.2004}.
+I'd like to quote Steve McConnell to respond: ``..the primary audience [of your code] is made up of humans, not computers.''\cite{Mcconnell.2004}.
+
+\begin{quote}
+    ``Any fool can write code that a computer can understand.
+    Good programmers write code that humans can understand.''\\
+    —Martin Fowler
+\end{quote}
+
 Intertwined logic, even though it works, are hard to read, understand, debug, and modify.
 It fails the primary purpose of communicating to other humans.
 Worse, it often results in redundant/duplicate code.
@@ -284,51 +290,27 @@ Often there are so many cases to test, if not designed properly, your code can b
 
 \section{Logic equivalences}
 
-\begin{enumerate}
-\item  \begin{lstlisting}
-leftShift[j] = (j + speed >= leftShift.length ? false : leftShift[j + \item speed]);
-\end{lstlisting}
-\begin{lstlisting}
-leftShift[j] = (j + speed < leftShift.length && leftShift[j + speed]);
-\end{lstlisting}
 
-\item \begin{lstlisting}
-rightShift[j] = (j - speed < 0 ? false : rightShift[j - speed]);
-\end{lstlisting}
-\begin{lstlisting}
-rightShift[j] = (j - speed >= 0 && rightShift[j - speed]);
-\end{lstlisting}
-\item \begin{lstlisting}
-boolean check(int[] board, int s, int d) {
-return board[s] == board[d]
-|| board[s] - board[d] == d - s
-|| board[d] - board[s] == d - s;
-}
-\end{lstlisting}
-\item \begin{lstlisting}
-boolean check(int[] board, int s, int d) {
-if (board[s] == board[d]
-|| board[s] - board[d] == d - s
-|| board[d] - board[s] == d - s)
-return true;
-return false;
-}
-\end{lstlisting}
-\item \begin{lstlisting}
-if (existing.contains(candidate))
-return false;
-return true;
-\end{lstlisting}
-\item \code{return !existing.contains(candidate);}
-\item \begin{lstlisting}
-- if (x == -1 || x == n || matrix[x / matrix[0].length][x \% matrix[0].length] != target) {
-- return false;
--        }
-- return true;
-+ return x != -1 && x != n && matrix[x / matrix[0].length][x \% matrix[0].length] == target;
-\end{lstlisting}
-    \item \code{str.substring(i, str.length()} is equivalent to \code{str.substring(i)}
-    \item \code{sb.append(str.substring(i, j + 1));} is eqivalent to \code{sb.append(str, i, j + 1);}
-    \item \code{Arrays.asList(new String\[\]\{"a", "an", "em", "fir", "fire", "ire", "ma", "man"\})} is eqivalent to
-    \item \code{Arrays.asList("a", "an", "em", "fir", "fire", "ire", "ma", "man")}
-\end{enumerate}
+\begin{table}[h]
+    \begin{center}
+        \caption{Equivalent statements and logic optimization
+        \label{tbl:equiv-stmt}}
+        \begin{tabular}{l|p{7cm}}
+            \hline
+            \multirow{6}{*}{\textsf{Original}} &
+            \lstinputlisting[label={lst:nestedBranching},firstline=1,
+            lastline=4]{if-else/equivalent_statements_if_return.java} \\
+
+            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=6, lastline=6]{if-else/equivalent_statements_if_return.java} \\
+            \hline
+            \hline
+            \multirow{5}{*}{\textsf{Original}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=1, lastline=3]{if-else/equivalent_statements_ternary_expr.java} \\
+
+            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=5, lastline=7]{if-else/equivalent_statements_ternary_expr.java} \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}

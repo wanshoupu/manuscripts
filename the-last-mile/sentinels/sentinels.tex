@@ -10,3 +10,11 @@
 
 Null terminated string is essentially a sentinel to tell us the end of string.
 By doing so, the benefit is uniform treatment.
+
+Many programming languages provide `getOrDefault' methods for their collection classes.
+That's a disguised application of sentinel.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:getOrDefault},caption={An example of sentinel as a programming
+    language feature.}]{sentinels/getOrDefault.java}
+\end{minipage}

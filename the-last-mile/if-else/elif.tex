@@ -183,6 +183,23 @@ In practice, one may find one out of the two to be more useful under certain cir
 So one may try one or the other or both, depending on which one is more convenient.
 
 \section{Conditional statements in a loop}\label{sec:branchingInLoop}
+\begin{table}[h]
+    \begin{center}
+        \caption{Equivalent conditional statements within a loop using \code{if-else} vs.
+        \code{if-continue}.
+        \label{tbl:conditional-statement-in-loop}
+        }
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Option 1 & Option 2  \\
+            \lstinputlisting{if-else/if_continue.java}
+            &
+            \lstinputlisting{if-else/if_else.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+With the keywords \code{break} and \code{continue}, Logic simplification in a loop
+therefore has one extra piece of complexity and a new weapon to wield.
 
 \begin{table}[h]
     \begin{center}

@@ -96,6 +96,23 @@ Pre-condition loop is the simplest loop and amongst them, \code{while} loop is t
 Another form of pre-condition loop is the conventional C-like \code{for}-loop as in
 \autoref{lst:for-loop}.
 
+What are the important parts when using a for-loop?
+Questions to ask and answer
+\begin{itemize}
+    \item
+    what's the initialization?
+    Initialization is the starting points. To iterate over an array, for example,
+    should the initialization be i = -1 or i = 0?
+    \item
+    when and where should state updates, \textit{e.g.}, variable increment/decrement, happen?
+    in the 3rd part of the \code{for} statement? or in the body?
+    It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
+    if the increment/decrement is in the body. But it's more concise to put in the for-statement
+    \item
+    What's the termination condition and How many termination points?
+    Often, infinite loop is resulted when incorrect assumption is made about the termination condition
+\end{itemize}
+
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:for-loop},
     caption={For loop structure as a pre-condition.}]{loop/for_loop.java}
@@ -108,8 +125,10 @@ The \code{<condition>} are always executed one more time than the rest of loop b
 unless there are break or continue statements inside.
 The \code{<post-stmt>} is the \emph{last} statement of for-loop body.
 and
-The \code{<post-stmt>} is always executed as many times as the rest of loop body
-unless there are break or continue statements inside.
+The \code{<post-stmt>} is always executed as many times as the rest of loop body even when there
+are \code{continue} in the loop body.
+But when \code{break} statements are there, the \code{<post-stmt>} will be skipped.
+
 
 I like for-loop for the limited scope of its loop-variables.
 But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
@@ -189,7 +208,25 @@ to final answer.
 Associated with collections and \code{iterable} containers, there is a new type of \code{foreach}
 or a disguised \code{for} loop in \java.
 
+\subsection{Conversion from pre-loop to post-loop}\label{subsec:Pre-loop.To.Post-loop}
 
+It is possible to convert a pre-loop to post-loop.
+To illustrate this, let's say we are given a \code{string s} as an input and we want to iterate
+through it to find all the indexes of \code{char} `\code{x}'.
+That's as simple as the following code
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:loop-use-continue},
+    caption={Using pre-loop}]{loop/string_find_x.java}
+\end{minipage}
+
+\subsection{Linear stepping \textit{vs.} nonlinear stepping}\label{subsec:linearVs.NonlinearStepping}
+
+When using a loop for simple step through, one usually steps through one element per round.
+However this model does not work for all cases.
+Sometimes one need to step through with a varying pace conditioned by the elements encountered
+and this is what I called Nonlinear stepping.
+Nonlinear stepping has an important application for simplify logics within a loop.
 
 \subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
 
@@ -249,19 +286,3 @@ Once I get a better idea for the implementation, I will settle down to the best 
     \item statements are clear, one can choose a suitable, concise loop statements
 \end{itemize}
 
-What are the important parts when using a for-loop?
-Questions to ask and answer
-\begin{itemize}
-    \item
-    what's the initialization?
-    Initialization is the starting points. To iterate over an array, for example,
-    should the initialization be i = -1 or i = 0?
-    \item
-    when and where should state updates, \textit{e.g.}, variable increment/decrement, happen?
-    in the 3rd part of the \code{for} statement? or in the body?
-    It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
-    if the increment/decrement is in the body. But it's more concise to put in the for-statement
-    \item
-    What's the termination condition and How many termination points?
-    Often, infinite loop is resulted when incorrect assumption is made about the termination condition
-\end{itemize}

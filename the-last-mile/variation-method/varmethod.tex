@@ -80,7 +80,7 @@ pattern for protobuf schema.
         \includegraphics[height=6cm]{variation-method/variational-commits.jpg}.
         \caption{An example of applying variational methods to improve an implementation of protobuf
         message visitor pattern.}
-        \label{image:variational-commits.jpg}
+        \label{img:variational-commits}
     \end{center}
 \end{figure}
 \index{commands!environments!figure}%
@@ -104,3 +104,46 @@ related to the class you’re adding.
 Refactor when you fix a defect Use the understanding you gain from fixing a bug to
 improve other code that might be prone to similar defects.
 --Steven McConnell
+
+\section{Interactive development}
+
+Many software development books depict the activity of software development as mechanical
+translation:
+\begin{quote}
+    Requirement $\rightarrow$ Design $\rightarrow$ Implementation $\rightarrow$ Algorithm
+    $\rightarrow$ Test as shown in \autoref{img:static-picture-software-dev}.
+\end{quote}
+
+\begin{figure}[htb] % Imported eps example.
+    \begin{center}
+        \includegraphics[height=6cm]{variation-method/design-algorithm-implementation-test.jpg}
+        \caption{Static picture of software development.}
+        \label{img:static-picture-software-dev}
+    \end{center}
+\end{figure}
+
+This is seldome the way software devleopment works.
+The reality is that from design to implementation or from algorithm to implementation is not simple
+`Translation'.
+Software development is an involved engineering process.
+
+It is interactive---a process with back and forth fit and retrofit.
+
+It is iterative--- with progress and setbacks between adjacent stages such as algorithm and
+implementation.
+
+It is embedded---local iterations between design and implementation are nested in larger iterations
+between requirement and implementation and so on.
+
+\begin{figure}[htb] % Imported eps example.
+    \begin{center}
+        \includegraphics[height=6cm]{variation-method/design-algorithm-implementation-test-fb.jpg}.
+        \caption{Dynamic, interactive picture of software development.
+        The whole software development involves interactive and iterative feedback and improvement.
+        Many things are built temporarily only to be torn down later.
+        Without building them first, the final product wouldn't be possible.
+        The diagram shows many such venues of feedback and, generally speaking, the longer the
+        line, the costly to accommodate of the feedback venue.}
+        \label{img:interactive-picture-software-dev}
+    \end{center}
+\end{figure}

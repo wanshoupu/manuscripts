@@ -10,7 +10,7 @@ def toString(json, indent=0):
     Input may be of type: string, number, boolean, dictionary, or None.
     When it's a dictionary, its keys are of type string and values can be 
     :param json: 
-    :return: string format of my_json
+    :return: string format of my-json
     """
     if json is None:
         return "null"

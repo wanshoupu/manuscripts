@@ -3,15 +3,44 @@
 %% 8/22/18
 %%
 
-% Preamble
-\documentclass[11pt]{article}
+\chapter{Longest palindrome}
 
-% Packages
-\usepackage{a4wide}
-
-% Document
-\begin{document}
+\section{The problem statement}
 
 
+\section{Outline of the algorithm}
 
-\end{document}
+The optimal algorithm for detecting the longest palindromic substring in a string originates from
+idea presented in a paper by Glenn Manache\cite{Manacher:1975}.
+
+The basic idea is from symmetry with respect to reflection in $1D$ space---the so-called
+mirror-image symmetry.
+Especially if there are two axes of symmetry near each other, the entire space will become
+periodic with a period of $2d$ where $d$ is the distance between the two axes of symmetry.
+
+\section{Implementation}
+
+In the literature, there are several implementations already
+published, for example the one of CS department of Princeton
+University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
+
+There the prescription of the algorithm was literally translated into code---the original string
+ws preprocessed to fill with blanks.
+
+But with a little maneuver, one can create a `virtual filling' among the characters of the
+original string and save on physical memory footprint.
+\autoref{lst:longest_palindromic_substring.py} and \autoref{lst:LongestPalindrom.java} are
+implementations in \python and \java respectively based on string `virtual filling'.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:longest_palindromic_substring.py},firstline=10,lastline=31,
+    caption={Jump Game II: an implementation with nested loops
+    .}]{case-study/longest-palindrome/longest_palindromic_substring.py}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
+    caption={Java implementation of longest
+    palindrome substring Manache's aglorithm.}]
+    {case-study/longest-palindrome/LongestPalindrome.java}
+\end{minipage}

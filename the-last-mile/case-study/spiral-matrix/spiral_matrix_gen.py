@@ -1,5 +1,4 @@
 import random
-from lc.grid_2d.mat_util import format_mat
 
 
 def spiral_indexes(m, n):
@@ -110,7 +109,6 @@ def testSpiralOrder():
         m = random.randrange(0, 10)
         n = random.randrange(0, 10)
         spiral_matrix = sol.generateMatrix(m, n)
-        print format_mat(spiral_matrix)
         print sol.spiralOrder(spiral_matrix)
 
 
@@ -133,7 +131,6 @@ def crossExamine():
         n = random.randrange(0, 10)
         print 'matrix {} x {}'.format(m, n)
         spiral_matrix = sol.generateMatrix(m, n)
-        print format_mat(spiral_matrix)
         print sol.spiralOrder(spiral_matrix)
         print index_gen(m, n)
 

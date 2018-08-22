@@ -33,11 +33,11 @@ def unescape(string):
 
 def parseJson(string):
     """
-    input is my_json represented as string
+    input is my-json represented as string
     Output may be of type: string, number, False, True, list, dictionary, or None.
     When it's a dictionary, its keys are of type string and values can be 
     :param string:
-    :return: obj representation of my_json data
+    :return: obj representation of my-json data
     """
     preproc = __tokenize__(string)
     return __structurize__(preproc)

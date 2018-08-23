@@ -1,0 +1,65 @@
+%%
+%% Author: shoupu_wan
+%% 8/22/18
+%%
+
+\chapter{Minimum containing window}\label{ch:minimumContainingWindow}
+
+\section{The problem statement}
+
+The problem is stated as follows:
+\begin{quote}
+    Given a string S and a string T, find the minimum window in S which will contain all
+    the characters in T.
+\end{quote}
+
+\section{Outline of the algorithm}
+
+We are talk about implementation of a greedy algorithm which runs in $O(N)$ time complexity.
+
+The algorithm does two things---first find a containing window and then attempt to `push-and-squash' the containing window to the smallest.
+It moves like a caterpillar: it pushes itself starting from the back.
+
+It contains the idea of queuing up tasks to be processed later while being blocked.
+So it's like an asynchronous way of processing.
+This implementation follows the idea of separating the Revenue and expenditure accounts.
+It stores the character deficit in a map.
+It start with an open set-a set of indexes that are not sufficient to cover all the
+deficit.
+It counts the length of an open set as infinity.
+It attempts to compress the length of the set by attempting replacing the most lagging
+behind position with the next available position for the char.
+
+deficit functions as a counter of deficit, surplus, and an account of what character
+is needed. But the exact original number is not needed while in the process.
+
+Aside from the deficit and the queue, we also need an integer to record the number of
+unique characters that is still in want.
+
+
+\section{Implementation}
+
+In the literature, there are several implementations already
+published, for example the one of CS department of Princeton
+University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
+
+There the prescription of the algorithm was literally translated into code---the original string
+ws preprocessed to fill with blanks.
+
+But with a little maneuver, one can create a `virtual filling' among the characters of the
+original string and save on physical memory footprint.
+\autoref{lst:longest_palindromic_substring.py} and \autoref{lst:LongestPalindrom.java} are
+implementations in \python and \java respectively based on string `virtual filling'.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:longest_palindromic_substring.py},firstline=10,lastline=31,
+    caption={Jump Game II: an implementation with nested loops
+    .}]{case-study/longest-palindrome/longest_palindromic_substring.py}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
+    caption={Java implementation of longest
+    palindrome substring Manache's aglorithm.}]
+    {case-study/longest-palindrome/LongestPalindrome.java}
+\end{minipage}

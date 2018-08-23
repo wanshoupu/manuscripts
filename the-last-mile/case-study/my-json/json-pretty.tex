@@ -1,0 +1,49 @@
+%%
+%% Author: shoupu_wan
+%% 8/22/18
+%%
+
+\chapter{Json prettifier}\label{ch:json-prettifier}
+
+\section{The problem statement}
+
+The requirement is simply as ``Given a string as a Json blob, make it pretty, well-formatted text''.
+
+\section{Outline of the algorithm}
+
+The algorithm consists of two steps.
+Step one, parse Json data;
+Step two, reformat the Json data by adding newlines, indent spaces, \textit{etc.}
+
+\section{Implementation}
+
+In the literature, there are several implementations already
+published, for example the one of CS department of Princeton
+University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
+
+There the prescription of the algorithm was literally translated into code---the original string
+ws preprocessed to fill with blanks.
+
+
+\autoref{lst:JsonPrettifier.py},  \autoref{lst:JsonFormatter.py}, and \autoref{lst:JsonParser.py}.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:JsonPrettifier.py},firstline=10,lastline=31,
+    caption={Json prettifier code that invokes the modular constructs of \code{JsonParser} and
+    \code{JosnFormatter} to prettify input Json blob data.}]
+    {case-study/my-json/JsonPrettifier.py}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:JsonFormatter.py},firstline=10,lastline=31,
+    caption={Json formatter.
+    It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
+    {case-study/my-json/JsonFormatter.py}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:JsonParser.py},firstline=10,lastline=31,
+    caption={Json formatter.
+    It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
+    {case-study/my-json/JsonParser.py}
+\end{minipage}

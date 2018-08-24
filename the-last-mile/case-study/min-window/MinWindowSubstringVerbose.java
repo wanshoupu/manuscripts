@@ -1,15 +1,15 @@
 public class MinWindowSubstringVerbose {
-    public String minWindow(String str, String target) {
+    public String minWindow(String src, String tgt) {
         //used to contain surplus but 'useful' chars for subsequent extension of window
-        //Be careful not to introduce new keys after the initialization, as the keys in this repository is used to test for target characters
+        //Be careful not to introduce new keys after the initialization, as the keys in this repository is used to test for tgt characters
         Map<Character, Integer> repository = new HashMap<>();
-        for (char c : target.toCharArray()) {
+        for (char c : tgt.toCharArray()) {
             repository.put(c, repository.getOrDefault(c, 0) - 1);
         }
         Set<Character> deficit = new HashSet<>(repository.keySet());
-        int end = 0;
-        for (; end < str.length() && !deficit.isEmpty(); ++end) {
-            char c = str.charAt(end);
+        int right = 0;
+        for (; right < src.length() && !deficit.isEmpty(); ++right) {
+            char c = src.charAt(right);
             if (repository.containsKey(c)) {
                 repository.put(c, repository.get(c) + 1);
                 if (repository.get(c) >= 0) {
@@ -21,8 +21,8 @@ public class MinWindowSubstringVerbose {
             return "";
         }
 
-        int minStart = 0;
-        int minEnd = end;
+        int minLeft = 0;
+        int minRight = right;
         /*
          * 1. The start-end window is initialized to contain all the characters in target
          * 2. The start is pruned one character at a time
@@ -34,33 +34,33 @@ public class MinWindowSubstringVerbose {
          * Newly discovered characters at the 'end' are never directly used to supply to pruned 'start'.
          */
 
-        for (int start = 0; ; ) {
+        for (int left = 0; ; ) {
             //update the min-window. This isn't needed for all the if-else cases. But doesn't hurt to check
-            if (end - start < minEnd - minStart) {
-                minStart = start;
-                minEnd = end;
+            if (right - left < minRight - minLeft) {
+                minLeft = left;
+                minRight = right;
             }
-            char c = str.charAt(start);
+            char c = src.charAt(left);
             Integer count = repository.get(c);
             if (count == null) {
                 //c is not needed
-                ++start;
+                ++left;
             } else if (count > 0) {
                 //c is needed and we have it in repository
                 repository.put(c, count - 1);
-                ++start;
-            } else if (end == str.length()) {
+                ++left;
+            } else if (right == src.length()) {
                 break;
             } else {
                 //explore more char to replenish repository
-                c = str.charAt(end);
+                c = src.charAt(right);
                 count = repository.get(c);
                 if (count != null) {
                     repository.put(c, count + 1);
                 }
-                ++end;
+                ++right;
             }
         }
-        return str.substring(minStart, minEnd);
+        return src.substring(minLeft, minRight);
     }
 }

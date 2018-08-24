@@ -2,38 +2,37 @@ public class ModularSolution {
     /**
      * A modular implementation of the minimum containing window algorithm
      *
-     * @param str
-     * @param target
+     * @param src
+     * @param tgt
      * @return
      */
-    public String minWindow(String str, String target) {
+    public String minWindow(String src, String tgt) {
         //used to contain surplus but 'useful' chars for subsequent extension of window
-        //Be careful not to introduce new keys after the initialization, as the keys in this repository is used to test for target characters
         Map<Character, Integer> repository = new HashMap<>();
-        for (char c : target.toCharArray()) {
+        for (char c : tgt.toCharArray()) {
             repository.put(c, 0);
         }
 
-        str = target + str;
-        // The initial window is set to contain all the characters in target
-        int minStart = target.length(); // inclusive
-        int minEnd = str.length(); // inclusive
-        for (int start = 0, end = target.length() - 1; start < str.length() && end < str.length(); ) {
+        src = tgt + src;
+        // The initial window is set to contain all the characters in tgt
+        int minStart = tgt.length(); // inclusive
+        int minEnd = src.length(); // inclusive
+        for (int start = 0, end = tgt.length() - 1; start < src.length() && end < src.length(); ) {
             //update the min-window.
-            if (start >= target.length() && end - start < minEnd - minStart) {
+            if (start >= tgt.length() && end - start < minEnd - minStart) {
                 minStart = start;
                 minEnd = end;
             }
             // Consume a char from repository and if successful, find next relevant char
-            if (consumeChar(str.charAt(start), repository)) {
-                start = nextIndex(start, str, repository);
+            if (consumeChar(src.charAt(start), repository)) {
+                start = nextIndex(start, src, repository);
             }
             // find the next relevant char and if successful recruit it to repository
-            else if ((end = nextIndex(end, str, repository)) < str.length()) {
-                recruitChar(str.charAt(end), repository);
+            else if ((end = nextIndex(end, src, repository)) < src.length()) {
+                recruitChar(src.charAt(end), repository);
             }
         }
-        return minEnd < str.length() ? str.substring(minStart, minEnd + 1) : "";
+        return minEnd < src.length() ? src.substring(minStart, minEnd + 1) : "";
     }
 
     private static boolean consumeChar(char c, Map<Character, Integer> repository) {

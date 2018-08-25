@@ -28,10 +28,13 @@ We zoom in straight to a greedy algorithm with the following ideas behind:
 \end{enumerate}
 
 Once initialized, the containing window, while maintaining the containment invariant, moves like an
-earthworm---it pushes itself way forward with waves starting from the behind.
-Namely, it attempts to prune the left most char with a replacement from within
+earthworm---it pushes itself way forward with longitudinal waves starting from the behind.
+It attempts to prune the left most char with a replacement from within
 the window and if this is not possible, it extends to the right until the end
 of the string.
+While doing this, the minimal containing window is kept outside of the loop and compared with
+each and every one of the containing windows found.
+Finally the minimal containing window is returned.
 
 To facilitate the lookup for replacement char, it would be useful to use an intermediate
 buffer to store character surplus within the window, \textit{e.g.},
@@ -59,7 +62,13 @@ I intend to figure out more useful insights for optimization at implementation t
 \section{Implementations}\label{sec:implementations.min-window}
 
 Now let's see how to implement the outlined solutions.
-To begin with, we have no other insights but the outline as shown in
+All the solutions in this chapter are provided in \java.
+
+\subsubsection{First ever solution}
+
+The importance of the role played by a stupid, first solution can never be overestimated.
+There are some things that must be built only to be thrown away.
+As a cold start, we have no other insights but the outline as shown in
 \autoref{img:min-window-algorithm.jpg}.
 So we firstly `find a containment window'.
 To do that, we firstly build up an account of the unique chars and their counts based on target
@@ -104,17 +113,20 @@ The final solution is presented in \autoref{lst:MinWindowSubstringVerbose}.
 caption={An earlier implementation for the `Minimum window' problem.}]
 {case-study/min-window/MinWindowSubstringVerbose.java}
 
-This solution is also reminiscent to concurrent programming with two threads, one for deposit
+Before we let go and move forward, let's have some reflection on the solution.
+This solution is reminiscent to concurrent programming with two threads, one for deposit
 and the other for withdrawal.
-And indeed one may adapt the code to a multi-threaded program similar to the
-well-known `producer-consumer' problem.
-For completeness, some implementations start with an open set---a set of indexes that are not
+It reminds me of the well-known `producer-consumer' problem.
+And indeed one may adapt the code to a multi-threaded program similar to it.
+Beyond this algorithm bucket, there are other ideas which I would like to compare briefly.
+I've seen solutions that start with an open set---a set of indexes that are not
 sufficient to cover the character deficit.
-But I found that starting with a closed set---a contained window---and then trying
-to shorten it is more manageable.
-This is similar to fighter aircraft chasing target---Lock and follow is the primary strategy,
-if at all possible.
+But I find that starting with a closed set---a contained window---and then trying
+to shorten it is a more manageable, faster convergence solution.
+This is similar to fighter aircraft chasing target---lock and follow is a way better strategy
+than others, if at all possible.
 
+\subsubsection{Improvements}
 Now that we have our first version of solution that passes all the unit tests we can think of.
 Let us take a moment to reflect on the program and how to improve it.
 As long as one takes the time, it's not hard to spot that
@@ -130,12 +142,12 @@ it has several issues including but not limited to
     beginning to end of the program,
     \item Exposed loop-variables such as \code{c} which may cause unexpected behavior.
 \end{itemize}
-As a result these issues, our first version of solution is very delicate and buggy.
+As a result of these issues, our first version of solution is very delicate and buggy.
 Moreover, it has very poor readability.
 Nevertheless, it is a good starting point---a fully functional correct solution.
 Let's see how we can improve on these identified issues.
 
-First of all, we can solve the duplicate code resulting from the `loop and a half' problem.
+First of all, we can attempt to remove the duplicate code from the `loop and a half' problem.
 Using the techniques discussed in \autoref{ch:loops}, particularly
 \autoref{sec:loop-and-a-half-Problem}, we can solve this problem by choosing the right loop
 construct and use the `one-more-loop' technique(see \autoref{subsec:one-more-loop}).
@@ -177,17 +189,22 @@ the sentinel idea.
 There is the extra bonus---the long-living-variable problem is also alleviated.
 Especially, the entire function consists of a single-loop.
 That by itself is beautiful.
-However, there are still something that I believe can be improved in
-\autoref{lst:MinWindowSubstringSentinel}.
-Firstly, the increment of the left and right boundaries both checks on the same condition---if
-the \code{charAt} is relevant to the target string.
-I consider this duplicate code.
-Also, because of this check, the \code{for}-loop was made fragmented and lengthy.
-Note the \code{break} statement in the middle?
-Note the the span of the variable \code{c}?
-Note the two occurrences of \code{++left}?
-Note the two nullity checks for \code{count}?
-All these convey the signal that there are still room for improvement.
+
+\subsubsection{Further room of improvement}
+
+\autoref{lst:MinWindowSubstringSentinel} is a neat solution for the problem it solves.
+However, there are still something that I believe can be improved on.
+If you inspect the loop carefully, you will notice that checking the \code{charAt} is relevant to
+the target string is done twice, once at the increment of the left window boundary when a char is
+prune and once at that of the right window boundary when a char is taken in.
+(Note the two nullity checks for \code{count}?)
+This is a type of duplicate code, even though it's implicit.
+Also, because of this repeated check, the \code{for}-loop was made fragmented and lengthy.
+(note the two occurrences of \code{++left}?)
+Additionally, the variable \code{c} also trespasses multiple blocks of code and different tasks.
+
+All these issues convey a clear signal that there are still room for improvement---maybe all
+these issues stem from a common root.
 
 a monolithic implementation of a fairly simple algorithm, is still hard to read.
 

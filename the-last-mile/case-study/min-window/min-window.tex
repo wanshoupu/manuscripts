@@ -63,7 +63,7 @@ To begin with, we have no other insights but the outline as shown in
 \autoref{img:min-window-algorithm.jpg}.
 So we firstly `find a containment window'.
 To do that, we firstly build up an account of the unique chars and their counts based on target
-string and store that in a map \code{repository}.
+string and store that in a map (a dictionary in \python) \code{repository}.
 Using \code{repository}, we look for a prefix string of the source string such that all the
 chars in \code{T} are included in the prefix string at least as many times as they occur in
 \code{repository}.
@@ -95,53 +95,101 @@ The flow of chars may be pictured as:
 \begin{quote}
     \code{rightBoundary} $\rightarrow$ \code{repository} $\rightarrow$ \code{leftBoundary}
 \end{quote}
-Namely, I used a map (dictionary in \python) as the intermediate buffer for char surplus.
-Populating the buffer is done in one part of the code, and extraction from the buffer is done in
+Deposit to the buffer is done in one part of the code, and extraction from the buffer is done in
 another.
-This creates separate grounds for the two major operations and thus greatly promotes modular
-designs.
-
-So this prompted me to do more research on how to simplify the implementation, how to create
-succinct, modular, and readable code.
-
-The subsequent subsections, I'm going to present my approaches of polishing my implementations from
-my very first, crude solution to the third solution which is acceptable to me.
-
-As Bruce Lee said ``to the free, creative martial artists, `Absorb what is useful, reject what is
-useless, and add what
-is essentially your own'.''
-
-To save space, all my implementations
-
-So it's like an asynchronous way of processing.
-It stores the character deficit in a map.
-
-Some implementations start with an open set---a set of indexes that are not sufficient to cover
-all the character deficit.
-
-But I found that starting with a closed set---a containing window---and then trying
-to shorten it is more manageable.
-
-It suffers several issues including verbose, oversize initialization, poor readability, lack
-of modular design.
+This creates separate grounds for the two major operations and thus promotes modular designs.
+The final solution is presented in \autoref{lst:MinWindowSubstringVerbose}.
 
 \lstinputlisting[label={lst:MinWindowSubstringVerbose},
 caption={An earlier implementation for the `Minimum window' problem.}]
 {case-study/min-window/MinWindowSubstringVerbose.java}
 
-For the first time, a technique of sentinel is used to free us from the lengthy
-initialization to find a starting point.
-The sentinel idea is to prepend the target string \code{T} to the source string \code{S}.
-The benefit of doing this is that in the composite string, we readily start with a containing
-window---substring from $0$ to \code{len(T)}.
-No more lengthy preprocessing to find a containing window within the original source string.
+This solution is also reminiscent to concurrent programming with two threads, one for deposit
+and the other for withdrawal.
+And indeed one may adapt the code to a multi-threaded program similar to the
+well-known `producer-consumer' problem.
+For completeness, some implementations start with an open set---a set of indexes that are not
+sufficient to cover the character deficit.
+But I found that starting with a closed set---a contained window---and then trying
+to shorten it is more manageable.
+This is similar to fighter aircraft chasing target---Lock and follow is the primary strategy,
+if at all possible.
+
+Now that we have our first version of solution that passes all the unit tests we can think of.
+Let us take a moment to reflect on the program and how to improve it.
+As long as one takes the time, it's not hard to spot that
+it has several issues including but not limited to
+\begin{itemize}
+    \item `Loop and half' problem discussed in \autoref{sec:loop-and-a-half-Problem} and this
+    results in significant duplicate code,
+    \item Nested loop also discussed in \autoref{sec:loop-and-a-half-Problem} and this
+    decrease readability,
+    \item `Oversize initialization' for finding the first containment window,
+    \item `Monolithic, multitasking function', consisting of 80+ lines of code,
+    \item Long-living variables like \code{repository}, whose scope spans all the way from
+    beginning to end of the program,
+    \item Exposed loop-variables such as \code{c} which may cause unexpected behavior.
+\end{itemize}
+As a result these issues, our first version of solution is very delicate and buggy.
+Moreover, it has very poor readability.
+Nevertheless, it is a good starting point---a fully functional correct solution.
+Let's see how we can improve on these identified issues.
+
+First of all, we can solve the duplicate code resulting from the `loop and a half' problem.
+Using the techniques discussed in \autoref{ch:loops}, particularly
+\autoref{sec:loop-and-a-half-Problem}, we can solve this problem by choosing the right loop
+construct and use the `one-more-loop' technique(see \autoref{subsec:one-more-loop}).
+Also the `exposed loop variables' problem may also be solved if we use \code{for}-loop properly
+restrict the scopes of relevant variables to the loop body.
+
+Next, note that in \autoref{lst:MinWindowSubstringVerbose}, finding the first containment
+window takes quite a chunk of code to initialize.
+`Initialization' clicks with our learning in \fullref{ch:sentinels}.
+Going through the techniques we covered, is it possible to shorten the initialization code?
+It seems that the code for finding the initial containment window is totally a different code
+from that of squeezing it.
+Would sentinel help save this lengthy initialization?
+That's good point.
+Indeed as we discussed in \autoref{ch:sentinels}, sentinel is a preprocessing technique for
+that enables uniform treatment in later code.
+Also note that the target string is a containment window for itself.
+So if we prepend \code{T} onto \code{S}, then in the resulting composite string the initial
+containment window would be obvious without no computation---the prefix as long as \code{T}.
+This totally frees us from the lengthy initialization, with the caveat that the later dynamic
+squeezing loop need to take care of if the window has left the target string boundary in the
+composite string.
+
+The next biggest problem with \autoref{lst:MinWindowSubstringVerbose} is the nested loops.
+One may argue that nested loop is acceptable as long as the layout is readable.
+While there are different aesthetic taste, I would propose to try alternatives before make a
+personal judgement.
+In my opinion, if we can solve a problem with one loop, don't use nested loop for reasons I
+listed in \autoref{ch:loops}.
 
 \lstinputlisting[label={lst:MinWindowSubstringSentinel},
 caption={A second version of implementation for the `Minimum window' problem.}]
 {case-study/min-window/MinWindowSubstring.java}
 
-However, \autoref{lst:MinWindowSubstringSentinel}, a monolithic implementation of a fairly simple
-algorithm, is still hard to read.
+With the improvements we discussed so far, our code is greatly improved
+\autoref{lst:MinWindowSubstringSentinel}.
+Not only the problems of duplicate code is removed, it's length is also shortened much thanks to
+the sentinel idea.
+There is the extra bonus---the long-living-variable problem is also alleviated.
+Especially, the entire function consists of a single-loop.
+That by itself is beautiful.
+However, there are still something that I believe can be improved in
+\autoref{lst:MinWindowSubstringSentinel}.
+Firstly, the increment of the left and right boundaries both checks on the same condition---if
+the \code{charAt} is relevant to the target string.
+I consider this duplicate code.
+Also, because of this check, the \code{for}-loop was made fragmented and lengthy.
+Note the \code{break} statement in the middle?
+Note the the span of the variable \code{c}?
+Note the two occurrences of \code{++left}?
+Note the two nullity checks for \code{count}?
+All these convey the signal that there are still room for improvement.
+
+a monolithic implementation of a fairly simple algorithm, is still hard to read.
 
 To fix the issues present in the second version, I implemented the third which is presented in
 \autoref{lst:MinWindowSubstringModular}.
@@ -163,3 +211,14 @@ readable solution using languages like \java and \python.
 What's more, based on my research on public available implementations on the Internet, almost all
 the implementations are so verbose and hard to read (One source may be Leetcode submitted
 solutions, visible only after you successfully submit a solution).
+
+So this prompted me to do more research on how to simplify the implementation, how to create
+succinct, modular, and readable code.
+
+The subsequent subsections, I'm going to present my approaches of polishing my implementations from
+my very first, crude solution to the third solution which is acceptable to me.
+
+As Bruce Lee said ``to the free, creative martial artists, `Absorb what is useful, reject what is
+useless, and add what
+is essentially your own'.''
+

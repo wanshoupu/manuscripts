@@ -33,32 +33,46 @@ public class MinWindowSubstringVerbose {
          * Newly discovered characters are first pushed to repository and then be used to replace pruned 'start' as needed
          * Newly discovered characters at the 'end' are never directly used to supply to pruned 'start'.
          */
+        int left = 0;
+        while (right < src.length()) {
+            char c = src.charAt(left);
+            while (!repository.containsKey(c) || repository.get(c) > 0) {
+                ++left;
+                if (repository.containsKey(c)) {
+                    //repository has the needed char c
+                    repository.put(c, repository.get(c) - 1);
+                }
+                c = src.charAt(left);
+                //update the min-window. This is only needed when we push left
+                if (right - left < minRight - minLeft) {
+                    minLeft = left;
+                    minRight = right;
+                }
+            }
+            //explore more char to replenish repository
+            while (right < src.length()) {
+                char rc = src.charAt(right++);
+                if (repository.containsKey(rc)) {
+                    repository.put(rc, repository.get(rc) + 1);
+                }
+                if (c == rc) {
+                    break;
+                }
+            }
+        }
 
-        for (int left = 0; ; ) {
-            //update the min-window. This isn't needed for all the if-else cases. But doesn't hurt to check
+        char c = src.charAt(left);
+        while (!repository.containsKey(c) || repository.get(c) > 0) {
+            ++left;
+            if (repository.containsKey(c)) {
+                //repository has the needed char c
+                repository.put(c, repository.get(c) - 1);
+            }
+            c = src.charAt(left);
+            //update the min-window. This is only needed when we push left
             if (right - left < minRight - minLeft) {
                 minLeft = left;
                 minRight = right;
-            }
-            char c = src.charAt(left);
-            Integer count = repository.get(c);
-            if (count == null) {
-                //c is not needed
-                ++left;
-            } else if (count > 0) {
-                //c is needed and we have it in repository
-                repository.put(c, count - 1);
-                ++left;
-            } else if (right == src.length()) {
-                break;
-            } else {
-                //explore more char to replenish repository
-                c = src.charAt(right);
-                count = repository.get(c);
-                if (count != null) {
-                    repository.put(c, count + 1);
-                }
-                ++right;
             }
         }
         return src.substring(minLeft, minRight);

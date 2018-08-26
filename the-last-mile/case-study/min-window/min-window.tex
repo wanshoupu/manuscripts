@@ -199,13 +199,16 @@ the target string is done twice, once at the increment of the left window bounda
 prune and once at that of the right window boundary when a char is taken in.
 (Note the two nullity checks for \code{count}?)
 This is a type of duplicate code, even though it's implicit.
-Also, because of this repeated check, the \code{for}-loop was made fragmented and lengthy.
+Also, because of this repeated check, the \code{for}-loop was made fragmented and quite lengthy.
 (note the two occurrences of \code{++left}?)
 Additionally, the variable \code{c} also trespasses multiple blocks of code and different tasks.
 
-All these issues convey a clear signal that there are still room for improvement---maybe all
-these issues stem from a common root.
+All these issues convey a clear signal that there is sufficient room for improvement.
+It is possible that each one of these issues need to be fixed separately.
+Or it may be that all the issues are related to a common one.
+Let us investigate.
 
+First of all,
 a monolithic implementation of a fairly simple algorithm, is still hard to read.
 
 To fix the issues present in the second version, I implemented the third which is presented in
@@ -218,6 +221,12 @@ prestigious company with a sustainable, long-term engineering mission.
 \lstinputlisting[label={lst:MinWindowSubstringModular},
 caption={A readable version of implementation for the `Minimum window' problem.}]
 {case-study/min-window/MinWindowSubstring2018.java}
+
+An instance-based solution that reduce the number of parameters of several functions.
+
+\lstinputlisting[label={lst:MinWindowSubstringSolver},
+caption={An object-oriented problem solver for the `Minimum window' problem.}]
+{case-study/min-window/MinWindowSubstringSolver.java}
 
 \section{Conclusion}
 

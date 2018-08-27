@@ -5,11 +5,32 @@
 
 \chapter{Minimum containing window}\label{ch:minimumContainingWindow}
 
-Out of all the coding questions I've worked on, `Minimum containing window' is one of a few
-whose problem statements are intuitive, and algorithms are straightforward but the implementations
-has a huge room for improvement.
-I'm going to demonstrate in near real production development environment, how I start with some
-rough ideas, make improvements bit by bit, finally end up with a readable, modular solution.
+In this chapter, I will demonstrate through a coding practice question
+how to start with some rough ideas, make improvements progressively, and arrive at a neat, readable
+solution.
+Out of the coding questions I've worked on, `Minimum containing window' is one such problem
+that is simple to state, has intuitive algorithms, but
+to code up a succinct, production-quality solution is by no means simple or straightforward.
+For an inexperienced beginner, correct implementation of a solution can easily grow into a bloated,
+obscure program.
+When I first encountered this problem, I stumbled badly after a few failed attempts to
+implement a clean and readable solution using languages like \java and \python.
+Over the years, I kept visiting, revisiting this problem and each time I worked on it, I ended up
+with new insights.
+The more I reflect on it, the more amazed I grew because I realized this will forever remain a
+new problem to me.
+On the other hand, when I search through public available resources for implementations of this
+problem\footnote{One source may be Leetcode submitted solutions, visible only after you
+successfully submit a solution}, I was disappointed to see that almost all
+implementations I encountered are verbose, containing duplicate code here and there, and hard to
+read.
+
+So this motivated me to do in-depth demonstration on how to start with an initial solution and
+gradually transform it into succinct, modular, and readable code.
+As Bruce Lee once said ``to the free, creative mastermind, `Absorb what is useful, reject what is
+useless, and add what is essentially your own'.''
+I hope you would find this sharing useful and inspiring.
+Let's get started with the problem statement.
 
 \section{Problem statement}\label{sec:problemStatement.min-window}
 
@@ -277,20 +298,19 @@ Overall, the solution \code{MinWindowSubstringSolver} is much readable than its 
 
 \section{Conclusion}\label{sec:minWindowSubstringConclusion}
 
-As we have discussed in this chapter is a typical problem that has both an simple problem
-statement and an intuitive algorithm.
-However coding up a solution for it is by no means simple or straightforward.
-For an inexperienced beginner, the implementation can easily blow up as a bloated, buggy chunk of
-obscure program.
-When I first encountered this problem, I stumbled badly after a few failed attempts to
-implement a clean and readable solution using languages like \java and \python.
-What's more, based on my research on public available implementations on the Internet, almost all
-the implementations are so verbose and hard to read (One source may be Leetcode submitted
-solutions, visible only after you successfully submit a solution).
+What is demonstrated in this chapter is a case study on the progressive improvement I made for
+solutions of one of the intensely practiced coding questions among coding skill learners and ones
+doing technical interview prep.
+Starting off with rough idea, we came with a rough solution with many issues.
+Nevertheless this humble solution serves as the springboard for a better solution applying the
+techniques of sentinel.
+Then modular and object-oriented concepts are used to make many other improvement over the
+successively better solutions.
 
-So this motivated me to do in-depth demonstration on how to start with an initial solution and
-gradually transform it into succinct, modular, and readable code.
-As Bruce Lee once said ``to the free, creative mastermind, `Absorb what is useful, reject what is
-useless, and add what is essentially your own'.''
-I hope you would find this sharing useful and inspiring.
-
+Online coding questions are a great way to practice coding skills.
+Many enthusiastic coders aim at successful submissions to as many problems as they can.
+Seldom do they spend time to quest why their code works and how to polish their code to a neater
+solution.
+Getting your solutions accepted by online judges only scratches the surface of software development.
+Much of the required skills for proficient software development are only the result of
+iterative retrospection, contemplations and improvement.

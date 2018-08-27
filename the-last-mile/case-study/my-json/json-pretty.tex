@@ -17,13 +17,14 @@ Step two, reformat the Json data by adding newlines, indent spaces, \textit{etc.
 
 \section{Implementation}
 
-In the literature, there are several implementations already
-published, for example the one of CS department of Princeton
-University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
+Divide and conquer.
+The input string may be a blob of strings with no newlines or spaces in between.
+Or the input may be `almost' well-formated Json files, off by just a few spaces or
+newlines---this requires minimal `style-compliance' formatting.
+Or the input may be invalid Json, with some missing part or extra part.
 
-There the prescription of the algorithm was literally translated into code---the original string
-ws preprocessed to fill with blanks.
-
+This inspires us to validate and parse the input string into an in-memory data structure
+first and then print the structure as pretty string.
 
 \autoref{lst:JsonPrettifier.py},  \autoref{lst:JsonFormatter.py}, and \autoref{lst:JsonParser.py}.
 

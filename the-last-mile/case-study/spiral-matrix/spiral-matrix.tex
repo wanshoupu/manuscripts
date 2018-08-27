@@ -36,6 +36,17 @@ So on and so forth, until you exhaust all the elements.
 
 This is a straightforward algorithm and I'm going to omit the proof.
 
+This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
+code up a neat solution, it'll take a number of skills and effort.
+
+The key for the solution of this problem is to realize there are two levels of programming.
+Firstly, one need to complete one round, peeling off the outermost layer of the matrix and leave
+the remaining a smaller matrix.
+
+Secondly, one need to recursively or iteratively loop through the remaining layers.
+
+Once one came up with this insight, coding will be easier and solution will be more readable.
+
 \section{Implementation}\label{sec:spiral-matrix-implementation}
 
 Simple algorithm. But implementation wise, it could be very verbose and buggy.

@@ -7,6 +7,7 @@
 
 \section{The problem statement}
 
+Given a string \code{S}, find the longest palindromic substring in \code{S}.
 
 \section{Outline of the algorithm}
 
@@ -17,6 +18,44 @@ The basic idea is from symmetry with respect to reflection in $1D$ space---the s
 mirror-image symmetry.
 Especially if there are two axes of symmetry near each other, the entire space will become
 periodic with a period of $2d$ where $d$ is the distance between the two axes of symmetry.
+
+\section{False start}
+Algorithm 1: (wrong answer)
+
+Consider the max possible palindromic substring ending on index i.
+There are 3 possibilities:
+1. the char at index i pairs up with the char at k < (i-1) to wrap a palindrome ending on (i-1);
+2. it forms a palindrome with the char at (i-1);
+3. it forms a palindrome with itself
+
+With dynamic programming, the above idea can be coded below
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
+    caption={Java implementation of longest
+    palindrome substring Manache's aglorithm.}]
+    {case-study/longest-palindrome/longestPalindromeFalseStart.java}
+\end{minipage}
+
+
+\section{Quadratic time}
+
+Algorithm 2: O(N^2)
+All palindromes ending on char arr[i] is recorded from longest to shortest in an array.
+Initially the array contains only one element 0.
+As we scan down, extensions based upon the palindromes of the char arr[i-1] are attempted in the
+order and if successful added to the palindrome array of this char. Additionally, the length 1
+(just the char arr[i] itself) and length 0 (no char) palindromes are also added.
+if the so-far max palindrome is shorter than the longest palindrome found for this char arr[i], then reset max.
+
+Return the max palindrome.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
+    caption={Java implementation of longest
+    palindrome substring Manache's aglorithm.}]
+    {case-study/longest-palindrome/longestPalindromeQuadraticTime.java}
+\end{minipage}
 
 \section{Implementation}
 
@@ -38,9 +77,146 @@ implementations in \python and \java respectively based on string `virtual filli
     .}]{case-study/longest-palindrome/longest_palindromic_substring.py}
 \end{minipage}
 
+Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space):
+
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
     caption={Java implementation of longest
     palindrome substring Manache's aglorithm.}]
     {case-study/longest-palindrome/LongestPalindrome.java}
 \end{minipage}
+
+
+
+
+
+Algorithm 3:
+Note that the center of any palindrome can be either a char in the array, or the space between
+two chars arr[i-1] and arr[i] or the left end and right end of the array. There are (2 * n + 1)
+possible centers. On each center the longest palindrome can be found by extending the chars to
+the left and right.
+Take "bananas" as an example. If one write down the palindrome lengths array for centers ordered
+from left to right, one would get something like this:
+[0, 1, 0, 1, 0, 3, 0, 5, 0, 3, 0, 1, 0, 1, 0]
+Do you notice the symmetry? A long palindrome carries within its two wings shorter palindromes
+that are total reflectively symmetric. So we can skip checking for some characters within the
+right wing as we scan down the centers. In one loop, there are two frontiers: center and
+rightmost checked char.
+
+For ease of implementation, we can map the original array to an augmented array by inserting
+blank chars in between the chars in the original array and restrict the palindrome must be
+centered on one of the element. So for "bananas", the augmented array would be
+  	b	  	a	  	n	  	a	  	n	  	a	  	s
+
+1. initialize an array lengths (lengths[0] = 1, lengths 1, 3, 5, will be mapped to lengths in original char as length / 2)
+2 initialize a longCenter = 0, which records the center of the longest right-extending palindrome
+3. for each char on position j in the augmented array,
+     if j lies within the right wing of the longCenter and the mirrored center, j', to the left of longCenter is trapped in longCenter's wing
+          record longest palindrome for c same as the j'
+     else
+          //get the length of the longest palindrome centered on j
+          for i = longCenter + lengths[longCenter] / 2 + 1; ; i++
+               if(2*j - i < 0 || i == 2 * n +1 || aug[2 * j - i] != aug[i]) {
+                    lengths[j] = 2 * (i - j) + 1;
+                    break;
+               }
+          end for
+          longCenter = j;
+     end if
+   end for
+
+return the longest length recorded
+
+    /**
+     * O(N) solution with O(N) space
+     * The idea is to augment the original char array by inserting some
+     * 'blank' char as dummy palindromic center and restricting palindromic
+     * search to odd-length palindromes only
+     * @param str
+     * @return
+     */
+    public static String longestPalindrome(String str){
+        final int n = str.length() * 2 + 1;
+        char[] aug = new char[n];
+        for(int i = 0; i < n; ++i){
+            aug[i] = (i & 1) == 0 ? 0 : str.charAt(i / 2);
+        }
+        int maxStart = 0, maxEnd = 0;
+        int[] length = new int[n];
+        length[0] = 1;
+        for(int center = 0, j = 1; j < n; ++j){
+            int wing = length[center] / 2;
+            if(j < center + wing){
+                int jmirror = 2 * center - j;
+                int jwing = length[jmirror] / 2;
+                if(jmirror - jwing > center - wing){
+                    length[j] = length[jmirror];
+                    continue;
+                }
+            }
+            //get the length of the longest palindrome centered on j
+            for(int i = center + wing + 1; ; i++){
+                if(2 * j - i < 0 || i == n || aug[2 * j - i] != aug[i]) {
+                    length[j] = 2 * (i - 1 - j) + 1;
+                    break;
+                }
+            }
+            center = j;
+            if(maxEnd - maxStart < length[center] / 2){
+                maxStart = (center + 1 - length[center] / 2) / 2;
+                maxEnd = (center + 1 + length[center] / 2) / 2;
+            }
+        } //end for
+        return str.substring(maxStart, maxEnd);
+    }
+
+We can make the augmented char array purely virtual / conceptual by rearrange the loop-index.
+Also redefining the lengths array to be the length of the original array
+
+    public static String longestPalindrome(String str){
+        int maxCenter = 0;
+        //lengths stores the lengths of the longest palindrome around centers [0..n-1] in the original string
+        int[] lengths = new int[str.length() * 2 + 1];
+        for(int center = 0, j = 1; j < lengths.length; ++j){
+            final int jmirror = 2 * center - j;
+            if(j < center + lengths[center] && jmirror - lengths[jmirror] > center - lengths[center]){
+                    lengths[j] = lengths[jmirror];
+            }else{
+                //get the length of the longest palindrome centered on j
+                for(int i = (center + lengths[center]) / 2; ; i++){
+                    /* one would find that the above initialization may be changed to "(center + lengths[center] + 1) / 2" without any difference
+                     * This is because the value "(center + lengths[center])" is always even.
+                     */
+                    if(j - i - 1 < 0 || i == str.length() || str.charAt(j - i - 1) != str.charAt(i)) {
+                        lengths[j] = 2 * i - j;
+                        break;
+                    }
+                }
+                center = j;
+                maxCenter = lengths[maxCenter] < lengths[center] ? center : maxCenter;
+            }
+        } //end for
+        //substring starts at (center - lengths[center]) / 2, and ends exclusively at (center + lengths[center]) / 2 beautifully!!
+        return str.substring((maxCenter - lengths[maxCenter]) / 2, (maxCenter + lengths[maxCenter]) / 2);
+    }
+
+
+longCenter	j	length of longCenter
+
+length of j
+on blank	on blank	0,2,4
+
+
+on char	on char	1,3,5
+
+
+on blank	on char	0,2,4
+
+
+on char	on blank	1,3,5
+
+
+
+
+The above algorithm takes O(N) space, though this may be made to take O(1) space (Really? How?)
+

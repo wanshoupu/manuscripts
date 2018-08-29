@@ -64,14 +64,14 @@ of the containing window.
 Useful data structures for that would be maps or dictionaries.
 If properly implemented, the algorithm runs in linear time complexity $O(M+N)$
 where $M$ and $N$ are the lengths of the strings \code{T} and \code{S}, respectively.
-\autoref{img:min-window-algorithm.jpg} depicts the algorithm.
+\autoref{fig:min-window-algorithm.jpg} depicts the algorithm.
 
 \begin{figure}[htb]
     \begin{center}
         \includegraphics[height=6cm]{case-study/min-window/min-window-algorithm.jpg}
         \caption{A visualization of the algorithm for finding the minimum window containing all
         the characters in the target string \code{T} in source string \code{S}.}
-        \label{img:min-window-algorithm.jpg}
+        \label{fig:min-window-algorithm.jpg}
     \end{center}
 \end{figure}
 
@@ -90,7 +90,7 @@ All the solutions in this chapter are provided in \java.
 The importance of the role played by a stupid, first solution can never be overestimated.
 There are some things that must be built only to be thrown away.
 As a cold start, we have no other insights but the outline as shown in
-\autoref{img:min-window-algorithm.jpg}.
+\autoref{fig:min-window-algorithm.jpg}.
 So we firstly `find a containment window'.
 To do that, we firstly build up an account of the unique \code{char}s and their counts based on target
 string and store that in a map (a dictionary in \python) \code{repository}.

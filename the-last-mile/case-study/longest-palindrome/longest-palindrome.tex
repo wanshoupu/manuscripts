@@ -18,7 +18,15 @@ idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
 The basic idea originates from reflection symmetry in one-dimensional ($1$D) space,
 \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}}.
-Let us firstly look at some aspect of the reflection symmetry.
+Reflection symmetry in $1$D space refers to space invariance under reflection transformation.
+A reflection transformation is the operation that transforms coordinates to their
+mirror-image with respect to the fixed point, which we will refer as axis of symmetry or center
+of symmetry.
+Particularly, for a coordinate at $x$, its transformed coordinate $x^\prime$ \textit{w.r.t.} axis $a$ is:
+\begin{equation}
+    \label{eq:reflection-transform}
+    x^\prime = 2a - x.
+\end{equation}
 
 \begin{figure}[H]
     \centering
@@ -46,83 +54,113 @@ Let us firstly look at some aspect of the reflection symmetry.
         \label{fig:palindrome-symmetry}
     \end{subfigure}
 
-    \caption{Two Reflection symmetry axes simultaneously present near each other will partition the
-    entire space periodically and infinitely.
+    \caption{Two axes of reflection symmetry simultaneously present near each other will partition
+    the entire space periodically and infinitely.
     Overlapping palindromes also form similar periodic patterns.}\label{fig:ReflectionSymmetry}
 \end{figure}
 
 As shown in \autoref{fig:a-axis-reflection-symmetry}, axis of symmetry $A$ partitions the entire $1$D
-space into left half-space and right half-space about itself, and they are each other's mirror
-image.
-Axis $B$ does to the space similarly about itself \autoref{fig:b-axis-reflection-symmetry}.
-If the two reflection symmetry axes are simultaneously present along the $x$-axis, by reflective
-symmetry, infinitely many axes will be present and they will partition
-the entire space periodically like magic, with a period
-of $2d$ where $d$ is the distance between the two axes of symmetry
-\autoref{fig:two-axes-reflection-symmetry}.
-You may have experienced such an illusion by stepping into two parallel mirrors.
-In reality, there is no infinite space.
-But as long as there are overlapping visibility of each other's mirror image, you will
-be able to experience this spectacular view to some extent.
+space into left half-space and right half-space about itself, and points in the half-spaces have
+one-to-one mapping.
+Axis $B$ does similarly except \textit{w.r.t.} its own axis of symmetry
+(\autoref{fig:b-axis-reflection-symmetry}).
+If the two axes of reflection symmetry are simultaneously present along the $x$-axis, by
+repetitively applying the reflection transformation, one may find infinitely many axes
+periodically located along the $x$-axis and they partition the entire space into periodic regions
+with period $2d$, where $d$ is the distance between the two axes of symmetry (see
+\autoref{fig:two-axes-reflection-symmetry}).
+You may have experienced such an illusion by stepping into two parallel mirrors \ldots
 
-The palindromic property of string is a manifestation of reflection symmetry as
+The palindromic property of string is a manifestation of reflection symmetry as shown in
 \autoref{fig:palindrome-symmetry}.
-It must be said that no space exists, neither does infinite string.
-Nevertheless, the above pattern of periodicity still applies within certain bounds.
+In reality space may be limited so are strings.
+Nevertheless as long as the regions of two reflection symmetry overlaps,
+the above periodic argument still applies within the overlapping regions.
 
-Note that the center of palindrome can be either a \code{char} in the string or between
-two \code{char}s.
+Now let us go back to the palindromic substring which may be viewed as discrete $1$D space.
+Note that the center of symmetry of a palindrome can be either a \code{char} or
+between two \code{char}s in the string.
 To facilitate coding and discussion, we treat the left end and right end of the string as two
 special centers and the length of the palindromic substrings at these two centers are always zero.
-Further, for empty string, the left and right ends collapse into the one.
-So all included, there are $(2 * n + 1)$ possible centers, where $n$ is length of the string.
-On any chosen center, the longest palindrome can be found by extending the left and right
-boundaries as far as the equally distant pair of \code{char}s match.
-As all the palindromes are thus found, nearby palindromes may overlap with one another---some
-smaller palindromes may be nested within bigger palindromes.
-Some interesting thing would happen if a \code{char} belongs to several palindromes at
-once---reflective symmetries are catchy as they can be applied in sequence to produce hops,
-double-hops, triple-hops, \textit{etc.}
-All the reflection symmetries applied at once on one \code{char} would produce the same effect as
-you stepping into a pair of parallel mirrors---a multitude of you are \emph{required} at
+Furthermore, the left and right ends collapse into one in case of empty string.
+So all in all, there are $(2 * n + 1)$ possible centers, where $n$ is length of the string.
+On any center, the longest palindrome can be found by extending the left and right
+boundaries as far as the equally distant pairs of \code{char}s match.
+With all the palindromes, nearby palindromes may overlap with one another.
+Some smaller palindromes may be nested within bigger ones.
+Interesting thing would happen if a \code{char} belongs to several palindromes at
+once because corresponding reflection transformations may be applied in any combination, any
+order, and thus produce a group of points consisting of the original \code(char), hops, double-hops,
+triple-hops, \textit{etc.}
+Multiple reflection symmetries applied together on one \code{char} would produce the same effect as
+you step into a pair of parallel mirrors---a multitude of you are present at
 reflectively symmetric spots along the line.
 
-This discussion of the reflection symmetry is very relevant to understand Manacher's
-algorithm.
+This discussion of the multiple reflection symmetry is the key to understand Manacher's algorithm.
 
 Take the string ``bananas'' as an example.
-If one write down the palindrome lengths array for centers ordered
-from left to right, one would get something like this:
+If one writes down the lengths of palindromes as an array, one would get something like this:
 [0, 1, 0, 1, 0, 3, 0, 5, 0, 3, 0, 1, 0, 1, 0]
-Do you notice the symmetry? A long palindrome carries within its two wings shorter palindromes
-that are total reflectively symmetric. So we can skip checking for some characters within the
-right wing as we scan down the centers. In one loop, there are two frontiers: center and
-rightmost checked char.
+Do you notice the symmetry?
+A long palindrome ``anana'' tucks under its left and right wings shorter palindromes
+``ana''---exactly as we discussed above.
+So when we check for palindrome substrings, we can skip the portion of substrings in one of
+the wings.
 
-And this is indeed the case for palindromic substring.
+It's common practice that one iterate through the string from left to right and as one does so,
+one caches the result, \textit{e.g.} the length.
+When examining a new center, the cached information for certain mirror image of it may be useful to
+totally or partially determine the palindrome length.
 
-For ease of implementation, we can map the original array to an augmented array by inserting
-blank chars in between the chars in the original array and restrict the palindrome must be
-centered on one of the element. So for "bananas", the augmented array would be
-b a n a n a s
+In one loop, there are two frontiers: center and rightmost checked char.
+within the right wing as we scan down the centers.
 
-1. initialize an array lengths (lengths[0] = 1, lengths 1, 3, 5, will be mapped to lengths in original char as length / 2)
-2 initialize a longCenter = 0, which records the center of the longest right-extending palindrome
-3. for each char on position j in the augmented array,
-if j lies within the right wing of the longCenter and the mirrored center, j', to the left of longCenter is trapped in longCenter's wing
-record longest palindrome for c same as the j'
-else
-//get the length of the longest palindrome centered on j
-for i = longCenter + lengths[longCenter] / 2 + 1; ; i++
-if(2*j - i < 0 || i == 2 * n +1 || aug[2 * j - i] != aug[i]) {
-lengths[j] = 2 * (i - j) + 1;
-break;
-}
-end for
-longCenter = j;
-end if
-end for
-
+In some implementations, the original array is augmented by inserting
+padding chars in between each pair of adjacent chars in the original string and require the
+palindrome substrings be centered on one of the \code{char} of the augmented string (padding
+\code{char} or original \code{char} alike).
+So for \code{string} ``bananas'', the augmented array would be
+\begin{table}[h]
+    \begin{center}
+        \caption{\label{tbl:breakdown-of-conditions}}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            \hline
+            b && a && n && a && n && a && s\\
+            \hline
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+Then all the palindromic substrings are centered on one of the \code{char} in the augmented
+string for sake of implementation.
+Algorithm outline is as follows, where $PS(i)$ denotes the longest palindrome
+substring centered at \code{i}, and $LPS(i)$ denotes length of it.
+\begin{clist}
+    \caption{Algorithm for calculating the length of longest palindrome substrings based on
+    Manacher's algorithm}
+    \begin{enumerate}
+        \item Initialize an array \code{lengths} of size $2 * n + 1$ that stores $LPL(i)$,
+        with \code{i} being one of the indexes of the array;
+        \item Initialize \code{maxCenter = 0}, which stores the palindrome center whose right wing
+        reaches right-most in each iteration of the main loop;
+        \item For each \code{char} at \code{j = 0, 1, ..., n} in the augmented array,
+        \begin{enumerate}[label={\roman*:}]
+            \item If $PS(j)$ lies within the right wing of $PS(\code{maxCenter})$,
+            check the $PS(j^\prime)$, where $j^\prime$ is the mirrored center
+            \textit{w.r.t.} \code{maxCenter}.
+            If $PS(j^\prime)$ is completely tucked under the $PS(\code{maxCenter})$'s left wing,
+            then the $LPS(j)$ is same as $PS(j^\prime)$.
+            \item Otherwise, if part of $PS(j^\prime)$ protrudes from
+            the left wing of $PS(\code{maxCenter})$,
+            then we can inherit the part under the left wing and all
+            we need is to calculate the portion protruding from the right wing of $PS
+            (\code{maxCenter})$.
+            \item Otherwise, we have to calculate from scratch the length of the longest
+            palindrome centered on \code{j}.
+        \end{enumerate}
+    \end{enumerate}
+\end{clist}
 
 \section{Implementation}
 

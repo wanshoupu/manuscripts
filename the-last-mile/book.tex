@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{newfloat}
 \usepackage{psfig}            % Allows inclusion of eps files.
 \usepackage{epsfig} % Allows inclusion of eps files.
 \usepackage[osf]{libertine} % Use the Libertine font
@@ -34,7 +35,7 @@
 
 %	Theorem environments (these need the amsthm package)
 %% \theoremstyle{plain} %% This is the default
-
+\DeclareFloatingEnvironment[placement={!ht},name=List]{clist}
 \newcommand{\edition}{Second Edition} % Book edition
 \chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
 \newcommand{\cn}[1]{\texttt{\bslash #1}}

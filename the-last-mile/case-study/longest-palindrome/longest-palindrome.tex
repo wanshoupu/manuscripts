@@ -202,29 +202,22 @@ implementation in Johan Jeuring's blog at
 There the prescription of the algorithm was literally translated into code---the original string
 ws preprocessed to fill with blanks.
 
-But with a little maneuver, one can create a `virtual filling' among the characters of the
-original string and save on physical memory footprint.
-\autoref{lst:longest_palindromic_substring.py} and \autoref{lst:LongestPalindrom.java} are
-implementations in \python and \java respectively based on string `virtual filling'.
-The price for doing that is a mapping of indexes of \code{char}s in the the original string.
-
-\lstinputlisting[label={lst:longest_palindromic_substring.py},
-caption={Longest palindromic substring in python.}]
-{case-study/longest-palindrome/longest_palindromic_substring.py}
-
-Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space):
-
-\lstinputlisting[label={lst:LongestPalindrom.java},
-caption={Java implementation of longest
-palindrome substring Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindrome.java}
-
-return the longest length recorded
+\subsection{Augmented string}\label{subsec:palindrom.augmentedString}
+Firstly, the most common practice is to augment the input string before running the main loop to
+calculate the palindromic substrings.
 
 \lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeAugment.java}
+
+\subsection{Virtual mapping for augmented string}\label{subsec:virtualMappingForAugmentedString}
+
+But with a little maneuver, one can create a `virtual filling' among the characters of the
+original string and save on physical memory footprint.
+\autoref{lst:longest_palindromic_substring.py} and \autoref{lst:LongestPalindrom.java} are
+implementations in \python and \java respectively based on string `virtual filling'.
+The price for doing that is a mapping of indexes of \code{char}s in the the original string.
 
 We can make the augmented char array purely virtual / conceptual by rearrange the loop-index.
 Also redefining the lengths array to be the length of the original array
@@ -234,16 +227,24 @@ caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeInPlaceMax.java}
 
-longCenter j length of longCenter
+Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space).
+This is one of the most performing implementations known so far.
 
-length of j
-on blank on blank 0,2,4
+\subsection{Modularized solution}\label{subsec:palindrom.modularized}
 
+\lstinputlisting[label={lst:longest_palindromic_substring.py},
+caption={Longest palindromic substring in python.}]
+{case-study/longest-palindrome/longest_palindromic_substring.py}
 
-on char on char 1,3,5
+\lstinputlisting[label={lst:LongestPalindrom.java},
+caption={Java implementation of longest
+palindrome substring Manacher's aglorithm.}]
+{case-study/longest-palindrome/LongestPalindrome.java}
 
-
-on blank on char 0,2,4
+\lstinputlisting[label={lst:LongestPalindrom.java},
+caption={Java implementation of longest
+palindrome substring Manacher's aglorithm.}]
+{case-study/longest-palindrome/LongestPalindromeSolver.java}
 
 
 on char on blank 1,3,5

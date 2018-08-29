@@ -9,7 +9,7 @@ public class LongestPalindrome {
         //length[0] = 0 by definition
         for (int i = 1, maxi = 0; i < length.length; ++i) {
             if (maxi + length[maxi] <= i) {
-                length[i] = palength(s, i);
+                length[i] = palength(s, i, i);
                 maxi = i;
             } else {
                 int im = maxi * 2 - i;
@@ -40,10 +40,6 @@ public class LongestPalindrome {
         int s = (c - len) / 2;
         int e = (c + len) / 2;
         return str.substring(s, e);
-    }
-
-    int palength(String s, int c) {
-        return palength(s, c, c);
     }
 
     int palength(String s, int c, int i) {

@@ -5,17 +5,31 @@
 
 \chapter{Longest palindrome}
 
-\section{The problem statement}
+The longest palindrome substrings in a given string has posed itself as an interesting question.
+It also have applications in music, architecture, mathematics, chemistry, physics,
+human DNA sequencing, \textit{etc.}
+This topic was picked mainly because the author would like achieve two things.
+Firstly, we want to promote the application of applying mathematical insights to understand a
+fairly complicated algorithm.
+Secondly, we want to demonstrate how to apply the techniques explained earlier in this book,
+particularly \autoref{prt:flowControl} and \autoref{prt:modularDesign} to make improvement on one's
+implementation into neat, understandable, and beautiful solution.
 
-Given a string \code{S}, find the longest palindromic substring in \code{S}.
+\section{The problem and its optimal algorithm}\label{sec:Manacher.algorithm}
 
-\section{Analysis of the algorithm}\label{sec:Manacher.algorithm}
+The problem is simply stated as
+\begin{quote}
+    ``Given a string \code{S}, find the longest palindromic substring in \code{S}.''
+\end{quote}
+According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or sequence that reads
+the same backward as forward''.
+The problem of finding palindromic substring has various forms and has been studied for decades.
+The optimal algorithm for detecting the longest palindromic substring in a string originates from
+idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
 
 Although algorithm is not the focus, you need a good understanding of it before moving on to the
 rest of the chapter.
-The optimal algorithm for detecting the longest palindromic substring in a string originates from
-idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
-The basic idea originates from reflection symmetry in one-dimensional ($1$D) space,
+The basic idea has is mathematical origin from reflection symmetry in one-dimensional ($1$D) space,
 \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}}.
 Reflection symmetry in $1$D space refers to space invariance under reflection transformation.
@@ -179,8 +193,11 @@ substring centered at \code{i}, and $LPS(i)$ denotes length of it.
 \section{Implementations}\label{sec:implementation.longestPalindrome}
 
 In the literature, there are several implementations already
-published, for example the \java version by CS department of Princeton
-University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
+published\footnote{For example, a \java version by CS department of Princeton
+University:\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}, \python version
+by Fred Akalin \url{https://www.akalin.com/longest-palindrome-linear-time}, an explanation and a Haskell
+implementation in Johan Jeuring's blog at
+\url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}}.
 
 There the prescription of the algorithm was literally translated into code---the original string
 ws preprocessed to fill with blanks.

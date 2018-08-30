@@ -1,23 +1,8 @@
 class Solution(object):
-    """
-    Given an array of non-negative integers, you are initially positioned at the first index of
-    the array.
-    Each element in the array represents your maximum jump length at that position.
-    Your goal is to reach the last index in the minimum number of jumps.
-    For example:
-    Given array A = [2,3,1,1,4]
-    """
-
     def jump(self, nums):
         """
-        DP reduced to greedy algorithm
-        Also it's like a quantum computing algorithm
-        Record the farthest index that can be reached and the minimum number of steps to reach
-        there.
-        All the indexes between the current index and the farthest can serve as jump board to
-        still farther indexes.
-        A quantum algorithm would be dispatch demons, one each on all these indexes and see who
-        reaches the farthest next.
+        DP reduced to greedy algorithm.
+        Runtime ~ O(N)
         :type nums: List[int]
         :rtype: int
         """

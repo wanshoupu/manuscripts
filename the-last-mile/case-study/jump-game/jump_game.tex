@@ -5,11 +5,27 @@
 \chapter{Minimum Jump Game}\label{ch:minimumjumpgame}
 \section{Problem statement}\label{sec:problemStatement}
 
+Given an array of non-negative integers, you are initially positioned at the first index of
+the array.
+Each element in the array represents your maximum jump length at that position.
+Your goal is to reach the last index in the minimum number of jumps.
+For example:
+Given array A = [2,3,1,1,4]
+\section{Algorithm and analysis}
+
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:jump_game_ii},firstline=10,lastline=31,
     caption={Jump Game II: an implementation with nested loops.}]
-    {case-study/jump-game/jump_game_ii.java}
+    {case-study/jump-game/jump_game_ii.py}
 \end{minipage}
+
+DP reduced to greedy algorithm.
+Also it's like a quantum computing algorithm.
+Record the farthest index that can be reached and the minimum number of steps to reach there
+All the indexes between the current index and the farthest can serve as jump board to
+still farther indexes.
+A quantum algorithm would be dispatch demons, one each on all these indexes and see who
+reaches the farthest next.
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:jump_game_ii},firstline=10,lastline=31,

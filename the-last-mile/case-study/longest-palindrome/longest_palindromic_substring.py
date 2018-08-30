@@ -1,16 +1,7 @@
 import numpy as np
 
-
 class Solution(object):
     def longestPalindrome(self, s):
-        """
-        A O(N) implementation using reflection Manacher's Algorithm
-        https://en.wikipedia.org/wiki/Longest_palindromic_substring
-        Here is a link for java implementation
-        https://algs4.cs.princeton.edu/53substring/Manacher.java.html
-        :type s: str
-        :rtype: str
-        """
         lengths = [0, 1]  # the lengths of the palindromes
         front = 1  # the front of charted area
         for i in range(2, 2 * len(s) + 1):
@@ -36,11 +27,3 @@ class Solution(object):
                 break
             j += 1
         return j - i - 1
-
-
-if __name__ == '__main__':
-    sol = Solution()
-    test_str = ['eceba', 'abcbbbbcccbdddadacb', 'abc', 'aaabbbbcde', 'aaabbbbccddeeff']
-    for test in test_str:
-        palindrome = sol.longestPalindrome(test)
-        print test, palindrome

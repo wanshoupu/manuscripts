@@ -5,7 +5,8 @@
 
 \chapter{Longest palindrome}
 
-The longest palindrome substrings in a given string has posed itself as an interesting question.
+The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
+question.
 It also have applications in music, architecture, mathematics, chemistry, physics,
 human DNA sequencing, \textit{etc.}
 This topic was picked mainly because the author would like achieve two things.
@@ -24,7 +25,7 @@ The problem is simply stated as
 According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or sequence that reads
 the same backward as forward''.
 The problem of finding palindromic substring has various forms and has been studied for decades.
-The optimal algorithm for detecting the longest palindromic substring in a string originates from
+The optimal algorithm for detecting the LPS in a string originates from
 idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
 
 Although algorithm is not the focus, you need a good understanding of it before moving on to the
@@ -120,7 +121,7 @@ This intuition of the multiple reflection symmetry is the key to understand Mana
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
-    \caption{The top $4$ longest palindromic substrings of the example string ``bananas''
+    \caption{The top $4$ palindromic substrings of the example string ``bananas''
     labeled as `$1$`, `$2$`, and `$3$`.}
     \label{fig:bananas.palindrome}
 \end{figure}
@@ -162,11 +163,10 @@ So for \code{string} ``bananas'', the augmented array would be
 \end{center}
 Then all the palindromic substrings are centered on one of the \code{char} in the augmented
 string for sake of implementation.
-Algorithm outline is as follows, where $PS(i)$ denotes the longest palindrome
-substring centered at \code{i}, and $LPS(i)$ denotes length of it.
+Algorithm outline is as follows, where $PS(i)$ denotes the LPS centered at \code{i}, and $LPS(i)$
+denotes length of it.
 \begin{clist}
-    \caption{Algorithm for calculating the length of longest palindrome substrings based on
-    Manacher's algorithm}
+    \caption{Algorithm for calculating the length of LPS based on Manacher's algorithm}
     \begin{enumerate}
         \item Initialize an array \code{lengths} of size $2 * n + 1$ that stores $LPL(i)$,
         with \code{i} being one of the indexes of the array;
@@ -192,26 +192,30 @@ substring centered at \code{i}, and $LPS(i)$ denotes length of it.
 
 \section{Implementations}\label{sec:implementation.longestPalindrome}
 
-In the literature, there are several implementations already
-published\footnote{For example, a \java version by CS department of Princeton
-University:\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}, \python version
-by Fred Akalin \url{https://www.akalin.com/longest-palindrome-linear-time}, an explanation and a Haskell
-implementation in Johan Jeuring's blog at
-\url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}}.
-
-There the prescription of the algorithm was literally translated into code---the original string
-ws preprocessed to fill with blanks.
+Published on the Internet are several implementations---
+A \java version by CS department of Princeton
+University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}},
+A \python version by Fred Akalin\footnote{\url{https://www.akalin
+.com/longest-palindrome-linear-time}},
+An explanation of the algorithm and a Haskell
+implementation in Johan Jeuring's blog\footnote{
+\url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}},
+and others.
 
 \subsection{Augmented string}\label{subsec:palindrom.augmentedString}
+
 Firstly, the most common practice is to augment the input string before running the main loop to
 calculate the palindromic substrings.
 
-\lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
+There the prescription of the algorithm was literally translated into code---the original string
+ws preprocessed to fill with blanks.
+\newpage
+\lstinputlisting[label={lst:LongestPalindrom.java},
 caption={Java implementation of longest
-palindrome substring Manacher's aglorithm.}]
+palindrome substring Manacher's aglorithm with augmented string.}]
 {case-study/longest-palindrome/LongestPalindromeAugment.java}
 
-\subsection{Virtual mapping for augmented string}\label{subsec:virtualMappingForAugmentedString}
+\subsection{Virtual mapping for augmented string}\label{subsec:virtualMapping}
 
 But with a little maneuver, one can create a `virtual filling' among the characters of the
 original string and save on physical memory footprint.
@@ -222,33 +226,43 @@ The price for doing that is a mapping of indexes of \code{char}s in the the orig
 We can make the augmented char array purely virtual / conceptual by rearrange the loop-index.
 Also redefining the lengths array to be the length of the original array
 
-\lstinputlisting[label={lst:LongestPalindrom.java},firstline=10,lastline=31,
-caption={Java implementation of longest
-palindrome substring Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindromeInPlaceMax.java}
+\newpage
+\lstinputlisting[label={lst:longest_palindromic_substring.py},
+caption={A \python implementation of ongest palindromic substring.}]
+{case-study/longest-palindrome/longest_palindromic_substring.py}
+
+\autoref{lst:LongestPalindrom.java} is a \java version.
+Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
+But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
+this information later.
+We think this way the code is easier to read and refactor.
+
+\newpage
+\lstinputlisting[label={lst:LongestPalindrom.java},
+caption={A \java implementation of LPS Manacher's aglorithm.}]
+{case-study/longest-palindrome/LongestPalindrome.java}
 
 Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space).
 This is one of the most performing implementations known so far.
 
 \subsection{Modularized solution}\label{subsec:palindrom.modularized}
 
-\lstinputlisting[label={lst:longest_palindromic_substring.py},
-caption={Longest palindromic substring in python.}]
-{case-study/longest-palindrome/longest_palindromic_substring.py}
+The virtual mapping in place of physically augmenting the input string is compact, neat solution
+with optimal runtime complexity and memory footprint.
+But it is full of arithmetics for symmetry transformations, key look ups, etc.
+All of these degrade its readability in a big way.
 
-\lstinputlisting[label={lst:LongestPalindrom.java},
-caption={Java implementation of longest
-palindrome substring Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindrome.java}
+Suppose we want to create a more readable, modular code,
+how should we go about do it?
 
+Let us use the version \autoref{lst:} as a demonstration on how to apply the techniques that are
+discussed in this book.
+
+
+\newpage
 \lstinputlisting[label={lst:LongestPalindrom.java},
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeSolver.java}
 
-
-on char on blank 1,3,5
-
-
-The above algorithm takes O(N) space, though this may be made to take O(1) space (Really? How?)
-
+\section{Conclusion}\label{sec:conclusion}

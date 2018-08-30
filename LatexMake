@@ -60,7 +60,7 @@ if [ -e $MAIN_SRC.bib ]; then
     exitcode="$?"
     if test $exitcode -ne 0
       then
-        exit 3
+        break
     fi
 
     echo ""

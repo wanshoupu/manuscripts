@@ -64,11 +64,12 @@ straightforward.
 Or is it?
 In the algorithm ~\ref{itm:straight-move} instructs one to move `straight forward'.
 However treacherous complexity is concealed in the two words as there are four directions
-for going `straight forward': up, down, left, and right.
-The logic of going `straight forward' in each direction is different others.
+along which to go `straight forward': up, down, left, and right.
+The logic of for each of them is different from others.
 
-~\ref{itm:turn-right} in that algorithm, which can be rephrased as `turn right if
-you cannot go straight' is equally misleadingly complex---there are four unique turns and each
+~\ref{itm:turn-right} in that algorithm, which can be rephrased as `turn right only if
+you cannot go straight', is similarly complex---there are four turns---right-to-down,
+down-to-left, left-to-up, and up-to-right---and each
 turn takes unique logic to execute.
 
 Thirdly, spiral motion is subtly different from circular motion in that accompanying each round of
@@ -88,9 +89,14 @@ the right end.
 Dealing these complexities all at once is challenging and prune to bugs.
 Even if one succeeds in implementing a working solution, it is doomed to be a mess lacking the
 necessary readability and clarity.
-\autoref{lst:VerboseSpiralMatrix.java} list an earlier implementation I myself managed to complete.
-It works but it is very cumbersome.
-If you want to understand what each line of code is doing, I'm sorry, it will take you a while.
+~\autoref{lst:VerboseSpiralMatrix.java} list an earlier implementation I myself managed to complete.
+It works but it contains a lot of loops, nested loops, duplicate code, \textit{etc.}
+It is very cumbersome to read or understand.
+When I was developing this solution toward the end, I desperately made a couple
+of blind luck-trying attempts to pass all the unit tests.
+As a matter of fact and honestly I have to admit that getting it to work is purely accidental.
+If I am asked to re-implement it without peeking at my previous code, I will have to go
+through the same painful trial-and-error process.
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:VerboseSpiralMatrix.java},
@@ -98,16 +104,45 @@ If you want to understand what each line of code is doing, I'm sorry, it will ta
     {case-study/spiral-matrix/VerboseSpiralMatrix.java}
 \end{minipage}
 
-\subsection{Analysis of the implementation}
+If you want to understand why each line of code is the way it is, you need to spend some
+time reading into it before going on reading the rest of explanation.
+The main loop terminates if the left bound meets the right bound or the top bound meets the
+bottom bound.
+Then I used an ordinal number, \code{s}, to denote the direction of motion.
+Then in each of the four cases, the cells along the corresponding direction are visited.
+``Why, some indexes are decremented beforehand?'' you ask.
+It is so because of the 1-pass-index notation in indexes, \textit{e.g.}, \code{i2} and \code{j2}.
+These indexes points to 1-pass the index of elements they point to.
+Therefore one need to decrement them before using them.
+This is the hindsight revelation I obtained after I finished coding, which is result of the
+trial-and-error in the first place.
 
-We have provided answer to the `why' question---why implementing this in a more readable way is so
+Another pitfall I learned is that one can easily mess up with the spiral
+direction---mistaking counter-clockwise for clockwise and vice versa.
+Make sure you have a visual picture of the $2$D matrix, a mapping of indexes i, j, etc and their
+directions of motion.
+
+\subsection{Analysis of the implementation}\label{subsec:implement.analysis.spiral-matrix}
+
+As I have shared in previous subsection, implementing the simple-looking algorithm for flattening
+a matrix in spiral order is non-trivial and error-prune---if we do it in a brute force way.
+To the `why' question---why implementing this in a more readable way is so
 hard.
-We are going to illustrate how to come about to implement the
-algorithm as stated in ~\autoref{enum:algorithm} in a more readable way.
-The key is as mentioned above `dealing these complexities all at once'.
-Let's avoid dealing all the complexities at once.
-Let's divide up the complexities and conquer them one at a time.
-%TODO
+The answer, as mentioned above, is `dealing these complexities all at once'.
+To break the implementation spell, one has to avoid dealing all the complexities at once.
+One needs to divide up the complexities and conquer them one at a time.
+In this subsection, we are going to rethink the algorithm ~\autoref{enum:algorithm} and its
+hidden complexity and how to handle these complexity strategically.
+
+Firstly, the complexities are not all at the same level---they are hierarchical and can be dealt
+with at different level.
+For example, we may organize the tandem patterns---go straight, turn right, go
+straight, turn right, \textit{etc.}---into rounds.
+Each round consists of consecutive four ``go straight, turn right'' phases.
+Then after one round, the remaining task is once more a matrix---thinner in size.
+Do you see the recursive pattern out there?
+This is one of the signs you are looking for---find the recursive pattern, try to transform the
+problem into subproblems that are smaller to solve.
 
 This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
 code up a neat solution, it'll take a number of skills and effort.
@@ -127,17 +162,29 @@ But what I found useful is to re-think what can help you close your loop---liter
     \end{center}
 \end{figure}
 
-\subsection{Recursive implementation}\label{subsec:recursiveImplementation.spiralMatrix}
+\subsection{Recursive implementation}\label{subsec:recursive.spiralMatrix}
 
 To simplify the question, one can imagine that the matrix is embedded in a visited
 
-~\autoref{lst:longest_palindromic_substring.py} and \autoref{lst:LongestPalindrom.java} are
-implementations in \python and \java, respectively.
+\lstinputlisting[label={lst:spiral_order_recursive.py},
+caption={Flattening a $2$D matrix in spiral order recursive \python implementation.}]
+{case-study/spiral-matrix/spiral_order_recursive.py}
+
+\subsection{New iterative implementation}\label{subsec:newIterative.spiralMatrix}
+
+This iterative solution is converted from the recursive solution below
+
+\lstinputlisting[label={lst:spiral_order_iterative.py},
+caption={Flattening a $2$D matrix in spiral order recursive \python implementation.}]
+{case-study/spiral-matrix/spiral_order_iterative.py}
+
 
 \subsection{Spiral Iterator in \python}\label{subsec:spiralIterator}
 
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:spiral_matrix_gen.py},
-    caption={Spiral matrix \python implementation.}]
-    {case-study/spiral-matrix/spiral_matrix_gen.py}
-\end{minipage}
+\lstinputlisting[label={lst:spiral_matrix_iter},
+caption={Spiral matrix \python implementation.}]
+{case-study/spiral-matrix/spiral_matrix_iterator.py}
+
+\lstinputlisting[label={lst:spiral_matrix_app},
+caption={Spiral matrix \python implementation.}]
+{case-study/spiral-matrix/spiral_matrix_app.py}

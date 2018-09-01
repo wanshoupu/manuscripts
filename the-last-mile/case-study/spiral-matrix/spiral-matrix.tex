@@ -64,29 +64,33 @@ straightforward.
 Or is it?
 In the algorithm ~\ref{itm:straight-move} instructs one to move `straight forward'.
 However treacherous complexity is concealed in the two words as there are four directions
-along which to go `straight forward': up, down, left, and right.
-The logic of for each of them is different from others.
+to go `straight forward'---up, down, left, and right---and the logic for each of them is different
+from others.
 
-~\ref{itm:turn-right} in that algorithm, which can be rephrased as `turn right only if
-you cannot go straight', is similarly complex---there are four turns---right-to-down,
-down-to-left, left-to-up, and up-to-right---and each
-turn takes unique logic to execute.
+Similarly ~\ref{itm:turn-right} in that algorithm is misleadingly over simplified as there
+are four turns---right-to-down, down-to-left, left-to-up, and up-to-right and each
+takes unique logic to execute.
 
-Thirdly, spiral motion is subtly different from circular motion in that accompanying each round of
+Moreover, the semantic choice of index also takes a careful treatment---it determines
+the joint point between ~\ref{itm:straight-move} and ~\ref{itm:turn-right}.
+If not chosen properly, it may result in uneven loop lengths in successive turns or, even worse,
+certain elements may be repeated or skipped.
+
+Further, spiral motion is subtly different from circular motion in that accompanying each round of
 circular motion is \emph{translation motion}.
 Particularly in this case, the matrix is gradually `peeled off' as the program execution is
 carried out and this `peel off' motion is the extra translational motion.
 
-Last but not least, the problem has a disguised pitfall.
-The reader may not have realized but the matrix is not necessarily a square matrix.
-Unprepared problem solver would imagine that the program shall terminate right in the
-center of the matrix.
-But that may not be the case.
-For example, for a $2\times n$ matrix, the program would terminate at the `outer layer', while
-for $1\times n$ matrix, the matrix reduces to essentially a list and the program would terminate at
-the right end.
+Last but not least, the problem has a pitfall that Unprepared reader may
+stumble---\label{complication-4}
+certain matrix shapes may leave us a special case to handle.
+If both dimensions of a $2$D matrix is odd sized, after all the outer layers are `peeled
+off', there is left a $1\times n$ or $n \times 1$ array.
+If this is not handled properly, it will lead to incomplete result.
+Try with some examples, \textit{e.g.}, matrices of sizes $5 \times 1$ and $2\times 3$,
+respectively, and you will have some insights about this.
 
-Dealing these complexities all at once is challenging and prune to bugs.
+Dealing with these complexities all at once is challenging and vulnerable to bugs.
 Even if one succeeds in implementing a working solution, it is doomed to be a mess lacking the
 necessary readability and clarity.
 ~\autoref{lst:VerboseSpiralMatrix.java} list an earlier implementation I myself managed to complete.
@@ -134,15 +138,27 @@ One needs to divide up the complexities and conquer them one at a time.
 In this subsection, we are going to rethink the algorithm ~\autoref{enum:algorithm} and its
 hidden complexity and how to handle these complexity strategically.
 
-Firstly, the complexities are not all at the same level---they are hierarchical and can be dealt
-with at different level.
-For example, we may organize the tandem patterns---go straight, turn right, go
-straight, turn right, \textit{etc.}---into rounds.
-Each round consists of consecutive four ``go straight, turn right'' phases.
-Then after one round, the remaining task is once more a matrix---thinner in size.
+Firstly, the complexities are not all at the same level.
+If one can properly separate them into different levels or categories, that will help deal with them
+at different constructs or modules.
+This is indeed the case---we may group `go right', `go down', 'go left', and `go up' into a cycle.
+After one cycle, the remaining portion is once again a matrix albeit a thinner one.
 Do you see the recursive pattern out there?
-This is one of the signs you are looking for---find the recursive pattern, try to transform the
-problem into subproblems that are smaller to solve.
+This is a good sign---find a recursive pattern means we can transform the original
+problem into a sequence of subproblems that are progressively smaller to solve.
+As warned in ~\autoref{complication-4}, be sure to handle the last complication properly.
+So a recursive solution could be as shown in ~\autoref{lst:pseudo-recursive-spiral-order}.
+
+\lstinputlisting[label{lst:pseudo-recursive-spiral-order},
+caption={A possible recursive \python implementation.}]
+{case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
+
+Let us keep looking for other patterns.
+Particularly, let us look into how to better organize code to complete one cycle, namely, `go
+right', `go down', 'go left', and `go up'.
+Especially, which direction should cover the pivot elements at the four corners of the matrix.
+
+
 %TODO
 This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
 code up a neat solution, it'll take a number of skills and effort.
@@ -151,7 +167,7 @@ But implementation wise, it's not easy to implement gracefully-free from duplica
 and more importantly, easy to read.
 
 But what I found useful is to re-think what can help you close your loop---literally.
-\autoref{fig:spiral-matrix-loop}.
+~\autoref{fig:spiral-matrix-loop}.
 
 \begin{figure}[htb]
     \begin{center}

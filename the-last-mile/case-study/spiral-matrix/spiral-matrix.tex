@@ -3,68 +3,73 @@
 %% 8/22/18
 %%
 
-\chapter{Spiral matrix}\label{ch:spiralMatrix}
+\chapter{Spiral Matrices}\label{ch:spiralMatrix}
 
-\section{The problem statement}\label{sec:ProblemStatement.spiralMatrix}
-
+The spiral matrix problems refers to visiting a $2$D matrix in clockwise spiral order
+starting from $M[0][0]$, outer layer first as shown in ~\autoref{fig:spiral-matrix-loop}.
 Depending on the emphasis of the problem, there are several related statements.
-
 \begin{enumerate}
     \item Given two integers $m$ and $n$, generate a matrix of dimension $m \times n$ filled with
     elements from 1 to n2 in spiral order (clockwise, same below).
+    \item Flatten a $2$D matrix in spiral order.
     \item Give a matrix of dimension $m \times n$, print its the elements in spiral order.
-    \item Given a matrix of dimension $m \times n$, starting from the element $M[0][0]$,
-    walking down each element in spiral order until all the element has been visited.
-    Determine the final element to be visited.
+    \item Given a matrix of dimension $m \times n$, determine the last visited element if one is
+    to visit the elements in spiral order.
 \end{enumerate}
+Whichever form it may take, the problem is so crafted such that it calls for high coding
+skills to write concise, expressive program.
+The purpose of this chapter is to demonstrate the interaction between algorithm design and
+coding practice.
+Through various implementation attempts, the reader will go through the same thought process as
+the author and witness how insights derived from each coding practice
+can be used as feedback to to next iteration of algorithm design.
+Also, the reader will practice techniques explained in ~\autoref{ch:reusableFunctions}
+to meaningfully decouple and manage complexities, striving for better code coherence.
 
-\section{Outline of the algorithm}\label{sec:spiral-matrix-Algorithm}
-
-Unless for some special cases and/or special form of questions,
-the algorithm is quite straightforward
-\begin{enumerate}[label=\textbf{Step.\arabic*}]
-    \label{enum:algorithm}
-    \item\label{itm:straight-move} Go straight forward
-    and visit each cell in passing as far as possible;
-    \item\label{itm:turn-right} When~\ref{itm:straight-move} is not possible
-    (facing a wall or visited cell), make a right turn to visit the cell;
-    \item\label{itm:goto-terminate} Repeat the above steps until the last cell is visited.
-\end{enumerate}
-
-This algorithm is similar to the `wall-follower algorithms' used for solving maze
-exploration problems
-~\footnote{\url{https://en.wikipedia.org/wiki/Maze_solving_algorithm\#Wall_follower}}.
-Interested readers are encouraged to read more in relevant source.
-
-Imagine that the matrix is tightly embedded in a wood frame which serves as the outer wall.
-Your goal is to iterate through the matrix elements such that you keep going straight unless
-you would revisit a previously visited element or hit the wall.
-At which point, make a right turn.
-So on and so forth, until you exhaust all the elements.
-
-The key for the solution of this problem is to realize there are two levels of programming.
-Firstly, one need to complete one round, peeling off the outermost layer of the matrix and leave
-the remaining a smaller matrix.
-
-Secondly, one need to recursively or iteratively loop through the remaining layers.
-
-Once one came up with this insight, coding will be easier and solution will be more readable.
-
-\section{Implementation}\label{sec:spiral-matrix-implementation}
-
-Simple algorithm.
-But implementation wise, it could be very verbose and buggy.
-Below are some false start.
-
-\begin{figure}[htb]
+\begin{figure}[H]
     \begin{center}
-        \includegraphics[height=6cm]{case-study/spiral-matrix/spiral-matrix.jpg}
-        \caption{An example of applying variational methods to improve an implementation of protobuf
-        message visitor pattern.}
+        \includegraphics[width=.8\textwidth]{case-study/spiral-matrix/spiral-matrix.jpg}
+        \caption{Visiting cells in a $2$D matrix in spiral order.}
         \label{fig:spiral-matrix-loop}
     \end{center}
 \end{figure}
 
+\section{Outline of the algorithm}\label{sec:spiral-matrix-Algorithm}
+
+Unless for some special cases and/or special form of questions,
+a general algorithm for the family of spiral matrix problems may be
+\begin{quote}
+    \begin{enumerate}[label=\textbf{Step.\arabic*}]
+        \label{enum:algorithm}
+        \item\label{itm:straight-move} Go straight forward
+        and visit each cell in passing as far as possible;
+        \item\label{itm:turn-right} When~\ref{itm:straight-move} is not possible
+        (facing a wall or visited cell), make a right turn to visit the cell;
+        \item\label{itm:goto-terminate} Repeat the above steps until the last cell is visited.
+    \end{enumerate}
+\end{quote}
+As one can see this algorithm is quite intuitive.
+It is also similar to the `wall-follower algorithms' used for solving maze
+exploration problems
+~\footnote{\url{https://en.wikipedia.org/wiki/Maze_solving_algorithm\#Wall_follower}}, namely,
+if one always sticks to the wall on his left while exploring a maze, one will
+eventually find the exit or back to the entrance.
+Interested readers are encouraged to read more on this topic.
+To provide more context,
+imagine that the matrix is tightly embedded in a rectangular concrete wall with an entrance at
+$M[0][0]$.
+The goal of the algorithm is to iterate through the matrix elements such that you keep on going
+straight unless
+you would revisit a previously visited element or hit the wall.
+At which point, make a right turn.
+So on and so forth, until you exhaust all the elements.
+
+\section{Implementation}\label{sec:spiral-matrix-implementation}
+
+Both problem statement and the general-purpose algorithm are pretty intuitive, needing no more
+explanation words.
+We would expect that an implementation is just as straightforward.
+Let us take a look at one of my first correct implementations after a few false starts.
 
 \subsection{Verbose Implementation}
 
@@ -106,19 +111,22 @@ necessary readability and clarity.
 ~\autoref{lst:VerboseSpiralMatrix.py} list an earlier implementation I myself managed to complete.
 It works but it contains a lot of loops, nested loops, duplicate code, \textit{etc.}
 It is very cumbersome to read or understand.
-When I was developing this solution toward the end, I desperately made a couple
-of blind luck-trying attempts to pass all the unit tests.
-As a matter of fact and honestly I have to admit that getting it to work is purely accidental.
+When I was developing this solution toward the end, my instinct told me that my code should work
+but it hadn't.
+I was desperately and blindly trying some combinations of `\code{i++}', `\code{--j}', etc., to
+make it work
+because my instinct tells me that I am `close' to pass all the unit tests.
+I have to admit that the final version works purely by accident.
 If I am asked to re-implement it without peeking at my previous code, I will have to go
-through the same painful trial-and-error process.
+through the same painful blind testing process.
 
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:VerboseSpiralMatrix},
-    caption={Spiral matrix \java implementation.}]
-    {case-study/spiral-matrix/VerboseSpiralMatrix.py}
-\end{minipage}
+\lstinputlisting[label={lst:VerboseSpiralMatrix},
+caption={Spiral matrix \java implementation.}]
+{case-study/spiral-matrix/VerboseSpiralMatrix.py}
 
-If you want to understand why each line of code is the way it is, you need to spend some
+Admittedly, this is not the very first version of working solution I ever came up.
+This is already improved a lot.
+But still, if you want to understand why each line of code is the way it is, you have to spend some
 time reading into it before going on reading the rest of explanation.
 The main loop terminates if the left bound meets the right bound or the top bound meets the
 bottom bound.

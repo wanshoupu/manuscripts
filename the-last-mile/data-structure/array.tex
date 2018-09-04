@@ -1,0 +1,48 @@
+%%
+%% Author: shoupu_wan
+%% 9/4/18
+%%
+
+\section{Array}\label{sec:array-pattern}
+
+Array is one of the simplest data structures that all modern programming language supports.
+
+\subsection{Indexing}\label{subsec:indexing}
+
+Array indexing has a huge impact on programming styles.
+Considerations when referencing elements in an array.
+\begin{enumerate}
+    \item The beginning element's index: zeroth or first,
+    \item Subarray referencing: inclusive or exclusive.
+\end{enumerate}
+There are four possible indexing choices
+\begin{enumerate}
+    \item
+\end{enumerate}
+
+Sometimes programming languages allow negative indexing, usually allowing cyclic index
+references.
+$-1$ is used to mean the last element in an array.
+
+\subsection{Loop over array}
+
+Looping over elements in an array.
+
+\subsection{How to choose}\label{subsec:howToChoose}
+
+First requirement on beginners when choosing indexing styles is consistency.
+
+\subsection{Why zero-based index is preferred?}
+
+Zero-based indexing In his publication, Dijkstra made a thorough analysis on the possible choices
+when referencing a
+array with indexing ~\cite{Dijkstra-2008}.
+
+\subsection{What are the drawbacks for zero-based indexing?}
+
+In binary search, zero-based indexing is actually a drawback.
+
+There are cases where zero-based indexing may not be the optimal choice.
+So create an exception for them instead of change your norm style.
+
+\subsection{out of bound exception}

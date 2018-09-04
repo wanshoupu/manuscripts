@@ -278,8 +278,8 @@ of OOD concepts in functional coding.
 Firstly, let's see what the solution would look like if we have an iterator interface that will
 iterate through a $2$D matrix in spiral order.
 The interface would look like this
-\lstinputlisting[label={lst:spiral_matrix_iter},
-caption={Index generator for dereferencing a $2$D matrix in spiral order.}]
+\lstinputlisting[label={lst:spiral_matrix_iter_interface},
+caption={Index generator interface for dereferencing a $m\times n$ $2$D matrix in spiral order.}]
 {case-study/spiral-matrix/spiral_matrix_iterator_interface.py}
 This design decouples the original matrix from the generator interface completely
 ---all that the generator interface needs are the dimensions of the matrix with
@@ -305,3 +305,7 @@ computations over the elements, stateful processing of elements, or any other
 arbitrary operations requiring sequential access to matrix elements.
 Suppose that someone came in and made improvement to the performance of the iterator,
 all invocations of this code will benefit with NO change in their code.
+
+Left as exercise for the reader is to ``converting one of the implementations discussed in
+~\autoref{sec:spiral-matrix-implementation} to an
+implementation of the generator interface ~\autoref{lst:spiral_matrix_iter_interface}''.

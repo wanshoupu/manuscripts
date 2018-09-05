@@ -8,10 +8,10 @@ def prettify(json):
     :return: formatted potentially multi-line Json
     """
     obj = parseJson(json)
-    return toPrettyFormat(obj)
+    return toPrettyString(obj)
 
 def parseJson(string):
     pass
 
-def toPrettyFormat(obj):
+def toPrettyString(obj):
     pass

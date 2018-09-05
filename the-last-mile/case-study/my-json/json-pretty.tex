@@ -54,18 +54,17 @@ This inspires us to validate and parse the input string into an in-memory data s
 first and then print the structure as pretty string.
 So supposedly, the prettifying code would look like
 
-~\autoref{lst:JsonPrettifier.py}, ~\autoref{lst:JsonFormatter.py},
-and ~\autoref{lst:JsonParser.py}.
-
-\lstinputlisting[label={lst:JsonPrettifier.py},
+Once we are clear of the structure of the solution, we can code up the top-level solution and we
+are way ahead of monolithic implementations (see ~\autoref{lst:JsonPrettifier}).
+\lstinputlisting[label={lst:JsonPrettifier},
 caption={Json prettifier code that invokes the modular constructs of \code{JsonParser} and
 \code{JosnFormatter} to prettify input Json blob data.}]
 {case-study/my-json/JsonPrettifier.py}
 
-\lstinputlisting[label={lst:JsonFormatter.py}
-caption={Json formatter.
-It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
-{case-study/my-json/JsonFormatter.py}
+Next we need to implement two functions \code{parseJson(json_str)} and \code{toPrettyString(obj)}.
+~\autoref{lst:JsonFormatter.py}, and ~\autoref{lst:JsonParser.py}.
+
+\subsection{Json Parser}\label{subsec:jsonParser}
 
 \lstinputlisting[label={lst:JsonParser.py}
 caption={Json formatter.
@@ -74,8 +73,16 @@ It take an in-memory object reprensetation of Json data, print it into well-form
 
 \subsection{Json formatter}\label{subsec:jsonFormatter}
 
-Now let us revisit the json formatter code since I believe there are still something we can learn
-from.
+An initial implementation
+\lstinputlisting[label={lst:JsonFormatter.py}
+caption={Json formatter.
+It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
+{case-study/my-json/JsonFormatter.py}
+
+But that is one possible implementation.
+
+Let us revisit the json formatter code since I believe there are still something
+we can learn from.
 As you may notice there is a function \code{def __white__(indent)} where \code{indent} is an
 integer that provides the global indent levels for the line.
 This function is called in multiple places

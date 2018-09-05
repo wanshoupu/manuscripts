@@ -1,43 +1,13 @@
-"""
-Limitations:
-- escape chars are not processed properly. For example "\"" will be treated as unmatched quotes and throw exception
-
-Input chars may contains
-whitespace
-newline
-"
-'
-[]
-{}
-:
-,
-true
-false
-null
-string
-int
-float
-"""
-
-
-def unescape(string):
-    escapse_seqs = {
-        '\\n': '',
-        '\\"': '\'',
-        '\n': ''
-    }
-    for e, u in escapse_seqs.items():
-        string = string.replace(e, u)
-    return string
+from collections import OrderedDict
 
 
 def parseJson(string):
     """
-    input is my-json represented as string
+    input is my_json represented as string
     Output may be of type: string, number, False, True, list, dictionary, or None.
     When it's a dictionary, its keys are of type string and values can be 
     :param string:
-    :return: obj representation of my-json data
+    :return: obj representation of my_json data
     """
     preproc = __tokenize__(string)
     return __structurize__(preproc)
@@ -78,13 +48,15 @@ def __parse_struct__(vals):
     :param vals: 
     :return: 
     """
-    from collections import OrderedDict
+    if not vals:
+        return OrderedDict()
     result = []
+    # add sentinel
     vals += [',']
     for i in range(len(vals)):
         if vals[i] == ',':
             result.append((vals[i - 3], vals[i - 1]))
-    return dict(result)
+    return OrderedDict(result)
 
 
 def __structurize__(tokens):
@@ -109,60 +81,49 @@ def __structurize__(tokens):
                 else __parse_struct__(val_stack[val_stack_start:])]
         else:
             val_stack.append(tokens[indx])
-    if len(val_stack) != 1:
+    if len(val_stack) > 1:
         raise ValueError('Too many or too few root node: {}'.format(len(val_stack)))
-    return val_stack[0]
+    return val_stack[0] if val_stack else None
 
 
 def __tokenize__(string):
     """
-    Take care of " and ' with priority
+    Take care of quote with priority
+    Single quote is regular char and has no special meaning.
+    Single quote cannot be used as string quote in JSON
     :param string: 
     :return: 
     """
     result = []
-    start = 0
+    start, indx = 0, 0
     quoted = None
-    for indx in range(len(string)):
-        if quoted:
+    while indx < len(string):
+        if string[indx] == '\\':
+            indx += 2
+            continue
+        if quoted:  # TODO need to simplify the logic
+            # don't be tempted to combine this two if's together.
             if string[indx] == quoted:
                 quoted = None
                 result.append(string[start:indx])
                 start = indx + 1
-        elif string[indx] == '"' or string[indx] == "'":
+        elif string[indx] == '"':
             quoted = string[indx]
-            seg = string[start:indx].strip()
-            if seg:
-                result.append(__parse_val__(seg))
+            attempt_parse_value(string[start:indx], result)
             start = indx + 1
         elif string[indx] == '{' or string[indx] == '}' \
                 or string[indx] == '[' or string[indx] == ']' \
                 or string[indx] == ',' or string[indx] == ':':
-            seg = string[start:indx].strip()
-            if seg:
-                result.append(__parse_val__(seg))
+            attempt_parse_value(string[start:indx], result)
             result.append(string[indx])
             start = indx + 1
+        indx += 1
+    # loop and a half problem below
+    attempt_parse_value(string[start:indx], result)
     return result
 
 
-############### unit tests ####################
-
-
-if __name__ == "__main__":
-    tests = [
-        '"abc"',
-        '{"a":-1.3}',
-        '{"a":-13}',
-        '{"a":-1e-13}',
-        '{"a":-1.0e-13}',
-        '[1,2]',
-        '{1:2,3:4}',
-        '"\'"',
-        "{'1':'\"1:{1:1}','2':2}",
-        '{1:2,3:{"5":5,"6":6}}',
-    ]
-    for test in tests:
-        json = parseJson(test)
-        print json
-        print '============'
+def attempt_parse_value(seg, result):
+    seg = seg.strip()
+    if seg:
+        result.append(__parse_val__(seg))

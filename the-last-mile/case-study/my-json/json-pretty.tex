@@ -50,18 +50,18 @@ newlines---this requires minimal `style-compliance' formatting.
 Or the input may be invalid JSON, in which case the formatting will be interrupted
 by a report of errors found.
 
-This inspires us to validate and parse the input string into an in-memory data structure
-first and then print the structure as pretty string.
-So supposedly, the prettifying code would look like
+This inspires us to divide up the task into subtask of parsing JSON strings,
+`\code{JsonParser}', and subtask of formatting
+structured object representing JSON into pretty multi-line string, `\code{JsonFormatter}'.
+Once we are clear of the structure of the solution, coding up top-level function,
+such as ~\autoref{lst:JsonPrettifier}, would
+move us one leg up the solution ladder.
 
-Once we are clear of the structure of the solution, coding up top-level function
-as something like ~\autoref{lst:JsonPrettifier}, which divide up
-the task into \code{JsonParser} and \code{JosnFormatter}, would put our solution
-way ahead of many of the monolithic implementations.
-\lstinputlisting{case-study/my-json/JsonPrettifier.py}
+\lstinputlisting[label={lst:JsonPrettifier},
+caption={JSON Prettifier driver function.}]
+{case-study/my-json/JsonPrettifier.py}
 
-Up to this point, our programming tasks and the roadmap to code complete would be much
-clearer.
+Reaching this point, our programming tasks and the roadmap to code complete have become very clear.
 For one, we have the subtasks laid out.
 We know better about the kind of work needed to complete the task, we can even start allocating
 resources to these subtasks.
@@ -143,25 +143,59 @@ caption={Components for data structure assembling.}]
 
 \section{Json formatter}\label{sec:jsonFormatter}
 
-~\autoref{lst:JsonFormatter}
+~\autoref{lst:JsonFormatter.firstVersion}
 
-An initial implementation
-\lstinputlisting[label={lst:JsonFormatter},
-caption={Json formatter.
-It take an in-memory object representation of JSON data, print it into well-formatted string.}]
+An initial implementation.
+It take an in-memory object representation of JSON data, print it into well-formatted string.
+\lstinputlisting[label={lst:JsonFormatter.firstVersion},
+caption={First version for JSON formatter.}]
 {case-study/my-json/JsonFormatter.py}
 
-But that is one possible implementation.
+The intended `public' function is
+\begin{lstlisting}
+def toPrettyString(obj, indent=0)
+\end{lstlisting}
+and and other private functions recursively call one another.
 
-Let us revisit the JSON formatter code since I believe there are still something
-we can learn from.
+List comprehension is a supported programming language feature in \python.
+Maybe we can make the above implementation more compact by using it.
+
+\lstinputlisting[label={lst:JsonFormatter.listComprehension},
+caption={Json formatter using list comprehension.}]
+{case-study/my-json/JsonFormatter_comprehension.py}
+
+Still the implementation smells.
+There is a lack of symmetry in the code,
+and because of it, everything seems so `manual'.
+Combination of string segments such as \code{",\n"} seems arbitrary and redundant to \code{"\n"}.
+It seems we really twisted our brain to come up with overly complicated logic in order
+to achieve the insertion of field separator \code{,} for ``all-but-last-line''.
+(The part of code where we enumerate with indexes along with item for dictionary and list.)
+Extra function parameter \code{indent} in function definition with default that's never used
+other than within the recursive call in function
+\begin{lstlisting}
+def toPrettyString(obj, indent=0)
+\end{lstlisting}
+This parameter is there only because it is needed by the other recursive methods.
+This is the so-called `remnant function parameter'.
+See \autoref{sec:remnantFunctionParameter} for more info.
+
 As you may notice there is a function \code{def __white__(indent)} where \code{indent} is an
 integer that provides the global indent levels for the line.
 This function is called in multiple places
 to provide the correct indentation for individual lines.
 
+But that is one possible implementation.
+
+In what follows, we are going to approach the formatting in a new prospective angle.
+First of all, we will renew our concept of a ``line'' from the usual form
+\[\mbox{line} = \mbox{line content} +\mbox{newline}\]
+to a rotated form
+\[\mbox{line} = \mbox{newline} \mbox{line content}.\]
+This may seem counterintuitive and arbitrary to you at this point.
+But the advantage of it will speak for itself subsequently.
+
 But there is another way of indenting structures.
-~\autoref{lst:new-indentation-code}
 \lstinputlisting[label={lst:NewJsonFormatter},
 caption={A new implementation of JSON formatter.}]
 {case-study/my-json/NewJsonFormatter.py}
@@ -169,3 +203,21 @@ The new implementation does not use a function such as \code{def __white__(inden
 indentation.
 Instead, it jack up the indentation for all lines in a block that represents a data structure.
 
+If we refactor the code such that the indentation functions are encapsulated
+in a \code{Formatter} class (see \autoref{lst:Formatter}),
+then our implementation for formatter could be greatly simplified.
+
+\lstinputlisting[label={lst:Formatter},
+caption={Formatter captures all the information needed for JSON indentation.}]
+{case-study/my-json/Formatter.py}
+
+So far we are discussing implementation without too much concern on performance adjustment.
+Our discussion are purely based on aesthetic and readability argument.
+You may argue that performance may be slightly better one way or the other.
+But again quoting other renowned authors, ``premature performance tuning is the evil for
+everything''.
+First of all, modern compilers are intelligent enough to account for micro-level optimization
+you are usually tempted to make in your code.
+In case when compiler missed an optimization and
+your optimizations do have a material gain over the compiler,
+the performance gained by sacrificing readability would still be most likely unworthy.

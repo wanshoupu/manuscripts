@@ -6,21 +6,16 @@ def toPrettyString(obj, indent=0):
     :param indent the overall indent value, default to 0
     :return: pretty format of my_json
     """
-    if obj is None:
-        return "null"
     if type(obj) is list:
         return __arrayToPrettyString__(obj, indent)
     if issubclass(type(obj), dict):
         return __dictToPrettyString__(obj, indent)
-    if type(obj) is str:
-        return '"' + obj + '"'
-    if type(obj) is bool:
-        return str(obj).lower()
+    # everything else is primitive types just convert to str
     return str(obj)
 
 
 def __white__(indent):
-    return ' ' * indent * 2
+    return " " * indent * 2
 
 
 def __dictToPrettyString__(obj, indent):

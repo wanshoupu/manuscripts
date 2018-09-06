@@ -3,9 +3,9 @@
 %% 8/22/18
 %%
 
-\chapter{Json prettifier}\label{ch:json-prettifier}
+\chapter{JSON prettifier}\label{ch:json-prettifier}
 
-The problem of designing a Json prettifier is a project that is close to production working
+The problem of designing a JSON prettifier is a project that is close to production working
 environment.
 At first sight, the problem may seem to be a coding problem.
 But after careful examination, much of the complicated logic encountered in
@@ -22,22 +22,22 @@ thinking skills as well as basic OOD application skills are required.
 
 \section{The problem statement}\label{sec:theProblemStatement.Json}
 
-The requirement for the Json prettifier can be simply as ``Given a string as a Json blob, format
-it into pretty, properly indented string''.
-Json is a data serialization format.
-Primitive Json element types include string, number, true, false, and null.
-Structural Json element types are dictionary and list and the keys for dictionary
-must be of type string\footnote{See Json spec at \url{https://www.json.org/}}.
+The JSON prettifier problem can be stated as ``Given a JSON blob in string, format
+it into pretty, multi-line string with proper indentation.''
+JSON is a data serialization format.
+Primitive JSON element types include string, number, true, false, and null.
+Structural JSON element types are dictionary and list and the keys for dictionary
+must be of type string\footnote{See JSON spec at \url{https://www.json.org/}}.
 
-But complication may come from invalid Json strings, where validation may be a prerequisite
+But complication may come from invalid JSON strings, where validation may be a prerequisite
 before formatting and prettifying.
 Other complexities may come from escape characters, including quotes like single/double quotes.
 
 \section{Outline of the algorithm}\label{sec:outlineOfTheAlgorithm.Json}
 
 The algorithm consists of two steps.
-Step one, parse Json data;
-Step two, reformat the Json data by adding newlines, indent spaces, \textit{etc.}
+Step one, parse JSON data;
+Step two, reformat the JSON data by adding newlines, indent spaces, \textit{etc.}
 
 \section{Implementation}\label{sec:implementation.Json}
 
@@ -45,43 +45,115 @@ This is another example where complexity management involves separating the comp
 then divide and conquer strategy is used, and the complexities are handled in
 different modules.
 The input string may be a blob of strings with no newlines or spaces in between.
-Or the input may be `almost' well-formatted Json files, off by just a few spaces or
+Or the input may be `almost' well-formatted JSON files, off by just a few spaces or
 newlines---this requires minimal `style-compliance' formatting.
-Or the input may be invalid Json, in which case the formatting will be interrupted
+Or the input may be invalid JSON, in which case the formatting will be interrupted
 by a report of errors found.
 
 This inspires us to validate and parse the input string into an in-memory data structure
 first and then print the structure as pretty string.
 So supposedly, the prettifying code would look like
 
-Once we are clear of the structure of the solution, we can code up the top-level solution and we
-are way ahead of monolithic implementations (see ~\autoref{lst:JsonPrettifier}).
-\lstinputlisting[label={lst:JsonPrettifier},
-caption={Json prettifier code that invokes the modular constructs of \code{JsonParser} and
-\code{JosnFormatter} to prettify input Json blob data.}]
-{case-study/my-json/JsonPrettifier.py}
+Once we are clear of the structure of the solution, coding up top-level function
+as something like ~\autoref{lst:JsonPrettifier}, which divide up
+the task into \code{JsonParser} and \code{JosnFormatter}, would put our solution
+way ahead of many of the monolithic implementations.
+\lstinputlisting{case-study/my-json/JsonPrettifier.py}
 
-Next we need to implement two functions \code{parseJson(json_str)} and \code{toPrettyString(obj)}.
-~\autoref{lst:JsonFormatter.py}, and ~\autoref{lst:JsonParser.py}.
+Up to this point, our programming tasks and the roadmap to code complete would be much
+clearer.
+For one, we have the subtasks laid out.
+We know better about the kind of work needed to complete the task, we can even start allocating
+resources to these subtasks.
+For another, decoupled the complexity and now the two functions, \code{parseJson(json_str)}
+and \code{toPrettyString(obj)}, may be implemented in parallel.
+In the next sections we will elaborate the implementation for each.
 
-\subsection{Json Parser}\label{subsec:jsonParser}
+\section{Json Parser}\label{sec:jsonparser}
 
-\lstinputlisting[label={lst:JsonParser.py}
-caption={Json formatter.
-It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
-{case-study/my-json/JsonParser.py}
+Tokens
+Smallest building blocks for JSON
+Invalid JSON
+Take care of quote
 
-\subsection{Json formatter}\label{subsec:jsonFormatter}
+\lstinputlisting[label={lst:JsonParser.layout},
+caption={Hash out the structure of a JSON parser.}]
+{case-study/my-json/JsonParser_layout.py}
+
+
+This way of coding also helps you focus.
+If you do development in this cascade way, you get to live out the moment.
+You focus on what you are doing now and do it right, as there are no other lower level things
+bother you.
+
+I want to pause here to give you a disclaimer, as
+I don't want the reader be mislead by the pretty layout at the forefront.
+Note that I didn't come out with this beautiful plan on my first stroke.
+For a long time, my code was messy and the function names were weird.
+But all that messy code is normal and encouraged at first.
+Only through working out something quick-n-dirty will you grasp much of the needed structure for
+the right code.
+The key is to iterate through your code.
+Don't settle until you achieve certain confidence and are comfortable with your code.
+
+\section{Break down a JSON string with Tokenizer}\label{sec:JsonTokenizer}
+
+The foremost thing when tokenizing is to match quotes and honor the things intact between quotes.
+
+\lstinputlisting[label={lst:JsonParser.tokenizer},
+caption={Components for data structure tokenizer.}]
+{case-study/my-json/JsonParser_tokenizer.py}
+
+
+\section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
+
+Stream of tokens come out of the tokenizer and are fed the assembler
+to be parsed as needed and assembled into in-memory data structures such as array or dictionary
+(map in \java and \cpp).
+For example the JSON string
+\begin{verbatim}
+{"1":"\"1:{1:1}","2":2}
+\end{verbatim}
+will be tokenized into the following token sequence:
+\begin{verbatim}
+{
+"1"
+:
+"\"1:{1:1}"
+,
+"2"
+:
+2
+}
+\end{verbatim}
+The assembler will figure out the
+relationship among the tokens with hints from punctuation tokens such as
+curly brackets `\texttt{\{}' and `\texttt{\}}',
+square brackets `\texttt{[}' and `\texttt{]}',
+comma `\texttt{,}', colon `\texttt{:}'
+and aggregate them in corresponding data structures.
+
+One of my earlier implementations is listed \autoref{lst:JsonParser.Assembler}.
+
+\lstinputlisting[label={lst:JsonParser.Assembler},
+caption={Components for data structure assembling.}]
+{case-study/my-json/JsonParser_assembler.py}
+
+
+
+\section{Json formatter}\label{sec:jsonFormatter}
+
+~\autoref{lst:JsonFormatter}
 
 An initial implementation
-\lstinputlisting[label={lst:JsonFormatter.py}
+\lstinputlisting[label={lst:JsonFormatter},
 caption={Json formatter.
-It take an in-memory object reprensetation of Json data, print it into well-formatted string.}]
+It take an in-memory object representation of JSON data, print it into well-formatted string.}]
 {case-study/my-json/JsonFormatter.py}
 
 But that is one possible implementation.
 
-Let us revisit the json formatter code since I believe there are still something
+Let us revisit the JSON formatter code since I believe there are still something
 we can learn from.
 As you may notice there is a function \code{def __white__(indent)} where \code{indent} is an
 integer that provides the global indent levels for the line.
@@ -90,8 +162,8 @@ to provide the correct indentation for individual lines.
 
 But there is another way of indenting structures.
 ~\autoref{lst:new-indentation-code}
-\lstinputlisting[label={lst:JsonParser.py}
-caption={A new implementation of Json formatter.}]
+\lstinputlisting[label={lst:NewJsonFormatter},
+caption={A new implementation of JSON formatter.}]
 {case-study/my-json/NewJsonFormatter.py}
 The new implementation does not use a function such as \code{def __white__(indent)} to do the
 indentation.

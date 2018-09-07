@@ -11,6 +11,16 @@ def parseJson(string):
     return __assemble__(preproc)
 
 
+def __tokenize__(string):
+    """
+    Break up the JSON-reprsenting string into smallest building blocks for JSON components
+    such as comma, bracket, string, number, etc.
+    :param string:
+    :return:
+    """
+    pass
+
+
 def __assemble__(tokens):
     """
     Takes care of structural construction for: [ ] { }
@@ -18,15 +28,5 @@ def __assemble__(tokens):
     :param tokens: are the atomic building blocks for JSON data such as comma, bracket, string,
     number, etc.
     :return: an object as specified in function 'parseJson'
-    """
-    pass
-
-
-def __tokenize__(string):
-    """
-    Break up the JSON-reprsenting string into smallest building blocks for JSON components
-    such as comma, bracket, string, number, etc.
-    :param string:
-    :return:
     """
     pass

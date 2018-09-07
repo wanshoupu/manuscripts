@@ -69,7 +69,7 @@ For another, decoupled the complexity and now the two functions, \code{parseJson
 and \code{toPrettyString(obj)}, may be implemented in parallel.
 In the next sections we will elaborate the implementation for each.
 
-\section{Json Parser}\label{sec:jsonparser}
+\section{Json string parser}\label{sec:jsonparser}
 
 Tokens
 Smallest building blocks for JSON
@@ -187,11 +187,27 @@ to provide the correct indentation for individual lines.
 
 But that is one possible implementation.
 
+\begin{figure}[htb]
+\centering
+\begin{subfigure}{.8\textwidth}
+\includegraphics[width=\textwidth]{case-study/my-json/line-view-a.jpg}
+\caption{Line view a.\label{fig:line-view-a}}
+\end{subfigure}
+\\
+\vspace{1mm}
+\begin{subfigure}{.8\textwidth}
+\includegraphics[width=\textwidth]{case-study/my-json/line-view-b.jpg}
+\caption{Line view b.\label{fig:line-view-b}}
+\end{subfigure}
+\caption{Two views of line in a paragraph. \label{fig:line-view}}
+\end{figure}
+
 In what follows, we are going to approach the formatting in a new prospective angle.
 First of all, we will renew our concept of a ``line'' from the usual form
-\[\mbox{line} = \mbox{line content} +\mbox{newline}\]
+\[\mbox{line} = \mbox{content} + \mbox{newline}\]
 to a rotated form
-\[\mbox{line} = \mbox{newline} \mbox{line content}.\]
+\[\mbox{line} = \mbox{newline} + \mbox{content}.\]
+See \autoref{fig:line-view} for an illustration.
 This may seem counterintuitive and arbitrary to you at this point.
 But the advantage of it will speak for itself subsequently.
 

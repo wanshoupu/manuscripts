@@ -188,7 +188,7 @@ caption={First version for JSON formatter.}]
 {case-study/my-json/JsonFormatter_v1.py}
 
 The only intended `public' function is
-\begin{lstlisting}\label{toPrettyString}
+\begin{lstlisting}[label={lst:toPrettyString}]
 def toPrettyString(obj, indent=0)
 \end{lstlisting}
 This function and other functions recursively call one another.
@@ -210,17 +210,17 @@ Still the implementations in ~\autoref{lst:JsonFormatter.firstVersion} and even
 ~\autoref{lst:JsonFormatter.listComprehension} smell.
 Generally speaking, there is a lack of symmetry in the code and because of that,
 we feel that the code contains a lot `manual labor' in there.
-String segments such as \code{",\n"} seems complex, arbitrary, and redundant to simple punctuations
-\code{","} and \code{"\n"}.
-In the part of code to format the enclosing items of array and object, it appears that we twisted
-our logic really hard in order to insert the `all-but-last' field separator \code{","}.
-As a confession, I stumbled more than once to get this working with the last bug fixed being
-\begin{lstlisting}
-",\n" if n < len(obj) else "\n"
-\end{lstlisting}
-Note the \code{if} condition which is never false.
-This code is very hard to get correct, very delicate, and very bug-prone.
-In function \autoref{toPrettyString}, parameter \code{indent} is
+First, string segments such as \code{",\\n"}, \code{"\{\\n"} and \code{"[\\n"} are arbitrary,
+redundant, and explosive combinations of basic characters \ \code{","}, \code{"\{"}, \code{"["}  and
+\code{"\\n"}.
+Second, in the part of code to format the enclosing items of array and object, it appears that we
+twisted our logic really hard in order to insert the `all-but-last' field separator \code{","}.
+I have to confess that I stumbled more than once to get this working correctly.
+In fact before adapting for this book, I just fixed a bug in the \code{if}-condition---which was
+mistakenly writen as \code{n < len(obj)}.
+I will leave it an exercise for the reader to figure out why it was a bug.
+As so, this code is admittedly very delicate and very hard to get right.
+Third, \autoref{lst:toPrettyString}, function parameter `\code{indent}' is
 never actively specified by client code
 This parameter is there only because it is needed by the other recursive methods.
 As a remedy, it is made with a default value of zero.
@@ -228,21 +228,30 @@ As the reader may have learned, this is the so-called `remnant function paramete
 in \autoref{sec:remnantFunctionParameter}.
 Interested readers are encouraged to review the relevant part to get familiar.
 
-But above all, the biggest problem to me is with the bloated functions
+But above all, the biggest problem to me is with the bloated, multitasking functions
 \code{__dictToPrettyString__} and \code{__arrayToPrettyString__}.
-Take a look at the function \code{__dictToPrettyString__}, it does at least two distinct things
-in a interleaved fashion---building a list of string representations for each item and assembling
-them into properly indented multi-line string.
-By cramming code in the poor little function to do two distinct tasks at once,
+Take a look at the function \code{__dictToPrettyString__}, it does at least two distinct
+things---building a list of string representations for each item and assembling
+them into properly indented multi-line string---in a intertwined fashion.
+By cramming multitasking code in the poor little function all at once,
 the function becomes a pile of heterogeneous conglomeration.
 This is an alarming violation of the single-purpose principle of function.
 Same issue exists in the function \code{__arrayToPrettyString__}.
 
-I can feel that your hearts are sunken with each of these issues.
+I can feel that your hearts are sunken with each of these stated issues.
+At this time, all the above issues seem formidable.
 But do not be dismayed.
-In what follows, I'm going to show you how to thread away the issues one by one.
+It's the purpose of what follows that we will demonstrate how to do away the issues thread
+by thread.
 
-First of all,
+We start by making small and easy improvements and
+hopefully at due time, the biggest problem---the bloated function problem---will be readily
+attacked.
+First of all, let us see if we simplify the twisted logic for ``all-but-last'' field separator
+for array and object entries.
+
+% TODO
+
 \begin{figure}[htb]
 \centering
 \begin{subfigure}{.8\textwidth}
@@ -268,7 +277,7 @@ This may seem counterintuitive and arbitrary to you at this point.
 But the advantage of it will speak for itself subsequently.
 
 With this way of defining a line, the meaning of
-indenting a line must also be redefined to ``insert certain number of
+indenting a line also need to be redefined to ``insert certain number of
 spaces between the \code{newline} and the rest of the sentence''.
 By the principle of encapsulation, let's create a class \code{Formatter} and put charge of
 indenting a multi-line string to it.

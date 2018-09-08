@@ -247,11 +247,38 @@ by thread.
 We start by making small and easy improvements and
 hopefully at due time, the biggest problem---the bloated function problem---will be readily
 attacked.
-First of all, let us see if we simplify the twisted logic for ``all-but-last'' field separator
-for array and object entries.
+First of all, let us see if we try to separate the logic of formatting elements and dressing them
+up with the indentation and field separators.
+By doing this it may be not that we will get that done completely in one stroke.
+But at least we make ourselves space to experiment some optimization by shift things around.
+Take for example the function \code{__arrayToPrettyString__}, we can refactor it in such a way.
+\lstinputlisting[label={lst:ArrayFormatting.separateElement},
+caption={Array formatting function with separated element formatting and style decoration.}]
+{case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
+Looking at the refactored code as \autoref{lst:ArrayFormatting.separateElement},
+I'm not sure if it's simpler than before.
+But the value this brings, as is to be manifested, is critical to subsequent steps.
 
-% TODO
+Now the twisted logic for ``all-but-last'' field separator is in our way for further progress.
+Let's pause and reflect on our situation a bit.
+We should rest assured that the ``all-but-last'' problem is not new to programming.
+For example, SQL language specification and many generic programming languages such as \cpp, it
+is a build breaking error to have trailing comma, `\code{,}' after the last element.
+In fact the \code{str.join} function of \python is already doing the ``all-but-last'' logic
+with whatever separator string
+\footnote{\url{https://docs.python.org/2/library/stdtypes.html\#str.join}}.
+For example
+\begin{lstlisting}
+>>> a = ['foo','bar','baz']
+>>> ', '.join(a)
+'foo, bar, baz'
+\end{lstlisting}
 
+But in our case, the formatting logic have to glue three things together---with indentation spaces
+on top, element and field separator in between, and a newline at the bottom---
+except the last element, for which NO field separator is used.
+This sandwich-making operation obstructs any effort to make use of the full power of
+\code{str.join}.
 \begin{figure}[htb]
 \centering
 \begin{subfigure}{.8\textwidth}
@@ -266,19 +293,38 @@ for array and object entries.
 \end{subfigure}
 \caption{Two views of line in a paragraph. \label{fig:line-view}}
 \end{figure}
-
-In what follows, we are going to approach the formatting in a new prospective angle.
-First of all, we will renew our concept of a ``line'' from the usual form
-\[\mbox{line} = \mbox{content} + \mbox{newline}\]
-to a rotated form
-\[\mbox{line} = \mbox{newline} + \mbox{content}.\]
+How about we shift the boundary between lines so that both the indentation
+and the newline character are on one side?
+To that end, we need a perspective change.
 See \autoref{fig:line-view} for an illustration.
-This may seem counterintuitive and arbitrary to you at this point.
-But the advantage of it will speak for itself subsequently.
+We need renew our view of a `line' and make `cuts' such that lines taking the form
+\[\mbox{line} = \mbox{content} + \mbox{newline}\]
+are rotated to the form
+\[\mbox{line} = \mbox{newline} + \mbox{content}.\]
+Along with this new line-wise view, the meaning of
+indenting a line also need to be redefined as ``Insert indentation
+spaces between the \code{newline} and the rest of the line content''.
+As you may se, with this counterintuitive `line cut',
+it is made possible that
+the styling strings---newline character and indentation string---be added on one side of
+an element.
+It is this minute change that unleashes the power of \code{str.join} function.
+The refactored code, again for \code{__arrayToPrettyString__} is shown in
+~\autoref{ArrayFormatting.shifted_decoration}.
 
-With this way of defining a line, the meaning of
-indenting a line also need to be redefined to ``insert certain number of
-spaces between the \code{newline} and the rest of the sentence''.
+\lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
+caption={Array formatting function with element formatting string shifted to one side.}]
+{case-study/my-json/JsonFormatter_array_element_shifted_view.py}
+
+I will leave it as an exercise to the reader to refactor the ~\autoref{ArrayFormatting
+.shifted_decoration} to get rid explicit code to achieve `all-but-last' separation
+using the built-in function \code{str.join}.
+Also I will leave it as another exercise for the reader to refactor the function
+\code{__dictToPrettyString__} in the same way.
+
+\subsection{Final words on \code{JsonFormatter} refactor}
+
+We can carry the refactor effort further.
 By the principle of encapsulation, let's create a class \code{Formatter} and put charge of
 indenting a multi-line string to it.
 
@@ -291,14 +337,15 @@ Instead, it jack up the indentation for all lines in a block that represents a d
 
 If we refactor the code such that the indentation functions are encapsulated
 in a \code{Formatter} class (see \autoref{lst:Formatter}),
-then our implementation for formatter could be greatly simplified.
+then our implementation for formatter could be greatly simplified and the latter is made readily
+reusable by other modules as well.
 
 \lstinputlisting[label={lst:Formatter},
 caption={Formatter captures all the information needed for JSON indentation.}]
 {case-study/my-json/Formatter.py}
 
-With help of an instance \code{Formatter}, the JsonFormatter can be rewritten.
-
+With help of an instance \code{Formatter}, the JsonFormatter can be rewritten as
+~\autoref{lst:NewJsonFormatter}.
 
 So far we are discussing implementation without too much concern on performance adjustment.
 Our discussion are purely based on aesthetic and readability argument.

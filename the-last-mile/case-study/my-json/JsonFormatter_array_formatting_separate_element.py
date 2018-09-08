@@ -1,7 +1,6 @@
 def __arrayToPrettyString__(obj, indent):
-    elements = __arrayElements__(obj)
-    result = [__white__(indent + 1)  # indentation prefix
-              + e +
+    elements = __arrayElements__(obj, indent)
+    result = [e +
               # field separator (for all but last line) and newline.
               (",\n" if n < len(obj) - 1 else "\n")
               for n, e in enumerate(elements)]
@@ -9,4 +8,5 @@ def __arrayToPrettyString__(obj, indent):
 
 
 def __arrayElements__(obj, indent):
-    return [toPrettyString(v, indent + 1) for n, v in enumerate(obj)]
+    return [__white__(indent + 1) +  # indentation prefix
+            toPrettyString(v, indent + 1) for n, v in enumerate(obj)]

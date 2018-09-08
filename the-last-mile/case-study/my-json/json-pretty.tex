@@ -209,7 +209,7 @@ caption={Json formatter using list comprehension.}]
 Still the implementations in ~\autoref{lst:JsonFormatter.firstVersion} and even
 ~\autoref{lst:JsonFormatter.listComprehension} smell.
 Generally speaking, there is a lack of symmetry in the code and because of that,
-we feel that the code contains a lot `manual labor' in there.
+you can feel it that the code has a lot `manual labor' in there.
 First, string segments such as \code{",\\n"}, \code{"\{\\n"} and \code{"[\\n"} are arbitrary,
 redundant, and explosive combinations of basic characters \ \code{","}, \code{"\{"}, \code{"["}  and
 \code{"\\n"}.
@@ -218,20 +218,24 @@ twisted our logic really hard in order to insert the `all-but-last' field separa
 I have to confess that I stumbled more than once to get this working correctly.
 In fact before adapting for this book, I just fixed a bug in the \code{if}-condition---which was
 mistakenly writen as \code{n < len(obj)}.
-I will leave it an exercise for the reader to figure out why it was a bug.
-As so, this code is admittedly very delicate and very hard to get right.
-Third, \autoref{lst:toPrettyString}, function parameter `\code{indent}' is
+I will leave it an exercise for the reader to figure out why this is a bug.
+As so, this code is admittedly very delicate and hard to get right.
+Third, in ~\autoref{lst:toPrettyString}, function parameter `\code{indent}' is
 never actively specified by client code
 This parameter is there only because it is needed by the other recursive methods.
-As a remedy, it is made with a default value of zero.
+As an effort to lift burden from client code, it is given a default value \code{0}.
 As the reader may have learned, this is the so-called `remnant function parameter' discussed
 in \autoref{sec:remnantFunctionParameter}.
 Interested readers are encouraged to review the relevant part to get familiar.
+Of course one could create a simpler function wrapping around this one to get rid of the remnant
+parameter.
+For now we leave it as is to be addressed later.
 
-But above all, the biggest problem to me is with the bloated, multitasking functions
+But above all, the biggest problem to me is the bloated, multitasking functions
 \code{__dictToPrettyString__} and \code{__arrayToPrettyString__}.
-Take a look at the function \code{__dictToPrettyString__}, it does at least two distinct
-things---building a list of string representations for each item and assembling
+Firstly, let us take a look at the function \code{__dictToPrettyString__}.
+It does at least two distinct
+things---building a list of strings, one for each array element, and assembling
 them into properly indented multi-line string---in a intertwined fashion.
 By cramming multitasking code in the poor little function all at once,
 the function becomes a pile of heterogeneous conglomeration.
@@ -274,9 +278,8 @@ For example
 'foo, bar, baz'
 \end{lstlisting}
 
-But in our case, the formatting logic have to glue three things together---with indentation spaces
-on top, element and field separator in between, and a newline at the bottom---
-except the last element, for which NO field separator is used.
+But in our case, the formatting logic has to glue three things together---indentation spaces
+on top, element and the ``all-but-last'' field separator in between, and a newline at the bottom.
 This sandwich-making operation obstructs any effort to make use of the full power of
 \code{str.join}.
 \begin{figure}[htb]
@@ -291,34 +294,37 @@ This sandwich-making operation obstructs any effort to make use of the full powe
 \includegraphics[width=\textwidth]{case-study/my-json/line-view-b.jpg}
 \caption{Line view b.\label{fig:line-view-b}}
 \end{subfigure}
-\caption{Two views of line in a paragraph. \label{fig:line-view}}
+\caption{Two views of line cut in a paragraph. Each framed box is cut into a line.
+\label{fig:line-view}}
 \end{figure}
-How about we shift the boundary between lines so that both the indentation
-and the newline character are on one side?
+How about we do a rotation on line boundaries so that both the indentation
+and the newline character are shifted to one side?
 To that end, we need a perspective change.
 See \autoref{fig:line-view} for an illustration.
-We need renew our view of a `line' and make `cuts' such that lines taking the form
+We need to renew our view of a `line' and make `cuts' such that a line used to take the form
 \[\mbox{line} = \mbox{content} + \mbox{newline}\]
-are rotated to the form
+are rotated to take the form
 \[\mbox{line} = \mbox{newline} + \mbox{content}.\]
-Along with this new line-wise view, the meaning of
-indenting a line also need to be redefined as ``Insert indentation
+Along with this new perspective of lines, the meaning of
+indenting a line is also redefined as ``Insert indentation
 spaces between the \code{newline} and the rest of the line content''.
-As you may se, with this counterintuitive `line cut',
+As you may see, with this counterintuitive `line cut',
 it is made possible that
 the styling strings---newline character and indentation string---be added on one side of
 an element.
-It is this minute change that unleashes the power of \code{str.join} function.
 The refactored code, again for \code{__arrayToPrettyString__} is shown in
 ~\autoref{ArrayFormatting.shifted_decoration}.
-
 \lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
 caption={Array formatting function with element formatting string shifted to one side.}]
 {case-study/my-json/JsonFormatter_array_element_shifted_view.py}
+Now it becomes trivial to get rid of the cluttered ``all-but-last'' logic altogether and
+rely on the built-in function \code{str.join} to do that (see ~\autoref{lst:ArrayFormatting.true.str.join}).
+\lstinputlisting[label={lst:ArrayFormatting.true.str.join},
+caption={Array formatting function with element formatting string shifted to one side.}]
+{case-study/my-json/JsonFormatter_array_element_true_str_join.py}
 
-I will leave it as an exercise to the reader to refactor the ~\autoref{ArrayFormatting
-.shifted_decoration} to get rid explicit code to achieve `all-but-last' separation
-using the built-in function \code{str.join}.
+So this minute change that unleashes the power of \code{str.join} function.
+
 Also I will leave it as another exercise for the reader to refactor the function
 \code{__dictToPrettyString__} in the same way.
 

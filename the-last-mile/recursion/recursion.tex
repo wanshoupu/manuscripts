@@ -54,3 +54,32 @@ tail recursive function\footnote{\url{https://en.wikipedia.org/wiki/Tail_call}}.
 \section{Recursion and mathematical induction}\label{sec:recursionAndMathematicalInduction}
 Mathematical induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}}
 
+\section{Multi-recursion}\label{sec:multi-recursion}
+
+When there are distinctly multiple tasks to be done together, multiple, recurisve functions may
+be a great way to write highly cohesive code.
+One example is structured data parsing like JSON data.
+A beautiful example may be found in the book ~\cite{Beautiful-Code:2007} chapter 1 for the regular
+expression \code{grep} function.
+
+I gave another example for the application of multi-function recursion in
+~\autoref{ch:json-prettifier}.
+
+Topology for multi-function recursion are usually star-shaped---a main function for dispatching,
+one or more leaf functions that only interact with the main function.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{recursion/multi-recursion.jpg}
+    \caption{Asymmetric cycle division.\label{fig:cycle.division.asymmetric}}
+\end{figure}
+
+\section{Stumbling block in recursion}\label{sec:stumblingBlockInRecursion}
+
+Stack is a state machine for recursion.
+Make sure that your other stateful variables do not interfere with this.
+One technique to reduce risk of modifying state of variables is to use immutable variables such
+as \code{string}, \code{tuple}, \code{pair}, \textit{etc.}
+
+The following code snippet suffers this problem.
+\lstinputlisting{recursion/bad-recursion.py}

@@ -2,6 +2,20 @@
 %% Author: shoupu_wan
 %% 7/19/18
 %%
+\section{Queue}\label{sec:queue}
+
+A queue is a stateful collection that is meant to be modified with push and pop operations
+frequently.
+
+Using a queue can free us from keeping track of the iteration progress explicitly and thus we can
+iterate the same data structure in various functions conveniently as illustrated in the example
+below.
+\lstinputlisting[
+caption={Illustration for using queue for stateful iteration across multiple functions}]
+{data-structure/JsonTokenizer_atomic.py}
+
+\section{Stack}\label{sec:stack}
+A stack is a mimick of the stack used by operating system to manage stack memory.
 
 \section{Stack \textit{vs.} Queue}
 \begin{itemize}

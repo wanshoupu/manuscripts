@@ -104,7 +104,7 @@ For another, decoupled the complexity and now the two functions, \code{parseJson
 and \code{toPrettyString(obj)}, may be implemented in parallel.
 In the next sections we will elaborate the implementation for each.
 
-\section{Json string parser}\label{sec:jsonparser}
+\section{Parser for JSON string}\label{sec:jsonparser}
 
 Tokens
 Smallest building blocks for JSON
@@ -115,8 +115,15 @@ Take care of quote
 caption={Hash out the structure of a JSON parser.}]
 {case-study/my-json/JsonParser.py}
 
-
-This way of coding also helps you focus.
+One should never underestimate the importance of breaking up a formidable task into smaller,
+simpler, bite-sized subtasks.
+First of all, you will make steady progress.
+People tend to work on easy tasks than hard ones.
+You will put more quality time to make concrete progress because the subtasks are easier, readily
+attacked.
+Just like a compiler that turns an high-level program into a series of arithmetic
+operations that machine can handle, you break up a hard project into tasks.
+Second, this helps you focus.
 If you do development in this cascade way, you get to live out the moment.
 You focus on what you are doing now and do it right, as there are no other lower level things
 bother you.
@@ -131,36 +138,205 @@ the right code.
 The key is to iterate through your code.
 Don't settle until you achieve certain confidence and are comfortable with your code.
 
+The functionality of the JSON parser is to convert the information encoded in the JSON string
+into a data structure that is understood by the \code{JsonFormatter}.
+So here we need to define the data structure to be shared by both the \code{JsonParser} and the
+\code{JsonFormatter}.
+We can readily make a mapping between JSON elements and the built-in types of \python and this is
+shown in ~\autoref{tab:ds-mapping}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Mapping of JSON element and \python types
+        \label{tab:ds-mapping}}
+        \begin{tabular}{r|l}
+            object & dictionary \\
+            array & list \\
+            value & string \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Note that the mapping of JSON \code{value} to \code{string} is something to be reflected on.
+In my initial design, I used the following additional mappings
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Mapping of JSON element and \python types}
+        \begin{tabular}{r|l}
+            string & \code{string} \\
+            number & \code{float} \\
+            true & \code{True} \\
+            false & \code{False} \\
+            null & \code{None} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Later on when I had to overcome the difficulty of recovering the original number format did I
+realized that it is not only unnecessary to convert strings to numbers but also doing so suffer the
+lost number format information.
+So I not only gave up converting for numbers, but also stopped converting other primitive values
+as well.
+Then I finally arrived at the simplified mappings in ~\autoref{tab:ds-mapping}.
+At the same time, I repurposed the functions that I created for parsing the values to value
+validators.
+
 \section{Break down a JSON string with Tokenizer}\label{sec:JsonTokenizer}
 
 The foremost thing when tokenizing is to match quotes and honor the things intact between quotes.
+Knowing when to parse values and when to preserve strings as is.
+Another difficulty of tokenizing the input string is escape sequences, especially the escaped
+quotes.
+I decided to take care of quotes in JSON string as first step.
+So I came up with a first version that works for all
+but the escape sequences as shown in ~\autoref{lst:JsonParser.tokenizer}.
 
 \lstinputlisting[label={lst:JsonParser.tokenizer},
 caption={Components for data structure tokenizer.}]
-{case-study/my-json/JsonTokenizer.py}
+{case-study/my-json/JsonTokenizer_lest_esc.py}
 
+What remains now is how to gracefully handle escape sequences.
+This is another hurdle.
+If not properly handled, one will end with various bugs.
+One false start is substitute escape sequences with something else.
+Depending on the choice of substitutions, each one has its own problems.
+Firstly one cannot choose substitution from valid characters.
+For example one cannot replace \code{'\\t'} with \code{'t'}.
+
+Also, if one chooses to substitute escape sequence with the original char in unicode for example,
+one would face a difficulty of substituting escaped double-quote,
+because double-quote is a the delimiter of string in JSON\@.
+
+One would face similar difficulty if one chooses to substitute escaped sequences with
+multi-character signatures.
+How do you guarantee that multi-character signatures will not be present in the original string?
+All schemes that I thought of, I found a counterexample to rule it out.
+
+Given that one has a safe scheme of substitution, one still has to do substitutions of
+various escape sequences in certain order.
+For example, if we substitute the escape sequence \code{'\\\\'}
+followed by \code{'\\t'} on the string \code{'\\\\t'},
+we will get different result than doing it the other way around.
+
+After all the searches and explorations, I found that
+the most effective way of handling escape sequence is 'detect and preserve'
+instead of substitution.
+
+With all the considerations, I came up with the first correct implementation on top of
+~\autoref{lst:JsonParser.tokenizer} by adding the escape sequence handling code to the beginning of
+the loop body.
+\lstinputlisting[caption={First correct tokenizer.}]
+{case-study/my-json/JsonTokenizer_1st.py}
+
+Since it's a first version, it is needless to say that there are various problems with it.
+Firstly, it has the `loop-and-a-half' problem as discussed in
+~\autoref{sec:loop-and-a-half-Problem}.
+Second, the main loop contains fat logic.
+Clearly, it is overcrowded with more than one responsibilities.
+Third, the function is full of arithmetic operations regarding the usage of index:
+\code{start = indx + 1}, \code{indx += 2} or \code{indx += 1}.
+Reading such code requires extra patience and attention.
+
+Can we overcome these problems and simplify the logic?
+Let us set out to see how to improve from here.
+Firstly the `loop-and-a-half' problem, as we learned in ~\autoref{sec:loop-and-a-half-Problem},
+came from the lack of symmetry in treatment of the end-of-string (EOS).
+Using technologies we learned there, let's introduce a sentinel for EOS,
+we can get rid of the `loop-and-a-half' problem.
+We know that the character \code{U+0000}, \textit{a.k.a} \code{NULL},
+is used to denote end of string in \code{C}-like languages,
+so we will append this character at the end of the JSON string as a sentinel.
+We also add this to the collection of punctuation characters to signal the processing of the
+remaining string segment, if any before EOS\@.
+Voila, no more `loop-and-a-half' problem.
+
+I am also tired of the arithmetic around the usages of the index.
+This index is used both before and after it's incremented.
+That is the cause of the excessive index-arithmetic.
+But careful examination shows that usages of index to get the segment is before it's incremented.
+All other usages may be made after it is incremented.
+Knowing this, we obtain the segment beforehand and then increment it.
+This frees us from doing weird arithmetic operations.
+
+Third, the lines of handling escape sequence, while small and succinct, seems to be misplaced.
+Apparently, no escape sequence can exist outside of a quoted string.
+So it's safe to move this into the \code{if quoted} block.
+
+Last, the call for function \code{attempt_parse_value} is unnecessary just before entering the
+\code{quoted}-mode.
+This can be verified by JSON format specification.
+
+With these changes, we renew the solution as ~\autoref{lst:json_tokenizer_with_no_lah}.
+
+\lstinputlisting[label={lst:json_tokenizer_with_no_lah},
+caption={Tokenizer with fixes to remove the `loop-and-a-half' problem and various other problems.}]
+{case-study/my-json/JsonTokenizer_with_no_lah_problem.py}
+
+But the main loop still contains a lot of \code{if}-\code{elif}-\code{elif} and that seems overly
+complicated.
+Above all, it is still in violation of the single-responsibility-principle.
+How can we refactor it into atomic, SRP-compliant functions?
+Well, the function \code{tokenize} tokenizes both quoted string, punctuations,
+and non-string values.
+Let's see what it takes to separate the parsing of quoted string (along with escape sequences) from
+the rest.
+I experimented with two ways.
+One other way of parsing the JSON string is to split the string into quoted and unquoted.
+Splitting the string means chop it up into \code{"}-delimited segments and non-\code{"}-delimited
+portions.
+As mentioned earlier, escape sequence \code{\\"} interferes with the delimiting quotes.
+It is a chicken-and-egg problem as to whether we should solve escape sequence problem or
+to solve splitting problem first.
+
+How about refactor the loop-body so as to separate the logic for processing quoted string into
+its own function?
+As a matter of fact, this is less disrupting to existing coding paradigm.
+But since the main loop iterates using \code{indx} to the original string, we need to pass
+\code{indx} as well as \code{string} as the parameters to the separate function.
+Moreover, after the quoted-string function is done, it needs to pass back not only the quoted
+string result, but also the new value for
+\code{indx} for the caller function to continue.
+Thus the refactored function turns out to be quite verbose.
+
+To solve this verboseness, a stateful iterator over the string would be very useful.
+Unfortunately, \python has no stateful `pointer' as C does.
+But this can be made up with the use of a \code{deque} which can turn the JSON string into a
+queue of characters.
+As we discussed in ~\autoref{sec:queue}, a \code{deque} can be taken as a stateful container,
+it faithfully records which character is next to be processed.
+So let us commit the JSON string to a \code{deque} and use it as a replacement for C-like pointer.
+This lifted us the taxing burden of maintaining the index to the next unprocessed character
+in the JSON string.
+The relevant part of the refactored code is presented in ~\autoref{lst:json_tokenizer_atomic}.
+
+\begin{figure}[H]
+    \lstinputlisting[label={lst:json_tokenizer_atomic},
+    caption={JsonTokenizer that separately process quoted strings and non-quoted portions.}]
+    {case-study/my-json/JsonTokenizer_atomic.py}
+\end{figure}
 
 \section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
 
 Stream of tokens come out of the tokenizer and are fed the assembler
 to be parsed as needed and assembled into in-memory data structures such as array or dictionary
-(map in \java and \cpp).
+(map in \java ~and \cpp).
 For example the JSON string
-\begin{verbatim}
-{"1":"\"1:{1:1}","2":2}
-\end{verbatim}
+\begin{lstlisting}
+'{"1":"\"1:{1:1}","2":2}'
+\end{lstlisting}
 will be tokenized into the following token sequence:
-\begin{verbatim}
-{
-"1"
-:
-"\"1:{1:1}"
-,
-"2"
-:
-2
-}
-\end{verbatim}
+\begin{lstlisting}
+    '{'
+    '"1"'
+    ':'
+    '"\"1:{1:1}"'
+    ','
+    '"2"'
+    ':'
+    '2'
+    '}'
+\end{lstlisting}
 The assembler will figure out the
 relationship among the tokens with hints from punctuation tokens such as
 curly brackets `\texttt{\{}' and `\texttt{\}}',
@@ -282,7 +458,7 @@ But in our case, the formatting logic has to glue three things together---indent
 on top, element and the ``all-but-last'' field separator in between, and a newline at the bottom.
 This sandwich-making operation obstructs any effort to make use of the full power of
 \code{str.join}.
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \begin{subfigure}{.8\textwidth}
 \includegraphics[width=\textwidth]{case-study/my-json/line-view-a.jpg}

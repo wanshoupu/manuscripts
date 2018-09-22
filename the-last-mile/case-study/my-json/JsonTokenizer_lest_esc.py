@@ -1,4 +1,4 @@
-def __tokenize__(string):
+def tokenize(string):
     """
     Take care of quote with priority
     Single quote is regular char and has no special meaning.
@@ -10,9 +10,6 @@ def __tokenize__(string):
     start, indx = 0, 0
     quoted = None
     while indx < len(string):
-        if string[indx] == '\\':
-            indx += 2
-            continue
         if quoted:  # TODO need to simplify the logic
             # don't be tempted to combine this two if's together.
             if string[indx] == quoted:
@@ -61,4 +58,4 @@ def __validate_val__(seg):
 
 if __name__ == '__main__':
     test = '{"1":"\\"1:{1:1}","2":2}'
-    print __tokenize__(test)
+    print tokenize(test)

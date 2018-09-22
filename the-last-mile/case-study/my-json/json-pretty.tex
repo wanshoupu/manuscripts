@@ -184,7 +184,8 @@ validators.
 
 \section{Break down a JSON string with Tokenizer}\label{sec:JsonTokenizer}
 
-The foremost thing when tokenizing is to match quotes and honor the things intact between quotes.
+The foremost thing when it comes to tokenizing
+is to match quotes and honor the things intact between quotes.
 Knowing when to parse values and when to preserve strings as is.
 Another difficulty of tokenizing the input string is escape sequences, especially the escaped
 quotes.
@@ -319,11 +320,11 @@ The relevant part of the refactored code is presented in ~\autoref{lst:json_toke
 \section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
 
 Stream of tokens come out of the tokenizer and are fed the assembler
-to be parsed as needed and assembled into in-memory data structures such as array or dictionary
+to be assembled into in-memory data structures such as array or dictionary
 (map in \java ~and \cpp).
 For example the JSON string
 \begin{lstlisting}
-'{"1":"\"1:{1:1}","2":2}'
+    '{"1":"\"1:{1:1}","2":2}'
 \end{lstlisting}
 will be tokenized into the following token sequence:
 \begin{lstlisting}
@@ -350,6 +351,28 @@ One of my earlier implementations is listed \autoref{lst:JsonParser.Assembler}.
 caption={Components for data structure assembling.}]
 {case-study/my-json/JsonAssembler.py}
 
+Note the use of \code{OrderedDict}.
+This is because the regular \code{dict} in \python doesn't preserve the original order of entries
+in the object value of JSON\@.
+
+Refactored JsonAssembler, a multi-recursive version.
+The refactored version are explained below.
+% TODO
+\begin{table}[H]
+\lstinputlisting{case-study/my-json/NewJsonAssembler.py}
+\end{table}
+
+\begin{table}[H]
+\lstinputlisting{case-study/my-json/NewJsonAssembler_dispatcher.py}
+\end{table}
+
+\begin{table}[H]
+\lstinputlisting{case-study/my-json/NewJsonAssembler_array.py}
+\end{table}
+
+\begin{table}[H]
+\lstinputlisting{case-study/my-json/NewJsonAssembler_struct.py}
+\end{table}
 
 
 \section{Json formatter}\label{sec:jsonFormatter}

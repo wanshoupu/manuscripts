@@ -1,51 +1,66 @@
 from collections import OrderedDict
 
 
-def __parse_list__(string):
+def assemble(tokens):
+    compositionStack = []
+    valueStack = []
+    for token in tokens:
+        if token in BRACKET_MAP:
+            compositionStack.append((len(valueStack), token))
+        elif token in CLOSING_BRACKETS:
+            valueStackStart, opening_bracket = compositionStack.pop()
+            checkBracket(opening_bracket, token)
+            values = valueStack[valueStackStart:]
+            del valueStack[valueStackStart:]
+            valueStack.append(
+                assembleArray(values) if token == ']' else assembleObject(values))
+        else:
+            valueStack.append(token)
+    checkSingleton(valueStack)
+    assert 0 == len(compositionStack)
+    return valueStack[0]
+
+
+BRACKET_MAP = {'{': '}', '[': ']'}
+CLOSING_BRACKETS = {'}', ']'}
+
+
+def assembleArray(values):
     result = []
-    for v in string:
-        if v != ',':
-            result.append(v)
+    index = 0
+    while index < len(values):
+        result.append(values[index])
+        assert index + 1 == len(values) or values[index + 1] == ','
+        index += 2
     return result
 
 
-def __parse_struct__(string):
+def assembleObject(values):
     """
-    Limitation: order of the dictionary is lost during processing
-    :param string:
+    To preserve the original order of entries, we use OrderedDict
+    :param values:
     :return:
     """
-    if not string:
-        return OrderedDict()
-    result = []
-    # add sentinel
-    string += [',']
-    for i in range(len(string)):
-        if string[i] == ',':
-            result.append((string[i - 3], string[i - 1]))
-    return OrderedDict(result)
+    result = OrderedDict()
+    index = 0
+    while index < len(values):
+        result[values[index]] = values[index + 2]
+        assert values[index + 1] == ':'
+        assert index + 3 == len(values) or values[index + 3] == ','
+        index += 4
+    return result
 
 
-OPENING_BRACKETS = {'{': '}', '[': ']'}
-CLOSING_BRACKETS = {'}': '{', ']': '['}
+def checkSingleton(valueStack):
+    if len(valueStack) > 1:
+        raise ValueError('Expect one value on stack but got {}'.format(len(valueStack)))
 
 
-def __assemble__(tokens):
-    struct_stack = []
-    val_stack = []
-    for indx in range(len(tokens)):
-        if tokens[indx] in OPENING_BRACKETS:
-            struct_stack.append((len(val_stack), indx))
-        elif tokens[indx] in CLOSING_BRACKETS:
-            val_stack_start, tokens_start = struct_stack.pop()
-            if OPENING_BRACKETS[tokens[tokens_start]] != tokens[indx]:
-                raise ValueError(
-                    'Unmatched bracket: {} and {}'.format(tokens[tokens_start], tokens[indx]))
-            val_stack[val_stack_start:] = [
-                __parse_list__(val_stack[val_stack_start:]) if tokens[indx] == ']'
-                else __parse_struct__(val_stack[val_stack_start:])]
-        else:
-            val_stack.append(tokens[indx])
-    if len(val_stack) > 1:
-        raise ValueError('Too many or too few root node: {}'.format(len(val_stack)))
-    return val_stack[0] if val_stack else None
+def checkBracket(openingBracket, closingBracket):
+    if BRACKET_MAP[openingBracket] != closingBracket:
+        raise ValueError('Unmatched bracket: {} and {}'.format(openingBracket, closingBracket))
+
+
+if __name__ == '__main__':
+    test = ['{', '"1"', ':', '"\\"1:{1:1}"', ',', '"2"', ':', '2', '}']
+    print assemble(test)

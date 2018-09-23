@@ -7,11 +7,11 @@ def parseJson(string):
     :param string:
     :return: an object representing the information in JSON string
     """
-    preproc = __tokenize__(string)
-    return __assemble__(preproc)
+    preproc = tokenize(string)
+    return assemble(preproc)
 
 
-def __tokenize__(string):
+def tokenize(string):
     """
     Break up the JSON-reprsenting string into smallest building blocks for JSON components
     such as comma, bracket, string, number, etc.
@@ -21,7 +21,7 @@ def __tokenize__(string):
     pass
 
 
-def __assemble__(tokens):
+def assemble(tokens):
     """
     Takes care of structural construction for: [ ] { }
     Parse tokens and assemble them into data structures like arrays, dictionaries, etc.

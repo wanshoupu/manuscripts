@@ -345,6 +345,19 @@ square brackets `\texttt{[}' and `\texttt{]}',
 comma `\texttt{,}', colon `\texttt{:}'
 and aggregate them in corresponding data structures.
 
+JSON is recursively structured data and the token stream is flat array.
+The job of assembling tokens into recursive data structure is essentially job of deserialization.
+
+There are two ways of doing that---iterative and recursive.
+The iterative way uses double stacks.
+The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
+\@\cite{Dijkstra-shunting-yard}.
+The Wikipedia description\@\footnote{A brief description is available at
+\url{https://en.wikipedia.org/wiki/Shunting-yard_algorithm}}
+of the `shunting-yard' algorithm works only for unary/binary operators.
+The algorithm implemented here can be viewed as a generalized `shunting-yard' algorithm that works
+for assembling arrays and objects which may be viewed as variable-length n-nary operators.
+% TODO graphics for the algorithm and the multi-recursion to be added
 One of my earlier implementations is listed \autoref{lst:JsonParser.Assembler}.
 
 \lstinputlisting[label={lst:JsonParser.Assembler},
@@ -357,7 +370,7 @@ in the object value of JSON\@.
 
 Refactored JsonAssembler, a multi-recursive version.
 The refactored version are explained below.
-% TODO
+
 \begin{table}[H]
 \lstinputlisting{case-study/my-json/NewJsonAssembler.py}
 \end{table}

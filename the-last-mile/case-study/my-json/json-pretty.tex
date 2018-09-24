@@ -317,6 +317,11 @@ The relevant part of the refactored code is presented in ~\autoref{lst:json_toke
     {case-study/my-json/JsonTokenizer_atomic.py}
 \end{figure}
 
+Note that the function \code{tokenizeStr} is solely responsible for consume all the characters
+between and including the delimiting quote characters so that after the control is returned to
+the main function, the remaining string is ready for consumption once again.
+There is no recursive call from within \code{tokenizeStr} because string is a primitive type
+requires no further parsing.
 \section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
 
 Stream of tokens come out of the tokenizer and are fed the assembler
@@ -355,7 +360,8 @@ The job of assembling tokens into recursive data structure is essentially job of
 in-memory data structures for JSON data.}
 \end{figure}
 
-There are two ways of doing that---iterative and recursive.
+There are two ways of doing that---iterative and recursive---and we will start with iterative
+solution.
 The iterative way uses two stacks one for elements, one for punctuations.
 The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
 \@\cite{Dijkstra-shunting-yard}.
@@ -365,38 +371,105 @@ of the `shunting-yard' algorithm works only for unary/binary operators.
 The implementation here can be viewed as generalized `shunting-yard' algorithm.
 The operation for assembling a variable number of entries into composite object or array can be
 viewed as an n-nary operation.
-There are two operations---one for assembling object and another for array---denoted by
+There are two operations---one for assembling object and the other for array---denoted by
 \code{']'} and \code{'\}'}, respectively.
 The implementation is listed in ~\autoref{lst:JsonParser.Assembler}.
 
 \lstinputlisting[label={lst:JsonParser.Assembler},
 caption={Components for data structure assembling.}]
 {case-study/my-json/JsonAssembler.py}
-
+There are certain degree of redundancy in the punctuation.
+We may use these tokens for verification purposes.
 Note the use of \code{OrderedDict}.
 This is because the original order of entries
 in the object value of JSON must be preserved but the built-in type \code{dict} of \python doesn't
 guarantee any order of entries.
 
-Refactored JsonAssembler, a multi-recursive version.
-The refactored version are explained below.
+Looking at the iterative solution one thing we can be sure is that it's pretty verbose.
+The first sight of it is formidable to a pair of new eyes without any explanation.
+That's certainly a sign that this is not the final version to settle on.
+Therefore I'm going to try the second way of implementation, that is, the recursive solution.
 
+Recall the discussions in ~\fullref{ch:recursion} that when there are more than one types of
+structures embedded within one another, a multi-recursion implementation might come to rescue.
+We are going to attempt to implement a recursive solution using techniques discussed there.
+
+Above all, we are going to convert string to a \code{deque} of characters in making up of the
+missing pointer concept in \python to facilitate stateful extraction of characters.
+We do this in the public facing wrapper function \code{assemble}.
 \begin{table}[H]
-\lstinputlisting{case-study/my-json/NewJsonAssembler.py}
+\lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
+caption={Function wraps a string in a \code{deque}.}]
+{case-study/my-json/NewJsonAssembler.py}
 \end{table}
 
-\begin{table}[H]
-\lstinputlisting{case-study/my-json/NewJsonAssembler_dispatcher.py}
-\end{table}
+Firstly the driver function which acts as a dispatcher---it delegates each type
+of structures to a special function to be processed---one type per function.
+What's important is that as you implement the driver, you should create function stubs as
+needed, but don't implement them as yet.
+The driver function of my implementation is as \autoref{lst:JsonAssemblerRecursion.driver}.
 
 \begin{table}[H]
-\lstinputlisting{case-study/my-json/NewJsonAssembler_array.py}
+\lstinputlisting[label={lst:JsonAssemblerRecursion.driver},
+caption={Driving function, a dispatcher to distribute each type of structures to the
+corresponding special functions.}]
+{case-study/my-json/NewJsonAssembler_dispatcher.py}
 \end{table}
+
+Now it is time to fill the blanks---we finish implementing the stubs that we created
+while implementing the driver functions.
+We starts with the simpler structure, JSON array, because we have fewer things to deal with and the
+insights learned here may be helpful for the more complex JSON object.
+With no ado, \autoref{lst:JsonAssemblerRecursion.array} lists the implementation.
 
 \begin{table}[H]
-\lstinputlisting{case-study/my-json/NewJsonAssembler_struct.py}
+\lstinputlisting[label={lst:JsonAssemblerRecursion.array},
+caption={Assembler function for array structure}]
+{case-study/my-json/NewJsonAssembler_array.py}
 \end{table}
 
+The key logic here is the \code{while}-loop as it corresponds to the list of elements of array.
+The two base cases are easier to understand.
+When the token is \code{','}, we know its a field separator but it is totally redundant and we
+don't need it so we skip.
+When the token is \code{']'}, we know that this is a conclusion of the current array.
+So we return the control to the invoker.
+Now it comes the critical part of the multi-recursion logic.
+``Why do we invoke the dispatcher function \code{assembleDispatcher}?'' you ask.
+``Because some of the array elements may be of composite types!'' I answer.
+So we have to pass control back to the specialist function for generic assembler for each element.
+Recall the discussion in \autoref{ch:recursion} that each function in the multi-recursion
+implementation has its specialty and is the sole expert for performing a duty.
+No function should perform this specialty except the designated function.
+When other functions need to perform this duty, they have to defer it to the designated function.
+
+Sometimes the function may look too simple to be correct.
+One really doubts its correctness.
+But subjecting it to unit tests, it handles all the easily thought of cases gracefully.
+Let us put up with our doubts and use the same idea
+to finish the implementation for JSON object.
+We can come back with more thorough, complete test suites after all stubs are completed.
+JSON object is slightly more complication but not much.
+Specifically, each JSON object entry consists of a pair of elements---key and value---separated
+by a colon \code{':'}.
+The JSON object key must be string, one token.
+The JSON object value can be of any type, including primitive types as well as composite types.
+Apart from these complications, the recursion logic is identical to that for JSON array.
+So without much ado, the implementation is listed in \autoref{lst:JsonAssemblerRecursion.wrapper}.
+
+\begin{table}[H]
+\lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
+caption={Assembler function for object structure}]
+{case-study/my-json/NewJsonAssembler_object.py}
+\end{table}
+
+Now that we finished the implementation of JSON assembler with three compact,
+SRP-compliant functions, we may subject them to extensive unit tests.
+My own test result reveals that it can successfully process JSON text of size 189MB,
+it can process JSON text with
+recursion depth of some limitation.
+Regardless, tests strengthen our confidence in its correctness.
+%TODO
 
 \section{Json formatter}\label{sec:jsonFormatter}
 

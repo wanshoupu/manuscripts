@@ -1,4 +1,4 @@
-def assembleList(tokens):
+def assembleArray(tokens):
     result = []
     while tokens:
         token = tokens.popleft()

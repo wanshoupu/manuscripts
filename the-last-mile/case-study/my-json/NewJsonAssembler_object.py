@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 
-def assembleStruct(tokens):
+def assembleObject(tokens):
     result = OrderedDict()
     while tokens:
         token = tokens.popleft()

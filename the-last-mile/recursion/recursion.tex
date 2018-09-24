@@ -74,6 +74,11 @@ one or more leaf functions that only interact with the main function.
     \caption{Asymmetric cycle division.\label{fig:cycle.division.asymmetric}}
 \end{figure}
 
+Each function in the multi-recursion
+implementation has its specialty and is the sole expert for performing a duty.
+No function should perform this specialty except the designated function.
+When other functions need to perform this duty, they have to defer it to the designated function.
+
 \section{Stumbling block in recursion}\label{sec:stumblingBlockInRecursion}
 
 Stack is a state machine for recursion.

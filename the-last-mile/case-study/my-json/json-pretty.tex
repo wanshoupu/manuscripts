@@ -348,25 +348,35 @@ and aggregate them in corresponding data structures.
 JSON is recursively structured data and the token stream is flat array.
 The job of assembling tokens into recursive data structure is essentially job of deserialization.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{case-study/my-json/generalized-shunting-yard-algo.jpg}
+\caption{\label{fig:shunting-yard}The generalized 'shunting-yard' algorithm for assembling
+in-memory data structures for JSON data.}
+\end{figure}
+
 There are two ways of doing that---iterative and recursive.
-The iterative way uses double stacks.
+The iterative way uses two stacks one for elements, one for punctuations.
 The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
 \@\cite{Dijkstra-shunting-yard}.
 The Wikipedia description\@\footnote{A brief description is available at
 \url{https://en.wikipedia.org/wiki/Shunting-yard_algorithm}}
 of the `shunting-yard' algorithm works only for unary/binary operators.
-The algorithm implemented here can be viewed as a generalized `shunting-yard' algorithm that works
-for assembling arrays and objects which may be viewed as variable-length n-nary operators.
-% TODO graphics for the algorithm and the multi-recursion to be added
-One of my earlier implementations is listed \autoref{lst:JsonParser.Assembler}.
+The implementation here can be viewed as generalized `shunting-yard' algorithm.
+The operation for assembling a variable number of entries into composite object or array can be
+viewed as an n-nary operation.
+There are two operations---one for assembling object and another for array---denoted by
+\code{']'} and \code{'\}'}, respectively.
+The implementation is listed in ~\autoref{lst:JsonParser.Assembler}.
 
 \lstinputlisting[label={lst:JsonParser.Assembler},
 caption={Components for data structure assembling.}]
 {case-study/my-json/JsonAssembler.py}
 
 Note the use of \code{OrderedDict}.
-This is because the regular \code{dict} in \python doesn't preserve the original order of entries
-in the object value of JSON\@.
+This is because the original order of entries
+in the object value of JSON must be preserved but the built-in type \code{dict} of \python doesn't
+guarantee any order of entries.
 
 Refactored JsonAssembler, a multi-recursive version.
 The refactored version are explained below.

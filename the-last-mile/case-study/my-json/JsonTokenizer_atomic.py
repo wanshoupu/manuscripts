@@ -21,7 +21,7 @@ def __tokenize__(chars):
         if char == '"':
             tokens.append(tokenizeStr(chars))
         elif char in PUNCTUATIONS:
-            attempt_parse_value(''.join(cache), tokens)
+            attemptToParseValue(''.join(cache), tokens)
             cache = []  # reset cache
             tokens.append(char)
         else:

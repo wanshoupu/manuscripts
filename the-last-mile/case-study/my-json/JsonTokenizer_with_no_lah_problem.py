@@ -36,24 +36,24 @@ def tokenize(string):
             quoted = True
             start = indx
         elif char in PUNCTUATIONS:
-            attempt_parse_value(seg, result)
+            attemptParseValue(seg, result)
             result.append(char)
             start = indx
     return result[:-1]
 
 
-def attempt_parse_value(seg, result):
+def attemptParseValue(seg, result):
     seg = seg.strip()
     if not seg:
         return
 
-    if __validate_val__(seg):
+    if validateValue(seg):
         result.append(seg)
     else:
         raise ValueError('Invalid JSON value "{}"'.format(seg))
 
 
-def __validate_num__(seg):
+def validateNumber(seg):
     seg = seg.lower()
     try:
         float(seg)
@@ -62,10 +62,10 @@ def __validate_num__(seg):
     return True
 
 
-def __validate_val__(seg):
+def validateValue(seg):
     if seg == 'null' or seg == 'true' or seg == 'false':
         return True
-    return __validate_num__(seg)
+    return validateNumber(seg)
 
 
 if __name__ == '__main__':

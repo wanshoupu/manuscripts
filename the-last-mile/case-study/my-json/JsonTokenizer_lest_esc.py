@@ -18,31 +18,31 @@ def tokenize(string):
                 start = indx + 1
         elif string[indx] == '"':
             quoted = string[indx]
-            attempt_parse_value(string[start:indx], result)
+            attemptToParseValue(string[start:indx], result)
             start = indx + 1
         elif string[indx] == '{' or string[indx] == '}' \
                 or string[indx] == '[' or string[indx] == ']' \
                 or string[indx] == ',' or string[indx] == ':':
-            attempt_parse_value(string[start:indx], result)
+            attemptToParseValue(string[start:indx], result)
             result.append(string[indx])
             start = indx + 1
         indx += 1
     # loop and a half problem below
-    attempt_parse_value(string[start:indx], result)
+    attemptToParseValue(string[start:indx], result)
     return result
 
 
-def attempt_parse_value(seg, result):
+def attemptToParseValue(seg, result):
     seg = seg.strip()
     if not seg:
         return
 
-    if __validate_val__(seg):
+    if validateValue(seg):
         result.append(seg)
     else:
         raise ValueError('Invalid JSON value {}'.format(seg))
 
-def __validate_num__(seg):
+def validateNumber(seg):
     seg = seg.lower()
     try:
         float(seg)
@@ -51,10 +51,10 @@ def __validate_num__(seg):
     return True
 
 
-def __validate_val__(seg):
+def validateValue(seg):
     if seg == 'null' or seg == 'true' or seg == 'false':
         return True
-    return __validate_num__(seg)
+    return validateNumber(seg)
 
 if __name__ == '__main__':
     test = '{"1":"\\"1:{1:1}","2":2}'

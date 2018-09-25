@@ -4,12 +4,14 @@ from collections import OrderedDict
 def assembleObject(tokens):
     result = OrderedDict()
     while tokens:
-        token = tokens.popleft()
+        token = tokens[0]
         if token == ',':
-            continue
+            tokens.popleft()
         elif token == '}':
+            tokens.popleft()
             return result
         else:
-            assert tokens.popleft() == ':'
+            token = tokens.popleft()
+            assert tokens.popleft() == ':', len(tokens)
             result[token] = assembleDispatcher(tokens)
     return result

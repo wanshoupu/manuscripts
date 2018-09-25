@@ -511,7 +511,7 @@ The only intended `public' function is
 def toPrettyString(obj, indent=0)
 \end{lstlisting}
 This function and other functions recursively call one another.
-As you may notice there is a helper function \code{def __white__(indent)} where \code{indent} is
+As you may notice there is a helper function \code{def whitespace(indent)} where \code{indent} is
 the global indentation levels.
 This function is called in multiple places
 to provide the correct indentation for individual lines.
@@ -551,15 +551,15 @@ parameter.
 For now we leave it as is to be addressed later.
 
 But above all, the biggest problem to me is the bloated, multitasking functions
-\code{__dictToPrettyString__} and \code{__arrayToPrettyString__}.
-Firstly, let us take a look at the function \code{__dictToPrettyString__}.
+\code{dictToPrettyString} and \code{arrayToPrettyString}.
+Firstly, let us take a look at the function \code{dictToPrettyString}.
 It does at least two distinct
 things---building a list of strings, one for each array element, and assembling
 them into properly indented multi-line string---in a intertwined fashion.
 By cramming multitasking code in the poor little function all at once,
 the function becomes a pile of heterogeneous conglomeration.
 This is an alarming violation of the single-purpose principle of function.
-Same issue exists in the function \code{__arrayToPrettyString__}.
+Same issue exists in the function \code{arrayToPrettyString}.
 
 I can feel that your hearts are sunken with each of these stated issues.
 At this time, all the above issues seem formidable.
@@ -574,7 +574,7 @@ First of all, let us see if we try to separate the logic of formatting elements 
 up with the indentation and field separators.
 By doing this it may be not that we will get that done completely in one stroke.
 But at least we make ourselves space to experiment some optimization by shift things around.
-Take for example the function \code{__arrayToPrettyString__}, we can refactor it in such a way.
+Take for example the function \code{arrayToPrettyString}, we can refactor it in such a way.
 \lstinputlisting[label={lst:ArrayFormatting.separateElement},
 caption={Array formatting function with separated element formatting and style decoration.}]
 {case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
@@ -631,7 +631,7 @@ As you may see, with this counterintuitive `line cut',
 it is made possible that
 the styling strings---newline character and indentation string---be added on one side of
 an element.
-The refactored code, again for \code{__arrayToPrettyString__} is shown in
+The refactored code, again for \code{arrayToPrettyString} is shown in
 ~\autoref{ArrayFormatting.shifted_decoration}.
 \lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
 caption={Array formatting function with element formatting string shifted to one side.}]
@@ -645,7 +645,7 @@ caption={Array formatting function with element formatting string shifted to one
 So this minute change that unleashes the power of \code{str.join} function.
 
 Also I will leave it as another exercise for the reader to refactor the function
-\code{__dictToPrettyString__} in the same way.
+\code{dictToPrettyString} in the same way.
 
 \subsection{Final words on \code{JsonFormatter} refactor}
 
@@ -656,7 +656,7 @@ indenting a multi-line string to it.
 \lstinputlisting[label={lst:NewJsonFormatter},
 caption={A new implementation of JSON formatter.}]
 {case-study/my-json/NewJsonFormatter.py}
-The new implementation does not use a function such as \code{def __white__(indent)} to do the
+The new implementation does not use a function such as \code{def whitespace(indent)} to do the
 indentation.
 Instead, it jack up the indentation for all lines in a block that represents a data structure.
 

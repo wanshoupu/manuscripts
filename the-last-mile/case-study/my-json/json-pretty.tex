@@ -264,7 +264,7 @@ Third, the lines of handling escape sequence, while small and succinct, seems to
 Apparently, no escape sequence can exist outside of a quoted string.
 So it's safe to move this into the \code{if quoted} block.
 
-Last, the call for function \code{attempt_parse_value} is unnecessary just before entering the
+Last, the call for function \code{attemptToParseValue} is unnecessary just before entering the
 \code{quoted}-mode.
 This can be verified by JSON format specification.
 
@@ -322,6 +322,7 @@ between and including the delimiting quote characters so that after the control 
 the main function, the remaining string is ready for consumption once again.
 There is no recursive call from within \code{tokenizeStr} because string is a primitive type
 requires no further parsing.
+
 \section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
 
 Stream of tokens come out of the tokenizer and are fed the assembler
@@ -484,77 +485,88 @@ Note that arguments based on the language of choice is irrelevant here as I'm me
 
 So far, we have presented half of the subtasks laid out in ~\autoref{lst:JsonPrettifier}.
 With the functions \code{tokenize} and \code{assemble}, the function \code{parseJson} is completed.
-Together, we witnessed the refinement process.
+Together, we experienced the refinement process.
 The process we go through for improvement usually starts with identifying issues, imperfections,
 other non-ideal code that tickles our heart and set us uneasy.
-With the specific problem in hand, some the techniques we explained in earlier chapters may
-resonate with the problem with a crispy `Ding' sound!
+Once with the specific problems in hand, we already solved half the problem.
+Especially some of the techniques we explained in earlier chapters may
+resonate with the problems with a crispy snapping sound!
 That's amazing achievement.
 
-We are going to advance into the second half of the project---formatting the in-memory data
-structure representatino of the JSON data into pretty text---and we are going to experience some
-miraculous refactor to simplify what looks incurable code.
+We are going to advance into the second half of the project---print the in-memory data
+structure into pretty JSON text---and we are going to be eye-witnesses of a series of
+miraculous refactor processes to simplify what looks incurable code.
 
-\section{Json formatter}\label{sec:jsonFormatter}
+\section{JSON formatter}\label{sec:jsonFormatter}
 
-%TODO
-An initial implementation ~\autoref{lst:JsonFormatter.firstVersion}
+If we think of the JSON parsing process as climbing up a hill, then
+the formatting process is like going downhill.
+Once we successfully validated and parsed JSON data into in-memory, structured object,
+the formatting part is easy task.
+So without much mind-bending exercise, we can come to an implementation such as
+~\autoref{lst:JsonFormatter.firstVersion}.
 
-It takes an in-memory object representation of JSON data, print it into well-formatted string in
+It takes an in-memory JSON-representing object and print it into well-formatted string in
 accordance with the requirements specified in ~\autoref{json-style-spec}.
 \lstinputlisting[label={lst:JsonFormatter.firstVersion},
 caption={First version for JSON formatter.}]
 {case-study/my-json/JsonFormatter_v1.py}
-
-The only intended `public' function is
+Just like the parsing code of JSON data, the above formatting code is another example of
+multi-recursive implementation.
+The `public' function is
 \begin{lstlisting}[label={lst:toPrettyString}]
 def toPrettyString(obj, indent=0)
 \end{lstlisting}
-This function and other functions recursively call one another.
-As you may notice there is a helper function \code{def whitespace(indent)} where \code{indent} is
-the global indentation levels.
-This function is called in multiple places
-to provide the correct indentation for individual lines.
-
-List comprehension is a programming language feature of \python.
-We can even make use of it to reduce the number of lines in code on top of
-the above implementation.
-let us do that and the changed functions are shown in \autoref{lst:JsonFormatter.listComprehension}.
+along with two other specialty functions for array and object, respectively.
+As you may have noticed there is a helper function \code{def whitespace(indent)} that provides
+the correct indentation for individual lines.
+It takes a parameter \code{indent}, the indentation level.
+This function is called for each line to provide the correct indentation.
+Despite the many issues to be explained below, the program does its job correctly.
+We may try to shrink the coding footprint by using list comprehension, which is syntactic sugar of
+\python.
+\autoref{lst:JsonFormatter.listComprehension} lists the version using list comprehension.
 
 \lstinputlisting[label={lst:JsonFormatter.listComprehension},
 caption={Json formatter using list comprehension.}]
 {case-study/my-json/JsonFormatter_comprehension.py}
 
-Still the implementations in ~\autoref{lst:JsonFormatter.firstVersion} and even
+While the program works correctly,
+the implementations ~\autoref{lst:JsonFormatter.firstVersion} and
 ~\autoref{lst:JsonFormatter.listComprehension} smell.
-Generally speaking, there is a lack of symmetry in the code and because of that,
-you can feel it that the code has a lot `manual labor' in there.
-First, string segments such as \code{",\\n"}, \code{"\{\\n"} and \code{"[\\n"} are arbitrary,
-redundant, and explosive combinations of basic characters \ \code{","}, \code{"\{"}, \code{"["}  and
-\code{"\\n"}.
-Second, in the part of code to format the enclosing items of array and object, it appears that we
-twisted our logic really hard in order to insert the `all-but-last' field separator \code{","}.
-I have to confess that I stumbled more than once to get this working correctly.
-In fact before adapting for this book, I just fixed a bug in the \code{if}-condition---which was
-mistakenly writen as \code{n < len(obj)}.
+Generally speaking, there is a lack of symmetry in the code and consequently
+you can feel that the code has a lot of `manual labor' in there.
+First, string segments such as \code{",\\n"} , \code{"\{\\n"} and
+\code{"[\\n"} are apparently arbitrary and redundant combinations of
+punctuations and formatting characters
+\ \code{","}, \code{"\{"}, \code{"["} and \code{"\\n"}.
+Their abounding appearances seem to reveal deeper suboptimal choices.
+Second, messy is the code that formats the enclosures of JSON arrays and objects.
+It appears that the logic is
+twisted really hard in order to achieve inserting the `all-but-last' field separator \code{","}.
+Even so, I have to confess that I stumbled and fixed many bugs to get this messy code to work
+correctly.
+In fact, I fixed a bug in the \code{if}-condition---which was
+mistakenly writen as \code{n < len(obj)}---just before I adapted the code for use in this book.
 I will leave it an exercise for the reader to figure out why this is a bug.
-As so, this code is admittedly very delicate and hard to get right.
-Third, in ~\autoref{lst:toPrettyString}, function parameter `\code{indent}' is
+I share these as testimony to show you that
+this piece of code, while working correctly, is admittedly very delicate and hard to get right.
+That's not all and here comes the third problem.
+In ~\autoref{lst:toPrettyString}, function parameter `\code{indent}' is
 never actively specified by client code
-This parameter is there only because it is needed by the other recursive methods.
-As an effort to lift burden from client code, it is given a default value \code{0}.
+This parameter is there dangling only because it is needed by the other recursive methods.
 As the reader may have learned, this is the so-called `remnant function parameter' discussed
 in \autoref{sec:remnantFunctionParameter}.
 Interested readers are encouraged to review the relevant part to get familiar.
-Of course one could create a simpler function wrapping around this one to get rid of the remnant
-parameter.
-For now we leave it as is to be addressed later.
+To free client code from having to provide a confusing, useless parameter,
+the parameter is given a default value \code{0} as a mitigation for now.
+We will come back to it later.
 
 But above all, the biggest problem to me is the bloated, multitasking functions
 \code{dictToPrettyString} and \code{arrayToPrettyString}.
-Firstly, let us take a look at the function \code{dictToPrettyString}.
-It does at least two distinct
-things---building a list of strings, one for each array element, and assembling
+Taking the function \code{dictToPrettyString} for example,
+it does at least two distinct
+things---building a list of strings, element by element, and assembling
 them into properly indented multi-line string---in a intertwined fashion.
 By cramming multitasking code in the poor little function all at once,
 the function becomes a pile of heterogeneous conglomeration.
@@ -562,32 +574,48 @@ This is an alarming violation of the single-purpose principle of function.
 Same issue exists in the function \code{arrayToPrettyString}.
 
 I can feel that your hearts are sunken with each of these stated issues.
-At this time, all the above issues seem formidable.
+``I never expect that a perfectly working code still have so many issues in it.'' you say.
+Yes, even working code has rooms to improve.
+The word `working' is an ambiguous in this context.
+Here `working' only means it passes the unit tests.
+But to pursue higher standard, we need code that works when facing long-term maintenance,
+reusing, refactoring, \textit{etc}.
+At this time, all the above issues seem formidable and we seem desperately clueless about how to
+go about improve it.
 But do not be dismayed.
-It's the purpose of what follows that we will demonstrate how to do away the issues thread
-by thread.
+It's the purpose of what follows that we will demonstrate how to employ the techniques discussed in
+earlier chapters to address the issues thread by thread, especially the ``variational method''
+discussed in \autoref{ch:variational}.
 
-We start by making small and easy improvements and
-hopefully at due time, the biggest problem---the bloated function problem---will be readily
+We start with small and easy improvements and
+hopefully at due time, the bigger problem---including the bloated function problem---will be readily
 attacked.
-First of all, let us see if we try to separate the logic of formatting elements and dressing them
-up with the indentation and field separators.
-By doing this it may be not that we will get that done completely in one stroke.
-But at least we make ourselves space to experiment some optimization by shift things around.
-Take for example the function \code{arrayToPrettyString}, we can refactor it in such a way.
+First of all, let us refactor the element-formatting logic into its own function.
+Doing so may be get us much ahead of the progress,
+but it will create space for us to experiment with more optimization attempts.
+\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
+refactored in such a way.
 \lstinputlisting[label={lst:ArrayFormatting.separateElement},
 caption={Array formatting function with separated element formatting and style decoration.}]
 {case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
-Looking at the refactored code as \autoref{lst:ArrayFormatting.separateElement},
-I'm not sure if it's simpler than before.
-But the value this brings, as is to be manifested, is critical to subsequent steps.
+Looking at the refactored code as \autoref{lst:ArrayFormatting.separateElement} you may say
+``Gee, that is messier, rather than simpler, than before.''
+True, it is not uncommon that quality of code drops at some steps of refactoring.
+But by the `quantum tunneling' effect, this is a beneficial attempt with
+value to be manifested later and is critical to subsequent refactor steps.
 
-Now the twisted logic for ``all-but-last'' field separator is in our way for further progress.
+Now the twisted logic for ``all-but-last'' field separator is still in our way.
 Let's pause and reflect on our situation a bit.
-We should rest assured that the ``all-but-last'' problem is not new to programming.
-For example, SQL language specification and many generic programming languages such as \cpp, it
-is a build breaking error to have trailing comma, `\code{,}' after the last element.
-In fact the \code{str.join} function of \python is already doing the ``all-but-last'' logic
+We should come to realize that the ``all-but-last'' problem is not new to programming.
+SQL language, for example, is very strict in its use of comma as separator in its \code{select}
+list---demand the use of comma between fields but prohibit trailing comma.
+Programming languages such as \cpp doesn't tolerate trailing comma in array literals, either.
+In all these occasions, a trailing comma after the last element is a build-breaking error.
+So our predecessors must have invested due amount of effort to combat with the ``all-but-last''
+problem before and our job is to humble ourselves to take advantage of their work.
+So please convince yourself that you are reinventing the wheel trying to code for the effected
+``all-but-last'' logic.
+Indeed, the built-in method \code{str.join} in \python is already doing the ``all-but-last'' logic
 with whatever separator string
 \footnote{\url{https://docs.python.org/2/library/stdtypes.html\#str.join}}.
 For example
@@ -599,8 +627,9 @@ For example
 
 But in our case, the formatting logic has to glue three things together---indentation spaces
 on top, element and the ``all-but-last'' field separator in between, and a newline at the bottom.
-This sandwich-making operation obstructs any effort to make use of the full power of
+It is this `sandwich operation' that obstructs our effort to make use of the power of
 \code{str.join}.
+
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.8\textwidth}
@@ -616,8 +645,10 @@ This sandwich-making operation obstructs any effort to make use of the full powe
 \caption{Two views of line cut in a paragraph. Each framed box is cut into a line.
 \label{fig:line-view}}
 \end{figure}
+
 How about we do a rotation on line boundaries so that both the indentation
 and the newline character are shifted to one side?
+That way, the `sandwich operation' will be simplified into a simple, generic joining operation!
 To that end, we need a perspective change.
 See \autoref{fig:line-view} for an illustration.
 We need to renew our view of a `line' and make `cuts' such that a line used to take the form
@@ -627,52 +658,109 @@ are rotated to take the form
 Along with this new perspective of lines, the meaning of
 indenting a line is also redefined as ``Insert indentation
 spaces between the \code{newline} and the rest of the line content''.
-As you may see, with this counterintuitive `line cut',
+As you may see, with this new, counterintuitive `line cut',
 it is made possible that
 the styling strings---newline character and indentation string---be added on one side of
 an element.
-The refactored code, again for \code{arrayToPrettyString} is shown in
+The refactored example code, again for \code{arrayToPrettyString}, is shown in
 ~\autoref{ArrayFormatting.shifted_decoration}.
 \lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
 caption={Array formatting function with element formatting string shifted to one side.}]
 {case-study/my-json/JsonFormatter_array_element_shifted_view.py}
 Now it becomes trivial to get rid of the cluttered ``all-but-last'' logic altogether and
-rely on the built-in function \code{str.join} to do that (see ~\autoref{lst:ArrayFormatting.true.str.join}).
+rely on the built-in function \code{str.join} to do all that
+(see ~\autoref{lst:ArrayFormatting.true.str.join}).
 \lstinputlisting[label={lst:ArrayFormatting.true.str.join},
 caption={Array formatting function with element formatting string shifted to one side.}]
 {case-study/my-json/JsonFormatter_array_element_true_str_join.py}
-
-So this minute change that unleashes the power of \code{str.join} function.
-
+As we can see, the seemingly minor change of view
+about `line cut' unleashes the full power of \code{str.join} function.
 Also I will leave it as another exercise for the reader to refactor the function
-\code{dictToPrettyString} in the same way.
+\code{dictToPrettyString} in the similarly way.
 
-\subsection{Final words on \code{JsonFormatter} refactor}
+Now that the two biggest issues are resolved, a lot of the related,
+previously formidable issues are suddenly exposed under our attack.
+Let us carry the refactor effort even further.
+There are some low-hanging fruits.
+As a byproduct, the myriad character combinations disappeared along with our
+refactor---no more action is needed to address that.
+The enumeration \code{for n, v in enumerate(obj)}
+over the array items are not necessary now that we don't need to track the
+index of the items.
+This can be simplified to \code{for v in obj}.
 
-We can carry the refactor effort further.
-By the principle of encapsulation, let's create a class \code{Formatter} and put charge of
-indenting a multi-line string to it.
+To me the next biggest issue is the way we indent the lines in the multi-line text
+for which the dangling parameter \code{indent} in the public method \code{toPrettyString}
+is just the tip of the iceberg.
+However it is not straightforward simplification process.
+This also requires a fresh look at the indentation process.
+One pattern that may be subtle is \code{"\n" + whitespace(indent)} as a result of the line
+boundary rotation.
+This is understandable as the indentation always takes place after a newline character.
+Also the contents of JSON array and object are always indented one more level with respect to its
+enclosing brackets.
+This prompts us to adapt another indentation model which we name as `block indenting'.
+The `block indenting' model treats indenting whitespaces layer by layer and
+insert a layer whitespaces to a block of pre-formatted text all at once before it is embedded
+within a pair of surrounding brackets.
+Unlike the initial indenting model, in `block indenting' mode,
+the indenting whitespaces are not added all at once for
+a particular line that is indented more than one level.
+To that end, we need a function that does the multi-line indentation
+such as ~\autoref{lst:indent-function}.
 
-\lstinputlisting[label={lst:NewJsonFormatter},
-caption={A new implementation of JSON formatter.}]
-{case-study/my-json/NewJsonFormatter.py}
-The new implementation does not use a function such as \code{def whitespace(indent)} to do the
-indentation.
-Instead, it jack up the indentation for all lines in a block that represents a data structure.
+\lstinputlisting[label={lst:indent-function},
+caption={Multi-line indenting function}]
+{case-study/my-json/JsonFormatter_indent_function.py}
 
-If we refactor the code such that the indentation functions are encapsulated
-in a \code{Formatter} class (see \autoref{lst:Formatter}),
-then our implementation for formatter could be greatly simplified and the latter is made readily
-reusable by other modules as well.
+To implement this algorithm, a systematic refactor of all the major functions altogether
+is required.
+To maintain the focus, let's ignore JSON object for now and consider only JSON array.
+Firstly let us copy all the functions for formatting JSON array and primitive types together in
+one file.
+Then, before making better let first make it worse---
+let's remove all the indenting logic.
+The remaining code should format correctly except that it does no indentation.
+Now, let us make use of the \code{def indent(string)} from
+\autoref{lst:indent-function} to indent the multi-line string of array contents and
+this is only needed in the function \code{arrayToPrettyString}.
+If you are following correctly, you will be surprised to see that all the correct indentation comes
+back as if by magic.
+Now that the parameter \code{indent} in all the functions is made obsolete, let's remove them
+altogether.
+The resulting code is shown in \autoref{lst:JsonFormatter.layer-by-layer.experiment}.
 
+\lstinputlisting[label={lst:JsonFormatter.layer-by-layer.experiment},
+caption={Experiment with new layer-by-layer indentation model for JSON arrays.}]
+{case-study/my-json/JsonFormatter_array_element_separate_indent.py}
+Convinced that this works for JSON array, as yet another exercise, refactor and add back the
+function for formatting JSON objects.
+
+This refactor is another big hurdle.
+As you may have seen, following each major refactor are a series of `easier' refactoring.
+For example, you may have noticed that there are bunch of variables \code{whitespace = " "} as
+well as string literals such as \code{"\\n"} scattering around in the code of
+~\autoref{lst:JsonFormatter.layer-by-layer.experiment}.
+We can refactor these variables along with the relevant functions into a class
+\code{Formatter} and commit indenting responsibilities to it.
+The refactored class is in ~\autoref{lst:Formatter}.
 \lstinputlisting[label={lst:Formatter},
 caption={Formatter captures all the information needed for JSON indentation.}]
 {case-study/my-json/Formatter.py}
-
-With help of an instance \code{Formatter}, the JsonFormatter can be rewritten as
+Now that the indentation functions are encapsulated
+in the class \code{Formatter}, not only that our implementation of JsonFormatter is greatly
+simplified, but also that the class is made readily reusable by other modules.
+With help of an instance \code{Formatter}, the \code{JsonFormatter} can be rewritten as
 ~\autoref{lst:NewJsonFormatter}.
+\lstinputlisting[label={lst:NewJsonFormatter},
+caption={A new implementation of JSON formatter.}]
+{case-study/my-json/NewJsonFormatter.py}
+The new implementation spares function such as \code{def whitespace(indent)}, it also reduces the
+size of argument lists for all the major functions.
+Most importantly, the public-facing function is free from weird dangling parameters such as
+\code{indent=0}.
 
-So far we are discussing implementation without too much concern on performance adjustment.
+So far we have been discussing implementation without too much concern on performance adjustment.
 Our discussion are purely based on aesthetic and readability argument.
 You may argue that performance may be slightly better one way or the other.
 But again quoting other renowned authors, ``premature performance tuning is the evil for

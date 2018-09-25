@@ -44,7 +44,14 @@ One of the criteria for a good base class is that that it requires minimal initi
 
 \section{Remnant function parameter}\label{sec:remnantFunctionParameter}
 
+Some parameters are used only by recursive calls and
+client code who invokes this function never need to specify.
 So we may dub it as `remnant function parameter'.
+
+One could create a simpler function wrapping around this one to get rid of the remnant
+parameter.
+As an effort to take the burden away from client code to specify a confusing, useless parameter,
+it is given a default value as a clumsy remedy.
 
 \section{Tail Recursion}\label{sec:tailRecursion}
 

@@ -1,3 +1,3 @@
-def __arrayToPrettyString__(obj, indent):
-    elements = __arrayElements__(obj, indent + 1)
-    return "[" + ",".join(elements) + "\n" + __white__(indent) + "]"
+def arrayToPrettyString(obj, indent):
+    elements = arrayElements(obj, indent + 1)
+    return "[" + ",".join(elements) + "\n" + whitespace(indent) + "]"

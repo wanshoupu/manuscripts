@@ -7,40 +7,40 @@ def toPrettyString(obj, indent=0):
     :return: pretty format of my_json
     """
     if type(obj) is list:
-        return __arrayToPrettyString__(obj, indent)
+        return arrayToPrettyString(obj, indent)
     if issubclass(type(obj), dict):
-        return __dictToPrettyString__(obj, indent)
+        return dictToPrettyString(obj, indent)
     # everything else is primitive types just convert to str
     return str(obj)
 
 
-def __white__(indent):
+def whitespaces(indent):
     return " " * indent * 2
 
 
-def __dictToPrettyString__(obj, indent):
+def dictToPrettyString(obj, indent):
     result = ["{\n"]
     count = 0
     for k, v in obj.items():
         count += 1
-        result.append(__white__(indent + 1))
+        result.append(whitespaces(indent + 1))
         result.append(toPrettyString(k))
         result.append(": ")
         result.append(toPrettyString(v, indent + 1))
         result.append(",\n" if count < len(obj) else "\n")
-    result.append(__white__(indent))
+    result.append(whitespaces(indent))
     result.append("}")
     return ''.join(result)
 
 
-def __arrayToPrettyString__(obj, indent):
+def arrayToPrettyString(obj, indent):
     result = ["[\n"]
     count = 0
     for v in obj:
         count += 1
-        result.append(__white__(indent + 1))
+        result.append(whitespaces(indent + 1))
         result.append(toPrettyString(v, indent + 1))
         result.append(",\n" if count < len(obj) else "\n")
-    result.append(__white__(indent))
+    result.append(whitespaces(indent))
     result.append("]")
     return ''.join(result)

@@ -464,19 +464,43 @@ caption={Assembler function for object structure}]
 \end{table}
 
 Now that we finished the implementation of JSON assembler with three compact,
-SRP-compliant functions, we may subject them to extensive unit tests.
-My own test result reveals that it can successfully process JSON text of size 189MB,
-it can process JSON text with
-recursion depth of some limitation.
-Regardless, tests strengthen our confidence in its correctness.
-%TODO
+SRP-compliant functions, and they passed extensive unit tests \footnote{For a complete test
+cases, please see
+\url{https://github.com/wanshoupu/simplePythonCode/blob/master/my_json/JsonPrettifier.py}.
+Also stress test reveals that it can process JSON text of size $189\mbox{\code{MB}}$, with maximum
+recursion depth of $493,000$ or so (the system default of the particular machine that I used).}.
+
+Let's reflect on the pros and cons between the two solutions we came up with in this section.
+The iterative solution is a robust solution with less concern of stack overflow.
+However the code there is not straightforward.
+In fact, it is formidable for new developers to read, understand, and modify.
+The recursive solution is elegant, succinct, and with better cohesion.
+For large JSON data or data with extremely deep recursive structures, it may run out of stack
+memory.
+In production environment, however, the property of being easy to maintain is an overwhelming
+factor especially for product fast iteration.
+Note that arguments based on the language of choice is irrelevant here as I'm merely using
+\python for illustration purposes.
+
+So far, we have presented half of the subtasks laid out in ~\autoref{lst:JsonPrettifier}.
+With the functions \code{tokenize} and \code{assemble}, the function \code{parseJson} is completed.
+Together, we witnessed the refinement process.
+The process we go through for improvement usually starts with identifying issues, imperfections,
+other non-ideal code that tickles our heart and set us uneasy.
+With the specific problem in hand, some the techniques we explained in earlier chapters may
+resonate with the problem with a crispy `Ding' sound!
+That's amazing achievement.
+
+We are going to advance into the second half of the project---formatting the in-memory data
+structure representatino of the JSON data into pretty text---and we are going to experience some
+miraculous refactor to simplify what looks incurable code.
 
 \section{Json formatter}\label{sec:jsonFormatter}
 
-~\autoref{lst:JsonFormatter.firstVersion}
+%TODO
+An initial implementation ~\autoref{lst:JsonFormatter.firstVersion}
 
-An initial implementation.
-It take an in-memory object representation of JSON data, print it into well-formatted string in
+It takes an in-memory object representation of JSON data, print it into well-formatted string in
 accordance with the requirements specified in ~\autoref{json-style-spec}.
 \lstinputlisting[label={lst:JsonFormatter.firstVersion},
 caption={First version for JSON formatter.}]

@@ -5,27 +5,88 @@
 
 \chapter{Power of sentinels} \label{ch:sentinels}
 
-Sentinels are added for multiple reasons.
-- Get rid of `Loop-and-a-half'.
-- Avoid costly condition-checking on performance-critical inner loops.
+Sentinels have been in use long before computer science becomes a science.
+Then it is found important application in computer programming.
+Have you heard of the infamous term---``Elephant in Cairo''?
+It explains the working of a sentinel very well.
+The term comes from a magazine essay titled ``Pachydermic Personnel Prediction''
+~\cite{elephant-in-Cairo:1989}.
+Here is an algorithm that computer scientists came up to answer the question ``How to hunt
+elephants in Africa?'':
+\begin{clist}
+    \caption{\label{enum:elephant-hunt-algo-A}
+    Modified algorithm for `Hunting elephant in Africa' for proper termination.}
+    \begin{enumerate}
+        \item Go to Africa.
+        \item Start at the Cape of Good Hope.
+        \item Work northward in an orderly manner, traversing the continent alternately east and west.
+        \item During each traverse pass,
+        \begin{enumerate}
+            \item Catch each animal seen.
+            \item Compare each animal caught to a known elephant.
+            \item Stop when a match is detected.
+        \end{enumerate}
+    \end{enumerate}
+\end{clist}
+The above algorithm, however, may not terminate at the north end of Africa in the rare
+cases there there is no elephant in Africa.
+So the hunters may end up drowning in the Mediterranean Sea.
+To avoid that from happening, one may add check after each iteration of the inner loop to make
+sure that the north end of Africa has not been reached as the modified algorithm in
+~\autoref{enum:elephant-hunt-algo-B} does.
+\begin{clist}
+    \caption{\label{enum:elephant-hunt-algo-B}
+    Modified algorithm for `Hunting elephant in Africa' for proper termination.}
+    \begin{enumerate}
+        \item Go to Africa.
+        \item Start at the Cape of Good Hope.
+        \item Work northward in an orderly manner, traversing the continent alternately east and west.
+        \item During each traverse pass,
+        \begin{enumerate}
+            \item Catch each animal seen.
+            \item Compare each animal caught to a known elephant.
+            \item Stop when a match is detected \emph{or north end of Africa is reached}.
+        \end{enumerate}
+    \end{enumerate}
+\end{clist}
+But an experienced computer scientist would place a known elephant
+in Cairo beforehand and use the algorithm `\autoref{enum:elephant-hunt-algo-A}' as is.
+Of course, after the hunt, they would have to inspect the animal they caught and see if it is the
+one they placed.
+If it is, then that signals the failure of the hunting trip.
+Otherwise, they successfully caught an elephant.
+This example is just a joke distributed on the Internet.
+However it revealed the basic idea behind using sentinels and the many important aspects of how
+to use it.
 
-Sentinels shifts certain condition-checking from within a loop to post-loop processing.
-The computation saving is huge if the condition-checking is costly and the loop size is big.
-
-To get the concept of sentinels, Wikipedia has quite a good introduction that readers are
-encouraged to get familiar with
-\footnote{\url{https://en.wikipedia.org/wiki/Sentinel_value}}.
-
-But at the root, sentinels are added to make the problem more symmetric so as to promote
-coding uniformity.
 I first came to learn about sentinels and their usage in the book ``Numerical Receipt in C''
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
-I was really amazed by the use of sentinels on ends of the array so that
-the inner loop doesn't need to check for array boundaries when partitioning the array elements
-by the pivot element.
-
+I was really amazed by how the authors of the book carefully avoided burdening the
+perfance-critical, fast spinning inner loop with the array boundary checks by the use of sentinels
+when partitioning the array elements by the pivot element.
 Later on in my own software development practice, I made conscious choice when facing similar
 problems.
+But I didn't stop there.
+I went beyond the classical use of sentinels to signal for a graceful termination.
+I summarized my encounter with sentinels in the past and listed the reasons I used sentinels as
+follows
+\begin{enumerate}
+    \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
+    loops.
+    \item\label{itm:sentinel:loop-and-a-half} Get rid of `Loop-and-a-half' issue
+    as their research in Reference ~\cite{Louden-Lambert-2011}.
+    \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell
+    as listed in the `Refactoring' book ~\cite{Fowler1999}
+    \item\label{itm:sentinel:ds} Promote uniform operations in data structures,
+    such as linked list.
+\end{enumerate}
+In all these situations, I found that at the root, sentinels are added to make the problem
+more symmetric so as the coding footprint may reduced significantly.
+Of course there are often % TODO
+Sentinels shifts certain condition-checking from within a loop to post-loop
+processing.
+The computation saving is huge if the condition-checking is costly and the loop size is big.
+
 
 For example,
 \lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word.}]
@@ -74,4 +135,5 @@ believed to be typical sentinel uses such as termination signal.
 Proper use of sentinel can save you from duplicate code, ``loop-and-a-half'' problem,
 oddball solution.
 
-You will see that sentinel is an important tool for succinct coding.
+You will see that sentinel is an important tool for succinct coding in later chapters of this book,
+especially in ~\fullref{prt:advanced}.

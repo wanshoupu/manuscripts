@@ -5,8 +5,35 @@
 
 \chapter{Power of sentinels} \label{ch:sentinels}
 
-\label{Evernote:Use of sentinel}
-\label{Evernote:Missing Ranges}
+Sentinels are added for multiple reasons.
+- Get rid of `Loop-and-a-half'.
+- Avoid costly condition-checking on performance-critical inner loops.
+
+Sentinels shifts certain condition-checking from within a loop to post-loop processing.
+The computation saving is huge if the condition-checking is costly and the loop size is big.
+
+To get the concept of sentinels, Wikipedia has quite a good introduction that readers are
+encouraged to get familiar with
+\footnote{\url{https://en.wikipedia.org/wiki/Sentinel_value}}.
+
+But at the root, sentinels are added to make the problem more symmetric so as to promote
+coding uniformity.
+I first came to learn about sentinels and their usage in the book ``Numerical Receipt in C''
+~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
+I was really amazed by the use of sentinels on ends of the array so that
+the inner loop doesn't need to check for array boundaries when partitioning the array elements
+by the pivot element.
+
+Later on in my own software development practice, I made conscious choice when facing similar
+problems.
+
+For example,
+\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word.}]
+{sentinels/valid_word_abbreviation.py}
+
+\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
+with use of sentinel.}]
+{sentinels/valid_word_abbrev_sentinel.py}
 
 Null terminated string is essentially a sentinel to tell us the end of string.
 By doing so, the benefit is uniform treatment.
@@ -22,3 +49,29 @@ That's a disguised application of sentinel.
 Sentinels are often used to cure the so-called `loop-and-a-half' problem.
 In the part ~\fullref{prt:advanced}, particularly ~\autoref{ch:json-prettifier}, application of
 sentinel is used extensively.
+
+\section{LinkedList Sentinels}
+
+\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
+with use of sentinel.}]
+{sentinels/reverse_linked_list.py}
+
+\section{Missing Range}
+
+Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive, return its
+missing ranges.
+
+For example, given \code{[0, 1, 3, 50, 75]}, return \code{["2", "4->49", "51->74", "76->99"]}
+
+\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
+with use of sentinel.}]
+{sentinels/missing_range.py}
+
+\section{Conclusion}
+
+Above we give a few examples to illustrate the uses of sentinels beyond what's traditionally
+believed to be typical sentinel uses such as termination signal.
+Proper use of sentinel can save you from duplicate code, ``loop-and-a-half'' problem,
+oddball solution.
+
+You will see that sentinel is an important tool for succinct coding.

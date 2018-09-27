@@ -48,3 +48,11 @@ A proven, reliable pattern make your implementation of similar function a no-bra
     }
     return cache.get(key);
 \end{lstlisting}
+
+\section{Ordered HashMap}
+Sometimes one need a data structure that preserves certain orders among the map entries.
+\code{OrderedDict} in \python or \code{LinkedHashMap} in \java are excellent choices in the
+particular programming language of choice.
+
+For example, to implement the least-recently-used (LRU) cache, one implementation would be using
+an ordered hashmap to store the key-value pairs.

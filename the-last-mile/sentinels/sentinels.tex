@@ -80,15 +80,87 @@ follows
     \item\label{itm:sentinel:ds} Promote uniform operations in data structures,
     such as linked list.
 \end{enumerate}
-In all these situations, I found that at the root, sentinels are added to make the problem
-more symmetric so as the coding footprint may reduced significantly.
-Of course there are often % TODO
-Sentinels shifts certain condition-checking from within a loop to post-loop
-processing.
-The computation saving is huge if the condition-checking is costly and the loop size is big.
+In all these cases, I found that at the root, \emph{sentinels are added to make the problem
+more symmetric}.
+``What do you mean by `symmetric'?'' you ask dubiously.
+Symmetry is the mathematical explanation of aesthetics.
+Symmetric objects are visually pleasing to us because it has `order', is familiar to us, and
+thus demand less energy to perceive.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower.jpg}
+        \caption{\label{fig:symmetric-flower}Symmetric sunflower seeds forms beautiful spiral
+        patterns.}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower-asymm.jpg}
+        \caption{\label{fig:asymmetric-flower}The missing seeds in this otherwise symmetric image
+        causes irregularity and anomaly.}
+    \end{subfigure}
+    \caption{\label{fig:line-view}Symmetry in sunflower pedal is at peace.
+    With the missing seeds, the cost to process the sunflower is elevated.}
+\end{figure}
+On the opposite, asymmetric objects are irregular, anomalous, requires extra effort to process.
+So symmetry represents uniformity, uniformity implies saving in resource.
+From \code{for}-loops to regular expressions (regex), from HTTP response status
+codes to \code{null} pointers, from recursion to dynamic programming, computer science is a
+science that is constantly seeking or creating symmetric information to treat things uniformly,
+to minimize energy footprint, and to do more with less.
+Sentinels is no exception.
+
+When we say ``It's one minute to 7'', we meant the following: first, put in one minute to make it
+7 o'clock for more symmetric representation of time and then take away the minute to mean the
+true time 6:59.
+In the same way, sentinels does the plus and minus operations.
+In the opening example `Elephant in Cairo', an elephant was added in the beginning and
+deducted at the end.
+In doing so we saved in-loop checks for termination as a result of end of Africa being reached.
+Sentinels shifts that logic from performance-critical
+loop to non-critical section, from inconvenient location to convenient location.
+With this option, we can optimize our coding to be more elegant and performant.
+In the following sections, we will have a brief look at a few applications of sentinels to
+illustrate the fast application opportunities.
 
 
-For example,
+Many programming languages provide `getOrDefault' methods for their collection classes.
+That's a disguised application of sentinel.
+Proper use of the `getOrDefault' method can save us a line of code.
+For example, accessing \code{HashMap} in the `usual way' would be
+\lstinputlisting{sentinels/cache_access.java}
+But using the `getOrDefault' method, the method becomes one-liner
+\lstinputlisting{sentinels/cache_access_getOrDefault.java}
+
+Sentinels are often used to cure the so-called `loop-and-a-half' problem.
+In the part ~\fullref{prt:advanced}, particularly ~\autoref{ch:json-prettifier}, application of
+sentinel is used extensively.
+
+\section{String termination sentinels}\label{sec:stringTerminationSentinels}
+
+Despite of controversial opinions\cite{Ritchie:1993,expensive-one-byte:2011}, the
+null-terminated strings in C is another excellent example of sentinel use.
+Even though saving memory is a major concern when it was originally designed, the
+null-terminated string has many programming advantages.
+One example is the expression \code{*p == '\0'} which test if the pointer \code{p} points to end
+of the string.
+Without using null character as a sentinel, it would not be so convenient to perform this test.
+Null-terminated strings in other languages has been deprecated largely due to development
+of containers and collections.
+But the idea of it is still inspiring to us.
+The following example will help illustrate this.
+The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.com}}:
+\begin{quote}
+    Given a non-empty string s and an abbreviation abbr, return whether the string matches with
+    the given abbreviation.
+    Abbreviation of word is given as replacing certain substring in the word with its length
+    printed in decimal integer.
+    \emph{Example 1:}
+    Given s = "internationalization", abbr = "i12iz4n":
+    Return true.
+    \emph{Example 2:}
+    Given s = "apple", abbr = "a2e":
+    Return false.
+\end{quote}
 \lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word.}]
 {sentinels/valid_word_abbreviation.py}
 
@@ -96,28 +168,17 @@ For example,
 with use of sentinel.}]
 {sentinels/valid_word_abbrev_sentinel.py}
 
-Null terminated string is essentially a sentinel to tell us the end of string.
-By doing so, the benefit is uniform treatment.
 
-Many programming languages provide `getOrDefault' methods for their collection classes.
-That's a disguised application of sentinel.
+\section{Anchoring sentinels}\label{sec:anchoringSentinels}
 
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:getOrDefault},caption={An example of sentinel as a programming
-    language feature.}]{sentinels/getOrDefault.java}
-\end{minipage}
-
-Sentinels are often used to cure the so-called `loop-and-a-half' problem.
-In the part ~\fullref{prt:advanced}, particularly ~\autoref{ch:json-prettifier}, application of
-sentinel is used extensively.
-
-\section{LinkedList Sentinels}
+\subsection{LinkedList Sentinels}
 
 \lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
 with use of sentinel.}]
 {sentinels/reverse_linked_list.py}
 
-\section{Missing Range}
+\section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
+\subsection{Missing Range}
 
 Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive, return its
 missing ranges.

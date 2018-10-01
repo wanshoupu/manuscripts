@@ -161,20 +161,67 @@ The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.c
     Given s = "apple", abbr = "a2e":
     Return false.
 \end{quote}
-\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word.}]
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
+\caption{\label{fig:letter-number-section}Illustration of the sectioning of the abbreviation for
+the word ``antidisestablishmentarianism''.}
+\end{figure}
+So in other words, the tasks required for the problem is
+\begin{enumerate}
+    \item\label{itm:breakup.letter.number} to break up the string into alternating
+    letter sections $L_{i}$ and number sections $N_{i}$, for $i = 1,2,\dots$
+    \item\label{itm:parse.numbers} parse the number sections as integers
+    as the number of letters to omit
+    \item\label{itm:check.letters} Check if the letter sections, after skipping
+    the corresponding number of letters, match corresponding sections in the word.
+\end{enumerate}
+
+One thing that is subtle and may slip your mind is that the letter sections and number
+sections, while alternating, may start and end with either with for combinations:
+%TODO
+\begin{table}[h]
+    \begin{center}
+        \caption{Possible combinations
+        \label{tbl:true-value-table}}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \code{condition1} & \code{condition2} & execution \\
+            \hline
+            \code{false} & \code{false} & \code{statement2}\\
+            \code{false} & \code{true} & \code{statement2}\\
+            \code{true} & \code{false} & \code{statement2}, \code{statement3}\\
+            \code{true} & \code{true} & \code{statement1}, \code{statement3}\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+
+~\autoref{itm:breakup.letter.number}.
+In the following implementation, we perform all the tasks, ~\autoref{itm:breakup.letter.number},
+ ~\autoref{itm:parse.numbers}, and ~\autoref{itm:check.letters} in one loop.
+
+\lstinputlisting[label={lst:ValidWordAbbrev},
+caption={Code for validating abbreviation of a word.}]
 {sentinels/valid_word_abbreviation.py}
 
-\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
-with use of sentinel.}]
+\lstinputlisting[label={lst:ValidWordAbbrev.sentinel},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/valid_word_abbrev_sentinel.py}
+
+
+\lstinputlisting[label={lst:ValidWordAbbrev},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
+{sentinels/valid_word_abbrev_regex.py}
 
 
 \section{Anchoring sentinels}\label{sec:anchoringSentinels}
 
 \subsection{LinkedList Sentinels}
 
-\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
-with use of sentinel.}]
+\lstinputlisting[label={lst:ValidWordAbbrev},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/reverse_linked_list.py}
 
 \section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
@@ -185,8 +232,8 @@ missing ranges.
 
 For example, given \code{[0, 1, 3, 50, 75]}, return \code{["2", "4->49", "51->74", "76->99"]}
 
-\lstinputlisting[label={lst:ValidWordAbbrev},caption={Code for validating abbreviation of a word
-with use of sentinel.}]
+\lstinputlisting[label={lst:ValidWordAbbrev},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/missing_range.py}
 
 \section{Conclusion}

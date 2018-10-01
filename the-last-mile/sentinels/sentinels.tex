@@ -150,8 +150,8 @@ But the idea of it is still inspiring to us.
 The following example will help illustrate this.
 The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.com}}:
 \begin{quote}
-    Given a non-empty string s and an abbreviation abbr, return whether the string matches with
-    the given abbreviation.
+    Given a non-empty string s consisting of English letters and an abbreviation abbr,
+    return whether the string matches with the given abbreviation.
     Abbreviation of word is given as replacing certain substring in the word with its length
     printed in decimal integer.
     \emph{Example 1:}
@@ -162,10 +162,10 @@ The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.c
     Return false.
 \end{quote}
 \begin{figure}
-\centering
-\includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
-\caption{\label{fig:letter-number-section}Illustration of the sectioning of the abbreviation for
-the word ``antidisestablishmentarianism''.}
+    \centering
+    \includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
+    \caption{\label{fig:letter-number-section} An example of abbreviation for
+    word ``pseudoanthropological''.}
 \end{figure}
 So in other words, the tasks required for the problem is
 \begin{enumerate}
@@ -178,47 +178,77 @@ So in other words, the tasks required for the problem is
 \end{enumerate}
 
 One thing that is subtle and may slip your mind is that the letter sections and number
-sections, while alternating, may start and end with either with for combinations:
-%TODO
+sections, while alternating, may have several cases to be considered (see
+~\autoref{tab:letter-number-combination} for more information).
 \begin{table}[h]
     \begin{center}
         \caption{Possible combinations
-        \label{tbl:true-value-table}}
+        \label{tab:letter-number-combination}}
         \begin{tabular}{|c|c|c|}
             \hline
-            \code{condition1} & \code{condition2} & execution \\
+            starting group & ending group & example \\
             \hline
-            \code{false} & \code{false} & \code{statement2}\\
-            \code{false} & \code{true} & \code{statement2}\\
-            \code{true} & \code{false} & \code{statement2}, \code{statement3}\\
-            \code{true} & \code{true} & \code{statement1}, \code{statement3}\\
+            letter & letter & `int8al' \\
+            number & number & `5nation2' \\
+            letter & number & `inter8' \\
+            number & letter & `5national' \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
 
-
-~\autoref{itm:breakup.letter.number}.
-In the following implementation, we perform all the tasks, ~\autoref{itm:breakup.letter.number},
- ~\autoref{itm:parse.numbers}, and ~\autoref{itm:check.letters} in one loop.
-
+Given so many degrees of freedom, it must be that we have to deal with each case separately?
+Actually not.
+In the implementation of ~\autoref{lst:ValidWordAbbrev}, we perform all three tasks,
+~\autoref{itm:breakup.letter.number}, ~\autoref{itm:parse.numbers},
+and ~\autoref{itm:check.letters} in one loop.
+It turns out that coded in such a way, the particular beginning group does not require any special
+treatment.
+But the ending group does regardless.
+Namely, when the ending group is number, the last parsed number and the remaining suffix of the
+word would be left unexamined in the loop, causing a potential bug.
+One would have to complete a one-time cross-examination of the two after the loop as we do in
+~\autoref{lst:ValidWordAbbrev}.
 \lstinputlisting[label={lst:ValidWordAbbrev},
-caption={Code for validating abbreviation of a word.}]
+caption={One-pass loop implementation for validating abbreviation of a word.}]
 {sentinels/valid_word_abbreviation.py}
-
+As you may have recognized, this is reminiscent of the so-called `loop-and-a-half' problem.
+Can we get rid of the residual post-loop processing code?
+``Yes, we can with the help of sentinel!'' as you guess correctly.
+In fact, all we have to do is to
+append a letter group as sentinel to both the word and the abbreviation arguments
+and then we can delete the post-loop processing code as shown in
+~\autoref{lst:ValidWordAbbrev.sentinel}.
 \lstinputlisting[label={lst:ValidWordAbbrev.sentinel},
-caption={Code for validating abbreviation of a word with use of sentinel.}]
+caption={Same implementation as ~\autoref{lst:ValidWordAbbrev} with use of sentinel.}]
 {sentinels/valid_word_abbrev_sentinel.py}
 
-
-\lstinputlisting[label={lst:ValidWordAbbrev},
+This is a crispy application of sentinel to simplify code, an even better example
+than `Elephant in Cairo', because in this case we don't even need any post-loop processing at all.
+The application of sentinel in this case is very elegant.
+But Don't get me wrong.
+By no means do I imply that that is the only solution.
+Regular expression may provide yet another beautiful solution, in which we may use regular
+expression patterns to find the boundaries between letter groups and number groups for task
+~\autoref{itm:breakup.letter.number}.
+\@\autoref{lst:ValidWordAbbrev.regex} provides one such implementation just for your information.
+\lstinputlisting[label={lst:ValidWordAbbrev.regex},
 caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/valid_word_abbrev_regex.py}
-
+Nevertheless, the simplicity of the implementation ~\autoref{lst:ValidWordAbbrev.sentinel} still
+stands as an exemplary model for the demonstration of the power of sentinels.
 
 \section{Anchoring sentinels}\label{sec:anchoringSentinels}
+Sentinel nodes are used in both linked list and tree data structures.
 
-\subsection{LinkedList Sentinels}
+\subsection{LinkedList Sentinel node}\label{subsec:linkedlistSentinelNode}
+One such example is the use of sentinel in linked list.
+For linked list, there is an exceptional state---empty list---which, in normal representation,
+would be \code{head=NULL}.
+%TODO
+The transition from this state to other states and from other states back to this state
+alike require special handling, because.
+This caused a lot of coding fragmentation.
 
 \lstinputlisting[label={lst:ValidWordAbbrev},
 caption={Code for validating abbreviation of a word with use of sentinel.}]

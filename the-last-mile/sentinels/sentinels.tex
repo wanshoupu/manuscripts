@@ -238,35 +238,138 @@ caption={Code for validating abbreviation of a word with use of sentinel.}]
 Nevertheless, the simplicity of the implementation ~\autoref{lst:ValidWordAbbrev.sentinel} still
 stands as an exemplary model for the demonstration of the power of sentinels.
 
-\section{Anchoring sentinels}\label{sec:anchoringSentinels}
-Sentinel nodes are used in both linked list and tree data structures.
+\section{Sentinels in Data Structures}\label{sec:sentinelsInDS}
 
-\subsection{LinkedList Sentinel node}\label{subsec:linkedlistSentinelNode}
-One such example is the use of sentinel in linked list and tree data structures.
-For both data structures, there is an exceptional state---empty---and an exceptional node---head
-for linked list or root for tree.
-``What's so exceptional about them?'' you ask.
-That's because the code used around the node or operation concerning it is different from those
-concerning other states.
-In C, this is often made possible by passing in a doubly-indirect pointer \code{Node** header}.
-In \java and \python, this is often done through instance variables and methods in a class.
-Take the append/delete in \python as example.
-When one appends to an empty linked list, not only does one append a new node, but one also
-needs to update the \code{header} instance variable of the linked list.
-Similarly, when one delete the head node,
-This is not the case for inserting a node non-empty linked list where one only need to append the
-new node and.
-%TODO
+Sentinel nodes have their niched uses in linked data structures such as linked list and tree.
+The rationale behind this is explained below.
+Linked data structures are fractured memory chunks, scattered all over the address space,
+linked together only through connectors.
+While they may have significant amount of nodes on boundaries,
+algorithms for operations on these data structures are antagonistic to symmetry-breaking boundary
+nodes.
+Sentinel nodes are nodes that are spared for the purpose of freeing algorithms from having to
+deal with boundary conditions.
 
-The transition from this state to other states and from other states back to this state
-alike require special handling, because.
-This caused a lot of coding fragmentation.
 
+\subsection{Anchoring Sentinel Node}\label{subsec:anchoringSentinels}
+
+One such example is the use of sentinel as an anchor node in algorithms concerning
+singly linked list.
+More aspects of linked list as a data structure
+will be discussed in detail in ~\autoref{ch:datastructure}.
+Most commonly, linked list is implemented by making the following declaration of \code{Node}
+\lstinputlisting[label={lst:linkedListNode},
+caption={Definition of linked list node.}]
+{sentinels/linked_list_node.py}
+Then a linked list can be defined by a \code{Node} named `\code{head}'.
+This deceivingly simple definition of a linked list conceals exceptional conditions
+for one to discover and handle properly,
+especially in the proximity of the head node.
+``What's so exceptional about it?'' you ask.
+It means the condition will often catch one off guard while coding simple algorithms such as
+delete a node.
+When deleting a node from a linked list, one need to consider if the node to be deleted could
+possibly be the `head' node.
+If so, one need extra effort in order to get the operation done correctly.
+In fact deleting node of linked list in C is such a big deal that it often takes
+a doubly-indirect pointer \code{Node** header} to be passed in the function \code{deleteNode} as
+shown in ~\autoref{lst:deleteNode} which I believe is not unfarmiliar for those with C programming
+background.
+\lstinputlisting[label={lst:deleteNode},
+caption={Delete node in linked list.}]
+{sentinels/delete_node.cc}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case.jpg}
+        \caption{\label{fig:RevertLinkedList.HappyCase.original}Happy case.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_algo.jpg}
+        \caption{\label{fig:RevertLinkedList.algo}Algorithm in action.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case_result.jpg}
+        \caption{\label{fig:RevertLinkedList.HappyCase.reverted}Reverted linked list.}
+    \end{subfigure}
+    \caption{\label{fig:RevertLinkedList}`Revert linked list' algorithm illustration on
+    happy case.}
+\end{figure}
+But we are going to dedicate the rest of this subsection to illustrate the power of sentinel
+by working out a more practical problem.
+The problem statement is simply put
+\begin{quote}
+    ``Revert a linked list.''
+\end{quote}
+A happy case for the problem has been illustrated, an commonly used algorithm for
+the problem is depicted, and the resulting linked list is also given, all in
+~\autoref{fig:RevertLinkedList}.
+
+%The transition from this state to other states and from other states back to this state
+%alike require special handling, because.
+%This caused a lot of coding fragmentation.
+If you try to solve the problem literally according to the algorithm,
+then the code may going to look like ~\autoref{lst:ValidWordAbbrev}.
 \lstinputlisting[label={lst:ValidWordAbbrev},
 caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/reverse_linked_list.py}
+It may not be the case for many that they come to this solution on their first attempt.
+Some may have been staring at the problem without knowing where to start.
+Others may have been spending substantial amount of time to fix an obnoxious bug.
+Regardless, if you have come this far, you must have had a pretty good grasp for the problem
+and a feel of what a plausible solution looks like.
+
+Now I'm ready to suggest the use of the sentinel for good.
+Look at the algorithm at work as shown in ~\autoref{fig:RevertLinkedList.algo}.
+You may have noticed that I choose to snapshot the algorithm when there
+are a visible stack of nodes on the \code{newHead} and a visible queue of
+nodes on \code{oldHead} remaining to be processed.
+I do this for the purpose of suggesting the `flow', the momentum of the algorithm---that nodes
+are transferred from the old pile to the new in so and so way.
+the motion when both piles has no mass and that may obstruct the
+
+I didn't snapshot the algorithm at the beginning or end because that way the onus is on the readers
+to imagine part of the
+motion picture---the missing pile to detach from or attach to the node in transit.
+You see that human imagination requires a nuclus, a starting point, a stub to begin with.
+Unfortunately with a cold start, we don't have such a luxury.
+But we can create one.
+We can artificially place an anchoring sentinel node and assign it to the \code{newHead}.
+Then everything else will `flow'.
+The benefits are two-fold.
+For one, it will unleashes our imagination power about how the algorithm works.
+It also frees up our mind from worrying about `null-pointer exception' so that it can focus on
+the `flow', the momentum part of the algorithm.
+This is the psychological benefit.
+For other, it simplifies our coding task---our code doesn't need to deal with the case when
+\code{newHead == None}.
+This is reflected in simpler code.
+This confirms, from another perspective, that a cold start is always harder than a hot one,
+that sustaining a fire is much easier than starting a fire.
+
+Some elaboration on sentinels.
+The working of sentinels has physical corroborations in nature.
+The mechanism sentinels work is reminiscent to that of water vapor condensation, for instance.
+In order for water vapor to readily condense, cloud condensation nuclei are required.
+Otherwise, oversaturation would occur, that is water vapor remaining in vaporous state below ice
+point for hours.
+You see, even the process of water vapor condensation is made easier with the use of sentinels.
+In fact, many catalysts in chemistry and enzymes in biology work with similar mechanism.
+In the context of quantum physics, catalysts and enzymes provide an energy barrier
+bypass, a detour to the otherwise normal path, for chemical reactions to take place while
+their identities remain intact.
+In this sense, it is not an exaggeration to call sentinels the `catalysts for programming'.
 
 \section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
+
+So far into the chapter, you should that sentinels are primers.
+They are added to make the rest of the work easier.
+
+Rather than let you go with the tiniest shade of doubt,
+I decide to overexpose you to the instinct of sentinels with yet another example.
+
 \subsection{Missing Range}
 
 Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive, return its

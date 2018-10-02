@@ -77,8 +77,8 @@ follows
     as their research in Reference ~\cite{Louden-Lambert-2011}.
     \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell
     as listed in the `Refactoring' book ~\cite{Fowler1999}
-    \item\label{itm:sentinel:ds} Promote uniform operations in data structures,
-    such as linked list.
+    \item\label{itm:sentinel:ds} Act as a padding boundary for data structures,
+    such as linked list, \textit{etc}., to promote uniform operations.
 \end{enumerate}
 In all these cases, I found that at the root, \emph{sentinels are added to make the problem
 more symmetric}.
@@ -242,10 +242,22 @@ stands as an exemplary model for the demonstration of the power of sentinels.
 Sentinel nodes are used in both linked list and tree data structures.
 
 \subsection{LinkedList Sentinel node}\label{subsec:linkedlistSentinelNode}
-One such example is the use of sentinel in linked list.
-For linked list, there is an exceptional state---empty list---which, in normal representation,
-would be \code{head=NULL}.
+One such example is the use of sentinel in linked list and tree data structures.
+For both data structures, there is an exceptional state---empty---and an exceptional node---head
+for linked list or root for tree.
+``What's so exceptional about them?'' you ask.
+That's because the code used around the node or operation concerning it is different from those
+concerning other states.
+In C, this is often made possible by passing in a doubly-indirect pointer \code{Node** header}.
+In \java and \python, this is often done through instance variables and methods in a class.
+Take the append/delete in \python as example.
+When one appends to an empty linked list, not only does one append a new node, but one also
+needs to update the \code{header} instance variable of the linked list.
+Similarly, when one delete the head node,
+This is not the case for inserting a node non-empty linked list where one only need to append the
+new node and.
 %TODO
+
 The transition from this state to other states and from other states back to this state
 alike require special handling, because.
 This caused a lot of coding fragmentation.

@@ -325,46 +325,55 @@ Now I'm ready to suggest the use of the sentinel for good.
 Look at the algorithm at work as shown in ~\autoref{fig:RevertLinkedList.algo}.
 You may have noticed that I choose to snapshot the algorithm when there
 are a visible stack of nodes on the \code{newHead} and a visible queue of
-nodes on \code{oldHead} remaining to be processed.
-I do this for the purpose of suggesting the `flow', the momentum of the algorithm---that nodes
-are being transferred from the old pile to the new in so and so way.
-the motion when both piles has no mass and that may obstruct the
+nodes on \code{oldHead}.
+With these, human imagination will be winged to make up the missing parts and
+conjure up the `flow', the momentum of the algorithm---that nodes
+are being transferred from the shrinking old pile to the growing new pile.
 
-I didn't snapshot the algorithm at the beginning or end because that way the onus is on the readers
-to imagine part of the
-motion picture---the missing pile to detach from or attach to the node in transit.
-You see that human imagination flows well with a nucleus, a starting point, a stub to begin with.
+I didn't snapshot the algorithm at the beginning or end because that way the onus is on the reader
+to figure out the missing pile to detach from or attach to the node in transit.
+You see that human imagination power is inhibited with the lack of a nucleus, a starting point,
+a stub to begin with.
 A cold start is always harder than a hot one.
-Unfortunately at the beginning of the algorithm it is always going to be a cold start and we don't
-have such a luxury.
-But we can create one, can't we?
-We can artificially place an anchoring sentinel node and assign it to the \code{newHead}.
-Then we have a `nucleus' to begin with and the rest of the task all of a sudden seems intuitive,
-the momentum is built up, and the `flow' is started.
+Unfortunately at the beginning of algorithm design, developers is always going to face a cold start
+and one usually does not have the luxury of a anchoring stub to begin with.
+But sometimes we can create one, and now it is the case.
+Let us create an anchoring node and assign it to the \code{newHead}.
+Now we have a clear `anchor' to attach nodes on and all of a sudden, the rest of the task becomes
+intuitive---remove next node from the \code{oldHead}, insert it immediately after \code{anchor}.
+The momentum is built up, and the `flow' is started.
+After all the nodes in the old linked list have been transferred, the anchor can be removed and
+what remains is the result.
+Following this thread, I am providing a revised implementation in
+~\autoref{lst:revertLinkedList.sentinel}.
 \lstinputlisting[label={lst:revertLinkedList.sentinel},
 caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/reverse_linked_list_sentinel.py}
-The benefits are two-fold.
-For one, it unleashes our imagination power about how the algorithm works.
+As one can see the benefits of using an anchoring sentinel are two-fold.
+For one, it unleashes our brain's visualization power about how the algorithm works.
 It also frees up our mind from worrying about `null-pointer exception' so that it can focus on
-the `flow', the momentum part of the algorithm.
+the main part of the algorithm.
 This is the psychological benefit.
-For other, it simplifies our coding task---our code doesn't need to deal with the case when
-\code{newHead == None}.
+For other, it simplifies our coding task---our code doesn't need to deal with the case
+\code{newHead == None} any more.
 This is reflected in the simpler code in ~\autoref{lst:ValidWordAbbrev.sentinel}.
 
 Some elaboration on sentinels.
-The working of sentinels has physical corroborations in nature.
-The mechanism sentinels work is reminiscent to that of water vapor condensation, for instance.
-In order for water vapor to readily condense, cloud condensation nuclei are required.
-Otherwise, oversaturation would occur, that is water vapor remaining in vaporous state below ice
-point for hours.
-You see, even the process of water vapor condensation is made easier with the use of sentinels.
-In fact, many catalysts in chemistry and enzymes in biology work with similar mechanism.
-In the context of quantum physics, catalysts and enzymes provide an energy barrier
-bypass, a detour to the otherwise normal path, for chemical reactions to take place while
+The working of sentinels has physical analogy in nature.
+The mechanism by which sentinel works is reminiscent to that of water vapor condensation, for
+instance.
+Water vapor condensation often takes place on the surface of something---
+water bottle, stone, leaves, \textit{etc.}
+Water vapor in the cloud also condenses on some non-gaseous core called `cloud condensation nuclei'
+or CCN for short ~\cite{condensation:2005}.
+Spontaneous condensation is possible but that has to overcome a huge energy barrier and
+only takes place after spending hours in the so-called supersaturated state.
+You see, even rain has to make use of sentinels.
+Also, catalysts, enzymes in biological organisms in particularly, work in a similar mechanism.
+In light of quantum physics, catalysts and enzymes provide a bypass to an energy barrier,
+a detour to the otherwise upheaval path for chemical reactions to take place while
 their identities remain intact.
-In this sense, it is not an exaggeration to call sentinels the `catalysts for programming'.
+In this sense, it is not exaggerating to call sentinels the `catalysts for programming'.
 
 \section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
 

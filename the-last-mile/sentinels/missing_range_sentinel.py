@@ -7,14 +7,10 @@ class Solution(object):
         """
         result = []
         sweep = lower
-        for n in arr:
+        for n in arr + [upper + 1]:  # append sentinel element
             if sweep == n - 1:
                 result.append(sweep)
             elif sweep < n - 1:
                 result.append((sweep, n - 1))
             sweep = n + 1
-        if sweep < upper:
-            result.append((sweep, upper))
-        elif sweep == upper:
-            result.append(upper)
         return result

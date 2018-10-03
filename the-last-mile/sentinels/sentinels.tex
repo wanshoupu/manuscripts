@@ -62,7 +62,8 @@ to use it.
 I first came to learn about sentinels and their usage in the book ``Numerical Receipt in C''
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
 I was really amazed by how the authors of the book carefully avoided burdening the
-perfance-critical, fast spinning inner loop with the array boundary checks by the use of sentinels
+performance-critical, fast spinning inner loop with the array boundary checks by the use of
+sentinels
 when partitioning the array elements by the pivot element.
 Later on in my own software development practice, I made conscious choice when facing similar
 problems.
@@ -313,7 +314,7 @@ the problem is depicted, and the resulting linked list is also given, all in
 If you try to solve the problem literally according to the algorithm,
 then the code may going to look like ~\autoref{lst:revertLinkedList}.
 \lstinputlisting[label={lst:revertLinkedList},
-caption={Code for validating abbreviation of a word with use of sentinel.}]
+caption={Common implementation for revert linked list.}]
 {sentinels/reverse_linked_list.py}
 It may not be the case for many that they come to this solution on their first attempt.
 Some may have been staring at the problem without knowing where to start.
@@ -347,7 +348,7 @@ what remains is the result.
 Following this thread, I am providing a revised implementation in
 ~\autoref{lst:revertLinkedList.sentinel}.
 \lstinputlisting[label={lst:revertLinkedList.sentinel},
-caption={Code for validating abbreviation of a word with use of sentinel.}]
+caption={Implementation for revert linked list with the use of sentinel.}]
 {sentinels/reverse_linked_list_sentinel.py}
 As one can see the benefits of using an anchoring sentinel are two-fold.
 For one, it unleashes our brain's visualization power about how the algorithm works.
@@ -368,7 +369,7 @@ Water vapor in the cloud also condenses on some non-gaseous core called `cloud c
 or CCN for short ~\cite{condensation:2005}.
 Spontaneous condensation is possible but that has to overcome a huge energy barrier and
 only takes place after spending hours in the so-called supersaturated state.
-You see, even rain has to make use of sentinels.
+You see, even rainy day does not come easy without sentinels.
 Also, catalysts, enzymes in biological organisms in particularly, work in a similar mechanism.
 In light of quantum physics, catalysts and enzymes provide a bypass to an energy barrier,
 a detour to the otherwise upheaval path for chemical reactions to take place while
@@ -377,27 +378,67 @@ In this sense, it is not exaggerating to call sentinels the `catalysts for progr
 
 \section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
 
-So far into the chapter, you should that sentinels are primers.
-They are added to make the rest of the work easier.
-
+So far into the chapter, you should have already gained understanding about sentinels.
 Rather than let you go with the tiniest shade of doubt,
 I decide to overexpose you to the instinct of sentinels with yet another example.
+Sometimes sentinels are used as primer layer before the main treatment.
+They are added to make the rest of the work easier.
+In the example below, I am going to present a problem where using of sentinels simplifies the
+algorithm.
+The problem statement is as follows
+\begin{quote}
+    Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive,
+    return its missing ranges.
+    For example, given \code{[0, 1, 3, 50, 75]},
+    return \code{["2", "4->49", "51->74", "76->99"]}
+\end{quote}
+Note that the input integer array is sorted and non-decreasing.
+Also, elements in the array lie within the range \code{lower} and \code{upper}, inclusive.
 
-\subsection{Missing Range}
-
-Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive, return its
-missing ranges.
-
-For example, given \code{[0, 1, 3, 50, 75]}, return \code{["2", "4->49", "51->74", "76->99"]}
-
-\lstinputlisting[label={lst:ValidWordAbbrev},
-caption={Code for validating abbreviation of a word with use of sentinel.}]
+Here we are going to implement a `sweep-line' algorithm.
+We are going to rely on a pivotal variable `\code{sweep}' initialized to \code{lower} at first.
+It went through and repelled by the elements in the array.
+For each element \code{e}, a range, $[\code{sweep}, \code{e}]$ (reduced to single point
+\code{e} if \code{sweep == e}), is appended to the final result if valid.
+This above process can potentially leave a final range unaccounted.
+To complete algorithm, a post-loop check is needed to recover the final range (or single point).
+The implementation is shown in ~\autoref{lst:missingRangeV1}.
+\lstinputlisting[label={lst:missingRangeV1},
+caption={An implementation for problem `Missing range'.}]
 {sentinels/missing_range.py}
+The above implementation has a mixed smell of `loop-and-a-half'
+(see ~\autoref{sec:loop-and-a-half-Problem}) and `Oddball solution' problem\@\cite{Fowler1999}
+and both are in the post-loop processing logic.
+We say that it has `loop-and-a-half' smell because post-loop processing logic is disguised
+duplication to the loop-body.
+We say that it has `Oddball solution' because the post-loop logic is slightly altered version of
+that in the loop-body.
+All in all, the post-loop processing code poses itself as a nuisance.
+Is there a way to get rid of it?
+
+Yes!
+Sentinel comes to rescue.
+The post-loop logic is needed because of the possible residual range.
+Can we add an extra element in the array so that it `reaps' the remaining range?
+Along this line of thought, we can add a fictitious element `\code{upper + 1}' to the end of the
+array.
+This element won't cause any other effect except that it helps reap the possibly remaining range
+after the last \emph{true} element.
+The code is presented in ~\autoref{lst:missingRangeSentinel}.
+\lstinputlisting[label={lst:missingRangeSentinel},
+caption={A sentinel implementation for problem `Missing range'.}]
+{sentinels/missing_range_sentinel.py}
+Note the addition of sentinel 'upper+1' cuts off the cluttered post-loop processing logic
+completely without any side effect.
+This is a neat application of sentinel I have ever seen.
 
 \section{Conclusion}
 
-Above we give a few examples to illustrate the uses of sentinels beyond what's traditionally
-believed to be typical sentinel uses such as termination signal.
+Above we presented the power of sentinels and gave a few examples to illustrate the uses of
+them.
+Some of the examples are typical sentinel uses such as termination signal.
+Others are beyond the typical uses.
+
 Proper use of sentinel can save you from duplicate code, ``loop-and-a-half'' problem,
 oddball solution.
 

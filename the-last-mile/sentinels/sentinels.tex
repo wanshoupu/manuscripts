@@ -271,14 +271,14 @@ delete a node.
 When deleting a node from a linked list, one need to consider if the node to be deleted could
 possibly be the `head' node.
 If so, one need extra effort in order to get the operation done correctly.
-In fact deleting node of linked list in C is such a big deal that it often takes
-a doubly-indirect pointer \code{Node** header} to be passed in the function \code{deleteNode} as
-shown in ~\autoref{lst:deleteNode} which I believe is not unfarmiliar for those with C programming
-background.
-\lstinputlisting[label={lst:deleteNode},
-caption={Delete node in linked list.}]
-{sentinels/delete_node.cc}
-\begin{figure}[htb]
+In fact deleting node of linked list in C is such a big deal that functions often take
+a doubly-indirect pointer \code{Node** header} as argument as shown in the below function signature.
+\begin{lstlisting}
+    void delete(NODE** header, NODE* node);
+\end{lstlisting}
+This should not be unfamiliar with most C programmers.
+
+\begin{figure}
     \centering
     \begin{subfigure}{.3\textwidth}
         \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case.jpg}
@@ -311,8 +311,8 @@ the problem is depicted, and the resulting linked list is also given, all in
 %alike require special handling, because.
 %This caused a lot of coding fragmentation.
 If you try to solve the problem literally according to the algorithm,
-then the code may going to look like ~\autoref{lst:ValidWordAbbrev}.
-\lstinputlisting[label={lst:ValidWordAbbrev},
+then the code may going to look like ~\autoref{lst:revertLinkedList}.
+\lstinputlisting[label={lst:revertLinkedList},
 caption={Code for validating abbreviation of a word with use of sentinel.}]
 {sentinels/reverse_linked_list.py}
 It may not be the case for many that they come to this solution on their first attempt.
@@ -327,27 +327,31 @@ You may have noticed that I choose to snapshot the algorithm when there
 are a visible stack of nodes on the \code{newHead} and a visible queue of
 nodes on \code{oldHead} remaining to be processed.
 I do this for the purpose of suggesting the `flow', the momentum of the algorithm---that nodes
-are transferred from the old pile to the new in so and so way.
+are being transferred from the old pile to the new in so and so way.
 the motion when both piles has no mass and that may obstruct the
 
 I didn't snapshot the algorithm at the beginning or end because that way the onus is on the readers
 to imagine part of the
 motion picture---the missing pile to detach from or attach to the node in transit.
-You see that human imagination requires a nuclus, a starting point, a stub to begin with.
-Unfortunately with a cold start, we don't have such a luxury.
-But we can create one.
+You see that human imagination flows well with a nucleus, a starting point, a stub to begin with.
+A cold start is always harder than a hot one.
+Unfortunately at the beginning of the algorithm it is always going to be a cold start and we don't
+have such a luxury.
+But we can create one, can't we?
 We can artificially place an anchoring sentinel node and assign it to the \code{newHead}.
-Then everything else will `flow'.
+Then we have a `nucleus' to begin with and the rest of the task all of a sudden seems intuitive,
+the momentum is built up, and the `flow' is started.
+\lstinputlisting[label={lst:revertLinkedList.sentinel},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
+{sentinels/reverse_linked_list_sentinel.py}
 The benefits are two-fold.
-For one, it will unleashes our imagination power about how the algorithm works.
+For one, it unleashes our imagination power about how the algorithm works.
 It also frees up our mind from worrying about `null-pointer exception' so that it can focus on
 the `flow', the momentum part of the algorithm.
 This is the psychological benefit.
 For other, it simplifies our coding task---our code doesn't need to deal with the case when
 \code{newHead == None}.
-This is reflected in simpler code.
-This confirms, from another perspective, that a cold start is always harder than a hot one,
-that sustaining a fire is much easier than starting a fire.
+This is reflected in the simpler code in ~\autoref{lst:ValidWordAbbrev.sentinel}.
 
 Some elaboration on sentinels.
 The working of sentinels has physical corroborations in nature.

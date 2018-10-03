@@ -1,10 +1,5 @@
 class Solution(object):
     def validWordAbbreviation(self, word, abbr):
-        """
-        :type word: str
-        :type abbr: str
-        :rtype: bool
-        """
         i = 0  # index
         k = 0  # starting index of number
         word = word + 'a'

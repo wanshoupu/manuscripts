@@ -5,8 +5,8 @@ class Solution(object):
         :type abbr: str
         :rtype: bool
         """
-        i = 0
-        k = 0
+        i = 0  # index
+        k = 0  # starting index of number
         for j, c in enumerate(abbr):
             if c.isalpha():
                 if k < j:

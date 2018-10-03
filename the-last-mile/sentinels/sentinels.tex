@@ -224,7 +224,8 @@ and then we can delete the post-loop processing code as shown in
 caption={Same implementation as ~\autoref{lst:ValidWordAbbrev} with use of sentinel.}]
 {sentinels/valid_word_abbrev_sentinel.py}
 
-This is a crispy application of sentinel to simplify code, an even better example
+This is a perfect demonstration of the power of sentinel to simplify code,
+an even better example
 than `Elephant in Cairo', because in this case we don't even need any post-loop processing at all.
 The application of sentinel in this case is very elegant.
 But Don't get me wrong.
@@ -385,12 +386,11 @@ Sometimes sentinels are used as primer layer before the main treatment.
 They are added to make the rest of the work easier.
 In the example below, I am going to present a problem where using of sentinels simplifies the
 algorithm.
-The problem statement is as follows
+The problem statement is as follows \footnote{Adapted from Leetcode \url{leetcode.com}.}
 \begin{quote}
-    Given a sorted integer array where the range of elements are \code{[0, 99]} inclusive,
-    return its missing ranges.
-    For example, given \code{[0, 1, 3, 50, 75]},
-    return \code{["2", "4->49", "51->74", "76->99"]}
+    Given a sorted integer array nums, where the range of elements are
+    in the inclusive range [lower, upper], return its missing ranges.
+    For example, given \code{[0, 1, 3, 50, 75]}, return \code{[2, (4,49), (51,74), (76,99)]}
 \end{quote}
 Note that the input integer array is sorted and non-decreasing.
 Also, elements in the array lie within the range \code{lower} and \code{upper}, inclusive.
@@ -428,9 +428,10 @@ The code is presented in ~\autoref{lst:missingRangeSentinel}.
 \lstinputlisting[label={lst:missingRangeSentinel},
 caption={A sentinel implementation for problem `Missing range'.}]
 {sentinels/missing_range_sentinel.py}
-Note the addition of sentinel 'upper+1' cuts off the cluttered post-loop processing logic
-completely without any side effect.
-This is a neat application of sentinel I have ever seen.
+Like the example in ~\autoref{lst:ValidWordAbbrev.sentinel},
+the addition of sentinel element 'upper+1' in the array cuts off the cluttered
+post-loop processing logic completely without any side effect.
+Both of them are neat application of sentinel I have ever seen.
 
 \section{Conclusion}
 

@@ -84,11 +84,11 @@ If the two axes of reflection symmetry are simultaneously present along the $x$-
 repetitively applying the reflection transformation, one may find infinitely many axes
 periodically located along the $x$-axis and they partition the entire space into periodic regions
 with period $2d$, where $d$ is the distance between the two axes of symmetry (see
-\autoref{fig:two-axes-reflection-symmetry}).
+~\autoref{fig:two-axes-reflection-symmetry}).
 You may have experienced such an illusion by stepping into two parallel mirrors \ldots
 
 The palindromic property of string is a manifestation of reflection symmetry as shown in
-\autoref{fig:palindrome-symmetry}.
+~\autoref{fig:palindrome-symmetry}.
 In reality space may be limited so are strings.
 Nevertheless as long as the regions of two reflection symmetry overlaps,
 the above periodic argument still applies within the overlapping regions.
@@ -128,7 +128,7 @@ This intuition of the multiple reflection symmetry is the key to understand Mana
 \end{figure}
 
 Taking string ``bananas'' as an example, a few of its palindromic substrings are shown in
-\autoref{fig:bananas.palindrome}.
+~\autoref{fig:bananas.palindrome}.
 Note that these substrings overlap with one another.
 Particularly, palindrome `$1$' tucks under its left and right wings shorter palindromes `$2$', and
 `$3$'---exactly as we discussed above.
@@ -220,7 +220,7 @@ palindrome substring Manacher's aglorithm with augmented string.}]
 
 But with a little maneuver, one can create a `virtual filling' among the characters of the
 original string and save on physical memory footprint.
-\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
+\@\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
 implementations in \python and \java respectively based on string `virtual filling'.
 The price for doing that is a mapping of indexes of \code{char}s in the the original string.
 
@@ -232,7 +232,7 @@ Also redefining the lengths array to be the length of the original array
 caption={A \python implementation of ongest palindromic substring.}]
 {case-study/longest-palindrome/longest_palindromic_substring.py}
 
-\autoref{lst:LongestPalindrom.java} is a \java version.
+\@\autoref{lst:LongestPalindrom.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.

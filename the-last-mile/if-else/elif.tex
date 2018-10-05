@@ -131,12 +131,12 @@ Then
     &=\lnot (a \land b) & \text{// De Morgan's law} \label{eq:boolean-expression-simplify}
 \end{align}
 
-\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
+\@\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
 \code{statement2} is \code{!(condition1 && condition2)} and this can be an \code{else} clause of
 \code{if (condition1 && condition2)} which is the condition for the execution of \code{statement1}.
 
 With this piece of wit, it is straightforward to implement much simple code such as
-\autoref{lst:final-simplified-conditional-statement}.
+~\autoref{lst:final-simplified-conditional-statement}.
 
 \lstinputlisting[label={lst:final-simplified-conditional-statement}, caption={Simplified logic that
 is equivalent to ~\autoref{lst:nestedBranching}}]{if-else/composite_condition_simplified2.java}
@@ -176,7 +176,7 @@ Now we can summarize the table and arrive at the following conclusions
 \end{enumerate}
 
 With these in mind, implementation of something like
-\autoref{lst:final-simplified-conditional-statement} naturally follows.
+~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
 So here two simplifying logic processes are presented.
 In practice, one may find one out of the two to be more useful under certain circumstances.

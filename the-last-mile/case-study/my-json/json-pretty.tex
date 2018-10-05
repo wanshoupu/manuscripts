@@ -593,7 +593,7 @@ attacked.
 First of all, let us refactor the element-formatting logic into its own function.
 Doing so may be get us much ahead of the progress,
 but it will create space for us to experiment with more optimization attempts.
-\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
+\@\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
 refactored in such a way.
 \lstinputlisting[label={lst:ArrayFormatting.separateElement},
 caption={Array formatting function with separated element formatting and style decoration.}]
@@ -722,7 +722,7 @@ Then, before making better let first make it worse---
 let's remove all the indenting logic.
 The remaining code should format correctly except that it does no indentation.
 Now, let us make use of the \code{def indent(string)} from
-\autoref{lst:indent-function} to indent the multi-line string of array contents and
+~\autoref{lst:indent-function} to indent the multi-line string of array contents and
 this is only needed in the function \code{arrayToPrettyString}.
 If you are following correctly, you will be surprised to see that all the correct indentation comes
 back as if by magic.
@@ -772,7 +772,7 @@ your optimizations do have a material gain over the compiler,
 the performance gained by sacrificing readability would still be most likely unworthy.
 
 ``What a surprise!'', you may say upon seeing the solution in ~\autoref{lst:NewJsonFormatter} and
-\autoref{lst:Formatter}.
+~\autoref{lst:Formatter}.
 This may be totally unexpected to you at the time when we just completed the first version of
 implementation.
 Truly I want to tell you that this should be the signal you should strive for when you review your

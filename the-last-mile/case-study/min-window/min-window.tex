@@ -128,7 +128,7 @@ The flow of \code{char}s may be pictured as:
 Deposit to the buffer is done in one part of the code, and extraction from the buffer is done in
 another.
 This creates separate grounds for the two major operations and thus promotes modular designs.
-The final solution is presented in \autoref{lst:MinWindowSubstringVerbose}.
+The final solution is presented in ~\autoref{lst:MinWindowSubstringVerbose}.
 
 \lstinputlisting[label={lst:MinWindowSubstringVerbose},
 caption={An earlier implementation for the `Minimum window' problem.}]
@@ -153,9 +153,9 @@ Let us take a moment to reflect on the program and how to improve it.
 As long as one takes the time, it's not hard to spot that
 it has several issues including but not limited to
 \begin{itemize}
-    \item `Loop and half' problem discussed in \autoref{sec:loop-and-a-half-Problem} and this
+    \item `Loop and half' problem discussed in ~\autoref{sec:loop-and-a-half-Problem} and this
     results in significant duplicate code,
-    \item Nested loop also discussed in \autoref{sec:loop-and-a-half-Problem} and this
+    \item Nested loop also discussed in ~\autoref{sec:loop-and-a-half-Problem} and this
     decrease readability,
     \item `Oversize initialization' for finding the first containment window,
     \item `Monolithic, multitasking function', consisting of 80+ lines of code,
@@ -169,21 +169,21 @@ Nevertheless, it is a good starting point---a fully functional correct solution.
 Let's see how we can improve on these identified issues.
 
 First of all, we can attempt to remove the duplicate code from the `loop and a half' problem.
-Using the techniques discussed in \autoref{ch:loops}, particularly
+Using the techniques discussed in ~\autoref{ch:loops}, particularly
 \autoref{sec:loop-and-a-half-Problem}, we can solve this problem by choosing the right loop
-construct and use the `one-more-loop' technique(see \autoref{subsec:one-more-loop}).
+construct and use the `one-more-loop' technique(see ~\autoref{subsec:one-more-loop}).
 Also the `exposed loop variables' problem may also be solved if we use \code{for}-loop properly
 restrict the scopes of relevant variables to the loop body.
 
-Next, note that in \autoref{lst:MinWindowSubstringVerbose}, finding the first containment
+Next, note that in ~\autoref{lst:MinWindowSubstringVerbose}, finding the first containment
 window takes quite a chunk of code to initialize.
-`Initialization' clicks with our learning in \fullref{ch:sentinels}.
+`Initialization' clicks with our learning in ~\fullref{ch:sentinels}.
 Going through the techniques we covered, is it possible to shorten the initialization code?
 It seems that the code for finding the initial containment window is totally a different code
 from that of squeezing it.
 Would sentinel help save this lengthy initialization?
 That's good point.
-Indeed as we discussed in \autoref{ch:sentinels}, sentinel is a preprocessing technique for
+Indeed as we discussed in ~\autoref{ch:sentinels}, sentinel is a preprocessing technique for
 that enables uniform treatment in later code.
 Also note that the target string is a containment window for itself.
 So if we prepend \code{T} onto \code{S}, then in the resulting composite string the initial
@@ -192,12 +192,12 @@ This totally frees us from the lengthy initialization, with the caveat that the 
 squeezing loop need to take care of if the window has left the target string boundary in the
 composite string.
 
-The next biggest problem with \autoref{lst:MinWindowSubstringVerbose} is the nested loops.
+The next biggest problem with ~\autoref{lst:MinWindowSubstringVerbose} is the nested loops.
 One may argue that nested loop is acceptable as long as the layout is readable.
 While there are different aesthetic taste, I would propose to try alternatives before make a
 personal judgement.
 In my opinion, if we can solve a problem with one loop, don't use nested loop for reasons I
-listed in \autoref{ch:loops}.
+listed in ~\autoref{ch:loops}.
 
 \lstinputlisting[label={lst:MinWindowSubstringSentinel},
 caption={A second version of implementation for the `Minimum window' problem.}]
@@ -232,7 +232,7 @@ Let us investigate.
 
 First and foremost, the indexes \code{left} and \code{right} increment takes much code and is
 done repeatedly at several places.
-In \autoref{lst:MinWindowSubstringSentinel} such logic is intermingled with logic for other
+In ~\autoref{lst:MinWindowSubstringSentinel} such logic is intermingled with logic for other
 tasks and telling apart which is which may be hard for first-timers, lest creating a common
 function that can be used for two distinct tasks is challenging.
 There are several connected tasks that distress me when I attempt to refactor this piece of code:
@@ -245,10 +245,10 @@ There are several connected tasks that distress me when I attempt to refactor th
 \end{enumerate}
 Obviously, \code{repository} plays a pivotal role in all these places because all of them consult
 \code{repository} before making a decision.
-In \ref{itm:indexincrement}, \code{repository} is consulted to decide if it contains a \code{char} as key;
-In \ref{itm:substitute}, a surplus in \code{repository} is searched for and deducted as substitute
+In ~\ref{itm:indexincrement}, \code{repository} is consulted to decide if it contains a \code{char} as key;
+In ~\ref{itm:substitute}, a surplus in \code{repository} is searched for and deducted as substitute
 for a pruned \code{char} at the left verge of the window;
-In \ref{itm:recruit}, the newly encountered \code{char} is accounted for in \code{repository}.
+In ~\ref{itm:recruit}, the newly encountered \code{char} is accounted for in \code{repository}.
 
 We seek to factor out the
 logic of incrementing indexes into a function such that it only stops on positions where the
@@ -261,7 +261,7 @@ The function returns a \code{boolean} to indicate if the substitution is success
 Likewise, recruiting is made straightforward as well because the \code{char} on index
 \code{right} is certainly to be recruited as long as the index is a valid index ($<$ \code{S.length()}).
 The only caveat is that the semantic shifting in the meaning of index \code{right}---it used to
-be exclusive in \autoref{lst:MinWindowSubstringSentinel} and now it must be inclusive.
+be exclusive in ~\autoref{lst:MinWindowSubstringSentinel} and now it must be inclusive.
 
 After this round of refactor, the third version is shown in
 \autoref{lst:MinWindowSubstringModular}.
@@ -275,9 +275,9 @@ But this is the ony acceptable version if this code is to be used in production
 environment as for a prestigious company with a sustainable, long-term engineering mission.
 This version of the code is still not perfect.
 For example, the parameter list for function \code{nextIndex} is pretty long.
-Using techniques from \autoref{ch:reusableFunctions},
+Using techniques from ~\autoref{ch:reusableFunctions},
 an instance-based solution will reduce the number of parameters for several functions and this
-solution is presented in \autoref{lst:MinWindowSubstringSolver}.
+solution is presented in ~\autoref{lst:MinWindowSubstringSolver}.
 
 \lstinputlisting[label={lst:MinWindowSubstringSolver},
 caption={An object-oriented problem solver for the `Minimum window' problem.}]

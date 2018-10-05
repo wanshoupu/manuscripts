@@ -5,48 +5,49 @@
 
 \chapter{Loops} \label{ch:loops}
 
-All major programming languages features one or more loop as a type of control flow.
+All major programming languages feature one or more loop types as control flow and
+it is one of the most widely used building block.
+But many developers often haphazardly stumble upon a first-working loop and settle.
+Seldom anyone would try to think about the difference between the varieties of loops,
+even fewer people would try different loop structures and loop types and see
+which best fits the current situation.
+This is so not because these developers have no appetite for better code.
+A majority of them are not even aware that conscious choice of loop types and structures can make a
+marked difference in the quality of code.
+Therefore, I dedicate this chapter as a primer to the topic ``How to close your loop?''
+and I meant it literally.
 
-This chapter is dedicated to the topic ``How to close your loop?'' and I meant it literally.
+``Why!'' you say, ``What's the point for you to talk about loops as a language feature
+outside of the language context?''
+Yes, there are so much to say about loops in their generic sense.
+Similar to the structure in ~\fullref{ch:organizeYourIfElse}, I will share mostly my first-hand
+coding experience throughout the presentation of the chapter.
+Beyond that, this chapter is also presented for completeness since
+later discussions of the interactions between conditional statements and loop is built on
+top of reader's mastery of loop programming.
 
-You can visualize a loop construct as a carousel or a Ferris wheel, with an
-entrance, a number of turns and an exit.
+\section{General information about loops}\label{sec:generalInfoForLoop}
+
 Loop is a powerhouse, a productivity amplifier for programing-with a static loop body,
 one or a few loop variable(s), and nominal overhead code, the loop may be executed as many
 times as needed.
-
-To developers, much of the coding work is spent on choosing the right loop construct, choosing
-loop variable(s), and designing the loop body.
-
 Construction wise, loop is like a machine embedded in computer programs-one prepares
 input, feed it to the loop, and collect the output at the end.
+You can visualize a loop construct as a roulette, a carousel, or a Ferris wheel---it has an
+starting point, an ending point, and a number of turns in between.
+So when it comes to programming a loop, the work involved are usually
+choosing the loop construct, choosing loop variable(s), and filling up the loop body.
 
 \code{for}-loop and \code{while}-loop are the most common looping flow of control that almost all
 languages support.
 \code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C, and
 others but not \python.
-
-``Why!'', you say, ``What makes you talking about loops as a language feature with no
-language context?''
-While loop is the one of the most basic building block for coding, beginners and intermediate
-developers often haphazardly stumble on one loop and found that it works for them and settle.
-Seldom anyone thinks about the difference between the varieties of loops.
-Especially, many are unaware of the fact that conscious choice of loop types can make a marked
-difference in the readability and conciseness your code.
-
-As in in ~\fullref{ch:organizeYourIfElse}, I am sharing my first-hand coding experiences which
-address this beginner's problems.
-Also later discussions about the interplay between conditional statements and loop is built on
-top of a good understanding of the various types of loops.
-So this chapter is also presented for completeness.
-
-But most importantly, I intend this chapter to serve as an inspiration to other enterprising
-programmers to reflect on why they code the way they do and find out ways to improve.
+We will begin with the generic structure of loops.
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
-Although there are some variations, the basic constructs of a loop are the same.
-\@\autoref{tbl:loop-construct} describes the parts of a loop in high-level languages.
 
+Although there are some variations, the basic constructs of a loop are the same.
+\@\autoref{tbl:loop-construct} describes the generic parts of a loop in high-level languages.
 \begin{table}[h]
     \begin{center}
         \caption{Function anatomy\label{tbl:loop-construct}}
@@ -77,12 +78,11 @@ Although there are some variations, the basic constructs of a loop are the same.
         \end{tabular}
     \end{center}
 \end{table}
-
-Depending on the situation, a loop may or may not have certain parts as mentioned above.
+Depending on the situation, a loop may not have all the parts mentioned above.
 
 \section{Loop classification}\label{sec:loopClassification}
 
-As mentioned at beginning of this chapter, a loop may be viewed as a `Lazy Susan' turntable.
+As mentioned at beginning of this chapter, a loop may be viewed as a roulette.
 Depending on the location of the \code{<condition>} statement, there are three possible classes:
 pre-condition loop, mid-condition loop, and post-condition loop.
 
@@ -104,16 +104,21 @@ Questions to ask and answer
 \begin{itemize}
     \item
     what's the initialization?
-    Initialization is the starting points. To iterate over an array, for example,
+    Initialization is the starting points.
+    To iterate over an array, for example,
     should the initialization be i = -1 or i = 0?
     \item
     when and where should state updates, \textit{e.g.}, variable increment/decrement, happen?
-    in the 3rd part of the \code{for} statement? or in the body?
-    It's more flexible (sometimes necessary when certain condition has to be met to increment/decrement)
-    if the increment/decrement is in the body. But it's more concise to put in the for-statement
+    in the 3rd part of the \code{for} statement?
+    or in the body?
+    It's more flexible (sometimes necessary when certain condition
+    has to be met to increment/decrement)
+    if the increment/decrement is in the body.
+    But it's more concise to put in the for-statement
     \item
     What's the termination condition and How many termination points?
-    Often, infinite loop is resulted when incorrect assumption is made about the termination condition
+    Often, infinite loop is resulted when incorrect assumption is made
+    about the termination condition
 \end{itemize}
 
 \begin{minipage}{\linewidth}
@@ -199,7 +204,7 @@ I like for-loop for the limited scope of its loop-variables.
 But sometimes limited scope may be a hinder for post-processing with \code{for}-loop.
 I will often balance out the trade-offs and if I choose \code{for}-loop, I will use
 `one-more-loop' technique (see ~\autoref{subsec:one-more-loop} for more details) to beat
-post-procesing outside of the loop.
+post-processing outside of the loop.
 
 \subsection{One-more-loop with in-loop \code{return} solution}\label{subsec:one-more-loop}
 
@@ -231,7 +236,7 @@ When using a loop for simple step through, one usually steps through one element
 However this model does not work for all cases.
 Sometimes one need to step through with a varying pace conditioned by the elements encountered
 and this is what I called Nonlinear stepping.
-Nonlinear stepping has an important application for simplify logics within a loop.
+Nonlinear stepping has an important application for simplifying logic within a loop.
 
 \subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
 
@@ -280,7 +285,10 @@ Under certain circumstances, use of \code{continue} can have magical power to si
     caption={Real case using continue in a loop}]{loop/use_of_continue.py}
 \end{minipage}
 
-\subsection{Noname section}
+\subsection{Conclusion}
+
+But most importantly, I intend this chapter to serve as an inspiration to other enterprising
+programmers to reflect on why they code the way they do and find out ways to improve.
 
 But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
 Once I get a better idea for the implementation, I will settle down to the best fit.

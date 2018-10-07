@@ -82,16 +82,10 @@ After control is yielded by it, output, if any, is collected for the rest of the
 You can visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
 three of which shares the properties of a circular sequence---an sequence with rotational
 degree of freedom.
-After one onboards a Ferris wheel in one of the cart,
-it starts looping around until some cart requests for a stop.
-In all cases, the entrance point, the termination point(s), and the loop body are arranged
-around the circle.
-The entrance point is usually unique whereas the termination point(s) may be more than one
-within the loop body.
-Thus, loop design involves arranging for the circular sequence (logic) and picking the
-starting point, ending points, and a number of turns in between.
-Even after everything has been laid out, there is still one more degree of freedom---rotation
-as shown in ~\autoref{fig:loop-rotation}.
+Even after everything has been laid out onboard, there is still the degree of
+freedom of rotation as shown in ~\autoref{fig:loop-rotation}.
+Thus, loop design involves arranging loop logic in the circular sequence and picking the
+entrance and termination ports.
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
@@ -100,6 +94,29 @@ as shown in ~\autoref{fig:loop-rotation}.
 Depending on the location of the main loop condition checking statement, loops are roughly
 classified as:
 pre-condition loop, post-condition loop, mid-condition loop.
+
+% TODO illustrate use of different loop constructs with chicken-and-egg problem.
+% Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
+% while(eggs) {
+%   hatch()
+%   if (has_hen()) {
+        lay()
+%   }
+% }
+%
+% do {
+%   hatch()
+% } while(eggs);
+%
+
+% another example
+% investment and balance
+% One is allowed to invest his bank account in stock only if his balance is > zero or if he
+% hasn't invested before.
+% Then we can use do...while
+% but if one is only if his balance is > zero, then we have to use
+% while(...)
+
 For convenience, programming languages frequently supports more than one types of loops.
 Depending on the entry point into the loop circular sequence and the programming language
 of choice,
@@ -114,6 +131,8 @@ programming language of choice together satisfies majority of programming requir
 The best practice for loop design is to choose a loop construct
 that is a closest match to your programming requirement so as to minimize loop customization.
 
+These words may sound blurry and abstract to you.
+So let us use examples to illustrate the ideas.
 %TODO make figure
 
 \subsection{Loop class I: Pre-condition}\label{subsec:pre-conditionLoop}

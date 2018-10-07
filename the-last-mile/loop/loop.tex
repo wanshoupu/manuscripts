@@ -7,6 +7,9 @@
 
 All major programming languages feature one or more loop types as control flow and
 it is one of the most widely used building block.
+Loop is a programing productivity amplifier---with a static loop body and
+a scarce of overhead code (\textit{e.g.}, loop variables), the loop may be executed as many
+times as needed.
 But many developers often haphazardly stumble upon a first-working loop and settle.
 Seldom anyone would try to think about the difference between the varieties of loops,
 even fewer people would try different loop structures and loop types and see
@@ -26,26 +29,15 @@ Beyond that, this chapter is also presented for completeness since
 later discussions of the interactions between conditional statements and loop is built on
 top of reader's mastery of loop programming.
 
-\section{General information about loops}\label{sec:generalInfoForLoop}
+\section{Loop anatomy}\label{sec:loopAnatomy}
 
-Loop is a powerhouse, a productivity amplifier for programing-with a static loop body,
-one or a few loop variable(s), and nominal overhead code, the loop may be executed as many
-times as needed.
-Construction wise, loop is like a machine embedded in computer programs-one prepares
-input, feed it to the loop, and collect the output at the end.
-You can visualize a loop construct as a roulette, a carousel, or a Ferris wheel---it has an
-starting point, an ending point, and a number of turns in between.
-So when it comes to programming a loop, the work involved are usually
-choosing the loop construct, choosing loop variable(s), and filling up the loop body.
-
+This section is an overview of loop structures in a few programming languages of choice for
+bookkeeping purposes.
 \code{for}-loop and \code{while}-loop are the most common looping flow of control that almost all
 languages support.
 \code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C, and
 others but not \python.
 We will begin with the generic structure of loops.
-
-\section{Loop anatomy}\label{sec:loopAnatomy}
-
 Although there are some variations, the basic constructs of a loop are the same.
 \@\autoref{tbl:loop-construct} describes the generic parts of a loop in high-level languages.
 \begin{table}[h]
@@ -80,15 +72,53 @@ Although there are some variations, the basic constructs of a loop are the same.
 \end{table}
 Depending on the situation, a loop may not have all the parts mentioned above.
 
-\section{Loop classification}\label{sec:loopClassification}
+\section{Loop Design}\label{sec:LoopDesignConsideration}
 
-As mentioned at beginning of this chapter, a loop may be viewed as a roulette.
-Depending on the location of the \code{<condition>} statement, there are three possible classes:
-pre-condition loop, mid-condition loop, and post-condition loop.
+From construction perspective, a loop is like an self-contained machine embedded in program.
+Before the loop, effort is often spent to deliberately set up the machine.
+At execution, the machine is triggered as control flows to it.
+After control is yielded by it, output, if any, is collected for the rest of the program.
 
-\subsection{Pre-condition loop}\label{subsec:pre-conditionLoop}
+You can visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
+three of which shares the properties of a circular sequence---an sequence with rotational
+degree of freedom.
+After one onboards a Ferris wheel in one of the cart,
+it starts looping around until some cart requests for a stop.
+In all cases, the entrance point, the termination point(s), and the loop body are arranged
+around the circle.
+The entrance point is usually unique whereas the termination point(s) may be more than one
+within the loop body.
+Thus, loop design involves arranging for the circular sequence (logic) and picking the
+starting point, ending points, and a number of turns in between.
+Even after everything has been laid out, there is still one more degree of freedom---rotation
+as shown in ~\autoref{fig:loop-rotation}.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
+    \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
+\end{figure}
+Depending on the location of the main loop condition checking statement, loops are roughly
+classified as:
+pre-condition loop, post-condition loop, mid-condition loop.
+For convenience, programming languages frequently supports more than one types of loops.
+Depending on the entry point into the loop circular sequence and the programming language
+of choice,
+a loop construct is often more convenient than others.
+Sometimes the termination condition checking is blended with the loop body with one or more
+statement of \code{break} or \code{return}.
+Other customization constructs are available in some programming languages such as
+`\code{continue}' statement by which part of the loop body may be skipped.
+\code{break}, \code{return}, and \code{continue} together with various loop constructs of
+programming language of choice together satisfies majority of programming requirements (see
+~\autoref{fig:fine-tune-loop-rotation}).
+The best practice for loop design is to choose a loop construct
+that is a closest match to your programming requirement so as to minimize loop customization.
 
-Pre-condition loop is the simplest loop and amongst them, \code{while} loop is the simplest (see
+%TODO make figure
+
+\subsection{Loop class I: Pre-condition}\label{subsec:pre-conditionLoop}
+
+Pre-condition loop is the simplest loop and amongst them, for example \code{while}-loop (see
 ~\autoref{lst:while-loop}).
 
 \begin{minipage}{\linewidth}
@@ -142,8 +172,9 @@ I like for-loop for the limited scope of its loop-variables.
 But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
 Once I get a better idea for the implementation, I will settle down to the best fit.
 
+%TODO make figure
 
-\subsection{Mid-condition loop}\label{subsec:mid-conditionLoop}
+\subsection{Loop class II: Mid-condition loop}\label{subsec:mid-conditionLoop}
 
 There is rarely any construct that directly support mid-condition loop \textit{per se}.
 Combining a \code{while (true)} with a conditional \code{break} is the closest approximation of a
@@ -154,7 +185,7 @@ mid-condition loop (\autoref{lst:mid-condition-loop}).
     caption={Mid-condition loop structure.}]{loop/mid_condition_loop.java}
 \end{minipage}
 
-\subsection{Post-condition loop}\label{subsec:post-conditionLoop}
+\subsection{Loop class III: Post-condition loop}\label{subsec:post-conditionLoop}
 
 The \code{do-while} loop featured in C, \cpp, or \java, but not \python, is a good example of
 post-condition loop (\autoref{lst:post-condition-loop}).
@@ -167,11 +198,12 @@ post-condition loop (\autoref{lst:post-condition-loop}).
     albeit duplicate code.
 \end{minipage}
 
-\section{The \textit{loop-and-a-half} problem}\label{sec:loop-and-a-half-Problem}
+\section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 
-``Why do we need so these varieties of loops?'' you say.
+``Why do we need the varieties of loops?'' you ask,
+``Is there a one-size-fit-all loop?''
 
-To answer your question, we need to start with research dated back 1966.
+To answer this question, we need to start with research dated back 1966.
 In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
 unnecessary and programs containing them can be transformed to use only conditional statements
 and loops\cite{Bohm:1966}.

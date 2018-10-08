@@ -94,33 +94,11 @@ entrance and termination ports.
 Depending on the location of the main loop condition checking statement, loops are roughly
 classified as:
 pre-condition loop, post-condition loop, mid-condition loop.
-
-% TODO illustrate use of different loop constructs with chicken-and-egg problem.
-% Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
-% while(eggs) {
-%   hatch()
-%   if (has_hen()) {
-        lay()
-%   }
-% }
-%
-% do {
-%   hatch()
-% } while(eggs);
-%
-
-% another example
-% investment and balance
-% One is allowed to invest his bank account in stock only if his balance is > zero or if he
-% hasn't invested before.
-% Then we can use do...while
-% but if one is only if his balance is > zero, then we have to use
-% while(...)
-
-For convenience, programming languages frequently supports more than one types of loops.
+For programmer's convenience, programming languages frequently supports more than one types of
+loops.
 Depending on the entry point into the loop circular sequence and the programming language
 of choice,
-a loop construct is often more convenient than others.
+some loop construct is often more convenient than others.
 Sometimes the termination condition checking is blended with the loop body with one or more
 statement of \code{break} or \code{return}.
 Other customization constructs are available in some programming languages such as
@@ -128,14 +106,66 @@ Other customization constructs are available in some programming languages such 
 \code{break}, \code{return}, and \code{continue} together with various loop constructs of
 programming language of choice together satisfies majority of programming requirements (see
 ~\autoref{fig:fine-tune-loop-rotation}).
+%TODO make figure
 The best practice for loop design is to choose a loop construct
 that is a closest match to your programming requirement so as to minimize loop customization.
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
-%TODO make figure
+Say a particular bank allows customers to invest in stocks with their bank accounts.
+The rule is that one is allowed to invest if and only if his balance is > zero.
+Then for a particular account \code{accnt}, the program would look like
+\begin{lstlisting}
+    while(accnt.balance > 0) {
+    accnt.invest();
+    }
+\end{lstlisting}
+
+If the rule is changed such that one is allowed to invest if and only if his balance is > zero
+\emph{or if the customer doesn't have investment history (hasn't invested before)}.
+We would refactor the above code as
+\begin{lstlisting}
+    while(accnt.balance > 0 || accnt.investmentHistory == null) {
+    accnt.invest();
+    }
+\end{lstlisting}
+In either case, the pre-condition loop is the best fit.
+For another example, we are to develop a command line tool that takes input from \code{stdin}.
+The tool does a bunch of cool stuff with non-empty user inputs and terminates when user simply hits
+`return' key (in which case input string length is zero).
+Then the best loop construct for that would be mid-condition loop.
+\begin{lstlisting}
+    while(true) {
+    str = stdin.read();
+    if (str.isEmpty()) break;
+    cool_stuff(str);
+    }
+\end{lstlisting}
+For yet another example, a dice spinning game.
+One is allowed to spin a dice $n$ times and the maximum number he got is used for subsequent move.
+The most succinct code for that may be
+\begin{lstlisting}
+    maxSpin = 0
+    do {
+    maxSpin = max(maxSpin, spinDice());
+    } while ();
+\end{lstlisting}
+
 
 \subsection{Loop class I: Pre-condition}\label{subsec:pre-conditionLoop}
+% TODO illustrate use of different loop constructs with chicken-and-egg problem.
+% Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
+% while(eggs) {
+%   hatch()
+%   if (has_hen()) {
+%        lay()
+%   }
+% }
+%
+% do {
+%   hatch()
+% } while(eggs);
+%
 
 Pre-condition loop is the simplest loop and amongst them, for example \code{while}-loop (see
 ~\autoref{lst:while-loop}).

@@ -112,47 +112,41 @@ that is a closest match to your programming requirement so as to minimize loop c
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
-Say a particular bank allows customers to invest in stocks with their bank accounts.
-The rule is that one is allowed to invest if and only if his balance is > zero.
-Then for a particular account \code{accnt}, the program would look like
-\begin{lstlisting}
-    while(accnt.balance > 0) {
-    accnt.invest();
-    }
-\end{lstlisting}
+Feel free to pause and give them a thought yourself before reading my suggested approaches.
 
+Say, a bank allows customers to invest in stocks with their bank accounts.
+The rule is that one is allowed to take unlimited `\code{invest()}' actions
+if and only if one's balance is greater than zero.
+Each action of investment may result in gain or loss which is applied back to the account.
+Then for a particular account, the program would look like
+\lstinputlisting{loop/pre_test_loop.java}
+To ensure the enforcement of policy, pre-test loop is used so that
+each investment action is subject to a balance check before execution.
 If the rule is changed such that one is allowed to invest if and only if his balance is > zero
-\emph{or if the customer doesn't have investment history (hasn't invested before)}.
+\emph{or if the customer doesn't have investment history (first time invester)}.
 We would refactor the above code as
-\begin{lstlisting}
-    while(accnt.balance > 0 || accnt.investmentHistory == null) {
-    accnt.invest();
-    }
-\end{lstlisting}
+\lstinputlisting{loop/pre_test_loop1.java}
 In either case, the pre-condition loop is the best fit.
-For another example, we are to develop a command line tool that takes input from \code{stdin}.
-The tool does a bunch of cool stuff with non-empty user inputs and terminates when user simply hits
-`return' key (in which case input string length is zero).
+
+For another example, suppose we are to develop a command line tool that takes input from
+\code{stdin}.
+The tool interprets user input and does a bunch of cool stuff.
+It terminates when user types `exit' or simply hits `return' key
+(in which case the input string is empty).
 Then the best loop construct for that would be mid-condition loop.
-\begin{lstlisting}
-    while(true) {
-    str = stdin.read();
-    if (str.isEmpty()) break;
-    cool_stuff(str);
-    }
-\end{lstlisting}
-For yet another example, a dice spinning game.
-One is allowed to spin a dice $n$ times and the maximum number he got is used for subsequent move.
-The most succinct code for that may be
-\begin{lstlisting}
-    maxSpin = 0
-    do {
-    maxSpin = max(maxSpin, spinDice());
-    } while ();
-\end{lstlisting}
+\lstinputlisting{loop/mid_test_loop.java}
+
+For yet another example, in a cooking competition game, each chef is to cook 3-dish
+meal---appetizer, main, and desert---with the following rules:
+\begin{enumerate}
+    \item He or she first makes one as a display dish.
+    \item she then goes on to make same dishes for each referee who orders her meal for judgement
+    until all orders are finished.
+\end{enumerate}
+This program is best coded with \code{do-while} loop as
+\lstinputlisting{loop/post_test_loop.java}
 
 
-\subsection{Loop class I: Pre-condition}\label{subsec:pre-conditionLoop}
 % TODO illustrate use of different loop constructs with chicken-and-egg problem.
 % Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
 % while(eggs) {
@@ -167,13 +161,7 @@ The most succinct code for that may be
 % } while(eggs);
 %
 
-Pre-condition loop is the simplest loop and amongst them, for example \code{while}-loop (see
-~\autoref{lst:while-loop}).
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:while-loop},
-    caption={Pre-condition while loop structure.}]{loop/while_loop.java}
-\end{minipage}
+\subsection{C-style For-loop}\label{subsec:for-loop}
 
 Another form of pre-condition loop is the conventional C-like \code{for}-loop as in
 ~\autoref{lst:for-loop}.
@@ -205,47 +193,48 @@ Questions to ask and answer
     caption={For loop structure as a pre-condition.}]{loop/for_loop.java}
 \end{minipage}
 
-There are some interesting aspects about for-loop.
-The \code{<init>} is a statement to be executed only once before control enters the loop.
-The \code{<condition>} may be regarded as the \emph{first} statement of loop body.
-The \code{<condition>} are always executed one more time than the rest of loop body
-unless there are break or continue statements inside.
-The \code{<post-stmt>} is the \emph{last} statement of for-loop body.
-and
-The \code{<post-stmt>} is always executed as many times as the rest of loop body even when there
-are \code{continue} in the loop body.
-But when \code{break} statements are there, the \code{<post-stmt>} will be skipped.
+There are some interesting aspects about for-loop header statements.
+\begin{enumerate}
+    \item The \code{<init>} is a statement to be executed only once as control is transferred to
+    the loop.
+    \item The \code{<condition>} may be regarded as the \emph{first} statement of the loop body.
+    \item The \code{<condition>} are executed one more time than the rest of loop body
+    unless loop is terminated with a \code{break} statement.
+    \item The \code{<aftrtht>} is the afterthought statement executed at the end of each
+    round, unless loop terminates with a \code{break} statement.
+    \item The \code{<aftrtht>} is always executed as many times as the rest of loop body
+    even in the presence of \code{continue}.
+    \item All three header statements are optional.
+    Namely, you may legally code `\code{for(;;);'} for infinite loop.
+\end{enumerate}
 
 
-I like for-loop for the limited scope of its loop-variables.
-But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
-Once I get a better idea for the implementation, I will settle down to the best fit.
+Another desirable feature of \code{for}-loop is its containment---
+scope of loop-variables are restrained within the loop.
+For example the following code wouldn't compile
+\begin{lstlisting}
+    for (int i = 0; i < 10; ++i);
+    System.out.println(i); // i is undefined
+\end{lstlisting}
+In contrast, loop variables used by the \code{while}-loop condition have to be declared
+outside of the loop and extends beyond thereafter.
+Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
+
+The most important thing when programming loops, just as any other part of coding, is to
+first have a working version with any loop type in hand and then experiment with rotating the loop,
+try on different types, move the header statements around in \code{for}-loop, \textit{etc}.
+To remind myself that my code is temporary, I often
+start with \code{while ( true )} or \code{for (; ; )} for prototyping.
+Once that is working, I often have gotten a good grasp for the implementation.
+Then I will start to pick among viable loop constructs best fits and settle down on one.
 
 %TODO make figure
 
-\subsection{Loop class II: Mid-condition loop}\label{subsec:mid-conditionLoop}
-
-There is rarely any construct that directly support mid-condition loop \textit{per se}.
-Combining a \code{while (true)} with a conditional \code{break} is the closest approximation of a
-mid-condition loop (\autoref{lst:mid-condition-loop}).
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:mid-condition-loop},
-    caption={Mid-condition loop structure.}]{loop/mid_condition_loop.java}
-\end{minipage}
-
-\subsection{Loop class III: Post-condition loop}\label{subsec:post-conditionLoop}
-
-The \code{do-while} loop featured in C, \cpp, or \java, but not \python, is a good example of
-post-condition loop (\autoref{lst:post-condition-loop}).
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:post-condition-loop},
-    caption={Post-condition loop structure.}]{loop/post_condition_loop.java}
-    This is equivalent to
-    \lstinputlisting{loop/post_condition_loop_equivalent.java}
-    albeit duplicate code.
-\end{minipage}
+\lstinputlisting[]{loop/NQueen.java}
+\lstinputlisting[]{loop/NumberOfPath.java}
+\lstinputlisting[]{loop/iterative_graph_traversal.java}
+\lstinputlisting[]{loop/array_jumper.java}
+\lstinputlisting[]{loop/WildcardStringMatching.java}
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 

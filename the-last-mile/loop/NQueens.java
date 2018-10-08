@@ -46,7 +46,7 @@ public class NQueens {
         return result;
     }
 
-    //place ith queen to the next feasiable position or 0 if none found
+    //place ith queen to the next feasible position or 0 if none found
     //v = 1 + max_position
     void feasiblePlace(int[] board, int i, int v){
         for(board[i] = (board[i] + 1) % v; board[i] != 0; board[i] = (board[i] + 1) % v){

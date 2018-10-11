@@ -1,9 +1,3 @@
-package org.shoupu.backtracking;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class NQueens {
     public int totalNQueens(int n) {
         // board is an array of size n
@@ -15,36 +9,16 @@ public class NQueens {
         int result = 0;
         // terminate when all queens are moved off-board at which point, all the feasible
         // configurations would have been enumerated.
+
+        //BUG: i = 0; loop-condition was board[0] == 0
+        //i started at 0 and board[0] was assigned 0
+        // which means this for loop is skipped
         for (int i = 1; board[0] != 0; ) {
             if (i == n) {
                 ++result;
                 --i;
             } else {
                 //place ith queen to the next feasible position or 0, if none found
-                place(board, i);
-                if (board[i] == 0) --i;
-                else ++i;
-            }
-        }
-        return result;
-    }
-
-    public List<List<String>> solveNQueens(int n) {
-        int[] board = new int[n]; // board records the queens' position
-        //board positions are 1..n
-        //offboard position is 0
-        //initialize with first queen on board, all other queens off-board
-        board[0] = 1;
-        List<List<String>> result = new ArrayList<>();
-        //BUG: i = 0; loop-condition was board[0] == 0
-        //i started at 0 and board[0] was assigned 0
-        // which means this for loop is skipped
-        for (int i = 1; board[0] != 0; ) {
-            if (i == n) {
-                result.add(snapshot(board));
-                --i;
-            } else {
-                //place next queen to a feasible position or 0, if none found
                 place(board, i);
                 if (board[i] == 0) --i;
                 else ++i;
@@ -88,22 +62,5 @@ public class NQueens {
         }
         // all previous queens are at peace with ith queen
         return true;
-    }
-
-    List<String> snapshot(int[] board) {
-        List<String> shot = new ArrayList<>();
-        for (int i = 0; i < board.length; ++i) {
-            shot.add(printRow(board, i));
-        }
-        return shot;
-    }
-
-    String printRow(int[] board, int i) {
-        char[] ca = new char[board.length];
-        Arrays.fill(ca, 0, board.length, '.');
-        //board positions are 1..n
-        //BUG: ca[i] = 'Q';
-        ca[board[i] - 1] = 'Q';
-        return new String(ca);
     }
 }

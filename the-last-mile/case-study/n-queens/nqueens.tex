@@ -16,10 +16,20 @@ If our first queen is moved off board (at position 0), then we are done with ite
 This is similar to the `next permutation' problem.
 
 
-\lstinputlisting[label={lst:ArrayFormatting.separateElement},
-caption={Array formatting function with separated element formatting and style decoration.}]
+\lstinputlisting[label={lst:OldNQueensSolution},
+caption={Count the number of solutions for the `$N$-queens' problem.}]
 {case-study/n-queens/NQueens_old.java}
 
-\lstinputlisting[label={lst:ArrayFormatting.separateElement},
-caption={Array formatting function with separated element formatting and style decoration.}]
+After refactor to better SRP and shrunk parameter list for functions \code{place()} and
+\code{check()}.
+
+\lstinputlisting[label={lst:NQueensSolution},
+caption={Refactored code based on ~\autoref{lst:OldNQueensSolution} for the `$N$-queens' problem.}]
 {case-study/n-queens/NQueens.java}
+
+If one want to list solutions instead of counting them, the changes I made on top of the
+~\autoref{lst:NQueensSolution} are shown in ~\autoref{lst:NQueensSolutionListSolutions}.
+
+\lstinputlisting[label={lst:NQueensSolutionListSolutions},
+caption={List solutions for the `$N$-queens' problem.}]
+{case-study/n-queens/NQueensListSolutions.java}

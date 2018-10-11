@@ -1,0 +1,25 @@
+%%
+%% Author: shoupu_wan
+%% 10/10/18
+%%
+
+\chapter{$N$ Queens}\label{ch:n-queens}
+
+\section{Solution}
+Our solution is backtracking.
+We are going to iterate through the solutions in digital-clock order.
+We place the first queen at the first possible position.
+If current placement is feasible, we keep exploring the current solution space.
+If we encountered dead-end, we backtrack to previous working solution by removing the last queen.
+If our first queen is moved off board (at position 0), then we are done with iteration.
+
+This is similar to the `next permutation' problem.
+
+
+\lstinputlisting[label={lst:ArrayFormatting.separateElement},
+caption={Array formatting function with separated element formatting and style decoration.}]
+{case-study/n-queens/NQueens_old.java}
+
+\lstinputlisting[label={lst:ArrayFormatting.separateElement},
+caption={Array formatting function with separated element formatting and style decoration.}]
+{case-study/n-queens/NQueens.java}

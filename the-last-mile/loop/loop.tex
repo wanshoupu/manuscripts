@@ -221,31 +221,26 @@ outside of the loop and extends beyond thereafter.
 Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
 
 The most important thing when programming loops, just as any other part of coding, is to
-first have a working version with any loop type in hand and then experiment with rotating the loop,
-try on different types, move the header statements around in \code{for}-loop, \textit{etc}.
-To remind myself that my code is temporary, I often
-start with \code{while ( true )} or \code{for (; ; )} for prototyping.
-Once that is working, I often have gotten a good grasp for the implementation.
-Then I will start to pick among viable loop constructs best fits and settle down on one.
+first get a working version with any loop type and then experiment with rotating the loop,
+try on different loop constructs, move the condition
+and afterthought statements around, \textit{etc}.
+In my own case, I often
+start with \code{while ( true )} or \code{for (; ; )} for prototyping and as a reminder to
+myself that this piece of code is temporary.
+Once that is working, I often have gotten a good grasp of the problem and the solutions.
+Then I will start to pick among viable loop constructs the best fits and settle down with one.
 
 %TODO make figure
-
-\lstinputlisting[]{loop/NQueen.java}
-\lstinputlisting[]{loop/NumberOfPath.java}
-\lstinputlisting[]{loop/iterative_graph_traversal.java}
-\lstinputlisting[]{loop/array_jumper.java}
-\lstinputlisting[]{loop/WildcardStringMatching.java}
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 
 ``Why do we need the varieties of loops?'' you ask,
 ``Is there a one-size-fit-all loop?''
-
-To answer this question, we need to start with research dated back 1966.
+To answer this question, we need to start with a research dated back 1966.
 In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
 unnecessary and programs containing them can be transformed to use only conditional statements
 and loops\cite{Bohm:1966}.
-Along that line of thought, more researches which might have gone too far, attempted to remove
+Along that line of thought, more researches, which might have gone too far, are attempted to remove
 other `nuances' in computer programming such as \code{break} and \code{return} in the middle of a
 loop to reduce control flow complexity and promote code composability.
 But doing so are with prices.
@@ -253,12 +248,12 @@ More local variables are needed.
 Even worse, it may require duplicate code before or after a loop.
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
 
-In summary, the \textit{loop-and-a-half} problem is the problem of partial code duplication of a
-loop body caused by unnecessarily restricting in-between termination of a loop.
+So in a disguise, the \textit{loop-and-a-half} problem is code duplication problem
+caused by unnecessarily restricting immature termination within a loop.
 Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
 problem.
-In the following sections, we will study how to programming techniques that alleviate
-\textit{loop-and-a-half} problems with a few case studies.
+In the following sections, we will study how programming techniques can alleviate
+`loop-and-a-half' problem with a few case studies.
 
 % TODO find examples that will illustrate:
 \begin{itemize}
@@ -369,3 +364,7 @@ Once I get a better idea for the implementation, I will settle down to the best 
     \item statements are clear, one can choose a suitable, concise loop statements
 \end{itemize}
 
+\lstinputlisting[]{loop/NumberOfPath.java}
+\lstinputlisting[]{loop/iterative_graph_traversal.java}
+\lstinputlisting[]{loop/array_jumper.java}
+\lstinputlisting[]{loop/WildcardStringMatching.java}

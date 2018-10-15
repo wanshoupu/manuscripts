@@ -138,28 +138,6 @@ Once that is working, I often have gotten a good grasp of the problem and the so
 Then I will start to pick among viable loop constructs the best fits and settle down with one.
 %TODO make figure
 
-\section{Loop Rotation}\label{sec:LoopDesignConsideration}
-
-From construction perspective, a loop is like an self-contained machine embedded in program.
-Before the loop, effort is often spent to deliberately set up the machine.
-At execution, the machine is triggered as control flows to it.
-After control is yielded by it, output, if any, is collected for the rest of the program.
-
-You can visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
-three of which shares the properties of a circular sequence---an sequence with rotational
-degree of freedom.
-Even after everything has been laid out onboard, there is still the degree of
-freedom of rotation as shown in ~\autoref{fig:loop-rotation}.
-Thus, loop design involves arranging loop logic in the circular sequence and picking the
-entrance and termination ports.
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
-    \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
-\end{figure}
-Depending on the location of the main loop condition checking statement, loops can be roughly
-classified as:
-pre-condition loop, post-condition loop, mid-condition loop.
 For programmer's convenience, programming languages frequently supports one or more types of
 loops.
 Depending on the entry point into the loop circular sequence and the programming language
@@ -174,26 +152,6 @@ loop may be skipped under certain circumstances.
 \code{break}, \code{return}, and/or \code{continue} along with loop constructs of
 programming language of choice fulfills majority of programming requirements (see
 ~\autoref{fig:fine-tune-loop-rotation}).
-%TODO make figure
-The best practice when it comes to programming with loops, as any other types of coding,
-is to get a \emph{working version} (WV).
-Then inspect the WV for pre-loop initialization and post-loop processing.
-If you can spot duplicate code of any severity, it may be a sign for loop rotation.
-Experiment with loop rotation starting with the WV:
-try on different loop constructs, move the condition
-and afterthought statements around, \textit{etc}.
-The purpose of this is to minimize or eliminate duplicate code in the pre-loop initialization and
-post-loop processing.
-Finally, narrow down to a loop construct
-that is a close match to your programming requirement
-minimal loop customization, if needed at all.
-
-The following are signs to look for when doing loop rotation:
-\begin{enumerate}
-    \item Initial values are not primitive but effected;
-    \item Heavy initialization that takes a whole loop or `almost a loop' to calculate;
-    \item Post processing repeats all or part of the loop body.
-\end{enumerate}
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
@@ -231,7 +189,6 @@ meal---appetizer, main, and desert---with the following rules:
 This program is best coded with \code{do-while} loop as
 \lstinputlisting{loop/post_test_loop.java}
 
-
 % TODO illustrate use of different loop constructs with chicken-and-egg problem.
 % Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
 % while(eggs) {
@@ -245,6 +202,49 @@ This program is best coded with \code{do-while} loop as
 %   hatch()
 % } while(eggs);
 %
+
+\section{Loop Rotation}\label{sec:LoopDesignConsideration}
+
+One can visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
+three of which shares the properties of a circular sequence---an sequence with rotational
+degree of freedom.
+Even after everything has been laid out onboard, there are still rotations as degrees of
+freedom as shown in ~\autoref{fig:loop-rotation}.
+Thus, one of the task in
+loop design is to arrange loop logic in circular sequence and pick the best
+entrance and termination ports.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
+    \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
+\end{figure}
+Depending on the location of the main loop condition checking statement, loops can be roughly
+classified as:
+pre-condition loop, post-condition loop, mid-condition loop.
+If a program is a thread, then a loop is a spool---because of spool, thread is compactly
+and neatly organized.
+If there are duplicate code before or after the loop, that means we need to spool up
+and `tighten' loose thread around it.
+The following are signs to look for when doing loop rotation:
+\begin{enumerate}
+    \item Initial values are not primitive but effected;
+    \item Heavy initialization that takes a whole loop or `almost a loop' to calculate;
+    \item Post processing repeats all or part of the loop body.
+\end{enumerate}
+
+%TODO make figure
+The best practice when it comes to programming with loops, as any other types of coding,
+is to get a \emph{working version} (WV).
+Then inspect the WV for pre-loop initialization and post-loop processing.
+If you can spot duplicate code of any severity, it may be a sign for loop rotation.
+Experiment with loop rotation starting with the WV:
+try on different loop constructs, move the condition
+and afterthought statements around, \textit{etc}.
+The purpose of this is to minimize or eliminate duplicate code in the pre-loop initialization and
+post-loop processing.
+Finally, narrow down to a loop construct
+that is a close match to your programming requirement
+minimal loop customization, if needed at all.
 
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
@@ -263,7 +263,7 @@ More local variables are needed.
 Even worse, it may require duplicate code before or after a loop.
 This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
 
-So in a disguise, the \textit{loop-and-a-half} problem is code duplication problem
+So in disguise, the \textit{loop-and-a-half} problem is code duplication problem
 caused by unnecessarily restricting immature termination within a loop.
 Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
 problem.

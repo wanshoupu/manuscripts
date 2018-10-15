@@ -72,7 +72,73 @@ Although there are some variations, the basic constructs of a loop are the same.
 \end{table}
 Depending on the situation, a loop may not have all the parts mentioned above.
 
-\section{Loop Design}\label{sec:LoopDesignConsideration}
+\subsection{C-style For-loop}\label{subsec:for-loop}
+
+Beside the universal \code{while}-loop, another pre-test loop is the conventional
+C-like \code{for}-loop as
+\lstinputlisting{loop/for_loop.java}
+This is not to be confused with the iterator-based \code{for}-loop such as
+\begin{lstlisting}
+    for (Object obj : list)
+\end{lstlisting}
+
+There are some interesting aspects about \code{for}-loop header statements.
+\begin{enumerate}
+    \item The \code{<init>} is a statement to be executed only once as control is transferred to
+    the loop.
+    \item The \code{<condition>} may be regarded as the \emph{first} statement of the loop body.
+    \item The \code{<condition>} are executed one more time than the rest of loop body
+    unless loop is terminated with a \code{break} statement.
+    \item The \code{<aftrtht>} is the afterthought statement executed at the end of each
+    round, unless loop terminates with a \code{break} statement.
+    \item The \code{<aftrtht>} is always executed as many times as the rest of loop body
+    even in the presence of \code{continue}.
+    \item All three header statements are optional.
+    Namely, you may legally code `\code{for(;;);'} for infinite loop.
+\end{enumerate}
+
+
+Design considerations for a \code{for}-loop are summarized below.
+\begin{itemize}
+    \item
+    Preparation code for a loop is called initialization
+    and it determines the starting point of the loop.
+    What's the best initialization?
+    Should it be \code{int i = -1} or \code{int i = 0}?
+    \item
+    When and where should state updates?
+    For example, where should \code{i++} or \code{j--} be placed?
+    in the 3rd part of the \code{for} statement?
+    or in the body?
+    It's more flexible (sometimes necessary when certain condition
+    has to be met to increment/decrement)
+    if the increment/decrement is in the body.
+    But it's more concise if done in the afterthought of a for-statement.
+    \item
+    What's the termination condition and How many termination points?
+    Many a time, infinite loop is resulted when incorrect assumption is made
+    about the termination condition.
+\end{itemize}
+
+In my opinion, the most desirable feature of a \code{for}-loop is its containment---
+scope of loop-variables are contained within the loop.
+For example the following code wouldn't compile
+\begin{lstlisting}
+    for (int i = 0; i < 10; ++i) {}
+    System.out.println(i); // i is undefined
+\end{lstlisting}
+In contrast, loop variables used by the \code{while}-loop condition have to be declared
+outside of the loop and extends beyond thereafter.
+Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
+
+In practice, I often
+start with \code{while ( true )} or \code{for (; ; )} for prototyping and as a reminder to
+myself that this piece of code is temporary.
+Once that is working, I often have gotten a good grasp of the problem and the solutions.
+Then I will start to pick among viable loop constructs the best fits and settle down with one.
+%TODO make figure
+
+\section{Loop Rotation}\label{sec:LoopDesignConsideration}
 
 From construction perspective, a loop is like an self-contained machine embedded in program.
 Before the loop, effort is often spent to deliberately set up the machine.
@@ -91,24 +157,43 @@ entrance and termination ports.
     \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
     \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
 \end{figure}
-Depending on the location of the main loop condition checking statement, loops are roughly
+Depending on the location of the main loop condition checking statement, loops can be roughly
 classified as:
 pre-condition loop, post-condition loop, mid-condition loop.
-For programmer's convenience, programming languages frequently supports more than one types of
+For programmer's convenience, programming languages frequently supports one or more types of
 loops.
 Depending on the entry point into the loop circular sequence and the programming language
 of choice,
 some loop construct is often more convenient than others.
-Sometimes the termination condition checking is blended with the loop body with one or more
+On top of the major offering of loop constructs, certain customization methods may be available
+depending on the programming language.
+For example, the termination condition checking is blended with the loop body with one or more
 statement of \code{break} or \code{return}.
-Other customization constructs are available in some programming languages such as
-`\code{continue}' statement by which part of the loop body may be skipped.
-\code{break}, \code{return}, and \code{continue} together with various loop constructs of
-programming language of choice together satisfies majority of programming requirements (see
+`\code{continue}' statement may be used in the middle of loop body so that certain part of the
+loop may be skipped under certain circumstances.
+\code{break}, \code{return}, and/or \code{continue} along with loop constructs of
+programming language of choice fulfills majority of programming requirements (see
 ~\autoref{fig:fine-tune-loop-rotation}).
 %TODO make figure
-The best practice for loop design is to choose a loop construct
-that is a closest match to your programming requirement so as to minimize loop customization.
+The best practice when it comes to programming with loops, as any other types of coding,
+is to get a \emph{working version} (WV).
+Then inspect the WV for pre-loop initialization and post-loop processing.
+If you can spot duplicate code of any severity, it may be a sign for loop rotation.
+Experiment with loop rotation starting with the WV:
+try on different loop constructs, move the condition
+and afterthought statements around, \textit{etc}.
+The purpose of this is to minimize or eliminate duplicate code in the pre-loop initialization and
+post-loop processing.
+Finally, narrow down to a loop construct
+that is a close match to your programming requirement
+minimal loop customization, if needed at all.
+
+The following are signs to look for when doing loop rotation:
+\begin{enumerate}
+    \item Initial values are not primitive but effected;
+    \item Heavy initialization that takes a whole loop or `almost a loop' to calculate;
+    \item Post processing repeats all or part of the loop body.
+\end{enumerate}
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
@@ -161,76 +246,6 @@ This program is best coded with \code{do-while} loop as
 % } while(eggs);
 %
 
-\subsection{C-style For-loop}\label{subsec:for-loop}
-
-Another form of pre-condition loop is the conventional C-like \code{for}-loop as in
-~\autoref{lst:for-loop}.
-
-What are the important parts when using a for-loop?
-Questions to ask and answer
-\begin{itemize}
-    \item
-    what's the initialization?
-    Initialization is the starting points.
-    To iterate over an array, for example,
-    should the initialization be i = -1 or i = 0?
-    \item
-    when and where should state updates, \textit{e.g.}, variable increment/decrement, happen?
-    in the 3rd part of the \code{for} statement?
-    or in the body?
-    It's more flexible (sometimes necessary when certain condition
-    has to be met to increment/decrement)
-    if the increment/decrement is in the body.
-    But it's more concise to put in the for-statement
-    \item
-    What's the termination condition and How many termination points?
-    Often, infinite loop is resulted when incorrect assumption is made
-    about the termination condition
-\end{itemize}
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:for-loop},
-    caption={For loop structure as a pre-condition.}]{loop/for_loop.java}
-\end{minipage}
-
-There are some interesting aspects about for-loop header statements.
-\begin{enumerate}
-    \item The \code{<init>} is a statement to be executed only once as control is transferred to
-    the loop.
-    \item The \code{<condition>} may be regarded as the \emph{first} statement of the loop body.
-    \item The \code{<condition>} are executed one more time than the rest of loop body
-    unless loop is terminated with a \code{break} statement.
-    \item The \code{<aftrtht>} is the afterthought statement executed at the end of each
-    round, unless loop terminates with a \code{break} statement.
-    \item The \code{<aftrtht>} is always executed as many times as the rest of loop body
-    even in the presence of \code{continue}.
-    \item All three header statements are optional.
-    Namely, you may legally code `\code{for(;;);'} for infinite loop.
-\end{enumerate}
-
-
-Another desirable feature of \code{for}-loop is its containment---
-scope of loop-variables are restrained within the loop.
-For example the following code wouldn't compile
-\begin{lstlisting}
-    for (int i = 0; i < 10; ++i);
-    System.out.println(i); // i is undefined
-\end{lstlisting}
-In contrast, loop variables used by the \code{while}-loop condition have to be declared
-outside of the loop and extends beyond thereafter.
-Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
-
-The most important thing when programming loops, just as any other part of coding, is to
-first get a working version with any loop type and then experiment with rotating the loop,
-try on different loop constructs, move the condition
-and afterthought statements around, \textit{etc}.
-In my own case, I often
-start with \code{while ( true )} or \code{for (; ; )} for prototyping and as a reminder to
-myself that this piece of code is temporary.
-Once that is working, I often have gotten a good grasp of the problem and the solutions.
-Then I will start to pick among viable loop constructs the best fits and settle down with one.
-
-%TODO make figure
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 

@@ -232,7 +232,22 @@ The following are signs to look for when doing loop rotation:
     \item Post processing repeats all or part of the loop body.
 \end{enumerate}
 
-%TODO make figure
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
+        \caption{\label{fig:loose-spool} Loop with loosely coupled, surrounding code is like a
+        loose spool.}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
+        \caption{\label{fig:tight-spool}A crafted loop is like a neatly tightened spool, free
+        from loose threads.}
+    \end{subfigure}
+    \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
+    threads using a spool.}
+\end{figure}
+
 The best practice when it comes to programming with loops, as any other types of coding,
 is to get a \emph{working version} (WV).
 Then inspect the WV for pre-loop initialization and post-loop processing.

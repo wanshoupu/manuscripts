@@ -28,6 +28,8 @@ coding experience throughout the presentation of the chapter.
 Beyond that, this chapter is also presented for completeness since
 later discussions of the interactions between conditional statements and loop is built on
 top of reader's mastery of loop programming.
+But most importantly, I intend this chapter to serve as an inspiration to other enterprising
+programmers to reflect on why they code the way they do and find out ways to improve.
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
 
@@ -151,7 +153,7 @@ statement of \code{break} or \code{return}.
 loop may be skipped under certain circumstances.
 \code{break}, \code{return}, and/or \code{continue} along with loop constructs of
 programming language of choice fulfills majority of programming requirements (see
-~\autoref{fig:fine-tune-loop-rotation}).
+~\autoref{fig:fine-tune-loop-rotation}). %TODO make figure
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
@@ -166,7 +168,7 @@ Then for a particular account, the program would look like
 To ensure the enforcement of policy, pre-test loop is used so that
 each investment action is subject to a balance check before execution.
 If the rule is changed such that one is allowed to invest if and only if his balance is > zero
-\emph{or if the customer doesn't have investment history (first time invester)}.
+\emph{or if the customer doesn't have investment history (first time investor)}.
 We would refactor the above code as
 \lstinputlisting{loop/pre_test_loop1.java}
 In either case, the pre-condition loop is the best fit.
@@ -203,9 +205,55 @@ This program is best coded with \code{do-while} loop as
 % } while(eggs);
 %
 
+\section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
+
+Depending on the location of the main loop condition checking statement, loops can be roughly
+classified as:
+pre-test loop, post-test loop, mid-test loop.
+``Why do we need the varieties of loops?'' you ask,
+``Is there a one-size-fit-all loop?''
+To answer this question, we need to start with a research dated back 1966.
+In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
+unnecessary and programs containing them can be transformed to use only conditional statements
+and loops\cite{Bohm:1966}.
+Along that line of thought, more researchers, who might have gone too far, attempted to remove
+other `nuances' in computer programming such as \code{break} and \code{return} in the middle of a
+loop to reduce control flow complexity and promote code composability.
+But the price of doing so may not pay the benefit it brings.
+More local variables are needed.
+Even worse, it may require duplicate code before or after a loop.
+This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+
+So in disguise, the \textit{loop-and-a-half} problem is code duplication problem
+caused by unnecessarily restricting immature termination within a loop.
+Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
+problem.
+In the following sections, we will study how programming techniques can alleviate
+`loop-and-a-half' problem with a few case studies.
+
+More often than not, the initialization part of a loop is simple, effortless,
+intuitive values---integer $0$, empty list, zero-length string, array of simple values,
+\textit{etc}.
+As an example, ~\autoref{lst:fibonacci} illustrates the initialization of the Fibonacci sequence
+with its first two elements: $0$ and $1$.
+Note that we have back-filled the Fibonacci numbers to the $0$th element as $0$.
+
+\lstinputlisting[label={lst:fibonacci},
+caption={A cached solution for the $n$th Fibonacci numbers.}]
+{loop/fibonacci.py}
+
+If you find that your initialization code actually repeats the loop body in whole or in part,
+or that the post-processing logic does similar things that
+the loop does,
+That's a sign to `tighten' your loop, to absorb the pre-loop and post-loop logic
+into the loop.
+what can you do to get rid of them?
+In the next couple of sections, we are going to present tips that can help you alleviate
+symptoms associated with `loop-and-a-half' problem.
+
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}
 
-One can visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
+It is beneficial to visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
 three of which shares the properties of a circular sequence---an sequence with rotational
 degree of freedom.
 Even after everything has been laid out onboard, there are still rotations as degrees of
@@ -218,20 +266,11 @@ entrance and termination ports.
     \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
     \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
 \end{figure}
-Depending on the location of the main loop condition checking statement, loops can be roughly
-classified as:
-pre-condition loop, post-condition loop, mid-condition loop.
-If a program is a thread, then a loop is a spool---because of spool, thread is compactly
-and neatly organized.
-If there are duplicate code before or after the loop, that means we need to spool up
-and `tighten' loose thread around it.
-The following are signs to look for when doing loop rotation:
-\begin{enumerate}
-    \item Initial values are not primitive but effected;
-    \item Heavy initialization that takes a whole loop or `almost a loop' to calculate;
-    \item Post processing repeats all or part of the loop body.
-\end{enumerate}
 
+Additionally, one can
+think of a program as a linear thread and a loop as a spool that helps organize loose thread.
+Thanks to the rotation degree of freedom, one can `rotate' the loop to match and spool up the
+duplicate initialization code or post-loop processing logic into the loop.
 \begin{figure}[H]
     \centering
     \begin{subfigure}{.45\textwidth}
@@ -248,48 +287,13 @@ The following are signs to look for when doing loop rotation:
     threads using a spool.}
 \end{figure}
 
-The best practice when it comes to programming with loops, as any other types of coding,
-is to get a \emph{working version} (WV).
-Then inspect the WV for pre-loop initialization and post-loop processing.
-If you can spot duplicate code of any severity, it may be a sign for loop rotation.
-Experiment with loop rotation starting with the WV:
-try on different loop constructs, move the condition
-and afterthought statements around, \textit{etc}.
-The purpose of this is to minimize or eliminate duplicate code in the pre-loop initialization and
-post-loop processing.
-Finally, narrow down to a loop construct
-that is a close match to your programming requirement
-minimal loop customization, if needed at all.
+This often requires developers to look for more general mathematical forms of the
+algorithm used.
+This is especially important for dynamic programming where often the boundary conditions are
+usually an array of simple values.
+What is the simple boundary conditions to be used for initialization?
+It may not be so straightforward in specific problems.
 
-
-\section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
-
-``Why do we need the varieties of loops?'' you ask,
-``Is there a one-size-fit-all loop?''
-To answer this question, we need to start with a research dated back 1966.
-In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
-unnecessary and programs containing them can be transformed to use only conditional statements
-and loops\cite{Bohm:1966}.
-Along that line of thought, more researches, which might have gone too far, are attempted to remove
-other `nuances' in computer programming such as \code{break} and \code{return} in the middle of a
-loop to reduce control flow complexity and promote code composability.
-But doing so are with prices.
-More local variables are needed.
-Even worse, it may require duplicate code before or after a loop.
-This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
-
-So in disguise, the \textit{loop-and-a-half} problem is code duplication problem
-caused by unnecessarily restricting immature termination within a loop.
-Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
-problem.
-In the following sections, we will study how programming techniques can alleviate
-`loop-and-a-half' problem with a few case studies.
-
-% TODO find examples that will illustrate:
-\begin{itemize}
-    \item Pre-loop duplicate
-    \item post-loop duplicate
-\end{itemize}
 
 \section{How to choose the right loop for concise program?}\label{sec:chooseTheRightLoop}
 
@@ -371,22 +375,39 @@ A case for \code{do-while} loop is as follows.
 \subsection{Use of \code{continue} to simplify conditional
 statements}\label{subsec:continue-in-loop}
 
+Use of \code{continue} in a loop is usually done within a \code{if}-branch.
+Bare use of \code{continue} in a loop is very rare only for educational reasons.
+
+When used within a \code{if}-block, it would be equivalent if an
+\code{else}-clause is added such as.
 In a program where several cases are treated discriminatorily in a loop, the organization of
 conditional statements is critical to its readability and simplicity.
 Under certain circumstances, use of \code{continue} can have magical power to simplify the logic.
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:loop-use-continue},
-    caption={Real case using continue in a loop}]{loop/use_of_continue.py}
+    caption={Equivalent code snippet with and without \code{continue} in a loop}]
+    {loop/use_of_continue.py}
 \end{minipage}
 
 \subsection{Conclusion}
 
-But most importantly, I intend this chapter to serve as an inspiration to other enterprising
-programmers to reflect on why they code the way they do and find out ways to improve.
+The best practice when it comes to programming with loops, as any other types of coding,
+is to get a \emph{working version} (WV).
+Personally, I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
+Once I get a WV, I've formed a pretty good idea for the implementation
+Then inspect the WV for pre-loop initialization and post-loop processing.
+If you can spot duplicate code of any severity, it may be a sign for loop rotation.
+Experiment with loop rotation starting with the WV:
+try on different loop constructs, move the condition
+and afterthought statements around, \textit{etc}.
+Also remember the use of sentinels may also be a good option (see ~\autoref{ch:sentinels}).
+The purpose of this is to minimize or eliminate duplicate code in the pre-loop initialization and
+post-loop processing.
+Finally, narrow down to a loop construct
+that is a close match to your programming requirement
+minimal loop customization, if needed at all.
 
-But I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
-Once I get a better idea for the implementation, I will settle down to the best fit.
 
 \begin{itemize}
     \item Firstly use a generic (infinite loop) with break statements as exit points

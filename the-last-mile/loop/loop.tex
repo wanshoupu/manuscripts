@@ -374,23 +374,29 @@ logic and post-loop processing.
 
 \subsection{Linear stepping \textit{vs.} nonlinear stepping}\label{subsec:linearVs.NonlinearStepping}
 
-\lstinputlisting[label={lst:nonlinear-stepping},
-caption={Nonlinear stepping in a loop}]{loop/string_find_x.java}
 If viewed as a state machine automaton, loop variables, serving as state registers, may change
 linearly as loop is executed, or not.
 In some cases, one can simply step through linearly, one element at a time.
 In others, one need to step through with a varying pace conditioned by the elements encountered,
 and this is called `nonlinear stepping' in the following context.
 Nonlinear stepping has important applications in implementation of complex algorithms.
-In some other cases, state may even jumps back and forth and this is often used in solving
-math problems.
-As and example, let's consider the infamous Google\texttrademark interview prep question
+\code{while}-loop is more accommodating for all kinds of stepping.
+For \code{for}-loop, if you see the afterthought part missing, that's probably a sign for
+nonlinear stepping.
+If you use \code{for}-loop for linear stepping,
+please try your best to afterthought part for increment or decrement purposes.
+
+In some other cases, loop state may even jumps back and forth.
+This is an extreme case of nonlinear stepping and is often used in solving math problems.
+Consider the infamous Google\texttrademark interview prep question
 \begin{quote}
     ``Given an array of integers where each
     element points to the index of the next element how would you detect if there is a cycle in this
     array''\footnote{\url{https://www.geeksforgeeks.org/check-loop-array-according-given-constraints}}.
     \subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
 \end{quote}
+\lstinputlisting[label={lst:nonlinear-stepping},
+caption={Nonlinear stepping in a loop}]{loop/nonlinear_stepping_example.java}
 %TODO finish the presentation of GOOGLE problem
 
 \subsection{\code{do-while} loop to execute first loop without checking

@@ -1,13 +1,18 @@
-for i in range(10):
-    if i % 2:
-        print i ** 2
-        continue
-    print i / 2
+def foo(n):
+    result = []
+    for i in range(n):
+        if 0 == i % 2:
+            print 'Stump'
+        elif 0 == i % 3:
+            print 'Clap'
+        elif 0 == i % 5:
+            continue
+        else:
+            print i
+        result.append(i)
+    return result
 
-# equivalent to:
 
-for i in range(10):
-    if i % 2:
-        print i ** 2
-    else:
-        print i / 2
+if __name__ == '__main__':
+    print foo(100)
+

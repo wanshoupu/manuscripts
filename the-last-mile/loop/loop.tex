@@ -33,13 +33,17 @@ programmers to reflect on why they code the way they do and find out ways to imp
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
 
+The location of conditional statements is critical to its correctness and readability.
+Based on the location of the loop condition checking statement, loops can be roughly
+grouped into: \emph{pre-test} loop, \emph{post-test} loop, \textit{etc.}
+
 This section is an overview of loop structures in a few programming languages of choice for
 bookkeeping purposes.
-\code{for}-loop and \code{while}-loop are the most common looping flow of control that almost all
-languages support.
-\code{do-while}-loop is a variation of \code{while}-loop that's supported by \java, \cpp, C, and
-others but not \python.
-We will begin with the generic structure of loops.
+\code{for}-loop and \code{while}-loop are the most common pre-test looping flow of control that
+almost all languages support.
+\code{do-while}-loop is a post-test loop supported by \java, \cpp, C, and
+others (but not \python).
+We begin with the generic structure of loops.
 Although there are some variations, the basic constructs of a loop are the same.
 \@\autoref{tbl:loop-construct} describes the generic parts of a loop in high-level languages.
 \begin{table}[h]
@@ -73,12 +77,63 @@ Although there are some variations, the basic constructs of a loop are the same.
     \end{center}
 \end{table}
 Depending on the situation, a loop may not have all the parts mentioned above.
+For programmer's convenience, programming languages frequently supports one or more types of
+loops.
+Depending on the entry point into the loop circular sequence and the programming language
+of choice,
+some loop construct is often more convenient than others.
+
+On top of the major offering of loop constructs, certain customization methods may be available
+depending on the programming language.
+For example, the termination condition checking is blended with the loop body with one or more
+statement of \code{break} or \code{return}.
+`\code{continue}' statement may be used in the middle of loop body so that certain part of the
+loop may be skipped under certain circumstances.
+\code{break}, \code{return}, and/or \code{continue} along with loop constructs of
+programming language of choice fulfills majority of programming requirements (see
+~\autoref{fig:fine-tune-loop-rotation}). %TODO make figure
+
+\subsection{A word on the usage of \code{continue} and \code{break}}
+\label{subsec:continue-and-break}
+
+I would like to add a word on the usage of \code{continue} and \code{break} before going on with
+other topics.
+Bare use of \code{continue} and \code{break} in a loop is very rare (maybe only for educational
+reasons).
+Use of \code{continue} and \code{break} in a loop is usually done within a \code{if}-branch.
+
+For most of the simple cases, the functionality realized by using \code{continue} statement can be
+equivalently produced by adding an \code{else}-clause.
+But when there is a `case stack' in a loop, use of \code{continue} has a magical power
+of logic simplification.
+For example, in ~\autoref{lst:loop-use-continue}, we code for a game for 2 or more players.
+All players take turn to enumerate through natural numbers starting from $1$ with the following
+rules:
+\begin{enumerate}
+    \item When the number is divisible by $2$, do a `clap' instead
+    \item Otherwise when the number is divisible by $3$, do a `stump' instead
+    \item Otherwise when the number is divisible by $5$, skip it altogether
+    \item Otherwise articulate the number loudly
+\end{enumerate}
+For book keeping purposes, all numbers are recorded in a list unless skipped.
+
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:loop-use-continue},
+    caption={Example usage of \code{continue} to simplify the logic in a loop}]
+    {loop/use_of_continue.py}
+\end{minipage}
+
+Without use of \code{continue}, it would be inevitable to have some duplicate code---one would
+either repeat the conditions accumulated up to the point of divisibility by $5$
+or repeatedly adding the \code{result.append(i)} in more than one blocks.
+
+Similar situations exist for the use of \code{break} to reduce redundant code.
+We are not going to repeat that with examples.
 
 \subsection{C-style For-loop}\label{subsec:for-loop}
 
 Beside the universal \code{while}-loop, another pre-test loop is the conventional
-C-like \code{for}-loop as
-\lstinputlisting{loop/for_loop.java}
+C-like \code{for}-loop as \lstinputlisting{loop/for_loop.java}
 This is not to be confused with the iterator-based \code{for}-loop such as
 \begin{lstlisting}
     for (Object obj : list)
@@ -134,26 +189,12 @@ outside of the loop and extends beyond thereafter.
 Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
 
 In practice, I often
-start with \code{while ( true )} or \code{for (; ; )} for prototyping and as a reminder to
+start with \code{while (true)} or \code{for (; ;)} for prototyping and as a reminder to
 myself that this piece of code is temporary.
 Once that is working, I often have gotten a good grasp of the problem and the solutions.
-Then I will start to pick among viable loop constructs the best fits and settle down with one.
-%TODO make figure
-
-For programmer's convenience, programming languages frequently supports one or more types of
-loops.
-Depending on the entry point into the loop circular sequence and the programming language
-of choice,
-some loop construct is often more convenient than others.
-On top of the major offering of loop constructs, certain customization methods may be available
-depending on the programming language.
-For example, the termination condition checking is blended with the loop body with one or more
-statement of \code{break} or \code{return}.
-`\code{continue}' statement may be used in the middle of loop body so that certain part of the
-loop may be skipped under certain circumstances.
-\code{break}, \code{return}, and/or \code{continue} along with loop constructs of
-programming language of choice fulfills majority of programming requirements (see
-~\autoref{fig:fine-tune-loop-rotation}). %TODO make figure
+Then I will start crafting the loop by trying different loop constructs, moving and fitting
+variable increment statements,
+combining or annihilating \code{break} or \code{continue} statements \textit{etc.}
 
 These words may sound blurry and abstract to you.
 So let us use examples to illustrate the ideas.
@@ -171,14 +212,14 @@ If the rule is changed such that one is allowed to invest if and only if his bal
 \emph{or if the customer doesn't have investment history (first time investor)}.
 We would refactor the above code as
 \lstinputlisting{loop/pre_test_loop1.java}
-In either case, the pre-condition loop is the best fit.
+In either case, the pre-test loop is the best fit.
 
 For another example, suppose we are to develop a command line tool that takes input from
 \code{stdin}.
 The tool interprets user input and does a bunch of cool stuff.
 It terminates when user types `exit' or simply hits `return' key
 (in which case the input string is empty).
-Then the best loop construct for that would be mid-condition loop.
+Then the best loop construct for that would be mid-test loop.
 \lstinputlisting{loop/mid_test_loop.java}
 
 For yet another example, in a cooking competition game, each chef is to cook 3-dish
@@ -207,11 +248,10 @@ This program is best coded with \code{do-while} loop as
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 
-Depending on the location of the main loop condition checking statement, loops can be roughly
-classified as:
-pre-test loop, post-test loop, mid-test loop.
-``Why do we need the varieties of loops?'' you ask,
-``Is there a one-size-fit-all loop?''
+As discussed above, there are a variety of loop constructs and loop families such as
+pre-test loop and post-test loop.
+Have you wondered why we need so many varieties and families?
+``Is there a one-size-fit-all loop?'' you ask.
 To answer this question, we need to start with a research dated back 1966.
 In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
 unnecessary and programs containing them can be transformed to use only conditional statements
@@ -228,20 +268,24 @@ So in disguise, the \textit{loop-and-a-half} problem is code duplication problem
 caused by unnecessarily restricting immature termination within a loop.
 Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
 problem.
-In the following sections, we will study how programming techniques can alleviate
-`loop-and-a-half' problem with a few case studies.
 
-More often than not, the initialization part of a loop is simple, effortless,
+What is the simple boundary conditions to be used for initialization?
+It may not be so straightforward because it really depends on the specific problem.
+But more often than not, the initialization part of a loop is simple, effortless,
 intuitive values---integer $0$, empty list, zero-length string, array of simple values,
 \textit{etc}.
 As an example, ~\autoref{lst:fibonacci} illustrates the initialization of the Fibonacci sequence
 with its first two elements: $0$ and $1$.
-Note that we have back-filled the Fibonacci numbers to the $0$th element as $0$.
-
 \lstinputlisting[label={lst:fibonacci},
 caption={A cached solution for the $n$th Fibonacci numbers.}]
 {loop/fibonacci.py}
-
+Note that we have `back-filled' the Fibonacci numbers to the $0$th element as $0$.
+You will see more cases later where some generalization of the algorithm and/or the mathematical
+concept behind will make the coding much easier.
+This effort of simplifying initialization process is especially important for dynamic programming
+where often the boundary conditions are
+usually an array of simple values.
+See ~\autoref{ch:dp} for more information.
 If you find that your initialization code actually repeats the loop body in whole or in part,
 or that the post-processing logic does similar things that
 the loop does,
@@ -269,9 +313,7 @@ entrance and termination ports.
 
 Additionally, one can
 think of a program as a linear thread and a loop as a spool that helps organize loose thread.
-Thanks to the rotation degree of freedom, one can `rotate' the loop to match and spool up the
-duplicate initialization code or post-loop processing logic into the loop.
-\begin{figure}[H]
+\begin{figure}[htb]
     \centering
     \begin{subfigure}{.45\textwidth}
         \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
@@ -286,14 +328,10 @@ duplicate initialization code or post-loop processing logic into the loop.
     \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
     threads using a spool.}
 \end{figure}
-
+Thanks to the rotation degree of freedom, one can `rotate' the loop to match and spool up the
+duplicate initialization code or post-loop processing logic into the loop.
 This often requires developers to look for more general mathematical forms of the
 algorithm used.
-This is especially important for dynamic programming where often the boundary conditions are
-usually an array of simple values.
-What is the simple boundary conditions to be used for initialization?
-It may not be so straightforward in specific problems.
-
 
 \section{How to choose the right loop for concise program?}\label{sec:chooseTheRightLoop}
 
@@ -325,8 +363,8 @@ through it to find all the indexes of \code{char} `\code{x}'.
 That's as simple as the following code
 
 \begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:loop-use-continue},
-    caption={Using pre-loop}]{loop/string_find_x.java}
+    \lstinputlisting[label={lst:nonlinear-stepping},
+    caption={Nonlinear stepping in a loop}]{loop/string_find_x.java}
 \end{minipage}
 
 \subsection{Linear stepping \textit{vs.} nonlinear stepping}\label{subsec:linearVs.NonlinearStepping}
@@ -361,7 +399,7 @@ condition}\label{subsec:do-while-loop}
 \code{do-while} loop attempts to execute the loop body at least once no matter what because it
 only checks the condition at the end of one round of loop execution.
 This is useful sometimes to combine an initialization section with loop body.
-Choosing pre-condition and post-condition loops is like choosing restaurants that charge
+Choosing pre-test and post-test loops is like choosing restaurants that charge
 first versus ones that serve first.
 If you are sure you you have enough money and you need a meal no matter what, you can go to a
 restaurant that serves first.
@@ -375,26 +413,12 @@ A case for \code{do-while} loop is as follows.
 \subsection{Use of \code{continue} to simplify conditional
 statements}\label{subsec:continue-in-loop}
 
-Use of \code{continue} in a loop is usually done within a \code{if}-branch.
-Bare use of \code{continue} in a loop is very rare only for educational reasons.
-
-When used within a \code{if}-block, it would be equivalent if an
-\code{else}-clause is added such as.
-In a program where several cases are treated discriminatorily in a loop, the organization of
-conditional statements is critical to its readability and simplicity.
-Under certain circumstances, use of \code{continue} can have magical power to simplify the logic.
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:loop-use-continue},
-    caption={Equivalent code snippet with and without \code{continue} in a loop}]
-    {loop/use_of_continue.py}
-\end{minipage}
 
 \subsection{Conclusion}
 
 The best practice when it comes to programming with loops, as any other types of coding,
 is to get a \emph{working version} (WV).
-Personally, I like to start with \code{while ( true )} or \code{for (; ; )} for prototyping.
+Personally, I like to start with \code{while (true)} or \code{for (; ;)} for prototyping.
 Once I get a WV, I've formed a pretty good idea for the implementation
 Then inspect the WV for pre-loop initialization and post-loop processing.
 If you can spot duplicate code of any severity, it may be a sign for loop rotation.

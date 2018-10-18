@@ -138,6 +138,7 @@ This is not to be confused with the iterator-based \code{for}-loop such as
 \begin{lstlisting}
     for (Object obj : list)
 \end{lstlisting}
+which has been largely made obsolete with stream-like coding styles in \java.
 
 There are some interesting aspects about \code{for}-loop header statements.
 \begin{enumerate}
@@ -343,55 +344,54 @@ I will often balance out the trade-offs and if I choose \code{for}-loop, I will 
 `one-more-loop' technique (see ~\autoref{subsec:one-more-loop} for more details) to beat
 post-processing outside of the loop.
 
-\subsection{One-more-loop with in-loop \code{return} solution}\label{subsec:one-more-loop}
+\subsection{`One-more-cycle' coding technique}\label{subsec:one-more-loop}
 
 Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
-to final answer.
+to final answer and that happy to share part of the logic of the loop body.
+To reduce duplication of code, one can use the `one-more-cycle' technique---
+instead of
+\begin{lstlisting}
+    for (int i = 0; i < list.size(); ++i)
+\end{lstlisting}
+and then repeat part of the loop body in post-loop processing logic,
+do
+\begin{lstlisting}
+    for (int i = 0; i < 1 + list.size(); ++i)
+\end{lstlisting}
+and with an \code{if}-branching, hitchhiking part of the loop body to do the processing
+for the last iteration and return the final result.
+@\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
+`largest rectangle in histogram' problem
+\@\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}.
 
-\lstinputlisting[]{loop/histogram.java}
+\lstinputlisting[label={lst:largest-rectangle-histogram},
+caption={Example usage of \code{continue} to simplify the logic in a loop}]
+{loop/histogram.java}
+To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.length} times and
+do the rest in post-loop logic and testify yourself for the duplicate code between loop
+logic and post-loop processing.
 
-\subsection{Collection iteration \code{foreach} loop}\label{subsec:collection-iteration-for-loop}
-
-Associated with collections and \code{iterable} containers, there is a new type of \code{foreach}
-or a disguised \code{for} loop in \java.
-
-\subsection{Conversion from pre-loop to post-loop}\label{subsec:Pre-loop.To.Post-loop}
-
-It is possible to convert a pre-loop to post-loop.
-To illustrate this, let's say we are given a \code{string s} as an input and we want to iterate
-through it to find all the indexes of \code{char} `\code{x}'.
-That's as simple as the following code
-
-\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:nonlinear-stepping},
-    caption={Nonlinear stepping in a loop}]{loop/string_find_x.java}
-\end{minipage}
 
 \subsection{Linear stepping \textit{vs.} nonlinear stepping}\label{subsec:linearVs.NonlinearStepping}
 
-When using a loop for simple step through, one usually steps through one element per round.
-However this model does not work for all cases.
-Sometimes one need to step through with a varying pace conditioned by the elements encountered
-and this is what I called Nonlinear stepping.
-Nonlinear stepping has an important application for simplifying logic within a loop.
-
-\subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
-
-Often in a loop a number of cases are treated on a case-by-case basis and the termination case is
-distinct from all others but poses as a symmetry breaking factor.
-
-To have uniform treatment overall, one may introduce artifact, the `missing part' to complete
-the pattern.
-
-This artifact is called `sentinel'.
-The benefit is
-\begin{itemize}
-    \item Avoidance of duplicate code
-    \item Improved performance
-\end{itemize}
-%Some heavily executed loops may be the `hot spot' whose performance is the bottleneck of the
-%entire system.
-
+\lstinputlisting[label={lst:nonlinear-stepping},
+caption={Nonlinear stepping in a loop}]{loop/string_find_x.java}
+If viewed as a state machine automaton, loop variables, serving as state registers, may change
+linearly as loop is executed, or not.
+In some cases, one can simply step through linearly, one element at a time.
+In others, one need to step through with a varying pace conditioned by the elements encountered,
+and this is called `nonlinear stepping' in the following context.
+Nonlinear stepping has important applications in implementation of complex algorithms.
+In some other cases, state may even jumps back and forth and this is often used in solving
+math problems.
+As and example, let's consider the infamous Google\texttrademark interview prep question
+\begin{quote}
+    ``Given an array of integers where each
+    element points to the index of the next element how would you detect if there is a cycle in this
+    array''\footnote{\url{https://www.geeksforgeeks.org/check-loop-array-according-given-constraints}}.
+    \subsection{Sentinels to avoid condition checking}\label{subsec:sentinelsAvoidConditionChecking}
+\end{quote}
+%TODO finish the presentation of GOOGLE problem
 
 \subsection{\code{do-while} loop to execute first loop without checking
 condition}\label{subsec:do-while-loop}

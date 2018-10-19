@@ -54,3 +54,11 @@ Compact:
     caption={Code snippet with nested loops.}]{embedded-loops/thinned_loop.java}
 \end{minipage}
 
+\section{Conclusion}
+
+Nested loops are hard to understand and are generally considered unacceptable in production code.
+They should be avoided if at all possible.
+With the `loop thinning' technique discussed in this chapter, many cases of nested loops can be
+compactify and converted to simple loop.
+If this is not possible or the resulting code is even harder to understand, one should consider
+refactor nested loop into smaller functions.

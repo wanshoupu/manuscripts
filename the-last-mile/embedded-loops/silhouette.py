@@ -11,7 +11,7 @@ def getSkyline(buildings):
         b. plateau P, the top point
         c. downturn D, the cliff point
         d. valley V, the bottom point
-    The algorithm is as follows until all buildings have been processed and heap is empty:
+    The algorithm is as follows until heap is empty:
     1. clean up heap
     2. if any V, add to result
     3. if U, add U to result, also add P to result

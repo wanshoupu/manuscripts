@@ -1,0 +1,47 @@
+#!/bin/sh
+# Check that files are referenced by at least one other file
+#
+USAGE="
+# USAGE ############## USAGE ############## USAGE ############## USAGE ##############
+#####################################################################################
+"
+fcheck(){
+# tex files: check if other tex file reference it
+# other file types: check if a tex file reference it
+# search for referencing files in the current or parent folders only
+# non-referenced (standalone) files are printed
+  file=$1
+  dname=`dirname "${file}"`
+  fname=`basename "${file}"`
+#  echo "$fname $dname"
+#  find "$dname" -name "*.tex"
+  while : ; do
+    result=`2>/dev/null grep "$fname" ${dname}/*.tex`
+    if [ ! -z "$result" ] || [ ${#dname} == 1 ] ; then
+      break
+    fi
+    dname=`dirname "${dname}"`
+  done
+  echo ${result}
+}
+
+recursive_check(){
+  path=$1
+  for f in ${path}/* ; do
+    if [ -f "$f" ] ; then
+      fcheck "$f"
+    elif [ -d "$f" ] ; then
+      recursive_check "${f}"
+    fi
+  done
+}
+
+if [ $# -gt 0 ]; then
+  path="${BASH_ARGV[0]}"
+  if [ ${path: -1} == / ]; then
+    path=${path%?}
+  fi
+else
+  path='.'
+fi
+recursive_check "$path"

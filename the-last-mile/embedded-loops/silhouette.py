@@ -4,7 +4,7 @@ import heapq
 def getSkyline(buildings):
     """
     data structure
-    1. sort the building by their starting point and if same starting point, heighest goes first
+    1. sort the building by their starting point and if same starting point, highest goes first
     2. use max-heap for height
     3. result is stored as list of (x,y) each point is one of 4 possible turning point
         a. upturn U, the climbing point

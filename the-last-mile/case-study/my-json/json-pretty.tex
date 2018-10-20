@@ -408,7 +408,7 @@ Firstly the driver function which acts as a dispatcher---it delegates each type
 of structures to a special function to be processed---one type per function.
 What's important is that as you implement the driver, you should create function stubs as
 needed, but don't implement them as yet.
-The driver function of my implementation is as \autoref{lst:JsonAssemblerRecursion.driver}.
+The driver function of my implementation is as ~\autoref{lst:JsonAssemblerRecursion.driver}.
 
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.driver},
@@ -421,7 +421,7 @@ Now it is time to fill the blanks---we finish implementing the stubs that we cre
 while implementing the driver functions.
 We starts with the simpler structure, JSON array, because we have fewer things to deal with and the
 insights learned here may be helpful for the more complex JSON object.
-With no ado, \autoref{lst:JsonAssemblerRecursion.array} lists the implementation.
+With no ado, ~\autoref{lst:JsonAssemblerRecursion.array} lists the implementation.
 
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.array},
@@ -439,7 +439,7 @@ Now it comes the critical part of the multi-recursion logic.
 ``Why do we invoke the dispatcher function \code{assembleDispatcher}?'' you ask.
 ``Because some of the array elements may be of composite types!'' I answer.
 So we have to pass control back to the specialist function for generic assembler for each element.
-Recall the discussion in \autoref{ch:recursion} that each function in the multi-recursion
+Recall the discussion in ~\autoref{ch:recursion} that each function in the multi-recursion
 implementation has its specialty and is the sole expert for performing a duty.
 No function should perform this specialty except the designated function.
 When other functions need to perform this duty, they have to defer it to the designated function.
@@ -456,7 +456,7 @@ by a colon \code{':'}.
 The JSON object key must be string, one token.
 The JSON object value can be of any type, including primitive types as well as composite types.
 Apart from these complications, the recursion logic is identical to that for JSON array.
-So without much ado, the implementation is listed in \autoref{lst:JsonAssemblerRecursion.wrapper}.
+So without much ado, the implementation is listed in ~\autoref{lst:JsonAssemblerRecursion.wrapper}.
 
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
@@ -556,7 +556,7 @@ In ~\autoref{lst:toPrettyString}, function parameter `\code{indent}' is
 never actively specified by client code
 This parameter is there dangling only because it is needed by the other recursive methods.
 As the reader may have learned, this is the so-called `remnant function parameter' discussed
-in \autoref{sec:remnantFunctionParameter}.
+in ~\autoref{sec:remnantFunctionParameter}.
 Interested readers are encouraged to review the relevant part to get familiar.
 To free client code from having to provide a confusing, useless parameter,
 the parameter is given a default value \code{0} as a mitigation for now.
@@ -585,7 +585,7 @@ go about improve it.
 But do not be dismayed.
 It's the purpose of what follows that we will demonstrate how to employ the techniques discussed in
 earlier chapters to address the issues thread by thread, especially the ``variational method''
-discussed in \autoref{ch:variational}.
+discussed in ~\autoref{ch:variational}.
 
 We start with small and easy improvements and
 hopefully at due time, the bigger problem---including the bloated function problem---will be readily
@@ -593,12 +593,12 @@ attacked.
 First of all, let us refactor the element-formatting logic into its own function.
 Doing so may be get us much ahead of the progress,
 but it will create space for us to experiment with more optimization attempts.
-\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
+\@\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
 refactored in such a way.
 \lstinputlisting[label={lst:ArrayFormatting.separateElement},
 caption={Array formatting function with separated element formatting and style decoration.}]
 {case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
-Looking at the refactored code as \autoref{lst:ArrayFormatting.separateElement} you may say
+Looking at the refactored code as ~\autoref{lst:ArrayFormatting.separateElement} you may say
 ``Gee, that is messier, rather than simpler, than before.''
 True, it is not uncommon that quality of code drops at some steps of refactoring.
 But by the `quantum tunneling' effect, this is a beneficial attempt with
@@ -650,7 +650,7 @@ How about we do a rotation on line boundaries so that both the indentation
 and the newline character are shifted to one side?
 That way, the `sandwich operation' will be simplified into a simple, generic joining operation!
 To that end, we need a perspective change.
-See \autoref{fig:line-view} for an illustration.
+See ~\autoref{fig:line-view} for an illustration.
 We need to renew our view of a `line' and make `cuts' such that a line used to take the form
 \[\mbox{line} = \mbox{content} + \mbox{newline}\]
 are rotated to take the form
@@ -722,13 +722,13 @@ Then, before making better let first make it worse---
 let's remove all the indenting logic.
 The remaining code should format correctly except that it does no indentation.
 Now, let us make use of the \code{def indent(string)} from
-\autoref{lst:indent-function} to indent the multi-line string of array contents and
+~\autoref{lst:indent-function} to indent the multi-line string of array contents and
 this is only needed in the function \code{arrayToPrettyString}.
 If you are following correctly, you will be surprised to see that all the correct indentation comes
 back as if by magic.
 Now that the parameter \code{indent} in all the functions is made obsolete, let's remove them
 altogether.
-The resulting code is shown in \autoref{lst:JsonFormatter.layer-by-layer.experiment}.
+The resulting code is shown in ~\autoref{lst:JsonFormatter.layer-by-layer.experiment}.
 
 \lstinputlisting[label={lst:JsonFormatter.layer-by-layer.experiment},
 caption={Experiment with new layer-by-layer indentation model for JSON arrays.}]
@@ -771,8 +771,8 @@ In case when compiler missed an optimization and
 your optimizations do have a material gain over the compiler,
 the performance gained by sacrificing readability would still be most likely unworthy.
 
-``What a surprise!'', you may say upon seeing the solution in \autoref{lst:NewJsonFormatter} and
-\autoref{lst:Formatter}.
+``What a surprise!'', you may say upon seeing the solution in ~\autoref{lst:NewJsonFormatter} and
+~\autoref{lst:Formatter}.
 This may be totally unexpected to you at the time when we just completed the first version of
 implementation.
 Truly I want to tell you that this should be the signal you should strive for when you review your

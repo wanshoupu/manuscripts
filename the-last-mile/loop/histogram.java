@@ -1,5 +1,5 @@
 public int largestRectangleArea(int[] h) {
-    Stack<Integer> stack = new Stack<Integer>();
+    Stack<Integer> stack = new Stack<>();
     int maxRec = 0;
     for (int i = 0; i <= h.length; /*increment occurs in loop*/) {
         if (stack.empty() || i < h.length && h[i] > h[stack.peek()]) {

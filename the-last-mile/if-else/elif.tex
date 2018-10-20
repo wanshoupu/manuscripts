@@ -64,7 +64,7 @@ and so on.
 
 But when disguised in real problems, especially when some alternatives are omitted or no-op,
 optimal coding may not be so straightforward.
-Show in \autoref{lst:nestedBranching} is my own code.
+Show in ~\autoref{lst:nestedBranching} is my own code.
 
 \lstinputlisting[label={lst:nestedBranching},
 caption={Code with nested branching and redudant
@@ -102,17 +102,17 @@ that are built on top of one another.
 The resulting code is as shown in\autoref{lst:simpleBranching}.
 
 \lstinputlisting[label={lst:simpleBranching},
-caption={Equivalent code snippet as \autoref{lst:nestedBranching} with simple condition checking
+caption={Equivalent code snippet as ~\autoref{lst:nestedBranching} with simple condition checking
 }]{if-else/composite_condition_simplified1.java}
 
 Now the conditional statements are streamlined and can be understood at a glance.
-Comparing with \autoref{lst:nestedBranching}, it is a big improvement.
+Comparing with ~\autoref{lst:nestedBranching}, it is a big improvement.
 
 But still it has duplication code.
 
 So I found a piece of paper and for each of the three statements, I wrote down the condition to
 be satisfied in order for it to be executed.
-My table is shown in \autoref{tbl:breakdown-of-conditions}.
+My table is shown in ~\autoref{tbl:breakdown-of-conditions}.
 Clearly simplifying the condition for the execution of \code{statement2} is the key and let us do
 the math now.
 Let $c$ be the condition for \code{statement2} to be executed and
@@ -131,15 +131,15 @@ Then
     &=\lnot (a \land b) & \text{// De Morgan's law} \label{eq:boolean-expression-simplify}
 \end{align}
 
-\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
+\@\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
 \code{statement2} is \code{!(condition1 && condition2)} and this can be an \code{else} clause of
 \code{if (condition1 && condition2)} which is the condition for the execution of \code{statement1}.
 
 With this piece of wit, it is straightforward to implement much simple code such as
-\autoref{lst:final-simplified-conditional-statement}.
+~\autoref{lst:final-simplified-conditional-statement}.
 
 \lstinputlisting[label={lst:final-simplified-conditional-statement}, caption={Simplified logic that
-is equivalent to \autoref{lst:nestedBranching}}]{if-else/composite_condition_simplified2.java}
+is equivalent to ~\autoref{lst:nestedBranching}}]{if-else/composite_condition_simplified2.java}
 
 Of course the above process is not the only process to simplify logic.
 Another possible way to achieve this is to use truth table.
@@ -162,7 +162,7 @@ let's look at this in detail.
     \end{center}
 \end{table}
 
-I constructed truth table as \autoref{tbl:true-value-table}.
+I constructed truth table as ~\autoref{tbl:true-value-table}.
 Since there are two conditional variables \code{condition1} and \code{condition2}, there are
 total four entries in the table.
 The third column shows the statements executed if the condition of the entry is true.
@@ -176,7 +176,7 @@ Now we can summarize the table and arrive at the following conclusions
 \end{enumerate}
 
 With these in mind, implementation of something like
-\autoref{lst:final-simplified-conditional-statement} naturally follows.
+~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
 So here two simplifying logic processes are presented.
 In practice, one may find one out of the two to be more useful under certain circumstances.
@@ -217,7 +217,7 @@ therefore has one extra piece of complexity and a new weapon to wield.
     \end{center}
 \end{table}
 
-Shown in \autoref{tbl:equivalent-code} side-by-side are equivalent code snippets.
+Shown in ~\autoref{tbl:equivalent-code} side-by-side are equivalent code snippets.
 
 But each has their own problem.
 The left column do redundant condition testing (condition1), whereas the right column has repeated
@@ -291,6 +291,10 @@ another.
 This is the foundation of simplifying a block if statements.
 
 \section{Build up your case step-by-step}
+
+Build up your case step by step.
+
+Case stack.
 
 The correct way to design the implementation of recursive, case-based testing code implementation is to do testing / checking such that knowledge is built up piece-by-piece.
 To inspect for logic holes and false assumptions, do it backward: from the very end go to the start, find out if the knowledge needed to perform the current line of code is in place. Any missing knowledge will result in exception.

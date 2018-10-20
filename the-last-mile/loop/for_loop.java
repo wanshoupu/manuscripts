@@ -1,3 +1,3 @@
-for (<init>; <condition>; <post-stmt>) {
+for (<init>; <condition>; <aftrtht>) {
     <body>
 }

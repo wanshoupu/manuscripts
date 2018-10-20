@@ -6,12 +6,19 @@
 \chapter{Loop Thinning} \label{ch:loop-thinning}
 
 Nested loop thinning \label{Evernote:Max area under histogram}
+~\autoref{lst:largest-rectangle-histogram}.
+
 \label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
+\lstinputlisting[label={lst:largest-rectangle-histogram},
+caption={Example usage of \code{continue} to simplify the logic in a loop}]
+{embedded-loops/silhouette.py}
 \label{Evernote:Server peak load problem}
 \label{Evernote:for-loop Loop compactification examples}
 
-Sometimes nested loops can be combined into a single loop + if-else inside the loop body.
-for example, the quick sort algorithm may be implemented as
+Many times nested loops can be combined into a single loop + if-else inside the loop body.
+In this chapter we are going to explain the technique in details.
+
+For example, the quick sort algorithm may be implemented as
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:nestedForLoop},
@@ -22,7 +29,11 @@ The for condition and the while condition bear some similarity, so we can combin
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
+    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_nested_loop.java}
+\end{minipage}
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_thinned_loop.java}
 \end{minipage}
 
 Example
@@ -44,13 +55,21 @@ Uncompact:
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:nestedLoop},
-    caption={Code snippet with nested loops.}]{embedded-loops/nested_loop_uncompact.java}
+    caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_nested_loop.java}
 \end{minipage}
 
 Compact:
 
 \begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:thinnedLoop},
-    caption={Code snippet with nested loops.}]{embedded-loops/thinned_loop.java}
+    caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_thinned_loop.java}
 \end{minipage}
 
+\section{Conclusion}
+
+Nested loops are hard to understand and are generally considered unacceptable in production code.
+They should be avoided if at all possible.
+With the `loop thinning' technique discussed in this chapter, many cases of nested loops can be
+compactify and converted to simple loop.
+If this is not possible or the resulting code is even harder to understand, one should consider
+refactor nested loop into smaller functions.

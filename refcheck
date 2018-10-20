@@ -5,6 +5,16 @@ USAGE="
 # USAGE ############## USAGE ############## USAGE ############## USAGE ##############
 #####################################################################################
 "
+
+exttest() {
+  exts=(tex log aux bbl blg dvi idx ilg ind lof lot ps out brf pdf toc)
+  for e in "${exts[@]}" ; do
+    if [ ${e} = ${extname} ]; then
+      return 1
+    fi
+  done
+}
+
 fcheck(){
 # tex files: check if other tex file reference it
 # other file types: check if a tex file reference it
@@ -13,8 +23,13 @@ fcheck(){
   file=$1
   dname=`dirname "${file}"`
   fname=`basename "${file}"`
-#  echo "$fname $dname"
-#  find "$dname" -name "*.tex"
+  # get chars after the last '.' in the file name
+  extname="${fname##*.}"
+  if ! exttest $extname ; then
+    return 0
+  fi
+
+  # while true ...
   while : ; do
     result=`2>/dev/null grep "$fname" ${dname}/*.tex`
     if [ ! -z "$result" ] || [ ${#dname} == 1 ] ; then
@@ -22,7 +37,9 @@ fcheck(){
     fi
     dname=`dirname "${dname}"`
   done
-  echo ${result}
+  if [ -z "$result" ] ; then
+      echo "$file"
+  fi
 }
 
 recursive_check(){
@@ -38,7 +55,9 @@ recursive_check(){
 
 if [ $# -gt 0 ]; then
   path="${BASH_ARGV[0]}"
+  # ${path: -1} -- last char of the string
   if [ ${path: -1} == / ]; then
+  # get rid of the last char in path
     path=${path%?}
   fi
 else

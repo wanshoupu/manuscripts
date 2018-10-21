@@ -5,23 +5,29 @@
 
 \chapter{Organize your Conditional Statements}\label{ch:organizeYourIfElse}
 
-Conditional statement is a switch of control flow to alter code execution path at runtime,
+Conditional is a control switching mechanism to alter code execution path,
 conditioned by one or more boolean conditions.
-This is a basic feature of almost all programming languages.
-It may be strange that I am actually spending a full chapter on this as
+Conditional control flow is the most basic programming building blocks in programs
+of almost all programming languages.
+It may seem strange to you that I am actually spending a full chapter on this as
 many books and articles have already given this comprehensive discussions,
 \textit{e.g.},
 Wikipedia\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
 
 But just because it is basic and widely discussed does not mean that many people can do it right
 or bother their willpower to do it right.
-Seldom the first version of implementation of complicated logic is the optimal solution.
+Most of us agree that seldom any implementation of non-trivial logic is
+correct and optimal at the first attempt.
 But based on my observation working in top-tier tech companies,
-the very first version of intertwined logic often makes its way to production code that is
-depended by millions.
+it is often
+the very first working version with bulging and intertwined logic that makes its way to production
+codebase and invoked by millions for real businesses.
+It is like a restaurant utensil was used for cooking for many days without being washed and no
+one notices.
 
 ``As long as it works, why should one bother to simplify the logic?'', you may argue.
-I'd like to quote Steve McConnell to respond: ``..the primary audience [of your code] is made up of humans, not computers.''\cite{Mcconnell.2004}.
+I'd like to quote Steve McConnell to respond:
+``..the primary audience [of your code] is made up of humans, not computers.''\cite{Mcconnell.2004}.
 
 \begin{quote}
     ``Any fool can write code that a computer can understand.
@@ -131,7 +137,7 @@ Then
     &=\lnot (a \land b) & \text{// De Morgan's law} \label{eq:boolean-expression-simplify}
 \end{align}
 
-\@\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
+~\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
 \code{statement2} is \code{!(condition1 && condition2)} and this can be an \code{else} clause of
 \code{if (condition1 && condition2)} which is the condition for the execution of \code{statement1}.
 
@@ -182,7 +188,35 @@ So here two simplifying logic processes are presented.
 In practice, one may find one out of the two to be more useful under certain circumstances.
 So one may try one or the other or both, depending on which one is more convenient.
 
+\section{Logic equivalences}
+
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Equivalent statements and logic optimization
+        \label{tbl:equiv-stmt}}
+        \begin{tabular}{l|p{7cm}}
+            \hline
+            \multirow{6}{*}{\textsf{Original}} &
+            \lstinputlisting[label={lst:nestedBranching},firstline=1,
+            lastline=4]{if-else/equivalent_statements_if_return.java} \\
+
+            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=6, lastline=6]{if-else/equivalent_statements_if_return.java} \\
+            \hline
+            \hline
+            \multirow{5}{*}{\textsf{Original}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=1, lastline=3]{if-else/equivalent_statements_ternary_expr.java} \\
+
+            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
+            firstline=5, lastline=7]{if-else/equivalent_statements_ternary_expr.java} \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
 \section{Conditional statements in a loop}\label{sec:branchingInLoop}
+
 \begin{table}[h]
     \begin{center}
         \caption{Equivalent conditional statements within a loop using \code{if-else} vs.
@@ -290,48 +324,93 @@ Secondly, note that \code{if-else-if-else} and multiple-\code{if} can be rewritt
 another.
 This is the foundation of simplifying a block if statements.
 
-\section{Build up your case step-by-step}
 
-Build up your case step by step.
+\section{Build up your cases in \code{if}-stack}
 
-Case stack.
+One frequently faces need of multi-way switching.
+One can realize this with nested \code{if..else} statements like ~\autoref{lst:nested_if_else}.
+\lstinputlisting[label={lst:nested_if_else}]{if-else/nested_if_else.java}
+The nesting level will go deeper with more switching fanouts and
+the logic becomes unwieldy pretty quickly.
+As an alterative with boosted readability, one can organize multi-way switching with an
+\code{if}-stack.
+A \code{if}-stack refers to a stack of \code{if}, \code{else if} (\code{elif} for \python), or
+\code{else}.
+For example the ~\autoref{lst:nested_if_else} complexity can be equivalently written as
+\lstinputlisting[label={lst:if-stack}]{if-else/if_else.java}
+Sometimes a \code{switch}-statement may be equivalently used in place of a \code{if}-stack on
+limited use cases.
+But we are going to limit our discussion to \code{if}-statement for now.
 
-The correct way to design the implementation of recursive, case-based testing code implementation is to do testing / checking such that knowledge is built up piece-by-piece.
-To inspect for logic holes and false assumptions, do it backward: from the very end go to the start, find out if the knowledge needed to perform the current line of code is in place. Any missing knowledge will result in exception.
+The execution of an \code{if}-stack is like walking up a staircase---one
+builds up cases by successive tests in a step-by-step fashion.
+The conditional expression of the leading \code{if}-clause is the first step of check.
+If it is evaluated to \code{true}, then the \code{if}-clause is executed
+and the rest of the stack is skipped.
+Otherwise, the conditional expression of the next branching clause is evaluated
+and so on until the end of the \code{if}-stack.
+Note that \code{if}-stack may not be in the form of \code{if..else if..else}.
+With the presence of \code{return} and \code{break}, a series of \code{if}-statements can also
+form an \code{if}-stack.
 
-Case 1: override the equals function for a class
+When taken apart, the conditional expressions of \code{if}-stack
+are cumulative---a later case combines all earlier conditionals with its own.
+For example the ~\autoref{lst:if-stack}, if taken apart, will be
+\lstinputlisting[label={lst:if-stack-taken-apart}]{if-else/if_stack_taken_apart.java}
+Note that the three \code{if}-blocks are totally independent and
+the order among them does not matter any more.
+Apart from this ordering flexibility, the code readability and
+the performance of ~\autoref{lst:if-stack-taken-apart} is
+generally speaking worse than ~\autoref{lst:if-stack} as it does a significant amount of
+redundant tests.
+When inspecting code for logic fallacies and unfounded assumptions, for example, one has to keep
+this cumulative effect in mind: all the assumptions about the
+the current line of code should have been tested by exactly one of the conditionals ahead.
+A missing test will likely result in exception.
+From this perspective, the alternative form ~\autoref{lst:if-stack-taken-apart} may be more
+straightforward to spot untested assumptions made for a later case than its \code{if}-stack
+counterpart.
 
-\lstinputlisting{if-else/equals.java}
+As an example of \code{if}-stack, let's consider the implementation of method \code{equals(Object
+obj)} as shown in ~\autoref{lst:if-stack-equals}.
+The first test we do is the nullity of the argument.
+If it is not null, then we test if its of type \code{MyClass}.
+Only if it is not null and is of type \code{MyClass}, we cast it to type \code{MyClass}
+and test equality between member variables of
+\code{this} instance and \code{that} instance, pairwise.
+From this example, you see how we build up the cases like a staircase step-by-step cumulatively.
+\lstinputlisting[label={lst:if-stack-equals},
+caption={Example implementation overriding\code{equals}in a subclass}]
+{if-else/equals.java}
 
-Case 2: determining the lowest common ancestor of two values in a BST:
+As another example, let us consider the code for determining the lowest common ancestor
+of two values in a binary search tree.
+This is a typical problem where the cases to be tested can be combinatorial
+if not handled properly, your code can blow out like crazy.
+But if we design our \code{if}-stack properly, a couple of lines of code can handle all the
+combinations like a breeze.
+Take a look at ~\autoref{lst:if-stack-lca}.
+The cases are built from ground up:
+\begin{enumerate}
+    \item Test nullity;
+    \item Test for left branching;
+    \item Test for right branching;
+    \item Test for existence of keys;
+    \item Final case;
+\end{enumerate}
+Note later statements are built on the assertions of previous tests---test for left/right
+branching requires the non-null attributes of root otherwise the code will throw
+\code{NullPointerException}.
+Also note that as the cases are being built up, the solution spaces are also being ruled
+out---each time we eliminate a half-space with a test---much like that of a binary search.
+\lstinputlisting[label={lst:if-stack-lca},
+caption={An implementation of finding lowest common ancestor in a binary search tree.}]
+{if-else/lca.java}
+Some source states that when designing \code{if}-stack do the simple tests first.
+I think that's a superfluous observation.
+The underlying rule is to do the most informative test first.
+That way, the solution space would be squashed at the earliest possible time.
+Building up the cases of an \code{if}-stack is ultimately empirical.
+Even the experienced developers may have to make a couple of attempts to get it right.
 
-\lstinputlisting{if-else/lca.java}
 
-Often there are so many cases to test, if not designed properly, your code can blow out like crazy.
-
-\section{Logic equivalences}
-
-
-\begin{table}[h]
-    \begin{center}
-        \caption{Equivalent statements and logic optimization
-        \label{tbl:equiv-stmt}}
-        \begin{tabular}{l|p{7cm}}
-            \hline
-            \multirow{6}{*}{\textsf{Original}} &
-            \lstinputlisting[label={lst:nestedBranching},firstline=1,
-            lastline=4]{if-else/equivalent_statements_if_return.java} \\
-
-            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=6, lastline=6]{if-else/equivalent_statements_if_return.java} \\
-            \hline
-            \hline
-            \multirow{5}{*}{\textsf{Original}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=1, lastline=3]{if-else/equivalent_statements_ternary_expr.java} \\
-
-            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=5, lastline=7]{if-else/equivalent_statements_ternary_expr.java} \\
-            \hline
-        \end{tabular}
-    \end{center}
-\end{table}

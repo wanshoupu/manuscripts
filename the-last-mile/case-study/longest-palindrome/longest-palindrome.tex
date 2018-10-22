@@ -220,7 +220,7 @@ palindrome substring Manacher's aglorithm with augmented string.}]
 
 But with a little maneuver, one can create a `virtual filling' among the characters of the
 original string and save on physical memory footprint.
-\@\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
+~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
 implementations in \python and \java respectively based on string `virtual filling'.
 The price for doing that is a mapping of indexes of \code{char}s in the the original string.
 
@@ -232,7 +232,7 @@ Also redefining the lengths array to be the length of the original array
 caption={A \python implementation of ongest palindromic substring.}]
 {case-study/longest-palindrome/longest_palindromic_substring.py}
 
-\@\autoref{lst:LongestPalindrom.java} is a \java version.
+~\autoref{lst:LongestPalindrom.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.

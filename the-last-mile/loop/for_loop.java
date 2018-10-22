@@ -1,3 +1,3 @@
-for (<init>; <condition>; <aftrtht>) {
+for (<init>; <test>; <aftrtht>) {
     <body>
 }

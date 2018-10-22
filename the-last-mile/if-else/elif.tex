@@ -6,66 +6,66 @@
 \chapter{Organize your Conditional Statements}\label{ch:organizeYourIfElse}
 
 Conditional is a control switching mechanism to alter code execution path,
-conditioned by one or more boolean conditions.
-Conditional control flow is the most basic programming building blocks in programs
+conditioned by boolean expressions.
+As a control flow, conditional is one of the fundamental building blocks
 of almost all programming languages.
-It may seem strange to you that I am actually spending a full chapter on this as
-many books and articles have already given this comprehensive discussions,
-\textit{e.g.},
-Wikipedia\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
-
-But just because it is basic and widely discussed does not mean that many people can do it right
-or have the willpower to do it right.
-Most of us agree that seldom any implementation of non-trivial logic is
-correct and optimal at the first attempt.
-But based on my observation working in top-tier tech companies,
-it is often
-the very first working version with bulging and intertwined logic that makes its way to production
-codebase and invoked by millions for real businesses.
-It is like a restaurant utensil was used for cooking for many days without being washed and no
-one notices.
-
+Undoubtedly, many references---textbooks, research articles, blog posts---have already covered this
+comprehensive discussions
+\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
+It may seem strange that I am spending a chapter on such a `well-known' topic here and now.
+However, just because the topic is basic and `well-known' does not mean that many folks can do it
+right or will do it right.
+But based on my years of working experience in several top-tier tech companies, it is often
+the haphazard first working version that makes its way to production codebase and becomes the
+core for millions of businesses, it does not matter how crooked the design may be, how
+obscure the logic may be.
+%But it is seldom the case that the first version of implementation of any non-trivial logic, if
+%correct at all, is optimal.
+%It fails the primary purpose of communication with other humans.
+%Worse, it often results in redundant/duplicate code.
 ``As long as it works, why should one bother to simplify the logic?'', you may argue.
-I'd like to quote Steve McConnell to respond:
+As a response, I'd like to quote Steve McConnell:
 ``..the primary audience [of your code] is made up of humans, not computers.''\cite{Mcconnell.2004}.
-
 \begin{quote}
     ``Any fool can write code that a computer can understand.
     Good programmers write code that humans can understand.''\\
     —Martin Fowler
 \end{quote}
 
-Twisted code and intertwined logic is often unsimplified
-product out of fierce battle fought by a struggling developer.
-They are hard to read, understand, debug, and modify.
-It fails the primary purpose of communication with other humans.
-Worse, it often results in redundant/duplicate code.
-
-I believe every minute spent with the basics is worthwhile before making publish pull requests on
-production code.
-
+Twisted code and intertwined logic are often unsimplified
+products out of fierce battle fought by a struggling developer.
+Though hard to read, understand, debug, and modify, they should not be regarded as enemy.
+On the opposite, they are the dawn of simple, effective implementation
+and the rest of this chapter is dedicated to show you how.
 %Communicate clear, succinct code to colleagues and successors are much more efficient.
-
-In this chapter, I'm going to share my experience of how to polish complicated logic into simple,
-beautiful, and succinct code.
-out \code{if elseif else} switching statements to reduce redundancy condition checks on the one
-hand and duplicate code on the other.
-
-Some of the techniques I employ is of math origin, especially basic Boolean algebra such as logical
-equivalences: double negation elimination, De Morgan's laws, distributive law, \textit{etc.}
-and normal forms: disjunctive normal form (DNF) or conjunctive normal form (CNF).
-
+I'm going to share my experience of how to polish complicated logic involving conditionals into
+simple, beautiful, and succinct code.
+You will learn how to organize branching statements using clauses such as \code{if}, \code{else if}
+(or\code{elif}), \code{else}, \textit{etc.},
+\code{if elseif else} to produce effective, succinct logic.
+You would minimize occurrences of redundancy condition checks in your code and reduce
+duplicate code overall.
+Every minute you spend on grasping the basic conditional programming is worthwhile before
+plunging into other topics.
 Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
 In doing so, I hope programmers would be inspired to the beautiful, succinct conditional statements.
 
-\section{Basics of conditional statements}\label{sec:if-else-condition}
+\section{Basic techniques for conditional statement simplification}
+\label{sec:conditional-simplify-tech}
 
-A boolean variable has two values-\code{true} and \code{false}.
-A simple condition in a \code{if-else} test has two execution alternatives-the \code{if}-block or
+Some of the techniques I employ in this section is of math origin, especially basic Boolean algebra
+such as logical equivalences:
+double negation elimination, De Morgan's laws, distributive law, \textit{etc.}
+and normal forms: disjunctive normal form (DNF) or conjunctive normal form (CNF).
+Review and refresh your memory on relevant materials as you see fit.
+
+A boolean variable or expression can evaluate to two possible values-\code{true} and \code{false}.
+Depending on the evaluation result of a boolean value,
+a \code{if-else} test has two execution alternatives-the \code{if}-block or
 the \code{else}-block;
-A composite condition of two boolean variables and a logical connective, such as
-\code{or}/\code{and}, may have up to 4 alternatives;
-and so on.
+A composite condition consisting of two boolean values may have up to 4 alternatives.
+Three boolean values make have up to 8 alternatives.
+And so on.
 \begin{figure}[htb]
     \centering
     \begin{subfigure}[b]{.4\textwidth}
@@ -79,20 +79,34 @@ and so on.
     \caption{\label{fig:conditional-branching}Branching effect of conditional statements.}
 \end{figure}
 
-But when disguised in real problems, especially when some alternatives are omitted or no-op,
-optimal coding may not be so straightforward.
-Show in ~\autoref{lst:nestedBranching} is my own code.
+But when embedded in real problems, disguised by specific forms, especially when some alternatives
+are masked, achieving optimal conditional programming may not be so straightforward.
+Let us examine the code in ~\autoref{lst:nestedBranching} (this is my own code at earlier years
+of my software development career).
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.3\textwidth}
+             \lstinputlisting[label={lst:nestedBranching},
+             caption={v1}]
+             {if-else/composite_condition_tobe_simplified.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.3\textwidth}
+             \lstinputlisting[label={lst:simpleBranching},
+             caption={v2}]
+             {if-else/composite_condition_simplified1.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.3\textwidth}
+             \lstinputlisting[label={lst:final-simplified-conditional-statement},
+             caption={v3}]
+             {if-else/composite_condition_simplified2.java}
+\end{minipage}
 
-\lstinputlisting[label={lst:nestedBranching},
-caption={Code with nested branching and redudant statements.}]
-{if-else/composite_condition_tobe_simplified.java}
 
-It is the very first version after I figured out the requirement from a real problem and, as
-usual, it 'smells'- it has complicated conditional statements and duplicate code\cite{Fowler1999}.
+It is the very first version after I figured out the requirement from a problem and,
+as expected, it 'smells'---it has complicated, nested conditional statements and duplicate
+code\cite{Fowler1999}.
 Because of these problems, one can hardly figure out which statement is executed under what
 condition without a mental twist.
-
-\begin{table}[h]
+\begin{table}[bth]
     \begin{center}
         \caption{Normal forms for conditions of execution of each statement.
         \label{tbl:breakdown-of-conditions}}
@@ -100,42 +114,42 @@ condition without a mental twist.
             \hline
             code & condition to execute \\
             \hline
-            statement1 & test1 $AND$ test2 \\
-            statement2 & test1 $AND$ !test2 $OR$ !test1 \\
+            statement1 & test1 $\land$ test2 \\
+            statement2 & test1 $\land\lnot$ test2 $\lor\lnot$ test1 \\
             statement3 & test1 \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
+Nevertheless, this is a good starting point for further improvement.
+What's important is to keep on working---do not settle on half-cooked solution.
 
-But still it's a good starting point for simplification.
-I decided to eliminate the nested conditional statements first.
-Observing that the \code{else} block of \code{if (test1)} is much simpler, I decided to flip
+So upon arriving at this first solution, I decided as a next step to eliminate the nested
+conditional statements.
+Observed that the \code{else} block of \code{if (test1)} is much simpler, I decided to flip
 the logic by negating \code{test1}.
-
 Then I promoted the nested \code{if (test2)} up to the first-level so that overall they
 become sequential conditional statements comprised of \code{if\{..\}else if\{..\}else\{\}} blocks
 that are built on top of one another.
-The resulting code is as shown in\autoref{lst:simpleBranching}.
+This turns out to be a coding pattern that I'm going to spend more time to explain
+in ~\autoref{sec:case-stack}.
+The resulting code is as shown in ~\autoref{lst:simpleBranching}.
 
-\lstinputlisting[label={lst:simpleBranching},
-caption={Equivalent code snippet as ~\autoref{lst:nestedBranching} with simple condition checking
-}]{if-else/composite_condition_simplified1.java}
-
-Now the conditional statements are streamlined and can be understood at a glance.
+Now the conditional statements are streamlined, straightforward and are easily understood at a
+glance.
 Comparing with ~\autoref{lst:nestedBranching}, it is a big improvement.
-
-But still it has duplication code.
-
-So I found a piece of paper and for each of the three statements, I wrote down the condition to
-be satisfied in order for it to be executed.
-My table is shown in ~\autoref{tbl:breakdown-of-conditions}.
-Clearly simplifying the condition for the execution of \code{statement2} is the key and let us do
-the math now.
+But still it has duplication code (both \code{statement2} and \code{statement3} are repeated).
+So I did a back-of-envelop calculation on a napkin---for each of the three statements
+(which consists of the conditional block body),
+I wrote down the conditions for the corresponding block to be executed.
+The result is shown in ~\autoref{tbl:breakdown-of-conditions}.
+With this table, it is clear that the key to simplify the logic lies in the conditions for the
+execution of \code{statement2}.
+Let us do some Boolean algebra.
 Let $c$ be the condition for \code{statement2} to be executed and
 \begin{align*}
     a &= \text{\code{test1}}, \\
-    b &= \text{\code{test2}}. \\
+    b &= \text{\code{test2}}.
 \end{align*}
 Then
 \begin{align}
@@ -149,42 +163,40 @@ Then
 \end{align}
 
 ~\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
-\code{statement2} is \code{!(test1 && test2)} and this can be an \code{else} clause of
-\code{if (test1 && test2)} which is the condition for the execution of \code{statement1}.
+\code{statement2} is \code{!(test1 && test2)} and this can be made as the \code{else}-clause of
+of the conditional construct for \code{statement1}, which is \code{if (test1 && test2)}.
+With this hard-earned wit, it now becomes straightforward to come up with yet an even simpler
+implementation such as ~\autoref{lst:final-simplified-conditional-statement}.
 
-With this piece of wit, it is straightforward to implement much simple code such as
-~\autoref{lst:final-simplified-conditional-statement}.
-
-\lstinputlisting[label={lst:final-simplified-conditional-statement}, caption={Simplified logic that
-is equivalent to ~\autoref{lst:nestedBranching}}]{if-else/composite_condition_simplified2.java}
-
-Of course the above process is not the only process to simplify logic.
-Another possible way to achieve this is to use truth table.
-let's look at this in detail.
-
+Please note that the above process is not the only way to arrive at simplified logic.
+Another possible way to achieve same logic simplicity is to use `truth table'.
+Let's see how this works.
 \begin{table}[h]
     \begin{center}
         \caption{True value table for \code{test1} and \code{test2}.
         \label{tbl:true-value-table}}
         \begin{tabular}{|c|c|c|}
             \hline
-            \code{test1} & \code{test2} & execution \\
+            \code{test1} & \code{test2} & true expr \& execution\\
             \hline
-            \code{false} & \code{false} & \code{statement2}\\
-            \code{false} & \code{true} & \code{statement2}\\
-            \code{true} & \code{false} & \code{statement2}, \code{statement3}\\
-            \code{true} & \code{true} & \code{statement1}, \code{statement3}\\
+            \code{false} & \code{false} & \code{!test1} $\rightarrow$ \code{statement2} \\
+            \code{false} & \code{true} & \code{!test1} $\rightarrow$ \code{statement2} \\
+            \code{true} & \code{false} & \code{test1 \&\& !test2}
+            $\rightarrow$ \code{statement2} \\
+            & & \code{test1=true} $\rightarrow$ \code{statement3} \\
+            \code{true} & \code{true} & \code{test1 \&\& test2} $\rightarrow$
+            \code{statement1} \\
+            & & \code{test1} $\rightarrow$ \code{statement3} \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
-
-I constructed truth table as ~\autoref{tbl:true-value-table}.
+I have constructed truth table as ~\autoref{tbl:true-value-table}.
 Since there are two conditional variables \code{test1} and \code{test2}, there are
-total four entries in the table.
-The third column shows the statements executed if the condition of the entry is true.
-
-Now we can summarize the table and arrive at the following conclusions
+total four entries in the truth table.
+The third column shows the boolean expression that's evaluated to \code{true} by which
+the execution of the statement ensues.
+Summarizing the table entries, we arrive at the following conclusions
 \begin{enumerate}[label={\roman*:}]
     \item \code{statement1} is executed iff both \code{true};
     \item \code{statement2} is executed iff not both \code{true};
@@ -192,14 +204,14 @@ Now we can summarize the table and arrive at the following conclusions
     \code{test2}.
 \end{enumerate}
 
-With these in mind, implementation of something like
+With all the mental twists untied, implementation of something like
 ~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
-So here two simplifying logic processes are presented.
-In practice, one may find one out of the two to be more useful under certain circumstances.
-So one may try one or the other or both, depending on which one is more convenient.
+We conclude this section with the presentation of two methods for logic simplification.
+In practice, you may find one or the other process to be more effective under certain circumstances.
+You are encouraged to try out both ways and for your own instinct about the methods.
 
-\section{Logic equivalence among conditional expressions}
+\section{Logic equivalence among conditional expressions}\label{sec:logicEquivalences}
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.45\textwidth}
@@ -225,12 +237,12 @@ So one may try one or the other or both, depending on which one is more convenie
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.45\textwidth}
-             \lstinputlisting[caption={Using \code{if..continue}.}]
-             {if-else/if_continue.java}
+             \lstinputlisting[caption={Using \code{if-else}.}]
+             {if-else/conditional_in_loop_no_continue.java}
 \end{minipage}\hfill
 \noindent\begin{minipage}[t]{.45\textwidth}
-             \lstinputlisting[caption={Using \code{if-else}.}]
-             {if-else/if_else.java}
+             \lstinputlisting[caption={Using \code{if..continue}.}]
+             {if-else/conditional_in_loop_continue.java}
 \end{minipage}
 
 With the keywords \code{break} and \code{continue}, Logic simplification in a loop
@@ -240,11 +252,11 @@ Shown below side-by-side are equivalent code snippets.
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.45\textwidth}
              \lstinputlisting[caption={Unsimplified code}]
-             {if-else/redundant_testing.java}
+             {if-else/loop_cond_redundant_testing.java}
 \end{minipage}\hfill
 \noindent\begin{minipage}[t]{.45\textwidth}
              \lstinputlisting[caption={Simplified code}]
-             {if-else/repeated_block.java}
+             {if-else/loop_cond_repeated_block.java}
 \end{minipage}
 But each has their own problem.
 The left column do redundant condition testing (test1), whereas the right column has repeated
@@ -272,7 +284,7 @@ The conditions for action A3 is \code{C1 == False && C2 == False}.
 \lstinputlisting[caption={Equivalent code snippets}]{if-else/equivalent_statements.java}
 
 The simplification of both lies in the smart use of continue:
-\lstinputlisting{if-else/no_redundancy.java}
+\lstinputlisting{if-else/loop_cond_no_redundancy.java}
 
 The following linked list operation code are equivalent between the left and the right
 \begin{table}[b]
@@ -324,14 +336,14 @@ For a really good example of multi-way conditional statement in a loop,
 the ~\fullref{lst:silhouette-skyline} presented in ~\fullref{ch:loop-thinning}
 would make an excellent example.
 
-\section{Build up your cases in \code{if}-stack}
+\section{Build up your cases in \code{if}-stack}\label{sec:case-stack}
 
 One frequently faces need of multi-way switching.
 One can realize this with nested \code{if..else} statements like ~\autoref{lst:nested_if_else}.
 \lstinputlisting[label={lst:nested_if_else}]{if-else/nested_if_else.java}
 The nesting level will go deeper with more switching fanouts and
 the logic becomes unwieldy pretty quickly.
-As an alterative with boosted readability, one can organize multi-way switching with an
+As an alternative with better readability, one can organize multi-way switching with an
 \code{if}-stack.
 A \code{if}-stack refers to a stack of \code{if}, \code{else if} (\code{elif} for \python), or
 \code{else}.

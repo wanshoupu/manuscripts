@@ -1,7 +1,7 @@
-if (!condition1) {
+if (!test1) {
      statement2;
      statement3;
-} else if (condition2) {
+} else if (test2) {
      statement1;
      statement3;
 } else {

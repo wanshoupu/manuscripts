@@ -1,6 +1,6 @@
-if (condition1) {
+if (test1) {
     statement1;
-} else if (condition2) {
+} else if (test2) {
     statement2;
 } else {
     statement3;

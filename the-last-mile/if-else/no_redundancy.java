@@ -1,10 +1,10 @@
-while (condition_overall) {
-    if (!condition1) {
+while (overall_test) {
+    if (!test1) {
         statement3;
         continue;
     }
-    //assert condition1
-    if (condition2) {
+    //assert test1
+    if (test2) {
         statement1;
     }
     statement2;

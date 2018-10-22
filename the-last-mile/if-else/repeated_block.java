@@ -1,8 +1,8 @@
-while(condition_overall){
-    if(condition1){
+while(overall_test){
+    if(test1){
         statement1
         statement2
-    }else if(condition2){
+    }else if(test2){
         statement2
     }else{
         statement3

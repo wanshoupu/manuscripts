@@ -66,14 +66,26 @@ the \code{else}-block;
 A composite condition of two boolean variables and a logical connective, such as
 \code{or}/\code{and}, may have up to 4 alternatives;
 and so on.
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[b]{.4\textwidth}
+        \includegraphics[width=\textwidth]{if-else/conditional.jpg}
+        \caption{Conditional}
+    \end{subfigure}
+    \begin{subfigure}[b]{.4\textwidth}
+        \includegraphics[width=\textwidth]{if-else/nested-conditionals.jpg}
+        \caption{$3$ conditionals}
+    \end{subfigure}
+    \caption{\label{fig:conditional-branching}Branching effect of conditional statements.}
+\end{figure}
 
 But when disguised in real problems, especially when some alternatives are omitted or no-op,
 optimal coding may not be so straightforward.
 Show in ~\autoref{lst:nestedBranching} is my own code.
 
-\lstinputlisting[caption={}
-caption={Code with nested branching and redudant
-statements.}]{if-else/composite_condition_tobe_simplified.java}
+\lstinputlisting[label={lst:nestedBranching},
+caption={Code with nested branching and redudant statements.}]
+{if-else/composite_condition_tobe_simplified.java}
 
 It is the very first version after I figured out the requirement from a real problem and, as
 usual, it 'smells'- it has complicated conditional statements and duplicate code\cite{Fowler1999}.
@@ -256,6 +268,9 @@ The conditions for action A1 is \code{C1 == True && C2 == True};
 The conditions for action A2 is \code{C1 == True};
 The conditions for action A3 is \code{C1 == False && C2 == False}.
 
+%TODO
+\lstinputlisting[caption={Equivalent code snippets}]{if-else/equivalent_statements.java}
+
 The simplification of both lies in the smart use of continue:
 \lstinputlisting{if-else/no_redundancy.java}
 
@@ -399,3 +414,16 @@ The underlying rule is to do the most informative test first.
 That way, the solution space would be squashed at the earliest possible time.
 Building up the cases of an \code{if}-stack is ultimately empirical.
 Even the experienced developers may have to make a couple of attempts to get it right.
+
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {if-else/spiral_termination_position.py}
+\end{figure}

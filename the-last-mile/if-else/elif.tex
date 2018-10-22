@@ -58,7 +58,7 @@ and normal forms: disjunctive normal form (DNF) or conjunctive normal form (CNF)
 Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
 In doing so, I hope programmers would be inspired to the beautiful, succinct conditional statements.
 
-\section{Conditional basics}\label{sec:if-else-condition}
+\section{Basics of conditional statements}\label{sec:if-else-condition}
 
 A boolean variable has two values-\code{true} and \code{false}.
 A simple condition in a \code{if-else} test has two execution alternatives-the \code{if}-block or
@@ -71,7 +71,7 @@ But when disguised in real problems, especially when some alternatives are omitt
 optimal coding may not be so straightforward.
 Show in ~\autoref{lst:nestedBranching} is my own code.
 
-\lstinputlisting[label={lst:nestedBranching},
+\lstinputlisting[caption={}
 caption={Code with nested branching and redudant
 statements.}]{if-else/composite_condition_tobe_simplified.java}
 
@@ -88,9 +88,9 @@ condition without a mental twist.
             \hline
             code & condition to execute \\
             \hline
-            statement1 & condition1 $AND$ condition2 \\
-            statement2 & condition1 $AND$ !condition2 $OR$ !condition1 \\
-            statement3 & condition1 \\
+            statement1 & test1 $AND$ test2 \\
+            statement2 & test1 $AND$ !test2 $OR$ !test1 \\
+            statement3 & test1 \\
             \hline
         \end{tabular}
     \end{center}
@@ -98,10 +98,10 @@ condition without a mental twist.
 
 But still it's a good starting point for simplification.
 I decided to eliminate the nested conditional statements first.
-Observing that the \code{else} block of \code{if (condition1)} is much simpler, I decided to flip
-the logic by negating \code{condition1}.
+Observing that the \code{else} block of \code{if (test1)} is much simpler, I decided to flip
+the logic by negating \code{test1}.
 
-Then I promoted the nested \code{if (condition2)} up to the first-level so that overall they
+Then I promoted the nested \code{if (test2)} up to the first-level so that overall they
 become sequential conditional statements comprised of \code{if\{..\}else if\{..\}else\{\}} blocks
 that are built on top of one another.
 The resulting code is as shown in\autoref{lst:simpleBranching}.
@@ -122,8 +122,8 @@ Clearly simplifying the condition for the execution of \code{statement2} is the 
 the math now.
 Let $c$ be the condition for \code{statement2} to be executed and
 \begin{align*}
-    a &= \text{\code{condition1}}, \\
-    b &= \text{\code{condition2}}. \\
+    a &= \text{\code{test1}}, \\
+    b &= \text{\code{test2}}. \\
 \end{align*}
 Then
 \begin{align}
@@ -137,8 +137,8 @@ Then
 \end{align}
 
 ~\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
-\code{statement2} is \code{!(condition1 && condition2)} and this can be an \code{else} clause of
-\code{if (condition1 && condition2)} which is the condition for the execution of \code{statement1}.
+\code{statement2} is \code{!(test1 && test2)} and this can be an \code{else} clause of
+\code{if (test1 && test2)} which is the condition for the execution of \code{statement1}.
 
 With this piece of wit, it is straightforward to implement much simple code such as
 ~\autoref{lst:final-simplified-conditional-statement}.
@@ -152,11 +152,11 @@ let's look at this in detail.
 
 \begin{table}[h]
     \begin{center}
-        \caption{True value table for \code{condition1} and \code{condition2}.
+        \caption{True value table for \code{test1} and \code{test2}.
         \label{tbl:true-value-table}}
         \begin{tabular}{|c|c|c|}
             \hline
-            \code{condition1} & \code{condition2} & execution \\
+            \code{test1} & \code{test2} & execution \\
             \hline
             \code{false} & \code{false} & \code{statement2}\\
             \code{false} & \code{true} & \code{statement2}\\
@@ -168,7 +168,7 @@ let's look at this in detail.
 \end{table}
 
 I constructed truth table as ~\autoref{tbl:true-value-table}.
-Since there are two conditional variables \code{condition1} and \code{condition2}, there are
+Since there are two conditional variables \code{test1} and \code{test2}, there are
 total four entries in the table.
 The third column shows the statements executed if the condition of the entry is true.
 
@@ -176,8 +176,8 @@ Now we can summarize the table and arrive at the following conclusions
 \begin{enumerate}[label={\roman*:}]
     \item \code{statement1} is executed iff both \code{true};
     \item \code{statement2} is executed iff not both \code{true};
-    \item \code{statement3} is executed iff \code{condition1=true}, regardless of
-    \code{condition2}.
+    \item \code{statement3} is executed iff \code{test1=true}, regardless of
+    \code{test2}.
 \end{enumerate}
 
 With these in mind, implementation of something like
@@ -189,71 +189,53 @@ So one may try one or the other or both, depending on which one is more convenie
 
 \section{Logic equivalence among conditional expressions}
 
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Unsimplified},firstline=1,lastline=4]
+             {if-else/equivalent_statements_if_return.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Simplified},firstline=6,lastline=6]
+             {if-else/equivalent_statements_if_return.java}
+\end{minipage}
 
-\begin{table}[h]
-    \begin{center}
-        \caption{Equivalent statements and logic optimization
-        \label{tbl:equiv-stmt}}
-        \begin{tabular}{l|p{7cm}}
-            \hline
-            \multirow{6}{*}{\textsf{Original}} &
-            \lstinputlisting[label={lst:nestedBranching},firstline=1,
-            lastline=4]{if-else/equivalent_statements_if_return.java} \\
-
-            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=6, lastline=6]{if-else/equivalent_statements_if_return.java} \\
-            \hline
-            \hline
-            \multirow{5}{*}{\textsf{Original}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=1, lastline=3]{if-else/equivalent_statements_ternary_expr.java} \\
-
-            \multirow{3}{*}{\textsf{Simplified}} & \lstinputlisting[label={lst:nestedBranching},
-            firstline=5, lastline=7]{if-else/equivalent_statements_ternary_expr.java} \\
-            \hline
-        \end{tabular}
-    \end{center}
-\end{table}
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Unsimplified},firstline=1,lastline=3]
+             {if-else/equivalent_statements_ternary_expr.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Simplified},firstline=5,lastline=7]
+             {if-else/equivalent_statements_ternary_expr.java}
+\end{minipage}
 
 \section{Conditional statements in a loop}\label{sec:branchingInLoop}
 
-\begin{table}[h]
-    \begin{center}
-        \caption{Equivalent conditional statements within a loop using \code{if-else} vs.
-        \code{if-continue}.
-        \label{tbl:conditional-statement-in-loop}
-        }
-        \begin{tabular}{p{7cm}|p{7cm}}
-            Option 1 & Option 2  \\
-            \lstinputlisting{if-else/if_continue.java}
-            &
-            \lstinputlisting{if-else/if_else.java} \\
-        \end{tabular}
-    \end{center}
-\end{table}
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Using \code{if..continue}.}]
+             {if-else/if_continue.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Using \code{if-else}.}]
+             {if-else/if_else.java}
+\end{minipage}
 
 With the keywords \code{break} and \code{continue}, Logic simplification in a loop
 therefore has one extra piece of complexity and a new weapon to wield.
+Shown below side-by-side are equivalent code snippets.
 
-\begin{table}[h]
-    \begin{center}
-        \caption{Equivalent code side-by-side.
-        On the left, is unsimplified code.
-        On the right, is simplified code.
-        \label{tbl:equivalent-code}
-        }
-        \begin{tabular}{p{7cm}|p{7cm}}
-            Option 1 & Option 2  \\
-            \lstinputlisting{if-else/redundant_testing.java}
-            &
-            \lstinputlisting{if-else/repeated_block.java} \\
-        \end{tabular}
-    \end{center}
-\end{table}
-
-Shown in ~\autoref{tbl:equivalent-code} side-by-side are equivalent code snippets.
-
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Unsimplified code}]
+             {if-else/redundant_testing.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Simplified code}]
+             {if-else/repeated_block.java}
+\end{minipage}
 But each has their own problem.
-The left column do redundant condition testing (condition1), whereas the right column has repeated
+The left column do redundant condition testing (test1), whereas the right column has repeated
 code (statement2).
 
 Let's think of the logic in terms of a real-world example.
@@ -358,7 +340,7 @@ form an \code{if}-stack.
 When taken apart, the conditional expressions of \code{if}-stack
 are cumulative---a later case combines all earlier conditionals with its own.
 For example the ~\autoref{lst:if-stack}, if taken apart, will be
-\lstinputlisting[label={lst:if-stack-taken-apart}]{if-else/if_stack_taken_apart.java}
+\lstinputlisting[label={lst:if-stack-taken-apart}]{if-else/if_else_taken_apart.java}
 Note that the three \code{if}-blocks are totally independent and
 the order among them does not matter any more.
 Apart from this ordering flexibility, the code readability and
@@ -373,18 +355,19 @@ From this perspective, the alternative form ~\autoref{lst:if-stack-taken-apart} 
 straightforward to spot untested assumptions made for a later case than its \code{if}-stack
 counterpart.
 
-As an example of \code{if}-stack, let's consider the implementation of method \code{equals(Object
-obj)} as shown in ~\autoref{lst:if-stack-equals}.
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:if-stack-equals},
+    caption={Example implementation overriding \code{equals} in a subclass}]
+    {if-else/equals.java}
+\end{figure}
+As an example of \code{if}-stack, let's consider the implementation of method
+\code{equals(Object obj)} as shown in ~\autoref{lst:if-stack-equals}.
 The first test we do is the nullity of the argument.
 If it is not null, then we test if its of type \code{MyClass}.
 Only if it is not null and is of type \code{MyClass}, we cast it to type \code{MyClass}
 and test equality between member variables of
 \code{this} instance and \code{that} instance, pairwise.
 From this example, you see how we build up the cases like a staircase step-by-step cumulatively.
-\lstinputlisting[label={lst:if-stack-equals},
-caption={Example implementation overriding\code{equals}in a subclass}]
-{if-else/equals.java}
-
 As another example, let us consider the code for determining the lowest common ancestor
 of two values in a binary search tree.
 This is a typical problem where the cases to be tested can be combinatorial
@@ -405,14 +388,14 @@ branching requires the non-null attributes of root otherwise the code will throw
 \code{NullPointerException}.
 Also note that as the cases are being built up, the solution spaces are also being ruled
 out---each time we eliminate a half-space with a test---much like that of a binary search.
-\lstinputlisting[label={lst:if-stack-lca},
-caption={An implementation of finding lowest common ancestor in a binary search tree.}]
-{if-else/lca.java}
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:if-stack-lca},
+    caption={An implementation of finding lowest common ancestor in a binary search tree.}]
+    {if-else/lca.java}
+\end{figure}
 Some source states that when designing \code{if}-stack do the simple tests first.
 I think that's a superfluous observation.
 The underlying rule is to do the most informative test first.
 That way, the solution space would be squashed at the earliest possible time.
 Building up the cases of an \code{if}-stack is ultimately empirical.
 Even the experienced developers may have to make a couple of attempts to get it right.
-
-

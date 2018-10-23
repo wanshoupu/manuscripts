@@ -338,19 +338,6 @@ That way, the maximal solution space can be chopped off at the earliest possible
 Generally speaking, building up the cases of an case-stack is ultimately empirical.
 Even the experienced developers may have to make a couple of attempts to get the optimal design.
 
-The questions when it comes to thinking of the base cases are:
-What if the matrix is a row array?
-Column array?
-What if the matrix is a one-cell matrix?
-Extreme question: what if the matrix is empty?
-Do you just throw exception?
-
-\begin{figure}[htb]
-    \lstinputlisting[label={lst:matrix-spiral-term},
-    caption={Matrix spiral print termination position.}]
-    {if-else/spiral_termination_position.py}
-\end{figure}
-
 \section{Logic equivalence among conditional expressions}\label{sec:logicEquivalences}
 %TODO
 % side-by-side two columns
@@ -374,6 +361,19 @@ Do you just throw exception?
 \end{minipage}
 
 \section{Conditional statements in a loop}\label{sec:branchingInLoop}
+
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {if-else/spiral_termination_position.py}
+\end{figure}
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.45\textwidth}

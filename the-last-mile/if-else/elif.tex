@@ -40,9 +40,9 @@ and the rest of this chapter is dedicated to show you how.
 %Communicate clear, succinct code to colleagues and successors are much more efficient.
 I'm going to share my experience of how to polish complicated logic involving conditionals into
 simple, beautiful, and succinct code.
-You will learn how to organize branching statements using clauses such as \code{if}, \code{else if}
-(or\code{elif}), \code{else}, \textit{etc.},
-\code{if elseif else} to produce effective, succinct logic.
+You will learn how to organize conditional statements with \code{if}, \code{else
+if} (or\code{elif}), \code{else}, \textit{etc.},
+to produce effective, succinct logic.
 You would minimize occurrences of redundancy condition checks in your code and reduce
 duplicate code overall.
 Every minute you spend on grasping the basic conditional programming is worthwhile before
@@ -163,7 +163,8 @@ Then
 \end{align}
 
 ~\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
-\code{statement2} is \code{!(test1 && test2)} and this can be made as the \code{else}-clause of
+\code{statement2} is \code{!(test1 && test2)} and this can be piggybacked as the
+\code{else}-block of
 of the conditional construct for \code{statement1}, which is \code{if (test1 && test2)}.
 With this hard-earned wit, it now becomes straightforward to come up with yet an even simpler
 implementation such as ~\autoref{lst:final-simplified-conditional-statement}.
@@ -207,9 +208,148 @@ Summarizing the table entries, we arrive at the following conclusions
 With all the mental twists untied, implementation of something like
 ~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
-We conclude this section with the presentation of two methods for logic simplification.
-In practice, you may find one or the other process to be more effective under certain circumstances.
-You are encouraged to try out both ways and for your own instinct about the methods.
+In this section, we presented two methods for logic simplification.
+One method en routes on the necessary condition for the execution of certain statements and seek to
+simplify the conditional expressions.
+The other considers all the possible branches and looks for ways to combining them.
+In practice, you are encouraged to try out both ways and for your own instinct about the methods.
+You may find one or the other process to be more beneficial under certain circumstances.
+
+\section{Build up `case-stack'}\label{sec:case-stack}
+
+As a programming language feature,
+it is not unfamiliar to many a sequence of consecutive conditional statements
+starting with \code{if} clause, followed by zero, one, or more of
+\code{else if} blocks (\code{elif} for \python), and optionally with
+\code{else} block, \textit{e.g.}, ~\autoref{lst:simpleBranching}.
+For the sake of argument, we refer to such construct as `case-stack'.
+Case-stack forms an effective pattern when coding fairly complicated logic.
+Together with a loop construct, case-stack is an important pattern to implement a wide range of
+algorithms. (Please refer to ~\autoref{ch:loops} for more discussion).
+
+Unfortunately, little is mentioned about this patterns in programming references.
+Beginning and intermediate developers often stumble upon this without concious choice, lest to
+master the best practice of it.
+In this section, so we hope to give it a fair coverage over some of the important aspects of a
+case-stack and the best practices around it.
+
+When faced with multi-branch switching,
+a common way of implementation uses nested \code{if..else} statements such as the example given at
+the beginning of this chapter ~\autoref{lst:nestedBranching}.
+As switching fanout grows, the nesting level goes deeper, indentation grows messier, and
+the logic quickly becomes unwieldy.
+As an alternative for better readability, one can organize multi-branch switching using a
+case-stack as ~\autoref{lst:simpleBranching}.
+For some special cases, \code{switch}-statement may be used equally well, if supported by the
+programming language.
+For simplicity, we limit our discussion to \code{if..else}-statement here.
+
+The execution model of a case-stack is like walking up a staircase---the program
+successively evaluates the conditional expression one at a time and builds up the cases.
+The conditional expression of the leading \code{if}-block is the first step of check.
+If it is evaluated to \code{true}, then the \code{if}-block is executed
+and the rest of the stack is skipped.
+Otherwise, the next conditional expression is evaluated
+and so on until the end of the case-stack.
+Note that in the presence of \code{return} and \code{break},
+the case-stack may be simplified with the removal of the \code{else} keyword.
+For examples, take a look at ~\autoref{lst:if-stack-equals} and ~\autoref{lst:if-stack-lca}.
+
+First property of a case-stack is the order of conditional statements which is often carefully
+designed for succinct code, optimal performance or both.
+The second property is the cumulative effect of successive tests.
+We are going to talk these properties below.
+
+\begin{table}[b]
+    \begin{center}
+        \caption{\label{tab:cumulative-tests-case-stack}Cumulative effect of tests in a case
+        stack.}
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Case stack & Equivalent decoupled conditional statements \\
+            \lstinputlisting{if-else/case_stack_example.java}
+            &
+            \lstinputlisting{if-else/case_stack_taken_apart.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+When taken apart, the effect of tests of a case-stack
+is cumulative---a later case combines all previous conditional expressions up to its own.
+This is illustrated by the example of ~\autoref{tab:cumulative-tests-case-stack}.
+Note that unlike the strict ordering of the conditional statements in the left column,
+the three \code{if}-blocks in the right column are not logically coupled and
+thus may be swapped assuming that the execution of \code{statement1}, \code{statement2},
+\code{statement3}, do not affect one another.
+
+When debugging a case-stack for logic fallacies and unfounded assumptions, for example,
+one needs to keep this cumulative effect in mind: all the assumptions about the
+the current line of code should have been tested by an earlier conditional expression.
+A missing test will likely result in exception in subsequent execution.
+From this perspective, the right column in ~\autoref{tab:cumulative-tests-case-stack} would be a
+good aid for debugging---due to its explicit conditional expressions, it is more
+straightforward to spot untested assumptions made for a later case than its case-stack
+counterpart.
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:if-stack-equals},
+    caption={Example implementation overriding \code{equals} in a subclass}]
+    {if-else/equals.java}
+\end{figure}
+As a real-world example to demonstrate the effectiveness of case-stack in handling
+multi-branching logic,
+let's consider another example of case-stack implementation---the method
+\code{public boolean equals(Object obj)} as shown in ~\autoref{lst:if-stack-equals}.
+The first test we do is the nullity of the argument.
+Only if it is not null do we move on to the second test---if it's of type \code{MyClass}.
+Only if it is not null and is of type \code{MyClass} do we cast it to type \code{MyClass}
+and perform pairwise equality tests between member variables of
+\code{this} instance and \code{that} instance.
+Once again, you see how the program progresses up a `staircases' step-by-step.
+
+To illustrate how the order of tests can affect the effectiveness of a case-stack,
+let's consider the problem of
+determining the lowest common ancestor of two values in a binary search tree.
+In this problem, the number of `special' cases is combinatorial.
+If not designed properly, the code of handling these cases can blow out like crazy.
+However, with a properly designed case-stack, a couple of lines of code can handle
+the myriad possibilities like a breeze.
+Take a look at ~\autoref{lst:if-stack-lca}.
+The cases are built from ground up like this:
+\begin{enumerate}
+    \item Test nullity;
+    \item Test for left branching;
+    \item Test for right branching;
+    \item Test for existence of keys;
+    \item Final case;
+\end{enumerate}
+Note later statements are built on the assertions of previous tests---test for left/right
+branching requires the non-null attributes of root otherwise the code will throw
+\code{NullPointerException}.
+Also note that as the cases are being built up, the solution space is also being divided and
+half of it is ruled out much like that of a binary search.
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:if-stack-lca},
+    caption={An implementation of finding lowest common ancestor in a binary search tree.}]
+    {if-else/lca.java}
+\end{figure}
+Some source states that when designing case-stack do the simple tests first.
+I think that's a superfluous observation.
+The underlying rule is to do the test consisting of most entropy first.
+That way, the maximal solution space can be chopped off at the earliest possible time.
+Generally speaking, building up the cases of an case-stack is ultimately empirical.
+Even the experienced developers may have to make a couple of attempts to get the optimal design.
+
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {if-else/spiral_termination_position.py}
+\end{figure}
 
 \section{Logic equivalence among conditional expressions}\label{sec:logicEquivalences}
 %TODO
@@ -336,106 +476,3 @@ For a really good example of multi-way conditional statement in a loop,
 the ~\fullref{lst:silhouette-skyline} presented in ~\fullref{ch:loop-thinning}
 would make an excellent example.
 
-\section{Build up your cases in \code{if}-stack}\label{sec:case-stack}
-
-One frequently faces need of multi-way switching.
-One can realize this with nested \code{if..else} statements like ~\autoref{lst:nested_if_else}.
-\lstinputlisting[label={lst:nested_if_else}]{if-else/nested_if_else.java}
-The nesting level will go deeper with more switching fanouts and
-the logic becomes unwieldy pretty quickly.
-As an alternative with better readability, one can organize multi-way switching with an
-\code{if}-stack.
-A \code{if}-stack refers to a stack of \code{if}, \code{else if} (\code{elif} for \python), or
-\code{else}.
-For example the ~\autoref{lst:nested_if_else} complexity can be equivalently written as
-\lstinputlisting[label={lst:if-stack}]{if-else/if_else.java}
-Sometimes a \code{switch}-statement may be equivalently used in place of a \code{if}-stack on
-limited use cases.
-But we are going to limit our discussion to \code{if}-statement for now.
-
-The execution of an \code{if}-stack is like walking up a staircase---one
-builds up cases by successive tests in a step-by-step fashion.
-The conditional expression of the leading \code{if}-clause is the first step of check.
-If it is evaluated to \code{true}, then the \code{if}-clause is executed
-and the rest of the stack is skipped.
-Otherwise, the conditional expression of the next branching clause is evaluated
-and so on until the end of the \code{if}-stack.
-Note that \code{if}-stack may not be in the form of \code{if..else if..else}.
-With the presence of \code{return} and \code{break}, a series of \code{if}-statements can also
-form an \code{if}-stack.
-
-When taken apart, the conditional expressions of \code{if}-stack
-are cumulative---a later case combines all earlier conditionals with its own.
-For example the ~\autoref{lst:if-stack}, if taken apart, will be
-\lstinputlisting[label={lst:if-stack-taken-apart}]{if-else/if_else_taken_apart.java}
-Note that the three \code{if}-blocks are totally independent and
-the order among them does not matter any more.
-Apart from this ordering flexibility, the code readability and
-the performance of ~\autoref{lst:if-stack-taken-apart} is
-generally speaking worse than ~\autoref{lst:if-stack} as it does a significant amount of
-redundant tests.
-When inspecting code for logic fallacies and unfounded assumptions, for example, one has to keep
-this cumulative effect in mind: all the assumptions about the
-the current line of code should have been tested by exactly one of the conditionals ahead.
-A missing test will likely result in exception.
-From this perspective, the alternative form ~\autoref{lst:if-stack-taken-apart} may be more
-straightforward to spot untested assumptions made for a later case than its \code{if}-stack
-counterpart.
-
-\begin{figure}[htb]
-    \lstinputlisting[label={lst:if-stack-equals},
-    caption={Example implementation overriding \code{equals} in a subclass}]
-    {if-else/equals.java}
-\end{figure}
-As an example of \code{if}-stack, let's consider the implementation of method
-\code{equals(Object obj)} as shown in ~\autoref{lst:if-stack-equals}.
-The first test we do is the nullity of the argument.
-If it is not null, then we test if its of type \code{MyClass}.
-Only if it is not null and is of type \code{MyClass}, we cast it to type \code{MyClass}
-and test equality between member variables of
-\code{this} instance and \code{that} instance, pairwise.
-From this example, you see how we build up the cases like a staircase step-by-step cumulatively.
-As another example, let us consider the code for determining the lowest common ancestor
-of two values in a binary search tree.
-This is a typical problem where the cases to be tested can be combinatorial
-if not handled properly, your code can blow out like crazy.
-But if we design our \code{if}-stack properly, a couple of lines of code can handle all the
-combinations like a breeze.
-Take a look at ~\autoref{lst:if-stack-lca}.
-The cases are built from ground up:
-\begin{enumerate}
-    \item Test nullity;
-    \item Test for left branching;
-    \item Test for right branching;
-    \item Test for existence of keys;
-    \item Final case;
-\end{enumerate}
-Note later statements are built on the assertions of previous tests---test for left/right
-branching requires the non-null attributes of root otherwise the code will throw
-\code{NullPointerException}.
-Also note that as the cases are being built up, the solution spaces are also being ruled
-out---each time we eliminate a half-space with a test---much like that of a binary search.
-\begin{figure}[htb]
-    \lstinputlisting[label={lst:if-stack-lca},
-    caption={An implementation of finding lowest common ancestor in a binary search tree.}]
-    {if-else/lca.java}
-\end{figure}
-Some source states that when designing \code{if}-stack do the simple tests first.
-I think that's a superfluous observation.
-The underlying rule is to do the most informative test first.
-That way, the solution space would be squashed at the earliest possible time.
-Building up the cases of an \code{if}-stack is ultimately empirical.
-Even the experienced developers may have to make a couple of attempts to get it right.
-
-The questions when it comes to thinking of the base cases are:
-What if the matrix is a row array?
-Column array?
-What if the matrix is a one-cell matrix?
-Extreme question: what if the matrix is empty?
-Do you just throw exception?
-
-\begin{figure}[htb]
-    \lstinputlisting[label={lst:matrix-spiral-term},
-    caption={Matrix spiral print termination position.}]
-    {if-else/spiral_termination_position.py}
-\end{figure}

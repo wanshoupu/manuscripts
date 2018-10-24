@@ -18,6 +18,19 @@ control the execution.
 Recursion on the other hand relies on stack variables, which include variables you passed in when
 recursively calling functions, to control the execution.
 
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {if-else/spiral_termination_position.py}
+\end{figure}
+
 \section{Convert Recursive Solutions to Iterative}\label{sec:convertRecursiveSolutionsToIterative}
 
 How to convert recursive solution to iterative?

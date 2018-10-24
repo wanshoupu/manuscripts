@@ -128,14 +128,14 @@ If you do development in this cascade way, you get to live out the moment.
 You focus on what you are doing now and do it right, as there are no other lower level things
 bother you.
 
-I want to pause here to give you a disclaimer, as
+I want to pause here to give a disclaimer, as
 I don't want the reader be mislead by the pretty layout at the forefront.
 Note that I didn't come out with this beautiful plan on my first stroke.
 For a long time, my code was messy and the function names were weird.
 But all that messy code is normal and encouraged at first.
-Only through working out something quick-n-dirty will you grasp much of the needed structure for
-the right code.
-The key is to iterate through your code.
+Only through working out something quick-n-dirty will you grasp much of the needed insights
+behind the problem for the right code.
+The key is to iterate over your code.
 Don't settle until you achieve certain confidence and are comfortable with your code.
 
 The functionality of the JSON parser is to convert the information encoded in the JSON string
@@ -174,8 +174,8 @@ In my initial design, I used the following additional mappings
 \end{table}
 
 Later on when I had to overcome the difficulty of recovering the original number format did I
-realized that it is not only unnecessary to convert strings to numbers but also doing so suffer the
-lost number format information.
+realized that it is not only unnecessary to convert strings to numbers but also doing so will
+result in the lost number formatting information.
 So I not only gave up converting for numbers, but also stopped converting other primitive values
 as well.
 Then I finally arrived at the simplified mappings in ~\autoref{tab:ds-mapping}.
@@ -352,8 +352,10 @@ comma `\texttt{,}', colon `\texttt{:}'
 and aggregate them in corresponding data structures.
 
 JSON is recursively structured data and the token stream is flat array.
-The job of assembling tokens into recursive data structure is essentially job of deserialization.
-
+Given the grammar of JSON \footnote{See the EBNF specification at
+\url{https://www.json.org/}},
+the job of assembling tokens into recursive data structure can be realized
+by a top-down parser.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{case-study/my-json/generalized-shunting-yard-algo.jpg}
@@ -363,7 +365,7 @@ in-memory data structures for JSON data.}
 
 There are two ways of doing that---iterative and recursive---and we will start with iterative
 solution.
-The iterative way uses two stacks one for elements, one for punctuations.
+The iterative solution uses two stacks one for elements, one for punctuations.
 The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
 \@\cite{Dijkstra-shunting-yard}.
 The Wikipedia description\@\footnote{A brief description is available at
@@ -392,7 +394,7 @@ That's certainly a sign that this is not the final version to settle on.
 Therefore I'm going to try the second way of implementation, that is, the recursive solution.
 
 Recall the discussions in ~\fullref{ch:recursion} that when there are more than one types of
-structures embedded within one another, a multi-recursion implementation might come to rescue.
+structures embedded within one another, a mutual recursion implementation might come to rescue.
 We are going to attempt to implement a recursive solution using techniques discussed there.
 
 Above all, we are going to convert string to a \code{deque} of characters in making up of the
@@ -435,12 +437,12 @@ When the token is \code{','}, we know its a field separator but it is totally re
 don't need it so we skip.
 When the token is \code{']'}, we know that this is a conclusion of the current array.
 So we return the control to the invoker.
-Now it comes the critical part of the multi-recursion logic.
+Now it comes the critical part of the mutual recursion logic.
 ``Why do we invoke the dispatcher function \code{assembleDispatcher}?'' you ask.
 ``Because some of the array elements may be of composite types!'' I answer.
 So we have to pass control back to the specialist function for generic assembler for each element.
-Recall the discussion in ~\autoref{ch:recursion} that each function in the multi-recursion
-implementation has its specialty and is the sole expert for performing a duty.
+Recall the discussion in ~\autoref{ch:recursion} that each function in the mutual recursion group
+has its specialty and is the sole expert for performing a duty.
 No function should perform this specialty except the designated function.
 When other functions need to perform this duty, they have to defer it to the designated function.
 
@@ -472,10 +474,13 @@ Also stress test reveals that it can process JSON text of size $189\mbox{\code{M
 recursion depth of $493,000$ or so (the system default of the particular machine that I used).}.
 
 Let's reflect on the pros and cons between the two solutions we came up with in this section.
+Both solutions belong to the family of LL$(1)$ parsers\cite{Rosenkrantz:1969:LL-parser}.
 The iterative solution is a robust solution with less concern of stack overflow.
 However the code there is not straightforward.
 In fact, it is formidable for new developers to read, understand, and modify.
 The recursive solution is elegant, succinct, and with better cohesion.
+It is an example of the recursive-descent parser with a group
+of three mutually recursive functions.
 For large JSON data or data with extremely deep recursive structures, it may run out of stack
 memory.
 In production environment, however, the property of being easy to maintain is an overwhelming
@@ -483,16 +488,18 @@ factor especially for product fast iteration.
 Note that arguments based on the language of choice is irrelevant here as I'm merely using
 \python for illustration purposes.
 
-So far, we have presented half of the subtasks laid out in ~\autoref{lst:JsonPrettifier}.
-With the functions \code{tokenize} and \code{assemble}, the function \code{parseJson} is completed.
-Together, we experienced the refinement process.
-The process we go through for improvement usually starts with identifying issues, imperfections,
-other non-ideal code that tickles our heart and set us uneasy.
+With the functions \code{tokenize} and \code{assemble} fully implemented,
+the functionality for JSON parsing is completed.
+Overall, \code{parseJson} is a 2-pass, LL$(1)$ parser for JSON string.
+We covered the implementation refinement process in details.
+To reiterate, the improvement process usually starts with identifying issues,
+imperfections, other non-ideal code that tickles our heart and set us uneasy.
 Once with the specific problems in hand, we already solved half the problem.
 Especially some of the techniques we explained in earlier chapters may
 resonate with the problems with a crispy snapping sound!
 That's amazing achievement.
 
+So far, we have presented half of the subtasks laid out in ~\autoref{lst:JsonPrettifier}.
 We are going to advance into the second half of the project---print the in-memory data
 structure into pretty JSON text---and we are going to be eye-witnesses of a series of
 miraculous refactor processes to simplify what looks incurable code.
@@ -512,7 +519,7 @@ accordance with the requirements specified in ~\autoref{json-style-spec}.
 caption={First version for JSON formatter.}]
 {case-study/my-json/JsonFormatter_v1.py}
 Just like the parsing code of JSON data, the above formatting code is another example of
-multi-recursive implementation.
+mutually recursive implementation.
 The `public' function is
 \begin{lstlisting}[label={lst:toPrettyString}]
 def toPrettyString(obj, indent=0)

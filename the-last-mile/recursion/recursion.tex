@@ -3,8 +3,19 @@
 %% 7/14/18
 %%
 
-\chapter{Recursive functions} \label{ch:recursion}
+\chapter{Recursive programming} \label{ch:recursion}
 
+The concept of recursion has long been known to artists and is present in many distinct
+disciplines: linguistics, logic, mathematics.
+In computer science, recursion becomes its central idea for developing both data structures and
+procedures.
+Many recursive data structures, generally falling in the linked data structure category, consist
+of the most important applications: linked lists, trees, \textit{etc}.
+In this chapter, we are going to discuss the \emph{practical} aspects of
+recursion, recursive procedures, and recursive functions.
+
+Recursive function has a close connection with dynamic programming.
+Recursive functions are the
 Do not think recursions as an infinite loop.
 Instead, recursive function execution is a spiral.
 
@@ -42,18 +53,33 @@ engineering taste, and thus needs some training.
 
 One of the criteria for a good base class is that that it requires minimal initialization.
 
+\section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
 
-\section{Simple recursive function}\label{sec:simpleRecursiveFunction}
+Functions become recursive because of the occurrence(s) of recursive function invocation.
+Depending on the number of recursive function invocations, recursive functions are classified
+into single and multiple recursive functions.
+The \emph{single recursive function}s are those that make exactly one recursive calls, whereas
+\emph{multiple recursive function}s are those that make more than one recursive function
+invocations in the function definition.
+Note some recursive functions make recursive calls in a loop.
+So even though there is only one recursive invocation, these are considered multiple recursive
+functions.
+One of the main reason for differentiating single and multiple recursive functions
+is for time complexity analysis.
 
-\begin{defn}
-    A simple recursive function is defined to be a function that only recursively call itself.
-\end{defn}
+Another way for recursive function classification is based on how many participant functions
+there are in the recursive calls.
+Ordinary recursive functions involve only one function and self invocation(s).
+When there are more than one mutually recursive participant functions and hetero-invocations, all
+the participating functions will be called \emph{mutually recursive functions}.
+Mutual recursions in function design have important application in text parsing and compositional
+recursive data processing, \textit{etc.}
+We will discuss mutual recursion in later sections of this chapter.
+For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
+~\fullref{prt:advanced}.
 
-\section{Multivariate recursive functions}\label{sec:multivariateRecursiveFunctions}
-\begin{defn}
-    A group of multivariate functions are recursive iff the invocation graph is not a directed
-    acyclic graph.
-\end{defn}
+\section{General design considerations of recursive functions}\label{sec:generalRecursiveFunction}
+
 
 \section{Remnant function parameter}\label{sec:remnantFunctionParameter}
 
@@ -74,16 +100,21 @@ tail recursive function\footnote{\url{https://en.wikipedia.org/wiki/Tail_call}}.
 \section{Recursion and mathematical induction}\label{sec:recursionAndMathematicalInduction}
 Mathematical induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}}
 
-\section{Multi-recursion}\label{sec:multi-recursion}
+\section{Mutual recursion}\label{sec:mutual-recursion}
 
-When there are distinctly multiple tasks to be done together, multiple, recurisve functions may
-be a great way to write highly cohesive code.
-One example is structured data parsing like JSON data.
+\section{Multivariate recursive functions}\label{sec:multivariateRecursiveFunctions}
+\begin{defn}
+    A group of multivariate functions are recursive iff the invocation graph is not a directed
+    acyclic graph.
+\end{defn}
+
+When dealing with a task that is a recursive composition of subtasks of a few
+distinct types, multiple mutually recursive functions,
+with each function dedicates to solve tasks of one category,
+usually make a solution with highly cohesive code.
 A beautiful example may be found in the book ~\cite{Beautiful-Code:2007} chapter 1 for the regular
 expression \code{grep} function.
-
-I gave another example for the application of multi-function recursion in
-~\autoref{ch:json-prettifier}.
+For an example in this book, reader can refer the JSON parser of ~\fullref{ch:json-prettifier}.
 
 Topology for multi-function recursion are usually star-shaped---a main function for dispatching,
 one or more leaf functions that only interact with the main function.
@@ -94,7 +125,7 @@ one or more leaf functions that only interact with the main function.
     \caption{Asymmetric cycle division.\label{fig:cycle.division.asymmetric}}
 \end{figure}
 
-Each function in the multi-recursion
+Each function in the mutual recursion group
 implementation has its specialty and is the sole expert for performing a duty.
 No function should perform this specialty except the designated function.
 When other functions need to perform this duty, they have to defer it to the designated function.

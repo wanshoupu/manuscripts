@@ -132,7 +132,7 @@ Use of \code{continue} and \code{break} in a loop is usually done within a \code
 
 For most of the simple cases, the functionality realized by using \code{continue} statement can be
 equivalently produced by adding an \code{else}-clause.
-But when there is a `case stack' in a loop, use of \code{continue} has a magical power
+But when there is a `case-stack' in a loop, use of \code{continue} has a magical power
 of logic simplification.
 For example, in ~\autoref{lst:loop-use-continue}, we code for a game for 2 or more players.
 All players take turn to enumerate through natural numbers starting from $1$ with the following
@@ -150,6 +150,34 @@ For book keeping purposes, all numbers are recorded in a list unless skipped.
     caption={Example usage of \code{continue} to simplify the logic in a loop}]
     {loop/use_of_continue.py}
 \end{minipage}
+
+% TODO settle down this presentation
+%% side-by-side two columns
+%\noindent\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Using \code{if-else}.}]
+%             {if-else/conditional_in_loop_no_continue.java}
+%\end{minipage}\hfill
+%\noindent\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Using \code{if..continue}.}]
+%             {if-else/conditional_in_loop_continue.java}
+%\end{minipage}
+
+
+% side-by-side two columns
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Unsimplified code}]
+             {if-else/loop_cond_redundant_testing.java}
+\end{minipage}\hfill
+\noindent\begin{minipage}[t]{.45\textwidth}
+             \lstinputlisting[caption={Simplified code}]
+             {if-else/loop_cond_repeated_block.java}
+\end{minipage}
+But each has their own problem.
+The left column do redundant condition testing (test1), whereas the right column has repeated
+code (statement2).
+
+The simplification of both lies in the smart use of continue:
+\lstinputlisting{if-else/loop_cond_no_redundancy.java}
 
 Without use of \code{continue}, it would be inevitable to have some duplicate code---one would
 either repeat the conditions accumulated up to the point of divisibility by $5$

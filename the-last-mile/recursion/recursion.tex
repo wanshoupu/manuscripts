@@ -4,54 +4,56 @@
 %%
 
 \chapter{Recursive programming} \label{ch:recursion}
+\label{Evernote:Flatten 2D Vector}
 
-The concept of recursion has long been known to artists and is present in many distinct
-disciplines: linguistics, logic, mathematics.
-In computer science, recursion becomes its central idea for developing both data structures and
-procedures.
-Many recursive data structures, generally falling in the linked data structure category, consist
-of the most important applications: linked lists, trees, \textit{etc}.
-In this chapter, we are going to discuss the \emph{practical} aspects of
-recursion, recursive procedures, and recursive functions.
+The concept of recursion has long been known to artists and scientists of past times and is present
+in many distinct disciplines: linguistics, logic, mathematics, \textit{etc}.
+With the advent of computer science, recursion was made the central idea for developing
+both data structures and procedures.
+Many recursive data structures, generally falling in the category of linked data structures, becomes
+the most important dynamic data structures for large-scale data retrieval and storage.
+Among the most known dynamic data structures are linked lists, trees, \textit{etc}.
+In parallel, recursive procedures and functions also consists a major programming pattern for
+recursively structured data processing.
+In this chapter, we are going to give a brief introduction ot the necessary attributes of
+recursion and then dedicate majority of the content to the discussion of
+the \emph{practical} aspects of recursion, recursive procedures, and recursive functions.
 
-Recursive function has a close connection with dynamic programming.
-Recursive functions are the
-Do not think recursions as an infinite loop.
-Instead, recursive function execution is a spiral.
+\section{Fallacies when programming recursions}\label{sec:recursiveFallacies}
+
+Beginners tend to picture recursions as an infinite loop because they focused too much on the
+recursive invocation statement.
+In reality, all successful implementation of recursive function are based on solid ground of base
+case(s).
+The image about recursion should be in the reverse order: think about the base case(s) first then
+about the recursive relation.
+So in this respect, execution of a recursive function is like a spiral---starting form solid
+ground it winds up its way to the summit.
+The first thing a recursive algorithm designer seeks is how to bring about convergence.
+Not the other way around.
+Going the other way around would result in the ruining departure of Martingale betting strategy
+practitioners.
+
+Stumbling block in recursion
+
+Stack is a state machine for recursion.
+Make sure that your other stateful variables do not interfere with this.
+One technique to reduce risk of modifying state of variables is to use immutable variables such
+as \code{string}, \code{tuple}, \code{pair}, \textit{etc.}
+
+The following code snippet suffers this problem.
+\lstinputlisting{recursion/bad-recursion.py}
 
 Like a sourdough recipe calling for some dough left over from the last time the same recipe was
 made.
 
-Like a spiral maze, recursive function execution will
-Recursions are a special kind of loop.
-Ordinary loop such as \code{for}, \code{while} or \code{do-while} relies on local variables to
-control the execution.
-Recursion on the other hand relies on stack variables, which include variables you passed in when
-recursively calling functions, to control the execution.
+From some point of view, recursion is a special kind of loop.
+Ordinary loop such as \code{for}, \code{while} or \code{do-while} relies on local variables as
+state register to control the execution and its termination.
+Recursion, on the other hand, relies on system stack frames, which faithfully
+deposits all the relevant program information before each recursive invocation,
+to memoize states.
 
-The questions when it comes to thinking of the base cases are:
-What if the matrix is a row array?
-Column array?
-What if the matrix is a one-cell matrix?
-Extreme question: what if the matrix is empty?
-Do you just throw exception?
-
-\begin{figure}[htb]
-    \lstinputlisting[label={lst:matrix-spiral-term},
-    caption={Matrix spiral print termination position.}]
-    {if-else/spiral_termination_position.py}
-\end{figure}
-
-\section{Convert Recursive Solutions to Iterative}\label{sec:convertRecursiveSolutionsToIterative}
-
-How to convert recursive solution to iterative?
-
-\section{Base Case Reduction Technique}\label{sec:baseCaseShrinkingTechnique}
-Choose a base case that's both small and with an obvious solution.
-The choice of a base case contains an aesthetic sense, is reflective to one's
-engineering taste, and thus needs some training.
-
-One of the criteria for a good base class is that that it requires minimal initialization.
 
 \section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
 
@@ -72,16 +74,22 @@ there are in the recursive calls.
 Ordinary recursive functions involve only one function and self invocation(s).
 When there are more than one mutually recursive participant functions and hetero-invocations, all
 the participating functions will be called \emph{mutually recursive functions}.
-Mutual recursions in function design have important application in text parsing and compositional
-recursive data processing, \textit{etc.}
+Mutual recursions in function design have important application in text parsing, compositional
+recursive data processing, file system programming, \textit{etc.}
 We will discuss mutual recursion in later sections of this chapter.
 For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
 ~\fullref{prt:advanced}.
 
 \section{General design considerations of recursive functions}\label{sec:generalRecursiveFunction}
 
+\subsection{Base Case Reduction Technique}\label{subsec:baseCaseShrinkingTechnique}
+Choose a base case that's both small and with an obvious solution.
+The choice of a base case contains an aesthetic sense, is reflective to one's
+engineering taste, and thus needs some training.
 
-\section{Remnant function parameter}\label{sec:remnantFunctionParameter}
+One of the criteria for a good base class is that that it requires minimal initialization.
+
+\subsection{Remnant function parameter}\label{sec:remnantFunctionParameter}
 
 Some parameters are used only by recursive calls and
 client code who invokes this function never need to specify.
@@ -92,12 +100,32 @@ parameter.
 As an effort to take the burden away from client code to specify a confusing, useless parameter,
 it is given a default value as a clumsy remedy.
 
+\section{Case study for recursive function implementation}\label{sec:recursivecaseStudy}
+
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{figure}[htb]
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {if-else/spiral_termination_position.py}
+\end{figure}
+
+\section{Convert Recursive Solutions to Iterative}\label{sec:recursiveToIterative}
+
+How to convert recursive solution to iterative?
+
 \section{Tail Recursion}\label{sec:tailRecursion}
 
 If last action of a function is an invocation of itself, then this recursive function is called a
 tail recursive function\footnote{\url{https://en.wikipedia.org/wiki/Tail_call}}.
 
-\section{Recursion and mathematical induction}\label{sec:recursionAndMathematicalInduction}
+\section{Recursion and mathematical induction}\label{sec:recursionMathematicalInduction}
+
 Mathematical induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}}
 
 \section{Mutual recursion}\label{sec:mutual-recursion}
@@ -130,12 +158,7 @@ implementation has its specialty and is the sole expert for performing a duty.
 No function should perform this specialty except the designated function.
 When other functions need to perform this duty, they have to defer it to the designated function.
 
-\section{Stumbling block in recursion}\label{sec:stumblingBlockInRecursion}
 
-Stack is a state machine for recursion.
-Make sure that your other stateful variables do not interfere with this.
-One technique to reduce risk of modifying state of variables is to use immutable variables such
-as \code{string}, \code{tuple}, \code{pair}, \textit{etc.}
+\section{Connection with dynamic programming}
 
-The following code snippet suffers this problem.
-\lstinputlisting{recursion/bad-recursion.py}
+Recursive function has a close connection with dynamic programming.

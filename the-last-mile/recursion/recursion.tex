@@ -4,7 +4,6 @@
 %%
 
 \chapter{Recursive programming} \label{ch:recursion}
-\label{Evernote:Flatten 2D Vector}
 
 The concept of recursion has long been known to artists and scientists of past times and is present
 in many distinct disciplines: linguistics, logic, mathematics, \textit{etc}.
@@ -18,6 +17,31 @@ recursively structured data processing.
 In this chapter, we are going to give a brief introduction ot the necessary attributes of
 recursion and then dedicate majority of the content to the discussion of
 the \emph{practical} aspects of recursion, recursive procedures, and recursive functions.
+
+\section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
+
+Functions become recursive because of the occurrence(s) of recursive function invocation.
+Depending on the number of recursive function invocations, recursive functions are classified
+into single and multiple recursive functions.
+The \emph{single recursive function}s are those that make exactly one recursive calls, whereas
+\emph{multiple recursive function}s are those that make more than one recursive function
+invocations in the function definition.
+Note some recursive functions make recursive calls in a loop.
+So even though there is only one recursive invocation, these are considered multiple recursive
+functions.
+One of the main reason for differentiating single and multiple recursive functions
+is for time complexity analysis.
+
+Another way for recursive function classification is based on how many participant functions
+there are in the recursive calls.
+Ordinary recursive functions involve only one function and self invocation(s).
+When there are more than one mutually recursive participant functions and hetero-invocations, all
+the participating functions will be called \emph{mutually recursive functions}.
+Mutual recursions in function design have important application in text parsing, compositional
+recursive data processing, file system programming, \textit{etc.}
+We will discuss mutual recursion in later sections of this chapter.
+For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
+~\fullref{prt:advanced}.
 
 \section{Fallacies when programming recursions}\label{sec:recursiveFallacies}
 
@@ -55,34 +79,12 @@ deposits all the relevant program information before each recursive invocation,
 to memoize states.
 
 
-\section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
-
-Functions become recursive because of the occurrence(s) of recursive function invocation.
-Depending on the number of recursive function invocations, recursive functions are classified
-into single and multiple recursive functions.
-The \emph{single recursive function}s are those that make exactly one recursive calls, whereas
-\emph{multiple recursive function}s are those that make more than one recursive function
-invocations in the function definition.
-Note some recursive functions make recursive calls in a loop.
-So even though there is only one recursive invocation, these are considered multiple recursive
-functions.
-One of the main reason for differentiating single and multiple recursive functions
-is for time complexity analysis.
-
-Another way for recursive function classification is based on how many participant functions
-there are in the recursive calls.
-Ordinary recursive functions involve only one function and self invocation(s).
-When there are more than one mutually recursive participant functions and hetero-invocations, all
-the participating functions will be called \emph{mutually recursive functions}.
-Mutual recursions in function design have important application in text parsing, compositional
-recursive data processing, file system programming, \textit{etc.}
-We will discuss mutual recursion in later sections of this chapter.
-For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
-~\fullref{prt:advanced}.
-
 \section{General design considerations of recursive functions}\label{sec:generalRecursiveFunction}
 
 \subsection{Base Case Reduction Technique}\label{subsec:baseCaseShrinkingTechnique}
+
+Similar to initialization for iterative programming, recursive base cases need to be carefully
+considered.
 Choose a base case that's both small and with an obvious solution.
 The choice of a base case contains an aesthetic sense, is reflective to one's
 engineering taste, and thus needs some training.

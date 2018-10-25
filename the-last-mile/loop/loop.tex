@@ -155,29 +155,29 @@ For book keeping purposes, all numbers are recorded in a list unless skipped.
 %% side-by-side two columns
 %\noindent\begin{minipage}[t]{.45\textwidth}
 %             \lstinputlisting[caption={Using \code{if-else}.}]
-%             {if-else/conditional_in_loop_no_continue.java}
+%             {loop/conditional_in_loop_no_continue.java}
 %\end{minipage}\hfill
 %\noindent\begin{minipage}[t]{.45\textwidth}
 %             \lstinputlisting[caption={Using \code{if..continue}.}]
-%             {if-else/conditional_in_loop_continue.java}
+%             {loop/conditional_in_loop_continue.java}
 %\end{minipage}
 
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.45\textwidth}
              \lstinputlisting[caption={Unsimplified code}]
-             {if-else/loop_cond_redundant_testing.java}
+             {loop/loop_cond_redundant_testing.java}
 \end{minipage}\hfill
 \noindent\begin{minipage}[t]{.45\textwidth}
              \lstinputlisting[caption={Simplified code}]
-             {if-else/loop_cond_repeated_block.java}
+             {loop/loop_cond_repeated_block.java}
 \end{minipage}
 But each has their own problem.
 The left column do redundant condition testing (test1), whereas the right column has repeated
 code (statement2).
 
 The simplification of both lies in the smart use of continue:
-\lstinputlisting{if-else/loop_cond_no_redundancy.java}
+\lstinputlisting{loop/loop_cond_no_redundancy.java}
 
 Without use of \code{continue}, it would be inevitable to have some duplicate code---one would
 either repeat the conditions accumulated up to the point of divisibility by $5$

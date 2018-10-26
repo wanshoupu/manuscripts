@@ -366,25 +366,27 @@ We will talk more about function modularity design in ~\fullref{ch:reusableFunct
 
 \section{Case-stack}\label{sec:case-stack}
 
-As a programming language feature,
-it is not unfamiliar to many a sequence of consecutive conditional statements
-starting with \code{if} clause, followed by zero, one, or more of
-\code{else if} blocks (\code{elif} for \python), and optionally with
-\code{else} block, \textit{e.g.}, ~\autoref{lst:simpleBranching}.
-For the sake of argument, we refer to such construct as `case-stack'.
-Case-stack is an important pattern to implement a wide range of algorithms.
-In combination with loop constructs or within recursive functions,
-Case-stack forms an effective pattern for implementing complicated logic.
-Its applications are throughout this book.
+Hopefully the sequence of consecutive conditional statements as shown in
+~\autoref{lst:simpleBranching} is not unfamiliar to reader.
+It begins with \code{if} clause, followed by zero, one, or more of
+\code{else if} blocks (\code{elif} for \python),
+and optionally concludes with an \code{else} block.
+In fact I see this again and again from proprietary repositories to open source codebase.
+For the sake of argument, we refer to such a construct as `case-stack'.
+Case-stack is an important pattern for coding.
+In combination with loop constructs or used within recursive functions,
+case-stack is an elegant programming pattern for implementing complicated logic.
+You can see its applications throughout this book.
 Please refer to examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, and the chapters in
 ~\fullref{prt:case-studies} for more discussion.
 
-Unfortunately, little is mentioned about this patterns in programming references.
-Beginning and intermediate developers often stumble upon this without conscious choice, lest to
-master the best practice of it.
-In this section, so we hope to give it a fair coverage over some of the important aspects of a
-case-stack and the best practices around it.
+Unfortunately, little is mentioned about this patterns in popular programming references.
+Beginning and intermediate developers often stumble upon this little programming gem haphazardly,
+not to mention mastering the best practice of it.
+We so hope that in this section some of the important aspects of case-stack be given a fair
+coverage to promote the best practices around it.
 
+%TODO
 When faced with multi-branch switching,
 a common way of implementation uses nested \code{if..else} statements such as the example given at
 the beginning of this chapter ~\autoref{lst:nestedBranching}.

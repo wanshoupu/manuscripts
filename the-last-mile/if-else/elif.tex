@@ -107,10 +107,25 @@ You may even realize that it is actually equivalent to ~\autoref{lst:simplified-
              firstline=6,lastline=6]
              {if-else/equivalent_statements_if_return.java}
 \end{minipage}
-But when embedded in real problems, disguised by specific forms, especially when some alternatives
-are masked, achieving optimal conditional programming may not be so straightforward.
-
-Many of the techniques employed in this section are of math origin in the domain of Boolean algebra.
+But when embedded in real problems, disguised by application-specific format, style, and so on,
+achieving optimal conditional programming would not be straightforward.
+%Even fewer people probably realize that the following two code snippets are actually equivalent,
+%assuming that \code{boolArr} is an array of \code{boolean} type.
+%% side-by-side two columns
+%\newline\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Ternary boolean expression},
+%             label={lst:ternary-boolean-expr},
+%             firstline=1,lastline=1]
+%             {if-else/equivalent_statements_ternary_expr.java}
+%\end{minipage}\hfill
+%\noindent\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Simplified boolean expression},
+%             label={lst:simplified-boolean-expr},
+%             firstline=3,lastline=3]
+%             {if-else/equivalent_statements_ternary_expr.java}
+%\end{minipage}
+We therefore resort to mathematical methods to help us simplify our logic.
+Many of the techniques employed in this section originates from the domain of Boolean algebra.
 I frequently make references to the logical equivalences, and normal forms, truth tables,
 \textit{etc.}
 Review and refresh your memory on relevant materials as needed.
@@ -270,16 +285,18 @@ Please work it out with one of the two methods above and my simplified solution 
 \section{Short-circuit evaluation}
 \label{sec:short-circuit-eval}
 
-Short-circuit evaluation (SCE) refers to the omission of evaluation of operand(s) in a boolean
-expression when the result of the boolean expression would not be changed by their evaluation(s).
-SCE is supported by C-family (also the mainstream) languages such as C, C++, \java, \python and
-many others.
+Short-circuit evaluation (SCE) refers to the omission of evaluation of certain operand(s)
+when the overall result of the boolean expression would not be changed by the result of their
+evaluation(s).
+SCE is supported by the C-family (also the mainstream) programming languages such as C, C++, \java,
+\python and others.
 SCE is an interesting feature for better or for worse.
-Unprepared developers may be caught by surprise.
-Inadvertent usage may results in unexpected results.
-We will use a couple of examples to illustrate implementation skills around SCE\@.
+On the one hand, unprepared developers may be caught by surprise and
+inadvertent usage may results in unexpected results.
+On the other it is the pivotal foundation for constructing extremely elegant logical statements.
+We will use a couple of examples to illustrate skills about SCE programming.
 
-Consider the following coding requirements:
+Consider the following requirement:
 \begin{quote}
     ``Implement a method, \code{next}, to fetch the next item from a source
     which is irrelevant to this problem and
@@ -289,8 +306,8 @@ Consider the following coding requirements:
     The cache shall be cleared with each successful invocation of method \code{next}.
     ''
 \end{quote}
-This is a subtask of an implementation of a class.
-Presumably, the algorithm to solve this problem would be
+This is a subtask extracted from a class design specification.
+Presumably, the algorithm to solve this problem could be
 \begin{quote}
     \begin{enumerate}
         \item Check \code{cache} to see if it is empty, if so
@@ -304,63 +321,47 @@ Presumably, the algorithm to solve this problem would be
     \end{enumerate}
 \end{quote}
 
-Let's see how we would implement the algorithm in \java in the absence of SCE mechanism.
-\lstinputlisting[caption={Implementation of \code{next} in the absence of SCE mechanism},label={lst:next-without-sce}]
+Let's see how we can implement the algorithm in \java in the absence of SCE mechanism.
+\lstinputlisting[caption={Implementation of \code{next} in the absence of SCE mechanism},
+label={lst:next-without-sce}]
 {if-else/getNext.java}
-It seems pretty simple code and is not bad.
-But as we all know \java supports SCE and with it one can readily implement
-the following logic instead
+That is not bad, right?
+The code seems pretty simple by itself.
+But in reality \java supports SCE and with it one can readily implement
+the following
 \lstinputlisting[caption={Implementation of \code{next} method taking advantage of SCE in\java.},
 label={lst:next-sce}]
 {if-else/getNext_shortCircuit.java}
-Here is how SCE works in ~\autoref{lst:next-sce}.
-When \code{cache} contains an item, the second part in the
-\code{if}-expression is \emph{ignored}, namely, the method \code{procure} is \emph{not} invoked.
+How does ~\autoref{lst:next-sce} work?
+When \code{cache} \emph{is absent}, regardless of the return value of the method
+\code{procure}, the overall value of the conditional expression will be \code{false}.
+By SCE mechanism, the compiler will \emph{omit} the evaluation of the rest operands in the
+conditional expression.
+So the overall effect is when \code{cache} is absent, the method \code{procure} will \emph{not}
+be invoked.
 The entire \code{if}-statement is skipped and the item in \code{cache} is all the business.
-When \code{cache} is empty, the \code{if}-expression continues with the evaluation of the
-second part, that is, \code{procure} is invoked.
-Depending on the return value of the invocation, exception is thrown if \code{false} or control
-is passed to subsequent statement after \code{if} statement.
+When \code{cache} is present, the evaluation process is back to normal:
+the conditional expression continues with the evaluation of
+the second part, which in turn, invokes \code{procure} and everything else ensues after that.
 
-Comparing ~\autoref{lst:next-sce} with ~\autoref{lst:next-without-sce}, we saw an elegant,
-succinct implementation of otherwise messy code.
+Comparing ~\autoref{lst:next-sce} with ~\autoref{lst:next-without-sce}, we saw the former is an
+elegant, succinct implementation of otherwise messy code, thanks to SCE mechanism.
 
-What can we learn about short-circuit mechanism from this example?
-\begin{itemize}
-    \item Order of operands matters, \textit{e.i.}, \code{a && b} is not equivalent to
-    \code{b && a}.
-    \item
-\end{itemize}
-
-How to consciously seek opportunities of SCE mechanism to simplify one's code?
-Firstly awareness will put you in an advantageous position of mastering elegant coding skills.
-You need to know the ins and outs of SCE.
-Next one needs to consciously modularize one's design, creating reusable, meaningful
+Through this example, we learn the the important aspects for SCE programming.
+First of all, order of operands matters, \textit{e.i.}, \code{a && b} is not always equivalent to
+\code{b && a} if the evaluation of one or both of them have side effects.
+Secondly, if one consciously seeks to take advantage of SCE mechanism to avoid unnecessary
+evaluate of some statements under certain circumstances, wrap them in a function with
+compact signature.
+To that end, one needs to consciously modularize one's design, creating reusable, meaningful
 single-responsible subroutines to be invoked at higher level.
-We will talk more about function designs in ~\fullref{ch:reusableFunctions}
-For example one need to create functions \code{procure} with a well-defined return value
-indicating if procurement of an item is successful or not for use in the short-circuit boolean
+For example one needs to create functions \code{procure} with a well-defined return value of
+boolean type that indicates
+if procurement of an item is successful or not for use in the short-circuit boolean
 expression in ~\autoref{lst:next-sce}.
-One need to be aware of other characteristics such as idempotence and mutability of the
-function invocation.
-
-%Before ending this section, let us look at a more subtle case code snippet
-%~\autoref{lst:ternary-boolean-expr}.
-%Assuming that \code{boolArr} is an array of \code{boolean} type,
-%~\autoref{lst:ternary-boolean-expr}
-%% side-by-side two columns
-%\newline\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Ternary boolean expression},
-%             label={lst:ternary-boolean-expr},
-%             firstline=1,lastline=1]
-%             {if-else/equivalent_statements_ternary_expr.java}
-%\end{minipage}\hfill
-%\noindent\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Simplified boolean expression},
-%             label={lst:simplified-boolean-expr},
-%             firstline=3,lastline=3]
-%             {if-else/equivalent_statements_ternary_expr.java}
-%\end{minipage}
+One need to be aware of characteristics such as idempotence and mutability of the
+function invocation and so on.
+We will talk more about function modularity design in ~\fullref{ch:reusableFunctions}
 
 
 \section{Case-stack}\label{sec:case-stack}

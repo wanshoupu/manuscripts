@@ -4,10 +4,6 @@
 %%
 \chapter{Reusable Functions}\label{ch:reusableFunctions}
 
-Especially paying attention to creation
-of read-only  \textit{vs.} state-altering functions,
-idempotent  \textit{vs.} non-idempotent functions.
-
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
 firmwares, \textit{etc.}.
@@ -330,6 +326,19 @@ A case study for this.
 %Then we build structures with these blocks.
 %Finally, we assemble structures into pyramid.
 %Higher level constructions depends on lower level constructions.
+
+\section{Idempotency}\label{sec:idempotency}
+
+Especially paying attention to creation
+of read-only  \textit{vs.} state-altering functions,
+idempotent  \textit{vs.} non-idempotent functions.
+
+Idempotency has bigger impact on member methods in OOD\@.
+idempotent: denoting an element of a set which is unchanged in value when multiplied or otherwise operated on by itself.
+
+immutable: constant function has no state altering operation whatsoever
+idempotent: 1+ call of the function are equivalent to 1 call.
+
 
 \section{Case Study--Spiral Matrix} \label{sec:case-spiral-matrix}
 

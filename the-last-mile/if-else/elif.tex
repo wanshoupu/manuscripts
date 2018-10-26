@@ -381,17 +381,19 @@ Please refer to examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, and th
 ~\fullref{prt:case-studies} for more discussion.
 
 Unfortunately, little is mentioned about this patterns in popular programming references.
-Beginning and intermediate developers often stumble upon this little programming gem haphazardly,
-not to mention mastering the best practice of it.
-We so hope that in this section some of the important aspects of case-stack be given a fair
-coverage to promote the best practices around it.
+Even many experienced developers stumble upon this little programming gem haphazardly,
+not to mention mastering the best practice of it systematically.
+To promote best practices around it, I hope to give a fair coverage to some of
+the important aspects of case-stack.
 
-%TODO
-When faced with multi-branch switching,
-a common way of implementation uses nested \code{if..else} statements such as the example given at
-the beginning of this chapter ~\autoref{lst:nestedBranching}.
-As switching fanout grows, the nesting level goes deeper, indentation grows messier, and
-the logic quickly becomes unwieldy.
+
+When faced with multi-branch switching, many developers are not aware of any
+programming pattern on this.
+So some of unexperienced developers end up with nested \code{if..else} statements such as the
+example given at the beginning of this chapter ~\autoref{lst:nestedBranching}.
+As the number of switching branches grows, more and more nesting level are needed, and the
+indentation grows deeper and deeper.
+Before long, the logic quickly becomes unwieldy.
 As an alternative for better readability, one can organize multi-branch switching using a
 case-stack as ~\autoref{lst:simpleBranching}.
 For some special cases, \code{switch}-statement may be used equally well, if supported by the
@@ -505,12 +507,13 @@ So go ahead and try this out this in your own practice and sharpen your instinct
 
 \section{Conditional statements in a loop}\label{sec:branchingInLoop}
 
-Conditional statements in a loop is one of the most important application.
-With the keywords \code{break} and \code{continue}, conditional statements
-have more moving parts, therefore logic simplification in a loop is even more challenging.
-On the other hand, this also means skilled developers have new weapons to wield when aiming at
-simple, succinct logic.
+The keywords \code{break} and \code{continue}, usually used in conditional statements in a loop,
+brings interesting new possibilities to programming.
+This brings both challenges and opportunities.
+It makes logic simplification in a loop more challenging.
+But it also means skilled developers have new weapons to wield for simple, succinct logic.
 
+%TODO
 Practical programming tips for loops will be more fully discussed ~\autoref{ch:loops}.
 Many of the topics overlap between here and there,
 so we are going to be brief here and with emphasis on conditional constructs.

@@ -51,7 +51,7 @@ Through plenty of examples, I demonstrate how to apply these techniques for logi
 In doing so, I hope programmers would be inspired to strive for beautiful, succinct conditional
 statements.
 
-\section{Preview of equivalent conditional expressions}\label{sec:logicEquivalences}
+\section{Equivalent conditional expressions}\label{sec:logicEquivalences}
 
 Equivalent logic and conditional statements can be subtle, especially camouflaged in the
 jungle of real-world code with real-world long variable names, complex expression, comments,
@@ -81,102 +81,7 @@ At this moment it may become obvious to you that it is actually equivalent to
              {if-else/equivalent_statements_if_return.java}
 \end{minipage}
 
-\section{Short-circuit evaluation and conditional statements simplification}
-\label{sec:short-circuit-eval}
-
-Short-circuit evaluation (SCE) refers to the omission of evaluation of operand(s) in a boolean
-expression when the result of the boolean expression would not be changed by their evaluation(s).
-SCE is supported by C-family (also the mainstream) languages such as C, C++, \java, \python and
-many others.
-SCE is an interesting feature for better or for worse.
-Unprepared developers may be caught by surprise.
-Inadvertent usage may results in unexpected results.
-We will use a couple of examples to illustrate implementation skills around SCE\@.
-
-Consider the following coding requirements:
-\begin{quote}
-    ``Implement a method, \code{next}, to fetch the next item from a source
-    which is irrelevant to this problem and
-    a method \code{procure} has been made available to fetch an element from the source and
-    stored it in a member variable \code{Optional<Object> cache} as
-    \lstinputlisting{if-else/getNext_procure.java}
-    The cache shall be cleared with each successful invocation of method \code{next}.
-    ''
-\end{quote}
-This is a subtask of an implementation of a class.
-Presumably, the algorithm to solve this problem would be
-\begin{quote}
-    \begin{enumerate}
-        \item Check \code{cache} to see if it is empty, if so
-        \begin{enumerate}
-            \item Invoke \code{procure} to attempt to populate \code{cache}
-            \item If attempt of procuring an item is unsuccessful, throw ``No element is left''
-            exception
-        \end{enumerate}
-        \item Get the item from cache and clear the cache
-        \item Return the item
-    \end{enumerate}
-\end{quote}
-
-Let's see how we would implement the algorithm in \java in the absence of SCE mechanism.
-\lstinputlisting[caption={Implementation of \code{next} in the absence of SCE mechanism},label={lst:next-without-sce}]
-{if-else/getNext.java}
-It seems pretty simple code and is not bad.
-But as we all know \java supports SCE and with it one can readily implement
-the following logic instead
-\lstinputlisting[caption={Implementation of \code{next} method taking advantage of SCE in\java.},
-label={lst:next-sce}]
-{if-else/getNext_shortCircuit.java}
-Here is how SCE works in ~\autoref{lst:next-sce}.
-When \code{cache} contains an item, the second part in the
-\code{if}-expression is \emph{ignored}, namely, the method \code{procure} is \emph{not} invoked.
-The entire \code{if}-statement is skipped and the item in \code{cache} is all the business.
-When \code{cache} is empty, the \code{if}-expression continues with the evaluation of the
-second part, that is, \code{procure} is invoked.
-Depending on the return value of the invocation, exception is thrown if \code{false} or control
-is passed to subsequent statement after \code{if} statement.
-
-Comparing ~\autoref{lst:next-sce} with ~\autoref{lst:next-without-sce}, we saw an elegant,
-succinct implementation of otherwise messy code.
-
-What can we learn about short-circuit mechanism from this example?
-\begin{itemize}
-    \item Order of operands matters, \textit{e.i.}, \code{a && b} is not equivalent to
-    \code{b && a}.
-    \item
-\end{itemize}
-
-How to consciously seek opportunities of SCE mechanism to simplify one's code?
-Firstly awareness will put you in an advantageous position of mastering elegant coding skills.
-You need to know the ins and outs of SCE.
-Next one needs to consciously modularize one's design, creating reusable, meaningful
-single-responsible subroutines to be invoked at higher level.
-We will talk more about function designs in ~\fullref{ch:reusableFunctions}
-For example one need to create functions \code{procure} with a well-defined return value
-indicating if procurement of an item is successful or not for use in the short-circuit boolean
-expression in ~\autoref{lst:next-sce}.
-One need to be away of the attributes of the function such as idempotency and mutability of the
-function invocation.
-
-%Before ending this section, let us look at a more subtle case code snippet
-%~\autoref{lst:ternary-boolean-expr}.
-%Assuming that \code{boolArr} is an array of \code{boolean} type,
-%~\autoref{lst:ternary-boolean-expr}
-%% side-by-side two columns
-%\newline\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Ternary boolean expression},
-%             label={lst:ternary-boolean-expr},
-%             firstline=1,lastline=1]
-%             {if-else/equivalent_statements_ternary_expr.java}
-%\end{minipage}\hfill
-%\noindent\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Simplified boolean expression},
-%             label={lst:simplified-boolean-expr},
-%             firstline=3,lastline=3]
-%             {if-else/equivalent_statements_ternary_expr.java}
-%\end{minipage}
-
-\section{Basic techniques for conditional statement simplification}
+\section{Conditional statement simplification}
 \label{sec:conditional-simplify-tech}
 
 Some of the techniques I employ in this section is of math origin in the domain of Boolean algebra.
@@ -370,8 +275,103 @@ Please work it out with one of the two methods above and compare your result wit
              {if-else/generic_conditioning2.java}
 \end{minipage}
 
+\section{Short-circuit evaluation}
+\label{sec:short-circuit-eval}
 
-\section{Build up `case-stack'}\label{sec:case-stack}
+Short-circuit evaluation (SCE) refers to the omission of evaluation of operand(s) in a boolean
+expression when the result of the boolean expression would not be changed by their evaluation(s).
+SCE is supported by C-family (also the mainstream) languages such as C, C++, \java, \python and
+many others.
+SCE is an interesting feature for better or for worse.
+Unprepared developers may be caught by surprise.
+Inadvertent usage may results in unexpected results.
+We will use a couple of examples to illustrate implementation skills around SCE\@.
+
+Consider the following coding requirements:
+\begin{quote}
+    ``Implement a method, \code{next}, to fetch the next item from a source
+    which is irrelevant to this problem and
+    a method \code{procure} has been made available to fetch an element from the source and
+    stored it in a member variable \code{Optional<Object> cache} as
+    \lstinputlisting{if-else/getNext_procure.java}
+    The cache shall be cleared with each successful invocation of method \code{next}.
+    ''
+\end{quote}
+This is a subtask of an implementation of a class.
+Presumably, the algorithm to solve this problem would be
+\begin{quote}
+    \begin{enumerate}
+        \item Check \code{cache} to see if it is empty, if so
+        \begin{enumerate}
+            \item Invoke \code{procure} to attempt to populate \code{cache}
+            \item If attempt of procuring an item is unsuccessful, throw ``No element is left''
+            exception
+        \end{enumerate}
+        \item Get the item from cache and clear the cache
+        \item Return the item
+    \end{enumerate}
+\end{quote}
+
+Let's see how we would implement the algorithm in \java in the absence of SCE mechanism.
+\lstinputlisting[caption={Implementation of \code{next} in the absence of SCE mechanism},label={lst:next-without-sce}]
+{if-else/getNext.java}
+It seems pretty simple code and is not bad.
+But as we all know \java supports SCE and with it one can readily implement
+the following logic instead
+\lstinputlisting[caption={Implementation of \code{next} method taking advantage of SCE in\java.},
+label={lst:next-sce}]
+{if-else/getNext_shortCircuit.java}
+Here is how SCE works in ~\autoref{lst:next-sce}.
+When \code{cache} contains an item, the second part in the
+\code{if}-expression is \emph{ignored}, namely, the method \code{procure} is \emph{not} invoked.
+The entire \code{if}-statement is skipped and the item in \code{cache} is all the business.
+When \code{cache} is empty, the \code{if}-expression continues with the evaluation of the
+second part, that is, \code{procure} is invoked.
+Depending on the return value of the invocation, exception is thrown if \code{false} or control
+is passed to subsequent statement after \code{if} statement.
+
+Comparing ~\autoref{lst:next-sce} with ~\autoref{lst:next-without-sce}, we saw an elegant,
+succinct implementation of otherwise messy code.
+
+What can we learn about short-circuit mechanism from this example?
+\begin{itemize}
+    \item Order of operands matters, \textit{e.i.}, \code{a && b} is not equivalent to
+    \code{b && a}.
+    \item
+\end{itemize}
+
+How to consciously seek opportunities of SCE mechanism to simplify one's code?
+Firstly awareness will put you in an advantageous position of mastering elegant coding skills.
+You need to know the ins and outs of SCE.
+Next one needs to consciously modularize one's design, creating reusable, meaningful
+single-responsible subroutines to be invoked at higher level.
+We will talk more about function designs in ~\fullref{ch:reusableFunctions}
+For example one need to create functions \code{procure} with a well-defined return value
+indicating if procurement of an item is successful or not for use in the short-circuit boolean
+expression in ~\autoref{lst:next-sce}.
+One need to be away of the attributes of the function such as idempotency and mutability of the
+function invocation.
+
+%Before ending this section, let us look at a more subtle case code snippet
+%~\autoref{lst:ternary-boolean-expr}.
+%Assuming that \code{boolArr} is an array of \code{boolean} type,
+%~\autoref{lst:ternary-boolean-expr}
+%% side-by-side two columns
+%\newline\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Ternary boolean expression},
+%             label={lst:ternary-boolean-expr},
+%             firstline=1,lastline=1]
+%             {if-else/equivalent_statements_ternary_expr.java}
+%\end{minipage}\hfill
+%\noindent\begin{minipage}[t]{.45\textwidth}
+%             \lstinputlisting[caption={Simplified boolean expression},
+%             label={lst:simplified-boolean-expr},
+%             firstline=3,lastline=3]
+%             {if-else/equivalent_statements_ternary_expr.java}
+%\end{minipage}
+
+
+\section{Case-stack}\label{sec:case-stack}
 
 As a programming language feature,
 it is not unfamiliar to many a sequence of consecutive conditional statements

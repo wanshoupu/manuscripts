@@ -13,60 +13,87 @@ Undoubtedly, many references---textbooks, research articles, blog posts---have a
 comprehensive discussions
 \footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
 It may seem strange that I am spending a chapter on such a `well-known' topic here and now.
-However, just because the topic is basic and `well-known' does not mean that many folks can do it
-right or will do it right.
-But based on my years of working experience in several top-tier tech companies, it is often
-the haphazard first working version that makes its way to production codebase and becomes the
-core for millions of businesses, it does not matter how crooked the design may be, how
-obscure the logic may be.
+But based on my years of working experience in several top-tier tech companies,
+haphazard suboptimal solutions with convoluted and lengthy logic make their way to
+production codebase and becomes the
+core for millions of businesses.
+The crooked design, the obscure the logic later pose as road-block and hazard on the way of
+code refactor and reuse.
+This shows that just because the topic is basic and `well-known' does not mean that folks can
+or will do it right.
 %But it is seldom the case that the first version of implementation of any non-trivial logic, if
 %correct at all, is optimal.
-%It fails the primary purpose of communication with other humans.
-%Worse, it often results in redundant/duplicate code.
-``As long as it works, why should one bother to simplify the logic?'', you may argue.
-As a response, I'd like to quote Steve McConnell:
-``..the primary audience [of your code] is made up of humans, not computers.''\cite{Mcconnell.2004}.
+``As long as it works, why does one bother to simplify the logic?'', some may argue.
+My answer is ``Suboptimal, obscure logic fails the primary purpose of coding---communication.''
+Worse, it often results in redundant/duplicate code which lays outrageous burden on code
+maintenance.
+I'd like to quote Steve McConnell
+\begin{quote}
+    ``..the primary audience [of computer programs] is made up of humans,
+    not computers\cite{Mcconnell.2004}.''
+\end{quote}
+Martin Fowler put it even more straightforward
 \begin{quote}
     ``Any fool can write code that a computer can understand.
-    Good programmers write code that humans can understand.''\\
-    —Martin Fowler
+    Good programmers write code that humans can understand\cite{Fowler1999}.''
 \end{quote}
 
-Twisted code and intertwined logic are often unsimplified
-products out of fierce battle fought by a struggling developer.
-Though hard to read, understand, debug, and modify, they should not be regarded as enemy.
-On the opposite, they are the dawn of simple, effective implementation
-and the rest of this chapter is dedicated to show you how.
+Twisted code and intertwined logic
+
+I don't blame the author of twisted code and intertwined logic, which
+are often the victorious output of a fierce battle fought by gallant developers.
+They has all my respect.
+But I criticize anyone who intends half-cooked work for final product in defiance of the
+production standard.
+Unequivocally I advocate that developers finish the other half of the work
+---polish the logic, simplify the conditional statements, craft production-quality solutions.
+Developers finish walking the last mile, solidify your otherwise hard-won victory.
+
+With simple techniques and due diligence, producing beautiful, succinct solution
+with initially unrefined code is possible.
+The rest of this chapter is dedicated to this.
+
 %Communicate clear, succinct code to colleagues and successors are much more efficient.
-I'm going to share my experience of how to polish complicated logic involving conditionals into
-simple, beautiful, and succinct code.
-You will learn how to organize conditional statements with \code{if}, \code{else
-if} (or\code{elif}), \code{else}, \textit{etc.},
+The techniques are based on my years of software development experience.
+%of how to polish complicated logic involving conditionals into simple, beautiful, and succinct code.
+You will learn how to design conditional statements using \code{if}, \code{else
+if} (or \code{elif}), \code{else}, \textit{etc.},
 to produce effective, succinct logic.
-You would minimize occurrences of redundancy condition checks in your code and reduce
+You will learn to minimize occurrences of redundancy condition checking in your code and reduce
 duplicate code overall.
-Every minute you spend on grasping the basic conditional programming is worthwhile before
-plunging into other topics.
 Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
 In doing so, I hope programmers would be inspired to strive for beautiful, succinct conditional
 statements.
+I believe the effort you spend in studying the basics of conditional programming
+will soon pay itself off.
 
-\section{Equivalent conditional expressions}\label{sec:logicEquivalences}
+\section{Equivalent but simple conditional expressions}\label{sec:logicEquivalences}
 
-Equivalent logic and conditional statements can be subtle, especially camouflaged in the
-jungle of real-world code with real-world long variable names, complex expression, comments,
-\textit{etc.}
-Take a look at ~\autoref{lst:if-return-boolean-real-world}, can you find a way to simplify
-the logic?
+A boolean variable or expression can evaluate to two possible values-\code{true} and \code{false}.
+Depending on the evaluation result of a boolean value,
+a \code{if-else} test has two execution alternatives-the \code{if}-block or
+the \code{else}-block;
+A composite condition consisting of two boolean values may have up to 4 alternatives.
+Three boolean values make have up to 8 alternatives.
+And so on.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{if-else/nested-conditionals.jpg}
+    \caption{\label{fig:conditional-branching}An example of $3$ nested conditional statements.}
+\end{figure}
+
+Establishing the equivalence between logic and conditional statements can be subtle.
+Simplifying them is even harder, especially when camouflaged in the
+jungle of real-world code with long variable names, complex expression, comments, \textit{etc.}
+Take a look at ~\autoref{lst:if-return-boolean-real-world}.
+At least to me, it is not yet clear how to simplify the logic or even what it does.
 \lstinputlisting[caption={Code snippet for demonstration},
 label={lst:if-return-boolean-real-world}]
 {if-else/equivalent_statements_if_return_real_world.java}
-It probably takes you a while to figure out what it does before you can form idea to simplify it.
-But if you replace the \code{if}-test with \code{<test>} and filter out the
-comments, at which point it becomes ~\autoref{lst:if-return-boolean}, only then will you realize
-that the code performs a test and return boolean value accordingly.
-At this moment it may become obvious to you that it is actually equivalent to
-~\autoref{lst:simplified-return-boolean}.
+But if we replace the \code{if}-test with \code{<test>} and filter out the
+comments, it would look like ~\autoref{lst:if-return-boolean}.
+Now it is clear that the code performs a test and return a boolean value accordingly.
+You may even realize that it is actually equivalent to ~\autoref{lst:simplified-return-boolean}.
 % side-by-side two columns
 \newline\begin{minipage}[t]{.45\textwidth}
             \lstinputlisting[caption={Unsimplified test and return boolean code},
@@ -80,50 +107,15 @@ At this moment it may become obvious to you that it is actually equivalent to
              firstline=6,lastline=6]
              {if-else/equivalent_statements_if_return.java}
 \end{minipage}
-
-\section{Conditional statement simplification}
-\label{sec:conditional-simplify-tech}
-
-Some of the techniques I employ in this section is of math origin in the domain of Boolean algebra.
-Especially, I frequently make references to logical equivalences:
-double negation elimination, De Morgan's laws, distributive law, \textit{etc.}
-and normal forms: disjunctive normal form (DNF) or conjunctive normal form (CNF).
-Review and refresh your memory on relevant materials as you see fit.
-
-A boolean variable or expression can evaluate to two possible values-\code{true} and \code{false}.
-Depending on the evaluation result of a boolean value,
-a \code{if-else} test has two execution alternatives-the \code{if}-block or
-the \code{else}-block;
-A composite condition consisting of two boolean values may have up to 4 alternatives.
-Three boolean values make have up to 8 alternatives.
-And so on.
-\begin{figure}[htb]
-    \centering
-    \begin{subfigure}[b]{.4\textwidth}
-        \includegraphics[width=\textwidth]{if-else/conditional.jpg}
-        \caption{Conditional}
-    \end{subfigure}
-    \begin{subfigure}[b]{.4\textwidth}
-        \includegraphics[width=\textwidth]{if-else/nested-conditionals.jpg}
-        \caption{$3$ conditionals}
-    \end{subfigure}
-    \caption{\label{fig:conditional-branching}Branching effect of conditional statements.}
-\end{figure}
-
 But when embedded in real problems, disguised by specific forms, especially when some alternatives
 are masked, achieving optimal conditional programming may not be so straightforward.
+
+Many of the techniques employed in this section are of math origin in the domain of Boolean algebra.
+I frequently make references to the logical equivalences, and normal forms, truth tables,
+\textit{etc.}
+Review and refresh your memory on relevant materials as needed.
 Let us examine the code in ~\autoref{lst:nestedBranching}\footnote{ this example is adapted
-from my own code at earlier years of software development career.
-If it helps you understand the rest of the material, you may
-assume that with the code, you are making a plan for the day and that
-\begin{itemize}
-    \item test1 = `calendar permits'
-    \item test2 = `weather permits'
-    \item statement1 = `Walk dog'
-    \item statement2 = `Work in office'
-    \item statement3 = `Have a coffee'
-\end{itemize}
-}
+from my own code at earlier years of software development career.}
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.3\textwidth}
@@ -143,11 +135,11 @@ assume that with the code, you are making a plan for the day and that
 \end{minipage}
 
 
-It is the very first version after I figured out the requirement from a problem and,
-as expected, it 'smells'---it has complicated, nested conditional statements and duplicate
+It is an intermediate version that barely converged on fulfilling all the logical requirements.
+As expected, it works but `smells'---it has complicated, nested conditional statements and duplicate
 code\cite{Fowler1999}.
-Because of these problems, one can hardly figure out which statement is executed under what
-condition without a mental twist.
+The readability is so compromised that one can hardly follow the paths of symbolic execution
+without a great deal of mental twists.
 \begin{table}[bth]
     \begin{center}
         \caption{Normal forms for conditions of execution of each statement.
@@ -163,27 +155,26 @@ condition without a mental twist.
         \end{tabular}
     \end{center}
 \end{table}
-Nevertheless, this is a good starting point for further improvement.
-What's important is to keep on working---do not settle on half-cooked solution.
-
-So upon arriving at this first solution, I decided as a next step to eliminate the nested
+Nevertheless, this is still a good starting point for further improvement---
+just do not settle.
+Upon capturing this solution, I immediately headed to eliminate the nested
 conditional statements.
-Observed that the \code{else} block of \code{if (test1)} is much simpler, I decided to flip
-the logic by negating \code{test1}.
-Then I promoted the nested \code{if (test2)} up to the first-level so that overall they
-become sequential conditional statements comprised of \code{if\{..\}else if\{..\}else\{\}} blocks
+Observing that the \code{else} block of \code{if (test1)} is much simpler, I decided to flip
+the logic by negating \code{test1} so I can swap the two blocks.
+Then I promoted the nested \code{if (test2)} up to the first-level and now they
+become sequential conditional statements comprised of \code{if..else if..else} blocks
 that are built on top of one another.
-This turns out to be a coding pattern that I'm going to spend more time to explain
-in ~\autoref{sec:case-stack}.
 The resulting code is as shown in ~\autoref{lst:simpleBranching}.
+In fact, we just came across a programming pattern that and that is to be explained later
+in ~\autoref{sec:case-stack}.
 
-Now the conditional statements are streamlined, straightforward and are easily understood at a
-glance.
-Comparing with ~\autoref{lst:nestedBranching}, it is a big improvement.
-But still it has duplication code (both \code{statement2} and \code{statement3} are repeated).
-So I did a back-of-envelop calculation on a napkin---for each of the three statements
-(which consists of the conditional block body),
-I wrote down the conditions for the corresponding block to be executed.
+Comparing with ~\autoref{lst:nestedBranching} the conditional statements are now streamlined and
+easier to understand.
+But still it has code duplication as both \code{statement2} and \code{statement3} are repeated.
+So I did a back-of-envelop calculation---
+I obtained the needed conditions in order for \code{statement1}, \code{statement2} and
+\code{statement3} to be executed, respectively.
+
 The result is shown in ~\autoref{tbl:breakdown-of-conditions}.
 With this table, it is clear that the key to simplify the logic lies in the conditions for the
 execution of \code{statement2}.
@@ -205,14 +196,14 @@ Then
 \end{align}
 
 ~\autoref{eq:boolean-expression-simplify} shows that the condition of execution for
-\code{statement2} is \code{!(test1 && test2)} and this can be piggybacked as the
-\code{else}-block of
-of the conditional construct for \code{statement1}, which is \code{if (test1 && test2)}.
+\code{statement2} is \code{!(test1 && test2)} and this happens to fit as the
+\code{else}-block of the conditional statement \code{if (test1 && test2)..}.
 With this hard-earned wit, it now becomes straightforward to come up with yet an even simpler
 implementation such as ~\autoref{lst:final-simplified-conditional-statement}.
+This completes the whole logic simplification process.
 
-Please note that the above process is not the only way to arrive at simplified logic.
-Another possible way to achieve same logic simplicity is to use `truth table'.
+Note that there are other ways to achieve the same goal.
+One can also use \emph{truth tables} to simplify logic.
 Let's see how this works.
 \begin{table}[h]
     \begin{center}
@@ -234,34 +225,35 @@ Let's see how this works.
         \end{tabular}
     \end{center}
 \end{table}
-I have constructed truth table as ~\autoref{tbl:true-value-table}.
-Since there are two conditional variables \code{test1} and \code{test2}, there are
-total four entries in the truth table.
-The third column shows the boolean expression that's evaluated to \code{true} by which
-the execution of the statement ensues.
+I have constructed a truth table with \code{test1} and \code{test2} as the variables
+(~\autoref{tbl:true-value-table}).
+Since there are two conditional variables, there are a total four rows in the table.
+Additionally, we added the third column to shows what \code{true} boolean expression leads
+the execution of which statement.
 Summarizing the table entries, we arrive at the following conclusions
 \begin{enumerate}[label={\roman*:}]
-    \item \code{statement1} is executed iff both \code{true};
-    \item \code{statement2} is executed iff not both \code{true};
-    \item \code{statement3} is executed iff \code{test1=true}, regardless of
+    \item \code{statement1} is executed \emph{iff} both \code{test1} and \code{test2}
+    are \code{true};
+    \item \code{statement2} is executed \emph{iff} not both \code{test1} and \code{test2} are
+    \code{true};
+    \item \code{statement3} is executed \emph{iff} \code{test1} is \code{true}, regardless of
     \code{test2}.
 \end{enumerate}
-
 With all the mental twists untied, implementation of something like
 ~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
-In this section, we presented two methods for logic simplification.
-One method en routes on the necessary condition for the execution of certain statements and seek to
-simplify the conditional expressions.
-The other lists all the possible branches in a true table and looks for simple ways to assemble
-them.
-In practice, you are encouraged to try out both ways and for your own instinct about the methods.
-You may find one or the other process to be more beneficial under certain circumstances.
+Thus far we have presented two processes for logic simplification.
+One of them en routes on the necessary and sufficient conditions for the execution of certain
+statements and use that to simplify the conditional expressions.
+The other lists all the possible branches in a true table and looks for simple ways to combine
+them into as few conditional expressions as possible.
+In practice, you are encouraged to try both and form an intuition for each process.
+You will find each of them has an edge for certain circumstances.
 
 To verify your understanding of the material, in
 ~\autoref{lst:exercise-original-conditional-statement} is presented an exercise.
-Please work it out with one of the two methods above and compare your result with mine in
-~ \autoref{lst:exercise-simplified-conditional-statement}.
+Please work it out with one of the two methods above and my simplified solution is provided in
+~\autoref{lst:exercise-simplified-conditional-statement} for your information.
 
 % side-by-side two columns
 \noindent\begin{minipage}[t]{.3\textwidth}
@@ -349,7 +341,7 @@ We will talk more about function designs in ~\fullref{ch:reusableFunctions}
 For example one need to create functions \code{procure} with a well-defined return value
 indicating if procurement of an item is successful or not for use in the short-circuit boolean
 expression in ~\autoref{lst:next-sce}.
-One need to be away of the attributes of the function such as idempotency and mutability of the
+One need to be aware of other characteristics such as idempotence and mutability of the
 function invocation.
 
 %Before ending this section, let us look at a more subtle case code snippet

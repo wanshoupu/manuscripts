@@ -1,6 +1,6 @@
 public Object next() {
-    if (!cache.isPresent() && !procure()) {
+    if (cache.isEmpty() && !procure()) {
         throw new NoSuchElementException("No element is left");
     }
-    return cache.get();
+    return cache.pop();
 }

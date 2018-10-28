@@ -356,7 +356,7 @@ label={lst:next-without-sce}]
 {if-else/getNext.java}
 That is not bad, right?
 The code seems pretty simple by itself.
-But now that \java supports SCE, so one can readily implement the following
+But now that \java ~ supports SCE, so one can readily implement the following
 \lstinputlisting[caption={Implementation of \code{next} method taking advantage of SCE in\java.},
 label={lst:next-sce}]
 {if-else/getNext_shortCircuit.java}
@@ -371,16 +371,16 @@ overall value of the conditional expression.
 
 Through this example, we learn the important aspects for SCE programming.
 First of all, order of operands matters, \textit{e.i.}, \code{a && b} is not always equivalent to
-\code{b && a} if the evaluation of one or both of them have side effects.
+\code{b && a}, especially if the evaluation of one or both of them have side effects.
 Secondly, if one seeks to avoid unnecessary operations conditionally using SCE mechanism,
 one should seek to wrap those operations in easily usable functions
 with a well-defined return value of boolean type (or boolean-equivalent types).
 To that end, one needs to consciously modularize one's design, creating reusable, meaningful
 subroutines with single-responsibility.
 The `\code{procure}' function in the above problem is a good example.
-Last but not least, one need to be aware of characteristics such as idempotence and
-mutability of the function invocation.
-We will talk more about function modularity design in ~\fullref{ch:reusableFunctions} and
+Last but not least, one needs to pay attention to idempotence and mutability, among
+other characteristics, of functions.
+We will talk more about function design in ~\fullref{ch:reusableFunctions} and
 idempotence and mutability in ~\fullref{ch:ood}.
 
 

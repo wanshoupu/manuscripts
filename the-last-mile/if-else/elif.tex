@@ -468,11 +468,11 @@ good aid for debugging---due to its explicit conditional expressions, it is more
 straightforward to spot untested assumptions made for a later case than its case-stack
 counterpart.
 
-\begin{figure}[htb]
+\begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:if-stack-equals},
     caption={Example implementation overriding \code{equals} in a subclass}]
     {if-else/equals.java}
-\end{figure}
+\end{minipage}
 As a real-world example to demonstrate the effectiveness of case-stack in handling
 multi-branching logic,
 let's look at a typical \code{equals} method in a subclass that overrides
@@ -485,11 +485,11 @@ and perform pairwise equality tests between member variables of
 \code{this} instance and \code{that} instance.
 Once again, you see how the program progresses up a `staircases' step-by-step.
 
-\begin{figure}[htb]
+\begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:if-stack-lca},
     caption={An implementation of finding lowest common ancestor in a binary search tree.}]
     {if-else/lca.java}
-\end{figure}
+\end{minipage}
 Earlier we pointed out the strict ordering property of case-stack.
 To illustrate how the order of tests affects the construct of case-stack,
 let's consider the problem:
@@ -535,15 +535,67 @@ This brings both challenges and opportunities.
 It makes logic simplification in a loop more challenging.
 But it also means skilled developers have new weapons to wield for simple, succinct logic.
 
-%TODO
-Practical programming tips for loops will be more fully discussed ~\autoref{ch:loops}.
-Many of the topics overlap between here and there,
-so we are going to be brief here and with emphasis on conditional constructs.
-For fuller discussions, we direct readers there.
+Suppose that an imaginary zoo is conducting health exams for their animal collection:
+insects, fish, birds, mammals, \textit{etc}.
+All animals will have their overall health examined.
+Vertebrates will undergo radiography exams.
+Temperatures are taken for warm-blooded animals.
+Finally animals in each species will have their distinct body parts examined.
+All the needed veterinary API has been provided in ~\autoref{lst:veterinary_api}
+\newline\begin{minipage}{\linewidth}
+            \lstinputlisting[caption={Zoological and veterinary API.},
+            label={lst:veterinary_api}]
+            {if-else/zoo_veterinary_api.py}
+\end{minipage}
+Due to the complex relationships among hierarchical units of animal taxonomy,
+coding up a correct and elegant conditional statements,
+serving all applicable exams to all the animals,
+is not a straightforward task.
+Some developers may introduce `slightly' duplicate code as in
+~\autoref{lst:dup-code-in-loop-conditional}.
+But those seemingly innocent, `slight' duplicate code will bite them as new
+species such as `reptiles' or `crustaceans' join the zoo.
+Some resorts to nested conditional statements such as
+~\autoref{lst:no-continue-in-loop-conditional}.
+\newline\begin{minipage}{\linewidth}
+            \lstinputlisting[caption={Conditional statements with tint of code duplication.},
+            label={lst:no-continue-in-loop-conditional}]
+            {if-else/zoo_animal_health_exam_dup_code.py}
+\end{minipage}
+The labyrinthine logic would cause developers to clench their teeth
+whoever dare to refactor the code.
+\newline\begin{minipage}{\linewidth}
+            \lstinputlisting[caption={Nested conditional statements in a loop.},
+            label={lst:no-continue-in-loop-conditional}]
+            {if-else/zoo_animal_health_exam_nested_cond.py}
+\end{minipage}
+Thankfully, keyword \code{continue} comes to rescue in this niche case and
+one does not have to face the dilemma between messy switching maze of
+~\autoref{lst:no-continue-in-loop-conditional}
+and risky duplicate code as in ~\autoref{lst:dup-code-in-loop-conditional}.
+simply use \code{continue} to skip the inapplicable part of the loop body.
+As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly
+sequential statements, bearing the essence of `case-stack'.
+\newline\begin{minipage}{\linewidth}
+            \lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
+            label={lst:continue-in-loop-conditional}]
+            {if-else/zoo_animal_health_exam_continue.py}
+\end{minipage}
+If desired, one may easily refactor the loop-body in ~\autoref{lst:continue-in-loop-conditional}
+into a separate function---the only change needed is to use
+keyword \code{return} in place of \code{continue}
+(see ~\autoref{lst:refactored-in-loop-conditional}).
+\newline\begin{minipage}{\linewidth}
+            \lstinputlisting[caption={Use of \code{return} in refactored conditional statements.},
+            label={lst:refactored-in-loop-conditional}]
+            {if-else/zoo_animal_health_exam_refactored.py}
+\end{minipage}
+For a real-world application of conditional application in a loop,
+the solution in ~\fullref{lst:silhouette-skyline} would make an excellent example.
+Practical programming tips for loops will be more fully discussed in
+~\autoref{ch:loops} and ~\fullref{ch:loop-thinning}.
+%Many of the topics overlap between here and there.
+%So we are going to stop here and defer fuller presentation accordingly.
 
-For a really good example of conditional application in a loop,
-the ~\fullref{lst:silhouette-skyline} presented in ~\fullref{ch:loop-thinning}
-would make an excellent example.
-
-Like a complex protein molecule, the conditional statements are assembled into a case-stack in
-resemblance of hierarchical structures and together they perform the processing in a stateful loop.
+%Like a complex protein molecule, the conditional statements are assembled into a case-stack in
+%resemblance of hierarchical structures and together they perform the processing in a stateful loop.

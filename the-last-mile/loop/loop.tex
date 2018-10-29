@@ -151,6 +151,16 @@ For book keeping purposes, all numbers are recorded in a list unless skipped.
     {loop/use_of_continue.py}
 \end{minipage}
 
+Refactoring a function with a loop that consists of intermediate variables into separate function
+often results in two simpler functions.
+Use of \code{return} in loop sometimes saves intermediate variables from being declared.
+\begin{minipage}{\linewidth}
+    \lstinputlisting[label={lst:loop-use-continue},
+    caption={Refactoring the loop body into a separate function}]
+    {loop/refactor_conditional_in_loop.java}
+\end{minipage}
+
+
 % TODO settle down this presentation
 %% side-by-side two columns
 %\noindent\begin{minipage}[t]{.45\textwidth}

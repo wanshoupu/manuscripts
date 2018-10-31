@@ -3,14 +3,37 @@
 %% 7/14/18
 %%
 
-\chapter{Loop Thinning} \label{ch:loop-thinning}
+\chapter{Flatten Nested Loops} \label{ch:loop-thinning}
+
+Nested loops are a complexity nuance that is hard to understand.
+Sometimes can cause bloated runtime complexity, \textit{e.g.} what could be $O(N)$ would be
+$O(N^2)$ .
+Programming loops is a complex work.
+First working version is seldom the best solution.
+This chapter is a spinoff of the ~\autoref{ch:loops}.
+We spend this chapter for the sole purpose of simplifying nested loops.
+The rule of thumb is ``avoid nested loops'.
+If nested loops can be simplified to one-layer loop, by using auxiliary data structures, better
+algorithm, and so on, that will be the first choice.
+Otherwise, refactoring the code may be necessary to decouple subtasks from the main one.
+One may raise counter examples, say, iterating through $2$D array elements using indexes \code{i,j}.
+I would argue back that refactoring the inner index access into a separate function may still be
+a better choice as it makes the inner loop more meaningful with a separate function with a
+meaningful name.
+Some one may argue about performance, saying that function call has overhead especially made in a
+loop.
+My answer to that is that ``By that argument you do not really care about performance.''
+Because if you really care about performance you would have vectorized your code using matrix
+operations instead of using nested loops.
 
 Nested loop thinning \label{Evernote:Max area under histogram}
 ~\autoref{lst:largest-rectangle-histogram}.
 
+% TODO research more on when loop thinning is possible and effective
+% TODO Find a few cases
 \label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
-\lstinputlisting[label={lst:largest-rectangle-histogram},
-caption={Example usage of \code{continue} to simplify the logic in a loop}]
+\lstinputlisting[label={lst:silhouette-skyline},
+caption={Loop thinning example for skyline calculation.}]
 {embedded-loops/silhouette.py}
 \label{Evernote:Server peak load problem}
 \label{Evernote:for-loop Loop compactification examples}

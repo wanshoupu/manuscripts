@@ -3,7 +3,7 @@
 %% 8/22/18
 %%
 
-\chapter{Longest palindrome}
+\chapter{Longest Palindrome Substrings}
 
 The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
 question.
@@ -220,7 +220,7 @@ palindrome substring Manacher's aglorithm with augmented string.}]
 
 But with a little maneuver, one can create a `virtual filling' among the characters of the
 original string and save on physical memory footprint.
-\@\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
+~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
 implementations in \python and \java respectively based on string `virtual filling'.
 The price for doing that is a mapping of indexes of \code{char}s in the the original string.
 
@@ -232,7 +232,7 @@ Also redefining the lengths array to be the length of the original array
 caption={A \python implementation of ongest palindromic substring.}]
 {case-study/longest-palindrome/longest_palindromic_substring.py}
 
-\@\autoref{lst:LongestPalindrom.java} is a \java version.
+~\autoref{lst:LongestPalindrom.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.
@@ -250,15 +250,14 @@ This is one of the most performing implementations known so far.
 
 The virtual mapping in place of physically augmenting the input string is compact, neat solution
 with optimal runtime complexity and memory footprint.
-But it is full of arithmetics for symmetry transformations, key look ups, etc.
+But it is full of arithmetic for symmetry transformations, key look ups, etc.
 All of these degrade its readability in a big way.
 
 Suppose we want to create a more readable, modular code,
 how should we go about do it?
 
-Let us use the version ~\autoref{lst:} as a demonstration on how to apply the techniques that are
-discussed in this book.
-
+Let us use the version ~\autoref{lst:LongestPalindrom.java} as a demonstration
+on how to apply the techniques that are discussed in this book.
 
 \newpage
 \lstinputlisting[label={lst:LongestPalindrom.java},
@@ -267,3 +266,4 @@ palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeSolver.java}
 
 \section{Conclusion}\label{sec:conclusion}
+%TODO

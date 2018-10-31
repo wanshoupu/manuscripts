@@ -2,7 +2,7 @@
 %% Author: shoupu_wan
 %% 7/14/18
 %%
-\chapter{Reusable Functions}\label{ch:reusableFunctions}
+\chapter{Make Functions Reusable}\label{ch:reusableFunctions}
 
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
@@ -202,7 +202,7 @@ expression tree for evaluation\footnote{\url{https://en.wikipedia
 Your functions should be built upon one another.
 Together they tell a complex and complete story, with outlines as well as details at the right place.
 
-\@\autoref{fig:functree} illustrates the idea with a fictitious tree structure and the pseudocode
+~\autoref{fig:functree} illustrates the idea with a fictitious tree structure and the pseudocode
 is shown in ~\autoref{lst:functree}.
 
 \begin{figure}[htb]
@@ -326,6 +326,19 @@ A case study for this.
 %Then we build structures with these blocks.
 %Finally, we assemble structures into pyramid.
 %Higher level constructions depends on lower level constructions.
+
+\section{Idempotence}\label{sec:idempotence}
+
+Especially paying attention to creation
+of read-only  \textit{vs.} state-altering functions,
+idempotent  \textit{vs.} non-idempotent functions.
+
+Idempotence is an important characteristics of member methods in object-oriented design.
+idempotent: denoting an element of a set which is unchanged in value when multiplied or otherwise operated on by itself.
+
+immutable: constant function has no state altering operation whatsoever
+idempotent: 1+ call of the function are equivalent to 1 call.
+
 
 \section{Case Study--Spiral Matrix} \label{sec:case-spiral-matrix}
 

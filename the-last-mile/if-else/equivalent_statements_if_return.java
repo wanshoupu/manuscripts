@@ -1,6 +1,6 @@
-if (<condition>) {
+if (<test>) {
     return false;
 }
 return true;
 
-return !<condition>;
+return !<test>;

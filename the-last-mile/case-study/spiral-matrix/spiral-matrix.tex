@@ -3,10 +3,12 @@
 %% 8/22/18
 %%
 
-\chapter{Spiral Matrices}\label{ch:spiralMatrix}
+\chapter{Matrices Spiralization}\label{ch:spiralMatrix}
 
-The spiral matrix problems refers to visiting a $2$D matrix in clockwise spiral order
-starting from $M[0][0]$, outer layer first as shown in ~\autoref{fig:spiral-matrix-loop}.
+Spiralize a $2$D matrix means to output its element in the order along a spiral from
+outer layer to the inner layer.
+Usually spiralization starts from $M[0][0]$ and works its way toward the right
+as shown in ~\autoref{fig:spiral-matrix-loop}.
 Depending on the emphasis of the problem, there are several related statements.
 \begin{enumerate}
     \item Given two integers $m$ and $n$, generate a matrix of dimension $m \times n$ filled with
@@ -26,9 +28,9 @@ can be used as feedback to to next iteration of algorithm design.
 Also, the reader will practice techniques explained in ~\autoref{ch:reusableFunctions}
 to meaningfully decouple and manage complexities, striving for better code coherence.
 
-\begin{figure}[H]
+\begin{figure}[htb]
     \begin{center}
-        \includegraphics[width=.8\textwidth]{case-study/spiral-matrix/spiral-matrix.jpg}
+        \includegraphics[width=.7\textwidth]{case-study/spiral-matrix/spiral-matrix.jpg}
         \caption{Visiting cells in a $2$D matrix in spiral order.}
         \label{fig:spiral-matrix-loop}
     \end{center}
@@ -106,10 +108,16 @@ If this is not handled properly, it will lead to incomplete result.
 Try with some examples, \textit{e.g.}, matrices of sizes $5 \times 1$ and $2\times 3$,
 respectively, and you will have some insights about this.
 
+\begin{minipage}{\textwidth}
+    \lstinputlisting[label={lst:VerboseSpiralMatrix},
+    caption={Spiral matrix \java~ implementation.}]
+    {case-study/spiral-matrix/VerboseSpiralMatrix.py}
+\end{minipage}\newpage
+
 Dealing with these complexities all at once is challenging and vulnerable to bugs.
 Even if one succeeds in implementing a working solution, it is doomed to be a mess lacking the
 necessary readability and clarity.
-~\autoref{lst:VerboseSpiralMatrix.py} list an earlier implementation I myself managed to complete.
+~\autoref{lst:VerboseSpiralMatrix} list an earlier implementation I myself managed to complete.
 It works but it contains a lot of loops, nested loops, duplicate code, \textit{etc.}
 It is very cumbersome to read or understand.
 When I was developing this solution toward the end, my instinct told me that my code should work
@@ -121,11 +129,8 @@ I have to admit that the final version works purely by accident.
 If I am asked to re-implement it without peeking at my previous code, I will have to go
 through the same painful blind testing process.
 
-\lstinputlisting[label={lst:VerboseSpiralMatrix},
-caption={Spiral matrix \java implementation.}]
-{case-study/spiral-matrix/VerboseSpiralMatrix.py}
 
-Admittedly, this is not the very first version of working solution I ever came up.
+Admittedly, this is not the first version of working solution I came up.
 This is already improved a lot.
 But still, if you want to understand why each line of code is the way it is, you have to spend some
 time reading into it before going on reading the rest of explanation.
@@ -169,10 +174,12 @@ As warned in ~\autoref{complication-special-case}, be sure to handle the special
 otherwise certain elements may be missing in the result.
 So a recursive solution could be as shown in ~\autoref{lst:pseudo_recursive_spiral_order}.
 
-\lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
-caption={A possible recursive \python implementation.}]
-{case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
-
+\begin{minipage}{\textwidth}
+            \lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
+            caption={A possible recursive implementation.}]
+            {case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
+\end{minipage}
+\newpage
 Let us keep looking for other patterns.
 Particularly, let us look into how to complete a cycle consisting of `go
 right', `go down', 'go left', and `go up'.
@@ -183,30 +190,6 @@ Especially, which direction should cover the pivot elements at the four corners 
 In ~\autoref{fig:cycle.division}, we depict three different ways of dividing up the cycle into
 the four sections.
 Pick one of them and try code it up yourself to get a feel of the difference.
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}{.8\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-asymmetric.jpg}
-        \caption{Asymmetric cycle division.}
-        \label{fig:cycle.division.asymmetric}
-    \end{subfigure}
-    \vspace{1mm}
-    \begin{subfigure}{.8\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-corner-special.jpg}
-        \caption{Division singling out corner cells.}
-        \label{fig:cycle.division.corner.special}
-    \end{subfigure}
-    \vspace{1mm}
-    \begin{subfigure}[b]{.8\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-symmetric.jpg}
-        \caption{Symmetric cycle division.}
-        \label{fig:cycle.division.symmetric}
-    \end{subfigure}
-
-    \caption{Division of one cycle into `upper row', `right column', `bottom row leftward',
-    and `left column upward'.
-    Each section is colored differently.\label{fig:cycle.division}}
-\end{figure}
 Watch out for the unexpected \python language feature when you slice a list
 with a negative step all the way to the beginning.
 You may be surprised that \code{arr[i:-1:-1]} is actually an empty list.
@@ -215,6 +198,29 @@ and the latter is empty.
 The correct slicing expression for that is \code{arr[i::-1]} with \code{i} between $\left[0,
 \mbox{\code{len(arr)}}\right)$ (open interval).
 
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-asymmetric.jpg}
+        \caption{Asymmetric cycle division.}
+        \label{fig:cycle.division.asymmetric}
+    \end{subfigure}
+    \vspace{2mm}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-corner-special.jpg}
+        \caption{Division singling out corner cells.}
+        \label{fig:cycle.division.corner.special}
+    \end{subfigure}
+    \vspace{2mm}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-symmetric.jpg}
+        \caption{Symmetric cycle division.}
+        \label{fig:cycle.division.symmetric}
+    \end{subfigure}
+    \caption{Division of one cycle into `upper row', `right column', `bottom row leftward',
+    and `left column upward'.
+    Each section is colored differently.\label{fig:cycle.division}}
+\end{figure}
 In coding, I used zero-based indexing and ~\fullref{fig:cycle.division.symmetric} cycle division.
 For reasons of preference for zero-based indexing please refer ~\autoref{sec:array-pattern} for
 more detailed discussion.
@@ -226,10 +232,13 @@ Specifically, the reasons for this choice here are
     \item better matches with the zero-based, close your loop more smoothly
 \end{enumerate}
 
-\lstinputlisting[label={lst:flatten_cycle}, firstline=37
-caption={Flattening elements in one cycle using the symmetric indexing
-~\autoref{fig:cycle.division.symmetric}.}]
-{case-study/spiral-matrix/spiral_order_recursive.py}
+\begin{minipage}{\textwidth}
+            \lstinputlisting[label={lst:flatten_cycle}, firstline=37
+            caption={Flattening elements in one cycle using the symmetric indexing
+            ~\autoref{fig:cycle.division.symmetric}.}]
+            {case-study/spiral-matrix/spiral_order_recursive.py}
+\end{minipage}
+\newpage
 
 %This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
 %code up a neat solution, it'll take a number of skills and effort.
@@ -241,6 +250,7 @@ Together, ~\autoref{lst:pseudo_recursive_spiral_order} and ~\autoref{lst:flatten
 forms a recursive solution with a modular design which has much better readability.
 Once one understands the solution, one can easily refactor it or extend it for a customized task
 without any haphazard guess work.
+
 
 \subsection{New iterative implementation}\label{subsec:newIterative.spiralMatrix}
 

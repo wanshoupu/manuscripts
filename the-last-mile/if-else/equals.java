@@ -1,7 +1,8 @@
 @Override
-public boolean equals(Object o){
-    if(o == null) return false;
-    if(!(o instanceof Pair)) return false;
-    Pair p = (Pair)o;
-    return this.j == p.j && this.i == p.i;
+public boolean equals(Object obj){
+    if(obj == null) return false;
+    if(!(obj instanceof MyClass)) return false;
+    MyClass that = (MyClass)obj;
+    // assume integers j and i are member variables of MyClass
+    return this.j == that.j && this.i == that.i;
 }

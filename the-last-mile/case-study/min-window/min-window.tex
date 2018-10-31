@@ -3,18 +3,18 @@
 %% 8/22/18
 %%
 
-\chapter{Minimum containing window}\label{ch:minimumContainingWindow}
+\chapter{Minimum Containing Window}\label{ch:minimumContainingWindow}
 
 In this chapter, I will demonstrate through a coding practice question
 how to start with some rough ideas, make improvements progressively, and arrive at a neat, readable
 solution.
 Out of the coding questions I've worked on, `Minimum containing window' is one such problem
 that is simple to state, has intuitive algorithms, but
-to code up a succinct, production-quality solution is by no means simple or straightforward.
+to code up a succinct, production-quality solution is by no means as straightforward.
 For an inexperienced beginner, correct implementation of a solution can easily grow into a bloated,
 obscure program.
 When I first encountered this problem, I stumbled badly after a few failed attempts to
-implement a clean and readable solution using languages like \java and \python.
+implement a clean and readable solution.
 Over the years, I kept visiting, revisiting this problem and each time I worked on it, I ended up
 with new insights.
 The more I reflect on it, the more amazed I grew because I realized this will forever remain a
@@ -44,8 +44,11 @@ The problem is stated as follows:
 
 We zoom in straight to a greedy algorithm with the following ideas behind:
 \begin{enumerate}
-    \item Find a containing window;
-    \item Attempts to `push-and-squash' the containing window to the smallest.
+    \item Find a containing window starting at the left end.
+    \item Then attempts to `push-and-squash' the containing window toward the right one element
+    at a time.
+    \item At each step, record the \emph{smallest containing window} so far.
+    \item Return the smallest containing window.
 \end{enumerate}
 
 Once initialized, the containing window, while maintaining the containment invariant, moves like an
@@ -64,7 +67,7 @@ of the containing window.
 Useful data structures for that would be maps or dictionaries.
 If properly implemented, the algorithm runs in linear time complexity $O(M+N)$
 where $M$ and $N$ are the lengths of the strings \code{T} and \code{S}, respectively.
-\@\autoref{fig:min-window-algorithm.jpg} depicts the algorithm.
+~\autoref{fig:min-window-algorithm.jpg} depicts the algorithm.
 
 \begin{figure}[htb]
     \begin{center}
@@ -87,7 +90,7 @@ All the solutions in this chapter are provided in \java.
 
 \subsection{First ever solution}
 
-The importance of the role played by a stupid, first solution can never be overestimated.
+The importance of the role played by a modest first solution can never be overestimated.
 There are some things that must be built only to be thrown away.
 As a cold start, we have no other insights but the outline as shown in
 ~\autoref{fig:min-window-algorithm.jpg}.
@@ -213,7 +216,7 @@ That by itself is beautiful.
 
 \subsection{Further room of improvement}
 
-\@\autoref{lst:MinWindowSubstringSentinel} is a neat solution for the problem it solves.
+~\autoref{lst:MinWindowSubstringSentinel} is a neat solution for the problem it solves.
 But it is no perfect solution.
 The issues are within the loop of squeezing window.
 First, note that the logic of checking if a \code{char} might be useful to

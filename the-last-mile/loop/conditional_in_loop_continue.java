@@ -1,9 +1,9 @@
-while (condition_overall) {
-    if (condition1) {
+while (overall_test) {
+    if (test1) {
         statement1;
         continue;
     }
-    if (condition2) {
+    if (test2) {
         statement2;
         continue;
     }

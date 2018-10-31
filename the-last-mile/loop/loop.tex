@@ -3,7 +3,7 @@
 %% 7/14/18
 %%
 
-\chapter{Loops} \label{ch:loops}
+\chapter{Tighten Loops} \label{ch:loops}
 
 All major programming languages feature one or more loop types as control flow and
 it is one of the most widely used building block.
@@ -154,7 +154,7 @@ For book keeping purposes, all numbers are recorded in a list unless skipped.
 Refactoring a function with a loop that consists of intermediate variables into separate function
 often results in two simpler functions.
 Use of \code{return} in loop sometimes saves intermediate variables from being declared.
-\begin{minipage}{\linewidth}
+\newline\begin{minipage}{\linewidth}
     \lstinputlisting[label={lst:loop-use-continue},
     caption={Refactoring the loop body into a separate function}]
     {loop/refactor_conditional_in_loop.java}

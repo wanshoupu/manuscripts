@@ -3,7 +3,7 @@
 %% 7/14/18
 %%
 
-\chapter{Recursive programming} \label{ch:recursion}
+\chapter{Recursive Functions} \label{ch:recursion}
 
 The concept of recursion has long been known to artists and scientists of past times and is present
 in many distinct disciplines: linguistics, logic, mathematics, \textit{etc}.
@@ -17,6 +17,10 @@ recursively structured data processing.
 In this chapter, we are going to give a brief introduction ot the necessary attributes of
 recursion and then dedicate majority of the content to the discussion of
 the \emph{practical} aspects of recursion, recursive procedures, and recursive functions.
+
+%TODO add these topics
+Recursion is a paradigm of implementing algorithms for functional programming.
+Every recursive version has an equivalent (but possibly more or less complex) iterative version, and vice versa.
 
 \section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
 
@@ -41,7 +45,7 @@ Mutual recursions in function design have important application in text parsing,
 recursive data processing, file system programming, \textit{etc.}
 We will discuss mutual recursion in later sections of this chapter.
 For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
-~\fullref{prt:advanced}.
+~\fullref{prt:advancedTopic}.
 
 \section{Fallacies when programming recursions}\label{sec:recursiveFallacies}
 
@@ -152,7 +156,7 @@ one or more leaf functions that only interact with the main function.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{recursion/multi-recursion.jpg}
-    \caption{Asymmetric cycle division.\label{fig:cycle.division.asymmetric}}
+    \caption{Mutual recursion.\label{fig:mutual-recursion}}
 \end{figure}
 
 Each function in the mutual recursion group

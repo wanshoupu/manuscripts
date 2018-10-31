@@ -63,7 +63,7 @@
 \author{Shoupu Wan} % Author
 
 \begin{document}
-\frontmatter
+    \frontmatter
 
     \maketitle
     \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -88,8 +88,8 @@
     tabsize=3,
     upquote=true
     }
-% temporarily comment these pages out for development
-%
+
+
     \thispagestyle{empty} % Suppress page numbering
     \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
 
@@ -108,9 +108,9 @@
     %	CHAPTERS
     %----------------------------------------------------------------------------------------
 
-%    \include{introduction/preface}
-%%    \include{example/insert-source-code}
-%    \include{introduction/mini-toc}
+    \include{introduction/preface}
+    %%    \include{example/insert-source-code}
+    %    \include{introduction/mini-toc}
 
     %----------------------------------------------------------------------------------------
     %	TABLE OF CONTENTS
@@ -118,36 +118,37 @@
 
     \tableofcontents % Prints the table of contents
 
-\mainmatter
+    \mainmatter
 
     \include{introduction/intro}
 
-    \part{Elements of programming}\label{prt:flowControl}
+    \part{\uppercase{Control Flow}}\label{prt:flowControl}
 
     \include{if-else/elif}
     \include{loop/loop}
     \include{embedded-loops/loop-push-up}
-    \include{recursion/recursion}
     \include{sentinels/sentinels}
+
+    \part{\uppercase{Modularity Design}}\label{prt:modularDesign}
+
     \include{functions/functions}
-
-    \chapter{Data Structures and Language Features}\label{ch:datastructure}
-
+    \include{object-oriented-design/ood}
+    \include{lang-feature/lang}
+    \chapter{Data Structure Patterns}\label{ch:datastructure}
     \include{data-structure/hashmap}
-     \include{data-structure/array}
+    \include{data-structure/array}
     \include{data-structure/linked-list}
     \include{data-structure/binary-tree}
     \include{data-structure/queue-stack}
-    \include{lang-feature/lang}
 
-    \part{Advanced Topics}\label{prt:advancedTopic}
+    \part{\uppercase{Select Programming Paradigms}}\label{prt:advancedTopic}
 
-    \include{object-oriented-design/ood}
+    \include{recursion/recursion}
     \include{functions/binary-search}
     \include{dynamic-programming/dp}
     \include{variation-method/varmethod}
 
-    \part{Case Studies}\label{prt:caseStudies}
+    \part{\uppercase{Case Studies}}\label{prt:caseStudies}
 
     \include{case-study/min-window/min-window}
     \include{case-study/spiral-matrix/spiral-matrix}
@@ -157,7 +158,7 @@
     \include{case-study/jump-game/jump_game}
     \include{case-study/list-encoder/list-encoder}
 
-\backmatter
+    \backmatter
     \include{afterword/aw}
     \printindex
 

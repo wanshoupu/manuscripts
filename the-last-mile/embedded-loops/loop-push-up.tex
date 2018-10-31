@@ -3,8 +3,11 @@
 %% 7/14/18
 %%
 
-\chapter{Loop Thinning} \label{ch:loop-thinning}
+\chapter{Flatten Nested Loops} \label{ch:loop-thinning}
 
+Nested loops are a complexity nuance that is hard to understand.
+Sometimes can cause bloated runtime complexity, \textit{e.g.} what could be $O(N)$ would be
+$O(N^2)$ .
 Programming loops is a complex work.
 First working version is seldom the best solution.
 This chapter is a spinoff of the ~\autoref{ch:loops}.

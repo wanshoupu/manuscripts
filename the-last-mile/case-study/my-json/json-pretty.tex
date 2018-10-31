@@ -3,7 +3,7 @@
 %% 8/22/18
 %%
 
-\chapter{JSON prettifier}\label{ch:json-prettifier}
+\chapter{JSON Prettifier}\label{ch:json-prettifier}
 
 By and large, JSON is familiar to most programmers, even beginners.
 Particularly, they have an intuitive idea of a `well-formatted' JSON\@.
@@ -329,9 +329,9 @@ Stream of tokens come out of the tokenizer and are fed the assembler
 to be assembled into in-memory data structures such as array or dictionary
 (map in \java ~and \cpp).
 For example the JSON string
-\begin{lstlisting}
-    '{"1":"\"1:{1:1}","2":2}'
-\end{lstlisting}
+\begin{quote}
+    \code{'\{"1":"\\"1:\{1:1\}","2":2\}'}
+\end{quote}
 will be tokenized into the following token sequence:
 \begin{lstlisting}
     '{'
@@ -363,9 +363,9 @@ by a top-down parser.
 in-memory data structures for JSON data.}
 \end{figure}
 
-There are two ways of doing that---iterative and recursive---and we will start with iterative
-solution.
-The iterative solution uses two stacks one for elements, one for punctuations.
+There are two ways of doing that---iterative and recursive.
+First let us attempt an iterative solution.
+The iterative solution uses two stacks---one for elements, one for punctuations.
 The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
 \@\cite{Dijkstra-shunting-yard}.
 The Wikipedia description\@\footnote{A brief description is available at
@@ -670,7 +670,7 @@ it is made possible that
 the styling strings---newline character and indentation string---be added on one side of
 an element.
 The refactored example code, again for \code{arrayToPrettyString}, is shown in
-~\autoref{ArrayFormatting.shifted_decoration}.
+~\autoref{lst:ArrayFormatting.shifted_decoration}.
 \lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
 caption={Array formatting function with element formatting string shifted to one side.}]
 {case-study/my-json/JsonFormatter_array_element_shifted_view.py}

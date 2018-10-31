@@ -13,7 +13,7 @@ The term comes from a magazine essay titled ``Pachydermic Personnel Prediction''
 ~\cite{elephant-in-Cairo:1989}.
 Here is an algorithm that computer scientists came up to answer the question ``How to hunt
 elephants in Africa?'':
-\begin{clist}
+\begin{alisting}
     \caption{\label{enum:elephant-hunt-algo-A}
     Modified algorithm for `Hunting elephant in Africa' for proper termination.}
     \begin{enumerate}
@@ -27,14 +27,14 @@ elephants in Africa?'':
             \item Stop when a match is detected.
         \end{enumerate}
     \end{enumerate}
-\end{clist}
+\end{alisting}
 The above algorithm, however, may not terminate at the north end of Africa in the rare
 cases there there is no elephant in Africa.
 So the hunters may end up drowning in the Mediterranean Sea.
 To avoid that from happening, one may add check after each iteration of the inner loop to make
 sure that the north end of Africa has not been reached as the modified algorithm in
 ~\autoref{enum:elephant-hunt-algo-B} does.
-\begin{clist}
+\begin{alisting}
     \caption{\label{enum:elephant-hunt-algo-B}
     Modified algorithm for `Hunting elephant in Africa' for proper termination.}
     \begin{enumerate}
@@ -48,7 +48,7 @@ sure that the north end of Africa has not been reached as the modified algorithm
             \item Stop when a match is detected \emph{or north end of Africa is reached}.
         \end{enumerate}
     \end{enumerate}
-\end{clist}
+\end{alisting}
 But an experienced computer scientist would place a known elephant
 in Cairo beforehand and use the algorithm `\autoref{enum:elephant-hunt-algo-A}' as is.
 Of course, after the hunt, they would have to inspect the animal they caught and see if it is the

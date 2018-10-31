@@ -43,13 +43,16 @@ The problem is stated as follows:
 \section{Analysis of the problem}\label{sec:analysis.min-window}
 
 We zoom in straight to a greedy algorithm with the following ideas behind:
-\begin{enumerate}
-    \item Find a containing window starting at the left end.
-    \item Then attempts to `push-and-squash' the containing window toward the right one element
-    at a time.
-    \item At each step, record the \emph{smallest containing window} so far.
-    \item Return the smallest containing window.
-\end{enumerate}
+\begin{alisting}
+    \caption{Greedy algorithm for the `minimum window' problem.}
+    \begin{enumerate}
+        \item Find a containing window starting at the left end.
+        \item Then attempts to `push-and-squash' the containing window toward the right one element
+        at a time.
+        \item At each step, record the \emph{smallest containing window} so far.
+        \item Return the smallest containing window.
+    \end{enumerate}
+\end{alisting}
 
 Once initialized, the containing window, while maintaining the containment invariant, moves like an
 earthworm---it pushes itself way forward with longitudinal waves starting from the behind.

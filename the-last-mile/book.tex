@@ -35,7 +35,8 @@
 
 %	Theorem environments (these need the amsthm package)
 %% \theoremstyle{plain} %% This is the default
-\DeclareFloatingEnvironment[placement={!ht},name=List]{clist}
+\DeclareFloatingEnvironment[placement={!ht},name=Algorithm]{alisting}
+\DeclareFloatingEnvironment[placement={!ht},name=Listing]{clisting}
 \newcommand{\edition}{Second Edition} % Book edition
 \chardef\bslash=`\\ % \bslash makes a backslash (in tt fonts)
 \newcommand{\cn}[1]{\texttt{\bslash #1}}
@@ -117,6 +118,13 @@
     %----------------------------------------------------------------------------------------
 
     \tableofcontents % Prints the table of contents
+
+    \listoffigures
+
+    \listoftables
+
+    \listof{alisting}{List of algorithms}
+    \listof{clisting}{List of code snippets}
 
     \mainmatter
 

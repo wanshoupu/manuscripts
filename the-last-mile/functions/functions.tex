@@ -144,11 +144,11 @@ numbers occur: some advises `Beat all the odds to keep it no more than 2', some 
 saying that's too strick make it $<5$, still some other say $8$ as they claim that some Linux
 kernel functions has up to that number of parameters.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:allocate_resource},caption={A Linux kernel function
     allocating resources for the purpose of illustrating parameter size.},language=C]
     {functions/allocate_resource.c}
-\end{minipage}
+\end{clisting}
 
 For me, I've seen functions on both end of the spectrum: majority of functions have $0$, $1$, $2$,
 parameters and some extremely rare but real-world applications, functions with up to $8$
@@ -218,10 +218,10 @@ is shown in ~\autoref{lst:functree}.
     \end{center}
 \end{figure}
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:functree},caption={Illustrative function tree.}]
     {functions/functree.py}
-\end{minipage}
+\end{clisting}
 
 It's a common problem among beginners to stuff all the logic into a monolithic function.
 But it is a fairly subtle mistake for intermediate professionals to arbitrarily chop
@@ -356,7 +356,7 @@ That only makes it worse.
 The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
 how they are created to be reused.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:ValidNumber.java},
     caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
-\end{minipage}
+\end{clisting}

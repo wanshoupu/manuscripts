@@ -168,7 +168,7 @@ Then all the palindromic substrings are centered on one of the \code{char} in th
 string for sake of implementation.
 Algorithm outline is as follows, where $PS(i)$ denotes the LPS centered at \code{i}, and $LPS(i)$
 denotes length of it.
-\begin{clist}
+\begin{alisting}
     \caption{Algorithm for calculating the length of LPS based on Manacher's algorithm}
     \begin{enumerate}
         \item Initialize an array \code{lengths} of size $2 * n + 1$ that stores $LPL(i)$,
@@ -191,16 +191,16 @@ denotes length of it.
             palindrome centered on \code{j}.
         \end{enumerate}
     \end{enumerate}
-\end{clist}
+\end{alisting}
 
 \section{Implementations}\label{sec:implementation.longestPalindrome}
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:LongestPalindromeAugment.java},
     caption={Java implementation of longest
     palindrome substring Manacher's aglorithm with augmented string.}]
     {case-study/longest-palindrome/LongestPalindromeAugment.java}
-\end{minipage}
+\end{clisting}
 
 Published on the Internet are several implementations---
 A \java version by CS department of Princeton
@@ -234,22 +234,22 @@ index mapping between the original string and the `virtually augmented' string.
 ~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
 implementations in \python and \java respectively based on `virtual augmentation'.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:longest_palindromic_substring.py},
     caption={A \python implementation of ongest palindromic substring.}]
     {case-study/longest-palindrome/longest_palindromic_substring.py}
-\end{minipage}
+\end{clisting}
 
 ~\autoref{lst:LongestPalindrom.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.
 We think this way the code is easier to read and refactor.
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:LongestPalindrom.java},
     caption={A \java implementation of LPS Manacher's aglorithm.}]
     {case-study/longest-palindrome/LongestPalindrome.java}
-\end{minipage}
+\end{clisting}
 Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space).
 This is one of the most performing implementations known so far.
 

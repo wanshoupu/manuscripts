@@ -1,3 +1,5 @@
+*.loalisting
+*.loclisting
 *.DS_Store
 .idea
 *.pyc

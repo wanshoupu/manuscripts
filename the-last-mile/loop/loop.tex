@@ -145,43 +145,46 @@ rules:
 \end{enumerate}
 For book keeping purposes, all numbers are recorded in a list unless skipped.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:loop-use-continue},
     caption={Example usage of \code{continue} to simplify the logic in a loop}]
     {loop/use_of_continue.py}
-\end{minipage}
+\end{clisting}
 
 Refactoring a function with a loop that consists of intermediate variables into separate function
 often results in two simpler functions.
 Use of \code{return} in loop sometimes saves intermediate variables from being declared.
-\newline\begin{minipage}{\linewidth}
-            \lstinputlisting[label={lst:loop-use-continue},
-            caption={Refactoring the loop body into a separate function}]
-            {loop/refactor_conditional_in_loop.java}
-\end{minipage}
+\begin{clisting}
+    \lstinputlisting[label={lst:loop-use-continue},
+    caption={Refactoring the loop body into a separate function}]
+    {loop/refactor_conditional_in_loop.java}
+\end{clisting}
 
 
-% TODO settle down this presentation
+%TODO settle down this presentation
 %% side-by-side two columns
-%\noindent\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Using \code{if-else}.}]
-%             {loop/conditional_in_loop_no_continue.java}
-%\end{minipage}\hfill
-%\noindent\begin{minipage}[t]{.45\textwidth}
-%             \lstinputlisting[caption={Using \code{if..continue}.}]
-%             {loop/conditional_in_loop_continue.java}
-%\end{minipage}
-
+%\begin{clisting}
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Using \code{if-else}.}]
+%        {loop/conditional_in_loop_no_continue.java}
+%    \end{minipage}\hfill
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Using \code{if..continue}.}]
+%        {loop/conditional_in_loop_continue.java}
+%    \end{minipage}
+%\end{clisting}
 
 % side-by-side two columns
-\noindent\begin{minipage}[t]{.45\textwidth}
-             \lstinputlisting[caption={Unsimplified code}]
-             {loop/loop_cond_redundant_testing.java}
-\end{minipage}\hfill
-\noindent\begin{minipage}[t]{.45\textwidth}
-             \lstinputlisting[caption={Simplified code}]
-             {loop/loop_cond_repeated_block.java}
-\end{minipage}
+\begin{clisting}
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Unsimplified code}]
+        {loop/loop_cond_redundant_testing.java}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Simplified code}]
+        {loop/loop_cond_repeated_block.java}
+    \end{minipage}
+\end{clisting}
 But each has their own problem.
 The left column do redundant condition testing (test1), whereas the right column has repeated
 code (statement2).

@@ -39,8 +39,10 @@ to meaningfully decouple and manage complexities, striving for better code coher
 \section{Outline of the algorithm}\label{sec:spiral-matrix-Algorithm}
 
 Unless for some special cases and/or special form of questions,
-a general algorithm for the family of spiral matrix problems may be
-\begin{quote}
+a general algorithm for the family of spiral matrix problems may be as shown in
+~\autoref{alg:spiral-matrix}.
+\begin{alisting}
+    \caption{\label{alg:spiral-matrix}Generic algorithm for matrix spiralization.}
     \begin{enumerate}[label=\textbf{Step.\arabic*}]
         \label{enum:algorithm}
         \item\label{itm:straight-move} Go straight forward
@@ -49,7 +51,7 @@ a general algorithm for the family of spiral matrix problems may be
         (facing a wall or visited cell), make a right turn to visit the cell;
         \item\label{itm:goto-terminate} Repeat the above steps until the last cell is visited.
     \end{enumerate}
-\end{quote}
+\end{alisting}
 As one can see this algorithm is quite intuitive.
 It is also similar to the `wall-follower algorithms' used for solving maze
 exploration problems
@@ -108,11 +110,11 @@ If this is not handled properly, it will lead to incomplete result.
 Try with some examples, \textit{e.g.}, matrices of sizes $5 \times 1$ and $2\times 3$,
 respectively, and you will have some insights about this.
 
-\begin{minipage}{\textwidth}
+\begin{clisting}
     \lstinputlisting[label={lst:VerboseSpiralMatrix},
     caption={Spiral matrix \java~ implementation.}]
     {case-study/spiral-matrix/VerboseSpiralMatrix.py}
-\end{minipage}\newpage
+\end{clisting}\newpage
 
 Dealing with these complexities all at once is challenging and vulnerable to bugs.
 Even if one succeeds in implementing a working solution, it is doomed to be a mess lacking the
@@ -174,11 +176,11 @@ As warned in ~\autoref{complication-special-case}, be sure to handle the special
 otherwise certain elements may be missing in the result.
 So a recursive solution could be as shown in ~\autoref{lst:pseudo_recursive_spiral_order}.
 
-\begin{minipage}{\textwidth}
-            \lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
-            caption={A possible recursive implementation.}]
-            {case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
-\end{minipage}
+\begin{clisting}
+    \lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
+    caption={A possible recursive implementation.}]
+    {case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
+\end{clisting}
 \newpage
 Let us keep looking for other patterns.
 Particularly, let us look into how to complete a cycle consisting of `go
@@ -232,12 +234,12 @@ Specifically, the reasons for this choice here are
     \item better matches with the zero-based, close your loop more smoothly
 \end{enumerate}
 
-\begin{minipage}{\textwidth}
-            \lstinputlisting[label={lst:flatten_cycle},
-            caption={Flattening elements in one cycle using the symmetric indexing
-            ~\autoref{fig:cycle.division.symmetric}.}]
-            {case-study/spiral-matrix/spiral_order_recursive.py}
-\end{minipage}
+\begin{clisting}
+    \lstinputlisting[label={lst:flatten_cycle},
+    caption={Flattening elements in one cycle using the symmetric indexing
+    ~\autoref{fig:cycle.division.symmetric}.}]
+    {case-study/spiral-matrix/spiral_order_recursive.py}
+\end{clisting}
 
 %This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
 %code up a neat solution, it'll take a number of skills and effort.

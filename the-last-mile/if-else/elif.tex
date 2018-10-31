@@ -301,9 +301,11 @@ For `\code{a OR b}', if \code{a = TRUE}, then the final result of the expression
     The solid gray denotes evaluated nodes while the dashed blank denotes omitted.
     }
 \end{figure}
-Short-circuit evaluation mechanism (SCE) refers to the evaluation omission of
-operand(s) that are known not to affect the overall value insofar as control
-cuts short directly to the result of the operator, thus the name `short-circuit'.
+Short-circuit evaluation (SCE) is a boolean expressions evaluation mechanism
+that omits the evaluation of certain
+operands insofar as their evaluation does not to affect the overall value.
+When SCE applies, control cuts short directly to return the result of the operator,
+thus the name `short-circuit'.
 SCE may be applied on all nodes on the expression tree, wherever applicable.
 Shown in ~\autoref{fig:short-circuit-eval} is an example where SCE is applied twice.
 SCE is supported by many modern programming languages, including C, C++, \java,

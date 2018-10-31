@@ -3,7 +3,7 @@
 %% 7/14/18
 %%
 
-\chapter{Tighten Loops} \label{ch:loops}
+\chapter{Tighten Up the Loops} \label{ch:loops}
 
 All major programming languages feature one or more loop types as control flow and
 it is one of the most widely used building block.
@@ -20,7 +20,7 @@ marked difference in the quality of code.
 Therefore, I dedicate this chapter as a primer to the topic ``How to close your loop?''
 and I meant it literally.
 
-``Why!'' you say, ``What's the point for you to talk about loops as a language feature
+``Why!'' you say, ``What's the point for you to talk about loops as a type of control flow
 outside of the language context?''
 Yes, there are so much to say about loops in their generic sense.
 Similar to the structure in ~\fullref{ch:organizeYourIfElse}, I will share mostly my first-hand
@@ -155,9 +155,9 @@ Refactoring a function with a loop that consists of intermediate variables into 
 often results in two simpler functions.
 Use of \code{return} in loop sometimes saves intermediate variables from being declared.
 \newline\begin{minipage}{\linewidth}
-    \lstinputlisting[label={lst:loop-use-continue},
-    caption={Refactoring the loop body into a separate function}]
-    {loop/refactor_conditional_in_loop.java}
+            \lstinputlisting[label={lst:loop-use-continue},
+            caption={Refactoring the loop body into a separate function}]
+            {loop/refactor_conditional_in_loop.java}
 \end{minipage}
 
 
@@ -373,6 +373,7 @@ duplicate initialization code or post-loop processing logic into the loop.
 This often requires developers to look for more general mathematical forms of the
 algorithm used.
 
+\lstinputlisting[]{loop/word_breaker.py}
 
 
 \section{`One-more-cycle' coding technique}\label{subsec:one-more-loop}
@@ -417,6 +418,8 @@ nonlinear stepping.
 If you use \code{for}-loop for linear stepping,
 please try your best to afterthought part for increment or decrement purposes.
 
+\lstinputlisting[]{loop/array_jumper.java}
+
 In some other cases, loop state may even jumps back and forth.
 This is an extreme case of nonlinear stepping and is often used in solving math problems.
 Consider this coding question:
@@ -453,6 +456,4 @@ minimal loop customization, if needed at all.
 The ultimate goal is to minimize or eliminate duplicate code in and around loop.
 
 \lstinputlisting[]{loop/NumberOfPath.java}
-\lstinputlisting[]{loop/iterative_graph_traversal.java}
-\lstinputlisting[]{loop/array_jumper.java}
 \lstinputlisting[]{loop/WildcardStringMatching.java}

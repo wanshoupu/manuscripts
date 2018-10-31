@@ -1,8 +1,3 @@
-/**
- * The idea is to augment the original char array by inserting some
- * 'blank' char as dummy palindromic center and restricting palindromic
- * search to odd-length palindromes only
- */
 public static String longestPalindrome(String str){
     final int n = str.length() * 2 + 1;
     char[] aug = new char[n];

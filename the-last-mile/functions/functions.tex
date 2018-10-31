@@ -2,7 +2,7 @@
 %% Author: shoupu_wan
 %% 7/14/18
 %%
-\chapter{Make Functions Reusable}\label{ch:reusableFunctions}
+\chapter{Make Reusable Functions}\label{ch:reusableFunctions}
 
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
@@ -18,16 +18,16 @@ program is beyond anyone's capability.
 %Is that necessary?
 %Why are they the way they are?
 
-Fortunately, no one needs to understand that amount of details all at once.
-When one takes medicine, one does not need to study the chemical ingredients or the molecular
-structure of the pills.
-The label on the bottle provides pretty much all that is needed.
-This is an example of abstraction, a key trait of human knowledge.
-In the same way, abstraction and encapsulation is the key in software design-a fairly complex
-application is made up of a number of components.
-The whole process is recursive-the components used by an application
-may, in turn, be encapsulations of components at yet another level of abstraction.
-\@\autoref{fig:hierarchy-of-encap} illustrates the idea of recursive abstraction.
+Fortunately, no one needs to understand that amount of details all at once as the computation
+details have been wrapped into reusable modules in a hierarchical architecture.
+Just as one does not need a degree in biochemistry to take a medicine, developers at one
+level of the hierarchy does not need domain knowledge of the level below.
+This is the power of abstraction, a key trait of human being.
+Abstraction and encapsulation plays a key roll in software engineering.
+Abstraction and encapsulation is recursive.
+As illustrated in ~\autoref{fig:hierarchy-of-encap}, a fairly complex system
+is usually made up of a number of components and each component may be yet
+another complex system and so on.
 
 \begin{figure}[htb]
     \begin{center}
@@ -39,9 +39,9 @@ may, in turn, be encapsulations of components at yet another level of abstractio
 
 When we develop a piece of software, we seldom do it from ground up but utilizing existing,
 pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
-when one uses these pre-built modules, one doesn't need to know anything more than the
+when one uses these pre-built modules, one usually doesn't need to know more detail than the
 documentations of the API of the module.
-
+Among all, function design is the foundation of everything else, especially object-oriented design.
 In this chapter, we are to study how to write clean, reusable functions as the building blocks of
 larger pieces.
 

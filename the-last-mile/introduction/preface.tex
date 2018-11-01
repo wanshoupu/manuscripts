@@ -1,54 +1,68 @@
 \chapter{Preface} \label{ch:preface}
 \index{Preface@\emph{Preface}}
 
+%\section{About this book}\label{sec:aboutThisBook}
+
 When my doctoral research came to a complete stall after $6$ years of hard work, I was convinced
 that I had no future as an unachieving physicist.
 Digging into my old dreams, I was delighted to find that my passion for coding,
 even though dormant throughout the years, is still burning.
-Through a prolonged, self-taught learning, I incrementally acquired higher and higher proficiency
-in software engineering skills.
-From a mere passionate dilettante to an experienced professional it took me about a decade.
-I struggled for the past ten years to get to the bottom of everything that bothers me.
+
+Through prolonged, incremental, and self-directed learning, I accumulated software development
+skills, one at a time.
+It took me about a decade to grow from a mere passionate dilettante to an experienced professional.
+In the course, I read vast amount of books, articles, blog posts on software engineering topics
+such as design patterns and programming paradigms.
+I get my hands dirty practice implementing many of the famous algorithms and data structures.
+solving mind-bending problems I saw online or offline.
+I eventually test my learning in my work which is the touchstone of everything.
+
+
+But beyond all these which every ambitious software development practitioners would do,
+I have an insatiable passion for one more thing---I periodically reflect on my
+past code and review notes I took.
+Many of the problems that I worked on were revisited for four to five times over a period of
+several years.
+But each time I was able to gain new understandings regarding why my code worked or
+not worked.
+As a result my solution becomes shorter and cleaner over time.
+I attempt to reconcile new learning with what I already grasped.
+I draw analogies across seemingly different fields.
+I painstakingly dedicate quality time to contemplate on bugs I made, bugs I fixed,
+and bugs I strategically avoided;
+
+I would do anything to get to the bottom of everything that bothers me.
+I ask questions ``Why a particular implementation works or does not work?'';
+I try different solutions to solve the same problem and compare the pros and cons;
+I follow `guts feeling' and would not give in if `something in there' upsets me.
+
 This book is a summary of the struggles, the gains, the dark quests, and the `aha' moments
 over the years.
 
-
-%Furthermore, I have aggregated considerable comparative understandings between science and
-%engineering.
-%Upon these thoughts, I have long wondered if it is worthwhile to write up my personal
-%experience into a book to help those who are entrusted with the difficult task of engineering.
-
-%\section{About this book}\label{sec:aboutThisBook}
-
-I spent hours and hours of concentrated time to understand the mechanisms behind computer programs,
-feel the relationships among various technologies, and draw multidisciplinary analogies
-across seemingly different fields.
-
-I try to reconcile new learning with what I already grasped.
-Have you ever wondered why comparison-based sorting algorithms are unanimously bound by $O(N
-\log N)$?
-I managed to gain a personal, psychologically satisfying understanding through long time
-contemplations.
-Starting with specific sorting algorithms,
-I related sorting operations as pumping Shannon's information entropy out of the subject of sorting,
-just like pumping heat out of the room with AC\cite{Shannon-mathematical-1948}.
-From there further up, I track it all the way back to the field of statistical
-mechanics which was first developed by Ludwig Boltzmann in the 19th century\cite{landau:1980}.
-Finally I ended up with modeling the time complexity of sorting algorithms by the statistical
-entropy of an isolated system with $N$ particles.
-This result is both surprising and expected to me.
 
 My journey of learning and practicing in the field of computer sciences was materialized in
 thousands of pages of Evernotes, $40k$
 lines of code solving problems that I found online or offline, \textit{e.g.},
 \url{https://projecteuler.net}, \url{https://leetcode.com}, and $100k+$ lines of
 production code at top-tier tech companies.
-Many of the problems that I worked on were revisited for four to five times over a period of
-several years.
-But each time I was able to gain new understandings regarding why my code worked or
-not worked.
-As a result my solution becomes shorter and cleaner over time.
-I thought about sharing the stumbles, the struggles, the lessons, and the learning in a book.
+They comprises organic programming experiences, home-made software development techniques,
+and other observed patterns.
+They are based on years of personal immersion in the software industry and
+many of them are not talked about elsewhere.
+
+For example, have you ever wondered why comparison-based sorting algorithms are unanimously bound
+by $O(N \log N)$?
+I managed to gain a psychologically satisfying understanding through enduring contemplations.
+Starting with specific sorting algorithms,
+I related sorting operations as pumping Shannon's information entropy out of the subject of sorting,
+similar to pumping heat out of the room with AC\cite{Shannon-mathematical-1948}.
+From there further up, I track it back to the field of statistical
+mechanics, developed by Ludwig Boltzmann in the 19th century\cite{landau:1980}.
+Finally I settled my quest with modeling the time complexity of sorting algorithms by the
+statistical entropy of an isolated system with $N$ particles.
+By the way, this result is both surprising and expected to me.
+
+
 
 %\section{Who am I?}\label{sec:whoAmI}
 
@@ -63,6 +77,7 @@ I thought about sharing the stumbles, the struggles, the lessons, and the learni
 
 %\section{Why should you this book?}\label{sec:whyThisBook}
 
+I thought about sharing the stumbles, the struggles, the lessons, and the learning in a book.
 But I didn't take this seriously until fairly recently when
 I came across a website posting the research report by Forrester where
 it cites that the prolonged software engineering talent shortage has turned from lack-of-quantity
@@ -159,94 +174,44 @@ Reproducing the battles I fought and sharing the insights I gained is the sole f
 I hope readers would have the same reaction to many of the topics in this book
 as Jon Bentley put in `Programming Pearls'\cite{Bentley:1986:PP}, namely, ``This sure looks
 familiar'' followed with ``I've never seen this before.''
-
-Yes,
-this book is intended for professionals who have already had a solid command on computer science
-foundations, but they still find that applying them in kaleidoscopic coding situations
-remains challenging nonetheless.
-
-
+Yes, this book is intended for professionals who have already had a solid command of
+computer science but still find applying the software development best practices
+challenging nonetheless especially in a kaleidoscopic range of coding situations.
 It assumes readers have familiarity with the popular programming languages such as \python, \java,
 C++ \textit{etc.}.
-It is assumed that reader have a substantial understanding in basic algorithms, data structures,
-and operating systems as these are not the focus of this book, at least not systematically.
-Where needed, an algorithm may be explained in detail for the sake of implementation.
-%TODO
-
-
-This book is rather a summary of 10 years software engineering experience of the author.
-The author believes and have proved through personal experience the effectiveness of constant
-learning.
-Undeniably, a lot of activities help one improve on programming skills.
-Coding up a great deal of problems will get you familiar with various algorithms, a command of
-data structures, and brush up on your coding skills.
-However, an often ignored activity is to contemplate on algorithms and your implementations of them.
-From time to time, one need to look back on the works they did before and pause on
-anything that may catch one's eyes.
-Trying new things that ranges from mundane variable renaming to systematic code overhaul.
-
-But the beauty of this kind of activities lies in the gifts that come with practice.
-The more you explore, the more there is to discover.
-If you make this a habit, you will unearth many gems in the depth of your ability.
-You will be a perpetual generator of innovations, a powerhouse of self-sustained improvement.
-
-Below is just a list of things that I usually spend time for meditation:
-\begin{itemize}
-    \item Bugs made previously
-    \item Bugs fixed previously
-    \item Why a particular implementation works
-    \item Why a particular implementation does not work
-    \item Refactor redundant code
-    \item
-\end{itemize}
+It is also assumed that reader have a basic understanding in algorithm, data structure,
+and operating system.
 
 %\section{How to use this book?}\label{sec:howToUseThisBook?}
 
-\section{What this book is not about}\label{sec:thisBookIsNotAbout}
+\section{What this book is NOT about}\label{sec:thisBookIsNotAbout}
 
-Some disclaimers are due here.
+I think some disclaimers are appropriate.
+This book is \emph{not} a systematic programming primer,
+nor does it teach you a specific programming language.
 
-Firstly this book is \emph{not} a systematic programming primer.
-Rather than focusing on complete coverage of most programming aspects,
-it comprises of a scarce of organic programming experiences, home-made software
-development techniques, and other observed patterns that are based on years of personal immersion
-in the software industry and many of them are not talked about elsewhere.
+Also this book does not offer problem-solving strategies or
+quick-n-dirty programming `tips' designed for coding interviews.
+Technical interview emphasizes more on `getting the job done'.
+Many of the techniques presented in this book such as ~\fullref{ch:organizeYourIfElse} or
+~\fullref{ch:reusableFunctions} requires more time than allowed in an interview setting.
+Nevertheless, if absorbed into one's coding habit, the techniques in this book \emph{do} help
+with build up one's code sense and instinct which, in turn, helps with technical interviews
+in the long run.
 
-Also this book is not squarely focused on interview problem-solving skills.
-Problem-solving in a interview settings often emphasizes too much on `getting the job done'.
-In a limited time, one is expected to understand and analyze the requirement, brainstorming for
-possible solutions, design, algorithm picking and tailoring, data structure fitting, \textit{etc.}
-Getting the job done in such a setting is at most biased if used solely to identify the right
-candidate.
-
-It inevitably fails to evaluate candidate for the skill set truly needed at work
-such as code refactor and reuse.
-
-Instead, interview setting should be as close to real work environment as possible.
-
-Through an interview, we want to be sure that candidates can or have the potential to produce
-usable, reusable, and readable code for large scale production.
-
-The focus of this writing is to help beginning and intermediate developers to advance their
-coding skills to next level.
-The techniques discussed here are practical in production coding environment.
-But they are not necessarily helpful during interview settings.
-Therefore this book may be an overkill for interview prep.
-
-I am not proposing new rules or new principles.
-Many of the principles, programming patterns already exists.
-What I attempt to do here is to show you how to turn these principles to correct and elegant code.
-My ways are not to be accepted but to be felt and verified in your own practice.
-
-Other than that, this book does not teach you any specific programming language.
-It assumes readers have familiarity with the popular programming languages such as \python, \java,
-C++ \textit{etc.}.
-Neither does this book focus on algorithms or data structures, at least not systematically.
-Where needed, the workings of an algorithms are outlined for reader's convenience.
-That should be taken as the focus of the book.
+%The focus of this writing is to help beginning and intermediate developers to advance their
+%coding skills to next level.
+%The techniques discussed here are practical in production coding environment.
+%But they are not necessarily helpful during interview settings.
+%Therefore this book may be an overkill for interview prep.
 
 This book is not about recipe or cookbook for any specific framework or system.
 Rather, it's a general guideline for development with all frameworks and systems.
+
+Last but not least, I am not proposing new rules or new principles.
+Many of the principles, programming patterns already exists.
+What I attempt here is to show you how to turn these principles to correct and elegant code.
+
 
 Last but not least, this book is not just about technical interviews.
 Those who are preparing for technical interviews will benefit by reading this book.

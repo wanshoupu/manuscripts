@@ -1,120 +1,152 @@
 \chapter{Preface} \label{ch:preface}
 \index{Preface@\emph{Preface}}
 
-Years ago, when my research work came to a complete stall, I was convinced that I had no future
-as an unachieved physicist.
-Digging dreams of my youth time, I was delighted to find that I may be able to make a living if I
-put up a different mindset and switch track from physics research to computer programming.
-Through a prolonged, self-guided learning, I incrementally acquired higher and higher proficiency
+When my doctoral research came to a complete stall after $6$ years of hard work, I was convinced
+that I had no future as an unachieving physicist.
+Digging into my old dreams, I was delighted to find that my passion for coding,
+even though dormant throughout the years, is still burning.
+Through a prolonged, self-taught learning, I incrementally acquired higher and higher proficiency
 in software engineering skills.
-From a mere dilettante to an experienced professional it took me one decade.
-Today my understanding in various aspects of software development is on a
-commensurable standing with that of physics.
-Furthermore, I have aggregated considerable comparative understandings between science and
-engineering.
+From a mere passionate dilettante to an experienced professional it took me about a decade.
+I struggled for the past ten years to get to the bottom of everything that bothers me.
+This book is a summary of the struggles, the gains, the dark quests, and the `aha' moments
+over the years.
 
+
+%Furthermore, I have aggregated considerable comparative understandings between science and
+%engineering.
 %Upon these thoughts, I have long wondered if it is worthwhile to write up my personal
 %experience into a book to help those who are entrusted with the difficult task of engineering.
 
-\section{Who am I?}\label{sec:whoAmI}
+%\section{About this book}\label{sec:aboutThisBook}
 
-I'm a physics dropout who broke into software engineering field a decade ago.
-%Unlike other physics dropouts, I decently spent enough time to finish my PhD thesis.
-I didn't make ground-breaking discoveries in my research.
-I have no dazzling publications on Science, Nature, or Cells.
-Miraculously, I managed to close a page and flipped to the next.
+I spent hours and hours of concentrated time to understand the mechanisms behind computer programs,
+feel the relationships among various technologies, and draw multidisciplinary analogies
+across seemingly different fields.
 
-So that little research background doesn't lend me much credentials for what I~am doing here.
-However sharing my credentials is not my focus here here.
-Share my struggles is.
-As it came to pass, I am a self-taught software engineer and
-I struggled for the past ten years to get to the bottom of everything that bothers me, ever since
-I began to seriously consider computer programming as a career, the very first moment of my
-attempt to understand the basics of algorithms, data structures, \textit{etc.}.
-I spent hours and hours of focused time on comprehend the mechanisms, relationships, and analogies.
-I built new learning on top of what I already mastered.
-For instance, I managed to gain a personal, multi-dimensional understanding of why
-pairwise-comparison-based sorting algorithms are bound by $Nlog(N)$ time complexity through long
-time back-and-forth reflection.
-While on it, I pondered on the similarity between the time complexity of sorting algorithms and
-entropy of an $N$-particle isolated system.
-I tracked it to Shannon's information entropy\cite{Shannon-mathematical-1948}, and from there
-further up, all the way back to Boltzmann's development in statistical mechanics\cite{landau:1980}.
+I try to reconcile new learning with what I already grasped.
+Have you ever wondered why comparison-based sorting algorithms are unanimously bound by $O(N
+\log N)$?
+I managed to gain a personal, psychologically satisfying understanding through long time
+contemplations.
+Starting with specific sorting algorithms,
+I related sorting operations as pumping Shannon's information entropy out of the subject of sorting,
+just like pumping heat out of the room with AC\cite{Shannon-mathematical-1948}.
+From there further up, I track it all the way back to the field of statistical
+mechanics which was first developed by Ludwig Boltzmann in the 19th century\cite{landau:1980}.
+Finally I ended up with modeling the time complexity of sorting algorithms by the statistical
+entropy of an isolated system with $N$ particles.
+This result is both surprising and expected to me.
 
-My immersion in this field was materialized in thousands of pages of notes, $40k$
-lines of coding problems practices that I can find online\footnote{\textit{e.g.},
-\url{https://projecteuler.net}, \url{https://leetcode.com}} or offline, and $100k+$ lines of
-deployed production code at top-tier tech firms.
+My journey of learning and practicing in the field of computer sciences was materialized in
+thousands of pages of Evernotes, $40k$
+lines of code solving problems that I found online or offline, \textit{e.g.},
+\url{https://projecteuler.net}, \url{https://leetcode.com}, and $100k+$ lines of
+production code at top-tier tech companies.
 Many of the problems that I worked on were revisited for four to five times over a period of
-several years and each time I was able to gain new understandings regarding why my code worked or
-not worked and how to redo it in a cleaner way than before.
-I believe the stumbles, the struggles, the lessons, and the learning is worth sharing by a book.
-My learned experience shared here may not not eliminate bugs from your code.
-But they will help eliminate hiding places for potential bugs.
+several years.
+But each time I was able to gain new understandings regarding why my code worked or
+not worked.
+As a result my solution becomes shorter and cleaner over time.
+I thought about sharing the stumbles, the struggles, the lessons, and the learning in a book.
 
-\section{Why this book?}\label{sec:whyThisBook}
+%\section{Who am I?}\label{sec:whoAmI}
 
-I didn't take this seriously until fairly recently when
-I came to realize high-end software developers
-have remained rare a commodity through so many years of tech hypes.
-This anecdotal observation seems to be silently confirmed by repositories at
-Github\footnote{\url{github.com}}.
-Take a look at the source code of projects which are the bread and butter and are
-depended by millions such as Hadoop, Spark, Apache Common Libraries, \textit{etc}.
-Except the getters, setters and other boilerplate code, in any fairly dense implementation of
-class, a method, it is almost guaranteed to contain one or more of the numerous `smells' as listed
+%I'm a physics dropout who broke into software engineering field a decade ago.
+%Unlike other physics dropouts, I decently spent enough time to finish my PhD thesis.
+%I didn't make ground-breaking discoveries in my research.
+%I have no dazzling publications on Science, Nature, or Cells.
+%Miraculously, I managed to close a page and flipped to the next.
+
+%So that little research background doesn't lend me much credentials for what I ~am doing here.
+%However sharing my credentials is not my focus here here.
+
+%\section{Why should you this book?}\label{sec:whyThisBook}
+
+But I didn't take this seriously until fairly recently when
+I came across a website posting the research report by Forrester where
+it cites that the prolonged software engineering talent shortage has turned from lack-of-quantity
+to lack-of-quality \footnote{\url{https://go.forrester.com/research/predictions}}.
+Then I realized that the data given in this report seems corroborated by my
+observation.
+
+As I progressed toward more and more mature a developer and starting about $5$ years ago,
+I started to note that many other developers, colleagues of mine included,
+struggled with the same problems that I used to struggle with.
+I also realized that company-owned proprietary codebases that I happened to work with,
+as well as open source ones, such as on Github\footnote{\url{github.com}}, are filled with
+copy-n-pasted code that could have been gotten rid of with a shared library of static functions,
+intricate logic that could have been simplified and achieved by a one-liner,
+sneaky bugs due to contamination by variables escaped its due scope,
+monolithic, all-inclusive mammoth that could have been refactored into
+smaller, single-purposed functions, and so on.
+Many famous projects which we thought should be highly dependable are no exception.
+It is unbelievable that our daily life, our depended-upon transactions, relies on code that
+`smells'.
+Beside getters, setters and other boilerplate code, implementations of fairly dense algorithm,
+designs of interrelated classes and methods, are almost guaranteed to contain one or more of the
+numerous `smells' as listed
 in Martin Fowler's seminal book `Refactor'~\cite{Fowler1999}.
-
+In fact I seldom see succinct code as examples given in `Programming Pearls'
+and others of its sort\cite{Bentley:1986:PP}.
+Ugly code becomes the norm and beautiful code the exception.
 and convince yourself that many of these great project came with a great design but were
 implemented with mediocrity.
 
-You will see that they came with great designs but were only implemented with mediocrity.
-
-Personally, I've worked with graduates and post-graduates from top-tier schools.
+Personally, I've worked with graduates and post-graduates from top-tier schools
+during design reviews, code reviews, and technical interviews.
 They come with latest theories in computer sciences.
-Their resumes are full of buzz words and eye-catching GPA\@.
-But at the end of the day when it's time to code up ideas, the incompetence betrays them
-glaringly.
+Their resumes are full of buzz words.
+They have eye-catching GPA\@.
+They even spent a great deal of time with books on principles, patterns, guidance,
+and advice of software development.
+But at the end of the day when it's time to code up ideas, they clearly needed help with
+how to practice them in industry settings.
+These plain facts convey the crying signal that there is a gap between the domain of best practices
+and the domain how to practice the best practices.
 
-It is revealed in design reviews, code reviews, technical interviews in top-tier tech companies.
+%lack of supply of quality engineers.
+%As news has it, since software industry became an industry,
+%the gap between supply and demand for qualified professionals has been steadily growing.
+%This shortage nowadays takes a new form, \textit{e.g.}, a shortage of quality.
 
-These plain facts convey the crying signal that there is a lack of supply of quality engineers.
-As news has it, since software industry became an industry,
-the gap between supply and demand for qualified professionals has been steadily growing.
-This shortage nowadays takes a new form, \textit{e.g.}, a shortage of quality.
+%This means it is not a mere lack of ``engineers'', but the rarity of experienced engineers with a
+%deep understanding of software engineering.
+%This observation is simultaneously corroborated by authoritative research firms.
+%According to a 2018 research by Forrester\footnote{\url{https://go.forrester
+%.com/research/predictions}},
+%it cites that the prolonged software engineering talent shortage has turned from lack-of-quantity
+%to lack-of-quality and employers may end up paying $20\%$ above market for quality engineering
+%talent.
 
-This means it is not a mere lack of ``engineers'', but the rarity of experienced engineers with a
-deep understanding of software engineering.
-This observation is simultaneously corroborated by authoritative research firms.
-According to a 2018 research by Forrester\footnote{\url{https://go.forrester
-.com/research/predictions}},
-it cites that the prolonged software engineering talent shortage has turned from lack-of-quantity
-to lack-of-quality and employers may end up paying $20\%$ above market for quality engineering
-talent.
+Unfortunately, applying best practices in work usually takes years of hands-on experience.
+The complexity of real-world problems often shatters the anticipations of well-prepared developers.
+Developers usually realize the value of best practices by empirical evidence, understand the
+applicability of principles with worked out examples, discover ignorance through perplexities,
+and balance conflicting needs through negotiations with various `best practices'.
 
-Therefore, this is what happens in reality: a few top-notch minds sense a need and conceive a
-project to meet the need.
-They then come up with a blueprint, a high-level design.
-Then over a period of time, they managed to find talents of varying
-proficiency levels and give it a faulty, smelly implementation followed by years of bug
-fixing and maintenance.
-It's a pity to see a world-class design having to put up with a mediocre implementation followed
-by a painful, lengthy bug fixing trail.
+%Therefore, this is what happens in reality: a few top-notch minds sense a need and conceive a
+%project to meet the need.
+%They then come up with a blueprint, a high-level design.
+%Then over a period of time, they managed to find talents of varying
+%proficiency levels and give it a faulty, smelly implementation followed by years of bug
+%fixing and maintenance.
+%It's a pity to see a world-class design having to put up with a mediocre implementation followed
+%by a painful, lengthy bug fixing trail.
 
-I don't believe that implementation doesn't need top-notch software engineers to complete.
-It is exactly the shortage of quality talents that causes this do-or-die makeshift.
+%I don't believe that implementation doesn't need top-notch software engineers to complete.
+%It is exactly the shortage of quality talents that causes this do-or-die makeshift.
 
 %than willful choice-There are just not enough top-tier engineers working on the projects.
 
-Formal computer science education is a foundation but not the commodity of trade.
-The application of education to problem solving is a skill that is learned by experience and
-mentorship.
-It is the main focus of this book to spread the insights I gained on my way toward sharpening my
-software development and problem-solving skills.
+%Computer science education or any formal education are unable to infuse these into a developer.
+%The application of education to problem solving is a skill that is learned by experience and
+%mentorship.
 
-What I want to achieve through this book is that through repeated retrospection and
-self-criticism, one immerse in a learning mindset to achieve a progressively higher
-level of proficiency.
+So it is my intention that this book can scratch the surface of bridging the body of software
+development best practices with the operations of developers on the industrial battle field.
+Reproducing the battles I fought and sharing the insights I gained is the sole focus of this book.
+
 %Through this book, I hope to do my part in narrowing the gap between demand and supply of quality
 %talents.
 %I rightly believe readers share the aspiration as mine and are working hard to realize their
@@ -124,14 +156,23 @@ level of proficiency.
 
 \section{Who should read this book?} \label{sec:whoshouldread}
 
-To the readers, many chapters in this book may seem familiar at first sight.
-However it is the author's hope that the moment you start dive in the chapter, you may
-immediately find something novel and interesting.
+I hope readers would have the same reaction to many of the topics in this book
+as Jon Bentley put in `Programming Pearls'\cite{Bentley:1986:PP}, namely, ``This sure looks
+familiar'' followed with ``I've never seen this before.''
 
-This book is intended for professionals who already have a solid command on
-algorithms, data structures, operating systems, and programming languages of their choice.
-However applying these to a complex coding practice on a daily basis remains a challenging task.
-toward their software engineering career goal.
+Yes,
+this book is intended for professionals who have already had a solid command on computer science
+foundations, but they still find that applying them in kaleidoscopic coding situations
+remains challenging nonetheless.
+
+
+It assumes readers have familiarity with the popular programming languages such as \python, \java,
+C++ \textit{etc.}.
+It is assumed that reader have a substantial understanding in basic algorithms, data structures,
+and operating systems as these are not the focus of this book, at least not systematically.
+Where needed, an algorithm may be explained in detail for the sake of implementation.
+%TODO
+
 
 This book is rather a summary of 10 years software engineering experience of the author.
 The author believes and have proved through personal experience the effectiveness of constant

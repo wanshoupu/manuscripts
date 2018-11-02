@@ -64,9 +64,6 @@
 \author{Shoupu Wan} % Author
 
 \begin{document}
-    \frontmatter
-
-    \maketitle
     \definecolor{dkgreen}{rgb}{0,0.6,0}
     \definecolor{gray}{rgb}{0.5,0.5,0.5}
     \definecolor{mauve}{rgb}{0.58,0,0.82}
@@ -90,20 +87,18 @@
     upquote=true
     }
 
+    \frontmatter
 
-    \thispagestyle{empty} % Suppress page numbering
-    \ThisCenterWallPaper{1.12}{littlered.jpg} % Add the background image, the first argument is the scaling - adjust this as necessary so the image fits the entire page
+    % TITLE PAGE
+    \include{acknowledgement/ack}
 
-    \titlepage % Produces the title page.
 
     %----------------------------------------------------------------------------------------
     %	DEDICATION
     %----------------------------------------------------------------------------------------
     \newpage
     \thispagestyle{plain}
-    \par\vspace*{.35\textheight}{\centering Dedicated to my parents\par}
-
-    \include{acknowledgement/ack}
+    \par\vspace*{.35\textheight}{\centering Dedicated to my wife, Lily Yang.\par}
 
     %----------------------------------------------------------------------------------------
     %	CHAPTERS

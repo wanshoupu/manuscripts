@@ -30,9 +30,9 @@ Then off I started my odyssey to acquire software development skills, one at a t
 It took me a decade or so to grow from a mere passionate dilettante to an experienced professional.
 During this period, I read vast amount of books, articles, blog posts first on programming
 primer, tools, and frameworks, then on software engineering best practices, programming paradigms,
-design patterns, \texttt{etc.}
+design patterns, \textit{etc.}
 I implemented most of the fundamental algorithms and data structures.
-I attempted to solve as many coding problems as I can find.
+I cracked as many coding problems as I can find.
 And I put them to work, which I deem as the ultimate touchstone for my learning.
 
 
@@ -43,11 +43,11 @@ I periodically review my notes and reflect on my previous code just because
 `something in there' upsets me.
 Many of the problems that I worked on were revisited up to five or more times over the years.
 Each time I was able to gain new understandings and each time my solution shrinks.
+
+
 I try different solutions to solve the same problem again and again and
 I keep asking myself these questions ``Why does certain implementation work or not work?
 How can I improve it?''
-
-
 I painstakingly dedicate quality time to think over bugs I made, bugs I fixed,
 and bugs I strategically avoided.
 I contemplate on new insights and attempt to reconcile it with previous experience.
@@ -61,25 +61,19 @@ This formula looks annoyingly familiar to me as it has a hint of statistical phy
 I then learned that Shannon borrowed that concept and introduced `information
 entropy'\cite{Shannon-mathematical-1948}.
 But how are all these connected?
-Well, a shuffled array of $N$ entities encodes information and thus contains `entropy'.
+Well, a shuffled array of $N$ entities encodes information and thus contains `information entropy'.
 When sorted, the array is deprived of the encoded information and thus is void of entropy.
-Aha, \texttt{a} sorting algorithm to a shuffled array is like a
+So \texttt{a} sorting algorithm to a shuffled array is like a
 housekeeper to a messy room or an air conditioner to a summery building---in all three cases,
 entropy is pumped out of the system into the environment.
-This lights up in me.
-A closed $N$-particle system is frequently used in statistical mechanics as a toy model
-whose equilibrium entropy is $S = \log \Omega$, where $\Omega$ is the
-number of `accessible micro-states' of the system.
-This was first developed by Ludwig Boltzmann in the 19th century\cite{kittel1980thermal}.
-Now if we take the $N$-particle system as the array of $N$ entities and all its permutations as
-the `accessible microstates', then the formula suddenly makes sense\footnote{Time complexity
-of an optimal sorting algorithm is proportional to the number of comparison operations which is
-in turn proportional to its entropy
-\begin{align*}
-    S &= \log\left( N! \right) & \\
-    &= O(N\log N-N + \log N), & \text{// Stirling's formula}
-\end{align*}
-where the dominate term is $O(N\log N)$.}
+
+
+Aha, this lights up in me.
+The entropy of a thermodynamic system is logarithmically proportional to the
+number of `accessible microstates'.
+Now if we take the $N$-particle system as the $N$-entities array and the `accessible microstates'
+as all the permutations, then the formula suddenly makes sense
+(Refer to ~\fullref{ch:timeComplexityOfSorting} for a more detailed explanation on this).
 
 
 \section{Why this book?

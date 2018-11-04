@@ -4,39 +4,44 @@
 %\section{What this book is about?}\label{sec:aboutThisBook}
 
 This book comprises organic programming experiences, home-grown development techniques,
-and other observed patterns, many of which are not mentioned elsewhere.
+and other heartfelt coding patterns, many of which are rarely mentioned elsewhere.
 This book is also a summary of the struggles and the learning, the stumbles and the gains, the dark
 quests and the `aha' moments recorded in my software engineering journey over the years.
 
-\section{Who am I?}\label{sec:whoAmI}
+\section{About the author}\label{sec:whoAmI}
 
-When my doctoral research came to a complete stall after six hard-working years, I was convinced
-that I had no future as an unachieved physicist.
-Digging into my old dreams, I was delighted to find that my passion for coding,
+When my doctoral research came to a complete stall after six hard-working years, I
+digging my old dreams for something else.
+I was delighted to find that my passion for coding,
 dormant throughout the years, is still unquenchable.
+I quickly brushed it up and signed up for a semester's course in the neighboring CS Department, I
+got top-of-the-class score and won a strong recommendation letter from the professor along with
+two opportunities---summer internship at Microsoft and an offer letter to enroll in
+the CS Department as a graduate student.
+I accepted the internship but chose to stay in physics to complete my degree albeit taking two
+other courses offered by the CS Department.
 
 
-Through self-directed, incremental, and prolonged learning, I built up my software development
-skills, one at a time.
+Then off I started my odyssey to acquire software development skills, one at a time.
 It took me a decade or so to grow from a mere passionate dilettante to an experienced professional.
-During this period, I read vast amount of books, articles, blog posts on software engineering
-best practices, design patterns, programming paradigms, \texttt{etc.}
-I implemented a number of fundamental algorithms and data structures.
+During this period, I read vast amount of books, articles, blog posts first on programming
+primer, tools, and frameworks, then on software engineering best practices, programming paradigms,
+design patterns, \texttt{etc.}
+I implemented most of the fundamental algorithms and data structures.
 I attempted to solve as many coding problems as I can find.
-And I put them to work, which I deem as the ultimate touchstone for learning.
+And I put them to work, which I deem as the ultimate touchstone for my learning.
 
 
-But more important than these, which every ambitious software developer would do,
-I have an insatiable passion for one other thing---I periodically reflect on my
-past code and review my notes.
-I would do anything to get to the bottom of things that bothers me.
-I follow my `guts feeling'---I would not give in if `something in there' upsets me.
-
-
+But beyond these which every ambitious software developer would do,
+I have a secrete weapon---I have an insatiable passion to get to the bottom
+of anything that bothers me.
+I periodically review my notes and reflect on my previous code just because
+`something in there' upsets me.
 Many of the problems that I worked on were revisited up to five or more times over the years.
 Each time I was able to gain new understandings and each time my solution shrinks.
 I try different solutions to solve the same problem again and again and
-I keep asking myself ``Why my implementation works or does not work?''
+I keep asking myself these questions ``Why does certain implementation work or not work?
+How can I improve it?''
 
 
 I painstakingly dedicate quality time to think over bugs I made, bugs I fixed,
@@ -45,36 +50,49 @@ I contemplate on new insights and attempt to reconcile it with previous experien
 I draw analogies across seemingly different fields.
 
 
-Have you ever wondered why comparison-based sorting algorithms are unanimously bound
-by $O(N \log N)$?
-I managed to gain a psychologically satisfying understanding through enduring contemplations.
-Starting with \texttt{a} sorting algorithm,
-I related sorting operations as pumping Shannon's information entropy out of the subject of sorting,
-similar to pumping heat out of the room with AC\cite{Shannon-mathematical-1948}.
-From there further up, I track it back to the field of statistical
-mechanics, developed by Ludwig Boltzmann in the 19th century.
-Finally I settled my quest with modeling the sorting time complexity by the
-statistical entropy of an $N$-particle isolated system\cite{landau:1980}.
-By the way, this result is both surprising and expected to me.
-
-
-My journey of learning and practicing in the field of computer sciences was materialized in
-thousands of Evernote\textregistered pages, $40,000$
-lines of coding exercise on problems found online \footnote{\textit{e.g.},
-\url{projecteuler.net}, \url{leetcode.com}, \url{glassdoor.com}} or offline,
-and more than $100,000$ lines of production code for companies that I worked for.
+Have you wondered why comparison-based sorting algorithms are unanimously bound by $O(N \log N)$?
+This is one of the problems that contemplated and eventually got a psychologically
+appeasing understanding.
+This formula looks annoyingly familiar to me as it has a hint of statistical physics origin.
+I then learned that Shannon borrowed that concept and introduced `information
+entropy'\cite{Shannon-mathematical-1948}.
+But how are all these connected?
+Well, a shuffled array of $N$ entities encodes information and thus contains `entropy'.
+When sorted, the array is deprived of the encoded information and thus is void of entropy.
+Aha, \texttt{a} sorting algorithm to a shuffled array is like a
+housekeeper to a messy room or an air conditioner to a summery building---in all three cases,
+entropy is pumped out of the system into the environment.
+This lights up in me.
+A closed $N$-particle system is frequently used in statistical mechanics as a toy model
+whose equilibrium entropy is $S = \log \Omega$, where $\Omega$ is the
+number of `accessible micro-states' of the system.
+This was first developed by Ludwig Boltzmann in the 19th century\cite{kittel1980thermal}.
+Now if we take the $N$-particle system as the array of $N$ entities and all its permutations as
+the `accessible microstates', then the formula suddenly makes sense\footnote{Time complexity
+of an optimal sorting algorithm is proportional to the number of comparison operations which is
+in turn proportional to its entropy
+\begin{align*}
+    S &= \log\left( N! \right) & \\
+    &= O(N\log N-N + \log N), & \text{// Stirling's formula}
+\end{align*}
+where the dominate term is $O(N\log N)$.}
 
 
 \section{Why this book?
 Why now?}\label{sec:whyThisBook}
 
+My prolonged journey of learning and practice in the field of computer sciences was
+materialized in thousands of Evernote\textregistered pages, $40,000$
+lines of coding exercise on problems found online \footnote{\textit{e.g.},
+\url{projecteuler.net}, \url{leetcode.com}, \url{glassdoor.com}} or offline,
+and more than $100,000$ lines of production code for companies that I worked for.
+
 I thought about writing a book like this long ago.
-But I didn't take this seriously until fairly recently when
+But I didn't take it seriously until fairly recently when
 I came across a web article talking about the then latest research report by Forrester
 which claims that the prolonged shortage in software engineering talent has turned from
 `lack of quantity' to `lack of quality'
 \footnote{\url{https://go.forrester.com/research/predictions}}.
-
 Quoting the article directly\footnote{Titled as ``2018's Software Engineering Talent
 Shortage---It's quality, not just quantity'' on \url{https://hackernoon.com}}:
 \begin{quote}
@@ -82,6 +100,8 @@ Shortage---It's quality, not just quantity'' on \url{https://hackernoon.com}}:
     themselves `engineers', the shortage is one of quality---a lack of well-studied,
     experienced engineers with a formal and deep understanding of software engineering.''
 \end{quote}
+
+
 That report resonated with my own observation.
 Starting about five years ago,
 I started to note that many other developers, colleagues of mine included,
@@ -95,13 +115,16 @@ patterns, guidance, and advice.
 But by end of the day when these best practices are to be put to production code, they
 needed help.
 
-As a result, it is not surprising to me that codebases, proprietary and open source alike,
+
+So it does not surprise me that codebases, proprietary and open source alike,
 all that I have ever worked on without exception,
 are filled with copy-n-pasted code that could have been avoided with a little shared function,
 intricate logic that could have been simplified into a one-liner,
 sneaky bugs caused by an escaped variable from its due scope,
 mammoth solutions that could have been refactored into a group of lean, single-purposed functions,
 and so on.
+
+
 It is like glimpsing out of the window of the airplane in a flight, you see a duct-taped wing.
 Browsing through implementations of fairly dense algorithms, it is not rare to see
 the `smells' listed in Martin Fowler's seminal book `Refactor'~\cite{Fowler1999}.
@@ -110,6 +133,7 @@ actually run on smelly code.
 Nowadays ugly code has become the norm rather than exception.
 As a matter of fact, if I see any code close to those in `Programming
 Pearls' and its sort\cite{Bentley:1986:PP}, I would be surprised.
+
 
 These plain facts convey the crying signal that there is a gap between the domain of best practices
 and the domain how to practice the best practices.
@@ -132,6 +156,7 @@ best practices in software development?''
 By reproducing the battles I fought and sharing the insights I gained, I hope to
 bridge the body of software development best practices with developers
 on the industrial battle field.
+
 
 I hope readers would find this book to be somewhat expected as well somewhat unexpected.
 As Jon Bentley put it ``This sure looks familiar \ldots but I've never seen this

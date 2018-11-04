@@ -3,10 +3,14 @@
 
 %\section{What this book is about?}\label{sec:aboutThisBook}
 
-This book comprises organic programming experiences, home-grown development techniques,
+The main focus of this book is ``How to practice the best practices in software development?''
+It comprises organic programming experiences, home-grown development techniques,
 and other heartfelt coding patterns, many of which are rarely mentioned elsewhere.
 This book is also a summary of the struggles and the learning, the stumbles and the gains, the dark
 quests and the `aha' moments recorded in my software engineering journey over the years.
+By reproducing the battles I fought and sharing the insights I gained, I hope to
+bridge the body of software development best practices with developers
+on the industrial battle field.
 
 \section{About the author}\label{sec:whoAmI}
 
@@ -85,9 +89,9 @@ My prolonged journey of learning and practice in the field of computer sciences 
 materialized in thousands of Evernote\textregistered pages, $40,000$
 lines of coding exercise on problems found online \footnote{\textit{e.g.},
 \url{projecteuler.net}, \url{leetcode.com}, \url{glassdoor.com}} or offline,
-and more than $100,000$ lines of production code for companies that I worked for.
+and more than $100,000$ lines of production code.
 
-I thought about writing a book like this long ago.
+I thought about writing up my adventure and learning process long ago.
 But I didn't take it seriously until fairly recently when
 I came across a web article talking about the then latest research report by Forrester
 which claims that the prolonged shortage in software engineering talent has turned from
@@ -102,7 +106,7 @@ Shortage---It's quality, not just quantity'' on \url{https://hackernoon.com}}:
 \end{quote}
 
 
-That report resonated with my own observation.
+That report resonates with my own observation.
 Starting about five years ago,
 I started to note that many other developers, colleagues of mine included,
 struggled with the same problems that I used to struggle with.
@@ -116,52 +120,45 @@ But by end of the day when these best practices are to be put to production code
 needed help.
 
 
-So it does not surprise me that codebases, proprietary and open source alike,
-all that I have ever worked on without exception,
-are filled with copy-n-pasted code that could have been avoided with a little shared function,
+This explains why codebases, whether proprietary or open source, whether I worked with or I
+happened to come across,
+are full of copy-n-pasted code that could have been avoided with a little shared function,
 intricate logic that could have been simplified into a one-liner,
 sneaky bugs caused by an escaped variable from its due scope,
 mammoth solutions that could have been refactored into a group of lean, single-purposed functions,
 and so on.
+That feeling is like in a flight one glimpses duct-tape on the wing.
 
 
-It is like glimpsing out of the window of the airplane in a flight, you see a duct-taped wing.
-Browsing through implementations of fairly dense algorithms, it is not rare to see
+Browsing through fairly dense algorithmic implementations, it is not rare to see
 the `smells' listed in Martin Fowler's seminal book `Refactor'~\cite{Fowler1999}.
-This may be shocking or even outrageous to mention but true that your mission-critical transactions
+It is shocking or even outrageous to mention but true that your mission-critical transactions
 actually run on smelly code.
 Nowadays ugly code has become the norm rather than exception.
 As a matter of fact, if I see any code close to those in `Programming
 Pearls' and its sort\cite{Bentley:1986:PP}, I would be surprised.
 
 
-These plain facts convey the crying signal that there is a gap between the domain of best practices
-and the domain how to practice the best practices.
-Good news is that the body of `best practices' already exists.
+These plain facts convey a strong signal that there is \emph{a gap between best practices
+and practicing the best practices}.
+Good news is that the body of `best practices' has become established consensus.
 Bad news is that putting the `best practices' to work itself takes years of \emph{practice}.
-Let's face the reality---it is a daunting task to attaining the `best practices' in ones own code.
-The real-world problems is usually much more complex than the toy examples used in
+Let's face the reality---it is a daunting task to attain the `best practices' in ones own code.
+The real-world problems are usually much more complex than the toy examples used in
 `best practices' books.
 Unless they have first-hand empirical evidence,
-developers would not \emph{feel} the values and limits of many of the `best practices'.
-Unless they get their hands dirty with fitting multiple principles, design patterns and other
-`best practice' tips on a couple of real-world projects, they would not understand the trade-offs,
-the collaborations, and the conflicts among various `best practices'.
+developers will not \emph{feel} the values and limits of many of the `best practices';
+Unless they get their hands dirty with fitting principles, design patterns and other
+`best practices' into a couple of real-world projects, they would not understand the trade-offs,
+collaborations, and conflicts among various `best practices'.
 
 
-\section{Who should read this book?} \label{sec:whoshouldread}
+\section{Who can benefit the most from this book?} \label{sec:whoshouldread}
 
-Therefore, the sole focus for this book is to serve as an exemplary work on ``How to practice the
-best practices in software development?''
-By reproducing the battles I fought and sharing the insights I gained, I hope to
-bridge the body of software development best practices with developers
-on the industrial battle field.
-
-
-I hope readers would find this book to be somewhat expected as well somewhat unexpected.
-As Jon Bentley put it ``This sure looks familiar \ldots but I've never seen this
-before''\cite{Bentley:1986:PP}.
-This book is intended for professionals who have already had a solid command of
+Anyone who are striving for long-term investment of
+improving their programming skills would find this book inspiring and beneficial, including
+those who are preparing for technical interviews.
+With that said, this book is intended for professionals who have already had a solid command of
 computer science nonetheless who still find application of the software development best practices
 in kaleidoscopic coding situations challenging.
 It is assumed that readers are comfortable working with one or two of the popular programming
@@ -170,40 +167,36 @@ Basic knowledge in algorithm, data structure, and operating system would be a pl
 critical to comprehend the key ideas.
 
 
+I hope readers would find this book to be somewhat expected and somewhat unexpected.
+As Jon Bentley put it ``This sure looks familiar \ldots but I've never seen this
+before''\cite{Bentley:1986:PP}.
+
+
 \section{What this book is NOT about?}\label{sec:thisBookIsNotAbout}
 
-Some disclaimers are needed here to disperse untrue assumptions for this book.
+Some disclaimers are needed here to dismiss some untrue assumptions for this book.
 This book is \emph{not} a programming primer at least not systematically.
 Nor does it teach you a specific programming language.
 
 
-This book is not about recipe or cookbook for any specific framework or system.
+This book is not a recipe or cookbook for any specific framework or system.
 Rather, it's a general guideline for development with all frameworks and systems.
 
 
-Also this book does not offer problem-solving strategies or
-quick-n-dirty programming `tips' designed for coding interviews.
-Nevertheless, if absorbed into one's coding habit, the techniques in this book \emph{do} help
-with build up one's code sense and instinct which, in turn, helps with technical interviews
+Last but not least, this book is not a typical preparation material for coding interviews.
+This book does not offer problem-solving strategies or
+quick-n-dirty programming `tips' solely designed for coding interviews.
+Coding interviews emphasize primarily on `Get it done',
+whereas the focus of this book is to `Get it done right'.
+As such many of the techniques presented in this book such as ~\fullref{ch:organizeYourIfElse} or
+~\fullref{ch:reusableFunctions} requires more time than allowed in an interview setting.
+So think of using duct-tape acceptable in interview settings while not so at work for the long-run.
+Nevertheless, if the examples in this book exerts formative influence over one's coding habit and
+help build up one's code sense and instinct, it would be beneficial for technical interviews
 in the long run.
 
 
-Last but not least, this book is not a typical preparation material for coding interviews.
-Coding interview emphasizes primarily on `Get it done'.
-But the focus of this book is to `Get it done right'.
-Also many of the techniques presented in this book such as ~\fullref{ch:organizeYourIfElse} or
-~\fullref{ch:reusableFunctions} requires more time than allowed in an interview setting.
-So don't be bound by them in an interview setting.
-
-
-Nevertheless, anyone who are striving for long-term investment of
-improving their programming skills may find this book inspiring and beneficial, including
-those who are preparing for technical interviews.
-Coding is a life-long endeavor and it takes both creativity and perseverance.
-This book shall be taken as seed rather than food, inspiration rather than formula.
-
-
-\section{Acknowledgement}
+\section{Acknowledgement}\label{sec:acknowledgement}
 
 A lot of people to thank\ldots
 

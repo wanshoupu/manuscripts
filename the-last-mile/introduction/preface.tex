@@ -12,6 +12,14 @@ By reproducing the battles I fought and sharing the insights I gained, I hope to
 bridge the body of software development best practices with developers
 on the industrial battle field.
 
+
+Readers may find the topics in this book to be somewhat familiar and yet somewhat unexpected.
+Most topics presented in this book lie in the gray areas where they are regularly encountered
+by most developers and yet they are so elusive as to escape developers' best practices.
+As Jon Bentley put it ``This sure looks familiar \ldots but I've never seen this
+before''\cite{Bentley:1986:PP}.
+
+
 \section{About the author}\label{sec:whoAmI}
 
 When my doctoral research came to a complete stall after six hard-working years, I
@@ -69,11 +77,11 @@ entropy is pumped out of the system into the environment.
 
 
 Aha, this lights up in me.
-The entropy of a thermodynamic system is logarithmically proportional to the
-number of `accessible microstates'.
-Now if we take the $N$-particle system as the $N$-entities array and the `accessible microstates'
-as all the permutations, then the formula suddenly makes sense
-(Refer to ~\fullref{ch:timeComplexityOfSorting} for a more detailed explanation on this).
+The entropy of a thermodynamic system is logarithmic to the number of `accessible microstates'.
+Now if we take the $N$-entities array as the system, then all the permutations would be
+`accessible' states for the system.
+Then the formula, $O(N \log N)$, suddenly makes sense
+(Refer to ~\fullref{ch:timeComplexityOfSorting} for a detailed explanation).
 
 
 \section{Why this book?
@@ -135,8 +143,8 @@ Pearls' and its sort\cite{Bentley:1986:PP}, I would be surprised.
 
 These plain facts convey a strong signal that there is \emph{a gap between best practices
 and practicing the best practices}.
-Good news is that the body of `best practices' has become established consensus.
-Bad news is that putting the `best practices' to work itself takes years of \emph{practice}.
+The good news is we already have an established body of `best practices'.
+The bad news is that putting the `best practices' to work itself takes years of \emph{practice}.
 Let's face the reality---it is a daunting task to attain the `best practices' in ones own code.
 The real-world problems are usually much more complex than the toy examples used in
 `best practices' books.
@@ -150,20 +158,16 @@ collaborations, and conflicts among various `best practices'.
 \section{Who can benefit the most from this book?} \label{sec:whoshouldread}
 
 Anyone who are striving for long-term investment of
-improving their programming skills would find this book inspiring and beneficial, including
+improving their programming skills may find this book inspiring and beneficial, including
 those who are preparing for technical interviews.
-With that said, this book is intended for professionals who have already had a solid command of
-computer science nonetheless who still find application of the software development best practices
-in kaleidoscopic coding situations challenging.
+With that said, this book is intended for professionals who have had a basic understanding
+of computer science.
 It is assumed that readers are comfortable working with one or two of the popular programming
 languages such as \python, \java, C and/or C++.
 Basic knowledge in algorithm, data structure, and operating system would be a plus but is not
 critical to comprehend the key ideas.
-
-
-I hope readers would find this book to be somewhat expected and somewhat unexpected.
-As Jon Bentley put it ``This sure looks familiar \ldots but I've never seen this
-before''\cite{Bentley:1986:PP}.
+Nonetheless they still find it challenging to write succinct, readable, and maintainable code
+in kaleidoscopic coding situations.
 
 
 \section{What this book is NOT about?}\label{sec:thisBookIsNotAbout}

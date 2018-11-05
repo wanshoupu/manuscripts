@@ -59,6 +59,9 @@
 \newcommand{\python}{\code{Python}}
 \newcommand{\cpp}{\code{C++}}
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\mbox{\autoref*{#1}~}``\nameref*{#1}''}}
+
+\newcommand{\blankpage}{\newpage\thispagestyle{empty}\mbox{}\newpage}
+
 %\makeindex
 
 \title{The Last Mile of Programming} % Book title
@@ -93,14 +96,15 @@
     % TITLE PAGE
     \include{acknowledgement/ack}
 
+    \blankpage
 
     %----------------------------------------------------------------------------------------
     %	DEDICATION
     %----------------------------------------------------------------------------------------
     \newpage
-    \newpage
     \thispagestyle{plain}
     \par\vspace*{.35\textheight}{\centering Dedicated to my wife, Lily Yang.\par}
+    \blankpage
 
     %----------------------------------------------------------------------------------------
     %	CHAPTERS

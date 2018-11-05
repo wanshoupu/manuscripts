@@ -5,71 +5,76 @@
 
 \chapter{Organize Conditional Statements}\label{ch:organizeYourIfElse}
 
-Conditional is a control switching mechanism to alter code execution path,
-conditioned by boolean expressions.
-As a control flow, conditional is one of the fundamental building blocks
-of almost all programming languages.
-Undoubtedly, many references---textbooks, research articles, blog posts---have already covered this
-comprehensive discussions
-\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
-It may seem strange that I am spending a chapter on such a `well-known' topic here and now.
-But based on my years of working experience in several top-tier tech companies,
-haphazard suboptimal solutions with convoluted and lengthy logic make their way to
-production codebase and becomes the
-core for millions of businesses.
-The crooked design, the obscure the logic later pose as road-block and hazard on the way of
-code refactor and reuse.
-This shows that just because the topic is basic and `well-known' does not mean that folks can
-or will do it right.
+%Conditional is a control switching mechanism to alter code execution path,
+%conditioned by boolean expressions.
+%As a control flow, conditional is one of the fundamental building blocks
+%of almost all programming languages.
+%Undoubtedly, many references---textbooks, research articles, blog posts---have already covered this
+%comprehensive discussions
+%\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
+It may sound strange to you but I am going to talk about the `well-known'
+commonplace---conditional statements and conditional constructs.
+Supported by almost all programming languages, conditional construct is control
+flow for pivoting execution path based on the on-the-fly evaluation of a boolean expression.
+``Are you going to reinvent the pedestrian or what?'' you may be wondering.
+%Just because some topic is `well-known' does not mean that folks can or will do it right.
+Sure enough, as a universal building block, ``\code{if \ldots else}'' is in everyone's toolbox.
+But it is my observation that
+writing optimal conditional statements and succinct logic remains an ``advanced'' coding
+skill that remains a rare trait of top developers.
+As a result, `working' but convoluted logic makes it way to production codebase.
+% convoluted conditional
 %But it is seldom the case that the first version of implementation of any non-trivial logic, if
 %correct at all, is optimal.
-``As long as it works, why does one bother to simplify the logic?'', some may argue.
-My answer is ``Suboptimal, obscure logic fails the primary purpose of coding---communication.''
-Worse, it often results in redundant/duplicate code which lays outrageous burden on code
-maintenance.
-I'd like to quote Steve McConnell
-\begin{quote}
-    ``..the primary audience [of computer programs] is made up of humans,
-    not computers\cite{Mcconnell.2004}.''
-\end{quote}
+
+
+``As long as it works, who cares if the logic is the simplest?'' some may insist.
+Involved logic is like deposited grease, sooner or later it will get in
+your way.
+First, it fails the primary purpose of communication to other programmers
+Steve McConnell said ``..the primary audience [of computer programs] is made up of humans,
+not computers\cite{Mcconnell.2004}.''
 Martin Fowler put it even more straightforward
-\begin{quote}
-    ``Any fool can write code that a computer can understand.
-    Good programmers write code that humans can understand\cite{Fowler1999}.''
-\end{quote}
+``Any fool can write code that a computer can understand.
+Good programmers write code that humans can understand\cite{Fowler1999}.''
+Then it will later become the roadblock for code refactor and reuse.
+Worse than that, hazy conditional condition often results in redundant/duplicate code.
+Gradually your business will be derailed from fast iteration.
 
-Twisted code and intertwined logic
 
-I don't blame the author of twisted code and intertwined logic, which
-are often the victorious output of a fierce battle fought by gallant developers.
-They has all my respect.
-But I criticize anyone who intends half-cooked work for final product in defiance of the
-production standard.
-Unequivocally I advocate that developers finish the other half of the work
----polish the logic, simplify the conditional statements, craft production-quality solutions.
-Developers finish walking the last mile, solidify your otherwise hard-won victory.
-
-With simple techniques and due diligence, producing beautiful, succinct solution
-with initially unrefined code is possible.
-The rest of this chapter is dedicated to this.
+%I don't blame the author of twisted code and intertwined logic, which
+%are often the victorious output of a fierce battle fought by gallant developers.
+%They ought to have my respect.
+%But I criticize anyone who intends half-cooked work for final product in defiance of the
+%production standard.
+%Unequivocally I advocate that developers finish the other half of the work
+%---polish the logic, simplify the conditional statements, craft production-quality solutions.
+%Developers finish walking the last mile, solidify your otherwise hard-won victory.
+%
+In the rest of this chapter, you are going to live through processes to turn bloated conditionals
+into simple logic.
+Through plenty of examples, I am going to show you how to organize `case stacks' to produce
+beautiful, succinct solution simple techniques and due diligence.
 
 %Communicate clear, succinct code to colleagues and successors are much more efficient.
-The techniques are based on my years of software development experience.
+%The techniques are based on my years of software development experience.
 %of how to polish complicated logic involving conditionals into simple, beautiful, and succinct code.
-You will learn how to design conditional statements using \code{if}, \code{else
-if} (or \code{elif}), \code{else}, \textit{etc.},
-to produce effective, succinct logic.
-You will learn to minimize occurrences of redundancy condition checking in your code and reduce
-duplicate code overall.
-Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
-In doing so, I hope programmers would be inspired to strive for beautiful, succinct conditional
-statements.
-I believe the effort you spend in studying the basics of conditional programming
-will soon pay itself off.
+
+%You will learn how to design conditional statements using \code{if}, \code{else
+%if} (or \code{elif}), \code{else}, \textit{etc.},
+%to produce effective, succinct logic.
+%You will learn to minimize occurrences of redundancy condition checking in your code and reduce
+%duplicate code overall.
+%Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
+%In doing so, I hope programmers would be inspired to strive for beautiful, succinct conditional
+%statements.
+%I believe the effort you spend in studying the basics of conditional programming
+%will soon pay itself off.
 
 \section{Strive for simpler conditional expressions}\label{sec:logicEquivalences}
 
-A boolean variable or expression can evaluate to two possible values-\code{true} and \code{false}.
+A boolean variable or expression can be evaluated to two possible values---\code{true} or
+\code{false}.
 Depending on the evaluation result of a boolean value,
 a \code{if-else} test has two execution alternatives-the \code{if}-block or
 the \code{else}-block;

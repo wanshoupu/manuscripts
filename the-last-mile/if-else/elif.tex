@@ -176,6 +176,7 @@ without some mental twists.
 Nevertheless, it is a good starting point.
 First let us try to eliminate the nested conditional statements.
 
+
 \begin{table}[bth]
     \begin{center}
         \caption{Normal forms for conditions of execution of each statement.
@@ -201,12 +202,14 @@ that are built on top of one another like a staircase \footnote{In fact,
 we just came across a pattern regarding conditional programming and
 ~\autoref{sec:conditional-staircase} is going to tell you more.}.
 
+
 The resulting code is shown in ~\autoref{lst:simpleBranching}.
 As one can see, if we promote the nested conditional statement without the boolean expression
 flip, the resulting code would be seriously out of balance.
 Comparing with ~\autoref{lst:nestedBranching} the conditional statements are now streamlined and
 easier to understand.
 But still it contains duplicate code as both \code{statement2} and \code{statement3} are repeated.
+
 
 Let us resist the temptation of settling and get rid of the `seemingly benign' duplicate code.
 So let us do a back-of-envelop calculation to
@@ -215,6 +218,7 @@ and \code{statement3}, respectively.
 As shown in ~\autoref{tbl:breakdown-of-conditions},
 it is clear that the key to simplify the logic lies in the conditions for the
 execution of \code{statement2}.
+
 
 Now it is time to do some Boolean algebra.
 Let $c$ be the condition for \code{statement2} to be executed and
@@ -240,6 +244,7 @@ With this hard-earned wit, it is now straightforward to implement an even simple
 ~\autoref{lst:final-simplified-conditional-statement}.
 This completes our first logic simplification process.
 
+
 Another way to achieve the same goal is to use \emph{truth tables}.
 Let us see how it works.
 \begin{table}[h]
@@ -250,12 +255,11 @@ Let us see how it works.
             \hline
             \code{test1} & \code{test2} & true expr \& execution\\
             \hline
-            \code{false} & \code{false} & \code{!test1} $\rightarrow$ \code{statement2} \\
-            \code{false} & \code{true} & \code{!test1} $\rightarrow$ \code{statement2} \\
-            \code{true} & \code{false} & \code{test1 \&\& !test2}
-            $\rightarrow$ \code{statement2} \\
-            & & \code{test1=true} $\rightarrow$ \code{statement3} \\
-            \code{true} & \code{true} & \code{test1 \&\& test2} $\rightarrow$
+            F & F & \code{!test1} $\rightarrow$ \code{statement2} \\
+            F & T & \code{!test1} $\rightarrow$ \code{statement2} \\
+            T & F & \code{test1 \&\& !test2} $\rightarrow$ \code{statement2} \\
+            & & \code{test1} $\rightarrow$ \code{statement3} \\
+            T & T & \code{test1 \&\& test2} $\rightarrow$
             \code{statement1} \\
             & & \code{test1} $\rightarrow$ \code{statement3} \\
             \hline
@@ -279,19 +283,20 @@ Summarizing the table entries, we arrive at the following conclusions
 With all the mental twists untied, implementation of something like
 ~\autoref{lst:final-simplified-conditional-statement} naturally follows.
 
+
 Thus far we have presented two processes for logic simplification.
-One of them en routes on the necessary and sufficient conditions for the execution of certain
+One of them takes route of SNC for the execution of certain
 statements and use that to simplify the conditional expressions.
-The other lists all the possible branches in a true table and looks for simple ways to combine
-them into as few conditional expressions as possible.
-In practice, you are encouraged to try both and form an intuition for each process.
-You will find each of them has an edge for certain circumstances.
+The other starts by listing all the possible branches in a true table and looks for ways to
+combine them into as few conditional expressions as possible.
+In practice, you may try both.
+Once you form an intuition, you will find the edge of each for certain circumstances.
 
-To verify your understanding of the material, in
-~\autoref{lst:exercise-original-conditional-statement} is presented an exercise.
-Please work it out with one of the two methods above and my simplified solution is provided in
-~\autoref{lst:exercise-simplified-conditional-statement} for your information.
 
+To verify your understanding of the material,
+~\autoref{lst:exercise-original-conditional-statement} is reserved as an exercise.
+Please work it out with one or both of the two methods above and get the simplified solution as
+that in ~\autoref{lst:exercise-simplified-conditional-statement}.
 \begin{clisting}
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:exercise-original-conditional-statement},
@@ -305,48 +310,52 @@ Please work it out with one of the two methods above and my simplified solution 
     \end{minipage}
 \end{clisting}
 
-\section{Short-circuit evaluation}
-\label{sec:short-circuit-eval}
 
-Certain binary logical operators have the property that when one
-of the operands assume certain value, the final result would be determined regardless of the
-value assumed by the other operand.
-For `\code{a AND b}', if \code{a = FALSE}, then the final result of the expression will be
-\code{FALSE}, no matter what value \code{b} assumes.
-For `\code{a OR b}', if \code{a = TRUE}, then the final result of the expression will be
-\code{TRUE}, regardless of the value of \code{b}.
+\section{Short-circuit evaluation}\label{sec:short-circuit-eval}
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.7\textwidth]{if-else/short-circuit.jpg}
-    \caption{\label{fig:short-circuit-eval} The short-circuit evaluation of the expression
+    \caption{\label{fig:short-circuit-eval}  Short-circuit evaluation of the expression tree for
     `\code{!(a || foo) && (bar || baz)}' when \code{a = true}.
-    The solid gray denotes evaluated nodes while the dashed blank denotes omitted.
+    Solid gray nodes are evaluated whereas dashed blank ones omitted.
     }
 \end{figure}
-Short-circuit evaluation (SCE) is a boolean expressions evaluation mechanism
-that omits the evaluation of certain
-operands insofar as their evaluation does not to affect the overall value.
-When SCE applies, control cuts short directly to return the result of the operator,
+Some binary logical operators, like \code{AND} and \code{OR}, have an unusual property---when
+one operand assumes certain value, the final value would be deterministically fixed
+regardless of the value of the other operand.
+For example, if \code{a = FALSE}, then the expression `\code{a AND b}' would deterministically
+evaluates to \code{FALSE}, no matter what value \code{b} assumes.
+Similarly, if \code{a = TRUE}, the expression `\code{a OR b}' evaluates to
+\code{TRUE} regardless.
+
+Taking advantage of this, certain programming languages introduce
+a boolean expression evaluation mechanism---namely, when the value of an expression
+(or subexpressions) can be unambiguously determined, it will omit the evaluation of the
+remaining part and cut short to the return value.
+This is called short-circuit evaluation (SCE).
+When this happens, control cuts short and returns from the expression,
 thus the name `short-circuit'.
-SCE may be applied on all nodes on the expression tree, wherever applicable.
+Note that SCE may be applied as many times as applicable during the evaluation of an expression.
+%insofar as their evaluation does not to affect the overall value.
 Shown in ~\autoref{fig:short-circuit-eval} is an example where SCE is applied twice.
 SCE is supported by many modern programming languages, including C, C++, \java,
 \python, and others.
 
-When an operand has `side-effects' besides yielding the boolean value
-demanded by the expression it belongs to, SCE brings subtle and interesting behaviors for better
-or for worse.
-Here `side-effects' refer to a diverse range of effects
-that usually survive the scope of the expression the operand belongs to.
-They can be state changes such as
-modified variables, updated database, forms posted to websites, \textit{etc.}
-Or they can be irrevocable action, \textit{e.g.}, I/O accesses, or simply elapsed time.
 
-Because of the diverse side-effects, inadvertent usage may results in unexpected results.
+SCE becomes interesting and subtle when an operand has `side-effects'
+besides yielding the boolean value demanded by the expression---
+these `side-effects' would be \emph{no more} with the omission of the corresponding evaluation,
+for better or for worse.
+Here `side-effects' may refer to a diverse range of changes
+that usually survive the scope of the expression---
+modified variables, updated database, forms posted to websites,
+or resource allocation such as \code{malloc}, page writes, disk IO, or simply elapsing time.
+Because of the diversity and complexity of side-effects, inadvertent usage can easily result in
+unexpected results.
 Inexperienced or unwary developers may be caught by surprise.
-But on the other hand, SCE is the pivotal technique for constructing elegant logic.
 
+But on the other hand, SCE may be a tool for constructing elegant logic.
 Consider the following problem:
 \begin{quote}
     ``Implement a method, \code{next}, to fetch the next item from a source
@@ -356,7 +365,7 @@ Consider the following problem:
     from the source, if any, into \code{cache}.
     Additionally, \code{procure()} returns \code{true}, if successful and false otherwise.''
 \end{quote}
-This is an extract from a class design task.
+This is an extract from a class design task that I worked on.
 Presumably, the algorithm to solve this problem can be as ~\autoref{alg:fetch-element-into-cache}.
 \begin{alisting}
     \caption{\label{alg:fetch-element-into-cache}}
@@ -365,29 +374,28 @@ Presumably, the algorithm to solve this problem can be as ~\autoref{alg:fetch-el
         \begin{enumerate}
             \item Invoke \code{procure} to populate \code{cache}
             \item If attempt is unsuccessful
-            \begin{enumerate}
+            \begin{enumerate}[label={}]
                 \item throw ``No element is left'' exception
             \end{enumerate}
-            \item ENDIF
+            \item end if
         \end{enumerate}
-        \item ENDIF
-        \item Get the item from and clear the \code{cache}
-        \item Return the item
+        \item end if
+        \item Return the item from the \code{cache} and clear it
     \end{enumerate}
 \end{alisting}
 
-Let's see how to implement the algorithm in the absence of SCE mechanism.
-\lstinputlisting[caption={Implementation of \code{next} in the absence of SCE mechanism},
-label={lst:next-without-sce}]
-{if-else/getNext.java}
+
+Let us first see how to implement the algorithm in the \emph{absence} of SCE mechanism.
+\lstinputlisting{if-else/getNext.java}
 That is not bad, right?
 The code seems pretty simple by itself.
 But now that \java ~ supports SCE, so one can readily implement the following
-\lstinputlisting[caption={Implementation of \code{next} method taking advantage of SCE in\java.},
-label={lst:next-sce}]
-{if-else/getNext_shortCircuit.java}
-The logic is much cleaner, dwarfing the code in ~\autoref{lst:next-without-sce}.
-Here is how ~\autoref{lst:next-sce} works.
+\lstinputlisting{if-else/getNext_shortCircuit.java}
+The logic is much cleaner, dwarfing the previous version without SCE\@.
+How does the code work?
+(Can you try to figure out that before reading on?)
+
+
 When \code{cache} is full, \code{procure} will \emph{not} be invoked, by virtue of SCE
 mechanism, as the conditional expression unequivocally evaluates to \code{false}.
 When \code{cache} is empty, the evaluation process continues with the evaluation of
@@ -396,46 +404,50 @@ overall value of the conditional expression.
 
 
 Through this example, we learn the important aspects for SCE programming.
-First of all, order of operands matters, \textit{e.i.}, \code{a && b} is not always equivalent to
+First of all, operator precedences and order of operands matters, \textit{e.i.}, \code{a && b} is
+not always equivalent to
 \code{b && a}, especially if the evaluation of one or both of them have side effects.
-Secondly, if one seeks to avoid unnecessary operations conditionally using SCE mechanism,
-one should seek to wrap those operations in easily usable functions
+Secondly, if one seeks to consciously avoid a group of operations using SCE
+mechanism based on certain condition,
+one should wrap those operations in easily usable functions
 with a well-defined return value of boolean type (or boolean-equivalent types).
-To that end, one needs to consciously modularize one's design, creating reusable, meaningful
-subroutines with single-responsibility.
-The `\code{procure}' function in the above problem is a good example.
-Last but not least, one needs to pay attention to idempotence and mutability, among
-other characteristics, of functions.
+To that end, one needs to strive for reusable, single-purposed
+subroutines and modular design in general.
+The `\code{procure}' function in the above problem is such an example that is compliant to the
+single responsibility principle (SRP).
+Last but not least, one needs to pay attention to function idempotence and mutability, among
+other characteristics.
 We will talk more about function design in ~\fullref{ch:reusableFunctions} and
 idempotence and mutability in ~\fullref{ch:ood}.
 
 
-\section{conditional staircase}\label{sec:conditional-staircase}
+\section{Conditional Staircases}\label{sec:conditional-staircase}
 
 Hopefully the sequence of consecutive conditional statements as shown in
 ~\autoref{lst:simpleBranching} is not unfamiliar to reader.
-It begins with \code{if} clause, followed by zero, one, or more of
-\code{else if} blocks (\code{elif} for \python),
+It begins with a \code{if}-conditional, followed by zero, one, or more of
+\code{else if} conditional blocks (\code{elif} for \python),
 and optionally concludes with an \code{else} block.
-In fact I see this again and again from proprietary repositories to open source codebase.
-For the sake of argument, we refer to such a construct as `conditional staircase'.
-conditional staircase is an important pattern for coding.
+This train of conditional statements is an important pattern for coding and it is present
+everywhere even in programing primer books.
+However it was not formally discussed as a conditional construct.
+Little is mentioned regarding this patterns in popular programming references.
+Developers experience this little programming gem by stumbling upon it haphazardly.
+To promote best practices around it, I am going to cover this here in some detail.
+
+
+For the sake of argument, we refer to such a construct as `conditional staircase', as it
+resembles to a stairway with a set of steps on top of one another.
 In combination with loop constructs or used within recursive functions,
 conditional staircase is an elegant programming pattern for implementing complicated logic.
 You can see its applications throughout this book.
 Please refer to examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, and the chapters in
 ~\fullref{prt:caseStudies} for more discussion.
 
-Unfortunately, little is mentioned about this patterns in popular programming references.
-Even many experienced developers stumble upon this little programming gem haphazardly,
-not to mention mastering the best practice of it systematically.
-To promote best practices around it, I hope to give a fair coverage to some of
-the important aspects of conditional staircase.
-
 
 When faced with multi-branch switching, many developers are not aware of any
 programming pattern on this.
-So some of unexperienced developers end up with nested \code{if..else} statements such as the
+So some of inexperienced developers end up with nested \code{if..else} statements such as the
 example given at the beginning of this chapter ~\autoref{lst:nestedBranching}.
 As the number of switching branches grows, more and more nesting level are needed, and the
 indentation grows deeper and deeper.
@@ -445,6 +457,7 @@ conditional staircase as ~\autoref{lst:simpleBranching}.
 For some special cases, \code{switch}-statement may be used equally well, if supported by the
 programming language.
 For simplicity, we limit our discussion to \code{if..else}-statement here.
+
 
 The execution model of a conditional staircase is like walking up a staircase---the program
 successively evaluates the conditional expression one at a time and builds up the cases.
@@ -457,6 +470,7 @@ Note that in the presence of \code{return} and \code{break},
 the conditional staircase may be simplified with the removal of the \code{else} keyword.
 For examples, take a look at ~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
 and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion}.
+
 
 First property of a conditional staircase is the strict order of conditional statements which cannot be
 altered once completed.

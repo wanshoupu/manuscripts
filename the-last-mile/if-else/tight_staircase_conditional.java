@@ -1,15 +1,17 @@
 ...
-List<Animal> collection = ...
+List<Animal> list = ...
 Animal animal = null;
 if (sound == null)
-    return new DumbAnimal();
-else if (soundsLikeNeigh(sound))
+    return new MuteAnimal();
+else if (soundsTrumpet(sound))
+    animal = new Elephant();
+else if (soundsNeigh(sound))
     animal = new Horse();
-else if (soundsLikeHiss(sound))
+else if (soundsHiss(sound))
     animal = new Snake();
-else if (soundsLikeBuzz(sound))
+else if (soundsBuzz(sound))
     animal = new Bee();
 else
-    animal = new UnknownAnimal();
-collection.add(animal);
+    animal = new Mystery();
+list.add(animal);
 ...

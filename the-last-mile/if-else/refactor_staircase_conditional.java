@@ -1,20 +1,21 @@
     ...
-    List<Animal> collection = ...
-    collection.add(constructAnimal(sound));
+    List<Animal> list = ...
+    list.add(guess(sound));
     ...
 }
 
-private Animal constructAnimal(sound) {
+Animal guess(sound) {
     if (sound == null)
-        return new SilentAnimal();
-    if (soundsLikeTrumpet(sound))
+        return new MuteAnimal();
+    if (soundsTrumpet(sound))
         return new Elephant();
-    if (soundsLikeNeigh(sound))
-        return new Horse();
-    amplifier = new Amplifier();
-    if (soundsLikeHiss(amplifier.apply(sound)))
+    ...
+    amp = new Amplifier();
+    if (soundsHiss(
+      amp.apply(sound)))
         return new Snake();
-    if (soundsLikeBuzz(amplifier.apply(sound)))
+    if (soundsBuzz(
+      amp.apply(sound)))
         return new Bee();
-    return new UnknownAnimal();
+    return new Mystery();
 }

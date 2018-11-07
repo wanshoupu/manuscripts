@@ -518,7 +518,7 @@ one's staircase.
 For example consider this problem ``Based on a given \code{sound}, construct an animal and add it
 to the \code{collection}.''
 The initial code snippet is as follows
-\lstinputlisting{if-else/tight_staircase_conditional.java}
+\lstinputlisting[language=Java,alsolanguage=Java,]{if-else/tight_staircase_conditional.java}
 Suppose that one needs the aid of a sound amplifier
 in order to precisely distinguish the sounds of a snake and a bee, the current code would not
 permit one to create a sound amplifier in the middle of the staircase.
@@ -530,18 +530,16 @@ Or one can resort to a helper function to wrap away the amplification logic
 
 
 \begin{clisting}
-    \begin{minipage}[t]{.45\textwidth}
-        \lstinputlisting[caption={Refactor SC to another function},
-        label={lst:refactor_staircase_conditional},
-        firstline=1,lastline=4]
-        {if-else/refactor_staircase_conditional.java}
-    \end{minipage}
-    \hspace{1mm}
-    \begin{minipage}[t]{.45\textwidth}
-        \lstinputlisting[caption={Use a helper function in SC},
-        label={lst:modified_tight_staircase_conditional},
-        firstline=6,lastline=6]
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Use a helper function in SC},language=Java,
+        alsolanguage=Java,label={lst:modified_tight_staircase_conditional},breaklines=false]
         {if-else/modified_tight_staircase_conditional.java}
+    \end{minipage}
+    \hspace{4mm}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Refactor SC to another function},language=Java,
+        alsolanguage=Java,label={lst:refactor_staircase_conditional},breaklines=false]
+        {if-else/refactor_staircase_conditional.java}
     \end{minipage}
 \end{clisting}
 

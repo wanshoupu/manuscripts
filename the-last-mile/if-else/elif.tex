@@ -429,13 +429,13 @@ A sequence of three or more tightly coupled conditional statements as shown in
 Many times, it begins with an \code{if}-conditional, optionally followed by one or more
 \code{else if} (or \code{elif}) blocks, and optionally ends with an \code{else} block.
 Occasionally it may simply be a series of \code{if}-conditional.
-We refer to such a train of conditional statements as \emph{staircase conditional} for its
-resemblance to a flight of stairs built on one another.
-
-Regardless of the form, the distinguishing characteristics of staircase conditionals are
-the `tight coupling' and the `sequential order' among the conditional statements.
+Regardless of the form, the distinguishing characteristics are
+the `tight coupling' and `sequential order' among the conditional statements.
+Similar structures even appears in programing primer books.
+We refer to such a train of conditional statements as `\emph{staircase conditional}', or simply
+`\emph{staircase}' or \emph{SC} in resemblance to a flight of stairs built on one another.
 ~\autoref{lst:staircaseCondJava}, ~\autoref{lst:staircaseCondPython},
-and ~\autoref{lst:staircaseCondReturn} are some examples of staircase conditional.
+and ~\autoref{lst:staircaseCondReturn} are examples of staircase conditional.
 \begin{clisting}
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:staircaseCondJava},
@@ -449,7 +449,7 @@ and ~\autoref{lst:staircaseCondReturn} are some examples of staircase conditiona
     \end{minipage}\hfill
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:staircaseCondReturn},
-        caption={A SC with \code{return}}]
+        caption={SC with \code{return}}]
         {if-else/staircase_conditional_return.py}
     \end{minipage}
 \end{clisting}
@@ -459,14 +459,6 @@ and ~\autoref{lst:staircaseCondReturn} are some examples of staircase conditiona
 %the block, or \code{break} and \code{continue} statements if used in a loop construct
 %(conditional statement in loop will be discussed later in this chapter and in ~\autoref{ch:loops})
 
-Staircase conditionals are ubiquitous even in programing primer books.
-In combination with loop constructs or recursive functions,
-staircase conditional is an elegant programming pattern for algorithmic implementations.
-Though it was not formally regarded as a major pattern in popular programming references.
-Developers often experience it first by haphazardly stumbling upon it
-instead of consciously following a pattern.
-In this book, I am going to call it as `pattern' for practical reasons.
-
 
 Staircase conditional is offered as an alternative to nested conditionals
 when facing multi-branch switching.
@@ -474,44 +466,103 @@ As ~\autoref{lst:nestedBranching} shows at the beginning of this chapter,
 nested conditionals may be used for multi-branch switching.
 However as the number of branches increases, nesting level as well as indentation level goes deeper.
 The logic becomes unwieldy before long.
-With compact logic and simple layout, staircase conditional is a much better alternative, as
-~\autoref{lst:simpleBranching} shows.
+As ~\autoref{lst:simpleBranching} shows, staircase
+conditional offers compact logic and simple layout for multi-branch switching.
 
-You will see its applications again and again in this book---with
+
+Though staircase conditionals are ubiquitous in programming,
+developers' first experience with it often begins with haphazard stumbling upon,
+because seldom any systematic discussion exists to clarify the best practices surrounding it.
+Used in conjunction with loops or recursive functions,
+staircase conditional is an important programming construct for algorithmic implementations,
+though it was not formally regarded as one in popular programming references.
+For practical reasons, I am going to explain the use patterns of staircase conditional in this
+section.
+But you will see its applications throughout this book---with
 examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, and the chapters in
 ~\fullref{prt:caseStudies}.
-I am going to cover staircase conditional in more detail in this section,
-to clarify the best practices about it.
 
+Early we pointed out characteristics of a staircase conditional.
+Let us elaborate on them.
 
-%TODO
+\subsection{Execution model}
 
-The execution of a staircase conditional is like walking up a staircase---the program
-successively evaluates the conditional expression one at a time and builds up the cases.
-The conditional expression of the leading \code{if}-block is the first step of check.
-If it is evaluated to \code{true}, then the \code{if}-block is executed
-and the rest of the stack is skipped.
-Otherwise, the next conditional expression is evaluated
-and so on until the end of the staircase conditional.
+Execution of a staircase conditional is as follows.
+Like stepping up a staircase, the control
+successively evaluates the conditional expression and builds up the cases
+progressively, one at a time.
+The conditional expression of the leading conditional block is the first thing to check.
+If it is evaluated to \code{true}, then the first block is executed and the rest is skipped.
+Otherwise, the next conditional expression is evaluated \ldots and so on.
 Note that in the presence of \code{return} and \code{break},
-the staircase conditional may be simplified with the removal of the \code{else} keyword.
-For examples, take a look at ~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
-and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion}.
+the staircase conditional may do away with \code{else if}.
+~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
+and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
 
-For readability purpose, each conditional block in a staircase conditional usually consists of no
-more than two statements.
+
+\subsection{Tight Coupling}
+
+The conditional statements are so tightly coupled that
+%there is no gap even for a needle.
+there is no place for foreign code remotely related to the main flow in a staircase conditional.
+For example creating an intermediate variable to be used in conditional expression in the middle
+of a staircase conditional is not only very hard but also not encouraged.
+Also, it is recommended that each conditional block in a staircase conditional
+usually consists of \emph{no more than} two statements.
 Anything more than that should be wrapped away as a function call.
+All these restrictions and recommendations are for the purpose of code coherence and readability.
 
-One property of staircase conditional is the strict order of conditional statements which
-shall not be altered once completed.
-The order of conditional statements takes careful design for succinct code,
-optimal performance or both.
-The second property is the cumulative effect of conditional expressions.
-We are going to talk these properties below.
+
+If one needs to create intermediate variable in the middle, one should consider refactor
+one's staircase.
+For example consider this problem ``Based on a given \code{sound}, construct an animal and add it
+to the \code{collection}.''
+The initial code snippet is as follows
+\lstinputlisting{if-else/tight_staircase_conditional.java}
+Suppose that one needs the aid of a sound amplifier
+in order to precisely distinguish the sounds of a snake and a bee, the current code would not
+permit one to create a sound amplifier in the middle of the staircase.
+There are more than one ways to deal with this.
+One can refactor the code into a separate function so that one can break apart the tightly
+coupled staircase conditional (~\autoref{lst:refactor_staircase_conditional}).
+Or one can resort to a helper function to wrap away the amplification logic
+(~\autoref{lst:modified_tight_staircase_conditional}).
+
+
+\begin{clisting}
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Refactor SC to another function},
+        label={lst:refactor_staircase_conditional},
+        firstline=1,lastline=4]
+        {if-else/refactor_staircase_conditional.java}
+    \end{minipage}
+    \hspace{1mm}
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Use a helper function in SC},
+        label={lst:modified_tight_staircase_conditional},
+        firstline=6,lastline=6]
+        {if-else/modified_tight_staircase_conditional.java}
+    \end{minipage}
+\end{clisting}
+
+
+\subsection{Cumulative effect of tests in a staircase conditional}
+
+The effect of tests of a staircase conditional
+is cumulative---a test in the staircase conditional accumulates the conditions of previous tests up
+to and including its own, as
+illustrated in ~\autoref{tab:cumulative-tests-staircase}.
+
+
+One property of staircase conditional is the strict order of conditional statements.
+Designing the order of conditional statements takes a great deal of deliberation.
+As to my own experience, I sometimes spend a long time permuting the conditional blocks aiming
+for optimal performance and succinct code.
+
 
 \begin{table}[tbh]
     \begin{center}
-        \caption{\label{tab:cumulative-tests-staircase conditional}
+        \caption{\label{tab:cumulative-tests-staircase}
         Cumulative effect of tests in a case stack.}
         \begin{tabular}{p{7cm}|p{7cm}}
             staircase conditional & taken apart  \\
@@ -521,30 +572,35 @@ We are going to talk these properties below.
         \end{tabular}
     \end{center}
 \end{table}
-When taken apart, the effect of tests of a staircase conditional
-is cumulative---a later case combines all previous conditional expressions up to its own.
-This is illustrated by the example of ~\autoref{tab:cumulative-tests-staircase conditional}.
+
+%TODO
 Note that unlike the strict ordering of the conditional statements in the left column,
 the three \code{if}-blocks in the right column are not logically coupled and
 thus may be swapped assuming that the execution of \code{statement1}, \code{statement2},
 \code{statement3}, do not affect one another.
 
-When debugging a staircase conditional for logic fallacies and unfounded assumptions, for example,
-one needs to keep this cumulative effect in mind: all the assumptions about the
-the current line of code should have been tested by an earlier conditional expression.
+Keeping the consistency between one's mind and the code is even more challenging
+when constructing staircase conditionals.
+When debugging a staircase conditional, for example,
+one needs to keep this cumulative effect in mind: that the test on the current line holds
+negated in all subsequent blocks and that the SNC for the current line comes from all the
+previously tested conditions.
+All the assumptions about the the current line of code must have been tested by an earlier
+conditional expression.
 A missing test will likely result in exception in subsequent execution.
 From this perspective, the right column in ~\autoref{tab:cumulative-tests-staircase conditional} would be a
 good aid for debugging---due to its explicit conditional expressions, it is more
 straightforward to spot untested assumptions made for a later case than its staircase conditional
 counterpart.
 
+\subsection{Case Study}
+
 \begin{clisting}
     \lstinputlisting[label={lst:if-stack-equals},
     caption={Example implementation overriding \code{equals} in a subclass}]
     {if-else/equals.java}
 \end{clisting}
-As a real-world example to demonstrate the effectiveness of staircase conditional in handling
-multi-branching logic,
+As a real-world example to demonstrate the effectiveness of staircase conditional,
 let's look at a typical \code{equals} method in a subclass that overrides
 the default implementation in \java.
 As shown in ~\autoref{lst:if-stack-equals},

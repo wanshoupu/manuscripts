@@ -422,34 +422,35 @@ We will talk more about function design in ~\fullref{ch:reusableFunctions} and
 idempotence and mutability in ~\fullref{ch:ood}.
 
 
-\section{staircase conditionals}\label{sec:conditional-staircase}
+\section{Staircase Conditionals}\label{sec:conditional-staircase}
 
 A sequence of three or more tightly coupled conditional statements as shown in
 ~\autoref{lst:simpleBranching} is probably familiar to reader.
 Many times, it begins with an \code{if}-conditional, optionally followed by one or more
 \code{else if} (or \code{elif}) blocks, and optionally ends with an \code{else} block.
-Occasionally it may simply be a series of \code{if}-conditional.
+Occasionally it may do away with \code{else if} and simply be a series of \code{if}-conditional,
+especially with \code{return} or \code{break} statements.
+
 Regardless of the form, the distinguishing characteristics are
 the `tight coupling' and `sequential order' among the conditional statements.
 Similar structures even appears in programing primer books.
 We refer to such a train of conditional statements as `\emph{staircase conditional}', or simply
 `\emph{staircase}' or \emph{SC} in resemblance to a flight of stairs built on one another.
-~\autoref{lst:staircaseCondJava}, ~\autoref{lst:staircaseCondPython},
-and ~\autoref{lst:staircaseCondReturn} are examples of staircase conditional.
-\begin{clisting}
+Below are some examples of staircase conditionals
+\begin{clisting}[h]
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:staircaseCondJava},
-        caption={A \java~ SC}]
+        caption={SC in \java}]
         {if-else/case_stack_example.java}
     \end{minipage}\hfill
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:staircaseCondPython},
-        caption={A \python~ SC}]
+        caption={SC in \python}]
         {if-else/staircase_conditional.py}
     \end{minipage}\hfill
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:staircaseCondReturn},
-        caption={SC with \code{return}}]
+        caption={SC with keyword \code{return}}]
         {if-else/staircase_conditional_return.py}
     \end{minipage}
 \end{clisting}
@@ -479,77 +480,26 @@ though it was not formally regarded as one in popular programming references.
 For practical reasons, I am going to explain the use patterns of staircase conditional in this
 section.
 But you will see its applications throughout this book---with
-examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, and the chapters in
-~\fullref{prt:caseStudies}.
+examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, \textit{etc.}
+
 
 Early we pointed out characteristics of a staircase conditional.
 Let us elaborate on them.
 
-\subsection{Execution model}
+\subsection{Cumulative Staircase Conditional Tests}\label{subsec:cumulativeStaircaseTests}
 
-Execution of a staircase conditional is as follows.
-Like stepping up a staircase, the control
-successively evaluates the conditional expression and builds up the cases
-progressively, one at a time.
-The conditional expression of the leading conditional block is the first thing to check.
-If it is evaluated to \code{true}, then the first block is executed and the rest is skipped.
-Otherwise, the next conditional expression is evaluated \ldots and so on.
-Note that in the presence of \code{return} and \code{break},
-the staircase conditional may do away with \code{else if}.
-~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
-and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
+Execution of a staircase conditional is analogous to stepping up a staircase.
+The control successively evaluates the conditional expression and builds up the cases, one at a
+time---the
+leading conditional expression is checked and if evaluated to \code{true}, then the
+first conditional block is executed and the rest is skipped;
+otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-\subsection{Tight Coupling}
-
-The conditional statements are so tightly coupled that
-%there is no gap even for a needle.
-there is no place for foreign code remotely related to the main flow in a staircase conditional.
-For example creating an intermediate variable to be used in conditional expression in the middle
-of a staircase conditional is not only very hard but also not encouraged.
-Also, it is recommended that each conditional block in a staircase conditional
-usually consists of \emph{no more than} two statements.
-Anything more than that should be wrapped away as a function call.
-All these restrictions and recommendations are for the purpose of code coherence and readability.
-
-
-If one needs to create intermediate variable in the middle, one should consider refactor
-one's staircase.
-For example consider this problem ``Based on a given \code{sound}, construct an animal and add it
-to the \code{collection}.''
-The initial code snippet is as follows
-\lstinputlisting[language=Java,alsolanguage=Java,]{if-else/tight_staircase_conditional.java}
-Suppose that one needs the aid of a sound amplifier
-in order to precisely distinguish the sounds of a snake and a bee, the current code would not
-permit one to create a sound amplifier in the middle of the staircase.
-There are more than one ways to deal with this.
-One can refactor the code into a separate function so that one can break apart the tightly
-coupled staircase conditional (~\autoref{lst:refactor_staircase_conditional}).
-Or one can resort to a helper function to wrap away the amplification logic
-(~\autoref{lst:modified_tight_staircase_conditional}).
-
-
-\begin{clisting}
-    \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Use a helper function in SC},language=Java,
-        alsolanguage=Java,label={lst:modified_tight_staircase_conditional},breaklines=false]
-        {if-else/modified_tight_staircase_conditional.java}
-    \end{minipage}
-    \hspace{4mm}
-    \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Refactor SC to another function},language=Java,
-        alsolanguage=Java,label={lst:refactor_staircase_conditional},breaklines=false]
-        {if-else/refactor_staircase_conditional.java}
-    \end{minipage}
-\end{clisting}
-
-
-\subsection{Cumulative effect of tests in a staircase conditional}
-
-The effect of tests of a staircase conditional
-is cumulative---a test in the staircase conditional accumulates the conditions of previous tests up
-to and including its own, as
-illustrated in ~\autoref{tab:cumulative-tests-staircase}.
+The tests in staircase conditional has cumulative effect.
+Passing through a staircase conditional, control progressively acquires a series of assertions ,
+as if one acquires a series of stamps in a scavenger hunt.
+This is illustrated in ~\autoref{tab:cumulative-tests-staircase}.
 
 
 One property of staircase conditional is the strict order of conditional statements.
@@ -558,10 +508,21 @@ As to my own experience, I sometimes spend a long time permuting the conditional
 for optimal performance and succinct code.
 
 
+One of the most important reason for this is the cumulative effect of the sequence of tests
+in a staircase conditional.
+
+
+A test in the staircase conditional accumulates the conditions of previous tests up
+to and including its own,
+As illustrated in ~\autoref{tab:cumulative-tests-staircase}.
+
+
 \begin{table}[tbh]
     \begin{center}
         \caption{\label{tab:cumulative-tests-staircase}
-        Cumulative effect of tests in a case stack.}
+        Cumulative effect of tests in a case stack.
+        Left: a staircase conditional construct.
+        Right: sufficient and necessary conditions are expanded for each case.}
         \begin{tabular}{p{7cm}|p{7cm}}
             staircase conditional & taken apart  \\
             \lstinputlisting{if-else/case_stack_example.java}
@@ -591,7 +552,63 @@ good aid for debugging---due to its explicit conditional expressions, it is more
 straightforward to spot untested assumptions made for a later case than its staircase conditional
 counterpart.
 
+\subsection{Tight Coupling}
+
+The conditional statements are so tightly coupled that
+%there is no gap even for a needle.
+there is no place for foreign code remotely related to the main flow in a staircase conditional.
+For example creating an intermediate variable to be used in conditional expression in the middle
+of a staircase conditional is not only very hard but also not encouraged.
+Also, it is recommended that each conditional block in a staircase conditional
+usually consists of \emph{no more than} two statements.
+Anything more than that should be wrapped away as a function call.
+All these restrictions and recommendations are for the purpose of code coherence and readability.
+
+
+If one needs to create intermediate variable in the middle, one may have to refactor
+one's staircase.
+For example consider this problem ``Based on a given \code{sound}, construct an animal and add it
+to the \code{collection}.''
+The initial code snippet is as follows
+\lstinputlisting[language=Java,alsolanguage=Java,]{if-else/tight_staircase_conditional.java}
+Suppose that the sounds of snake and bee needs to be amplified in order to tell them apart,
+one wants to create an amplifier instance.
+But where should one create the amplifier instance?
+Before the staircase conditional?
+After all, the amplifier is not needed for any other sounds but that of snakes and bees.
+Or maybe there is no snake or bee in the list then creating an amplifier would be a total waste.
+Anyway one would want to create the amplifier as close to where it will used as possible.
+Creating an amplifier at the beginning is not a good choice.
+But on the other, there is no room for one to create amplifier instance
+in the middle of the watertight staircase construct either.
+
+There are more than one ways to overcome this dilemma.
+One can refactor the staircase into a separate function where the
+coupling among the conditional statements may be made less tight
+(~\autoref{lst:refactor_staircase_conditional}).
+Or one can resort to a helper function to wrap away the verbose amplification logic
+(~\autoref{lst:modified_tight_staircase_conditional}).
+
+
+\begin{clisting}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Use a helper function in SC},language=Java,
+        alsolanguage=Java,label={lst:modified_tight_staircase_conditional},breaklines=false]
+        {if-else/modified_tight_staircase_conditional.java}
+    \end{minipage}
+    \hspace{4mm}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Refactor SC to another function},language=Java,
+        alsolanguage=Java,label={lst:refactor_staircase_conditional},breaklines=false]
+        {if-else/refactor_staircase_conditional.java}
+    \end{minipage}
+\end{clisting}
+
 \subsection{Case Study}
+
+For some real-world examples, see ~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
+and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
+
 
 \begin{clisting}
     \lstinputlisting[label={lst:if-stack-equals},

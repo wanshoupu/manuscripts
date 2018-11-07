@@ -7,10 +7,11 @@
 Animal guess(sound) {
     if (sound == null)
         return new MuteAnimal();
-    if (soundsTrumpet(sound))
-        return new Elephant();
     ...
-    amp = new Amplifier();
+    if (soundsNeigh(sound))
+        return new Horse();
+    Amplifier amp =
+      new Amplifier();
     if (soundsHiss(
       amp.apply(sound)))
         return new Snake();

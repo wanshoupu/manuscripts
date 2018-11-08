@@ -488,106 +488,88 @@ Let us elaborate on them.
 
 \subsection{Cumulative Staircase Conditional Tests}\label{subsec:cumulativeStaircaseTests}
 
+The tests in staircase conditional has cumulative effect.
+To understand what this is and why, let us see how staircase conditional is executed.
 Execution of a staircase conditional is analogous to stepping up a staircase.
-The control successively evaluates the conditional expression and builds up the cases, one at a
-time---the
+The control successively evaluates the conditional expression and builds up the cases---the
 leading conditional expression is checked and if evaluated to \code{true}, then the
 first conditional block is executed and the rest is skipped;
 otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-The tests in staircase conditional has cumulative effect.
-Passing through a staircase conditional, control progressively acquires a series of assertions ,
-as if one acquires a series of stamps in a scavenger hunt.
-This is illustrated in ~\autoref{tab:cumulative-tests-staircase}.
+As can be seen, passing through a staircase conditional, the control progressively acquires a
+series of assertions as if one acquires a series of stamps in a scavenger hunt.
+This is what `cumulative effect' is about and
+it is illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 
 
-One property of staircase conditional is the strict order of conditional statements.
-Designing the order of conditional statements takes a great deal of deliberation.
-As to my own experience, I sometimes spend a long time permuting the conditional blocks aiming
-for optimal performance and succinct code.
+\begin{clisting}[tbh]
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Staircase conditional},
+        label={lst:cumulative-tests-staircase}]
+        {if-else/case_stack_example.java}
+    \end{minipage}
+    \hspace{2mm}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[caption={Expanded equivalent},
+        label={lst:cumulative-tests-expanded-equivalent}]
+        {if-else/case_stack_taken_apart.java}
+    \end{minipage}
+    %    \caption*{Cumulative effect of tests in a staircase conditional construct.
+    %    Note the strict ordering on the left and loose grouping on the right.}
+\end{clisting}
 
 
-One of the most important reason for this is the cumulative effect of the sequence of tests
-in a staircase conditional.
+On the one hand, the cumulative effect demands a strict ordering among its conditional statements.
+Coming up with that ordering takes some deliberation.
+On the other, the cumulative effect of staircase conditionals makes it quite challenging to
+keep one's mind synchronized with one's code from time to time.
+To produce correct, optimal and succinct code, I almost always spend respectful time to
+arrange and rearrange the conditional blocks.
+After each arrangement or rearrangement, I would
+double-check that the assumptions for each line of code is asserted by earlier tests.
+The price for a missing test is likely an obnoxious exception.
+From this perspective, sometimes the ~\autoref{lst:cumulative-tests-expanded-equivalent},
+straightforward to spot untested assumptions, makes a good worksheet for debugging.
 
 
-A test in the staircase conditional accumulates the conditions of previous tests up
-to and including its own,
-As illustrated in ~\autoref{tab:cumulative-tests-staircase}.
+\subsection{Tight Coupling among Conditional Statements}\label{subsec:tightCoupling}
 
-
-\begin{table}[tbh]
-    \begin{center}
-        \caption{\label{tab:cumulative-tests-staircase}
-        Cumulative effect of tests in a case stack.
-        Left: a staircase conditional construct.
-        Right: sufficient and necessary conditions are expanded for each case.}
-        \begin{tabular}{p{7cm}|p{7cm}}
-            staircase conditional & taken apart  \\
-            \lstinputlisting{if-else/case_stack_example.java}
-            &
-            \lstinputlisting{if-else/case_stack_taken_apart.java} \\
-        \end{tabular}
-    \end{center}
-\end{table}
-
-%TODO
-Note that unlike the strict ordering of the conditional statements in the left column,
-the three \code{if}-blocks in the right column are not logically coupled and
-thus may be swapped assuming that the execution of \code{statement1}, \code{statement2},
-\code{statement3}, do not affect one another.
-
-Keeping the consistency between one's mind and the code is even more challenging
-when constructing staircase conditionals.
-When debugging a staircase conditional, for example,
-one needs to keep this cumulative effect in mind: that the test on the current line holds
-negated in all subsequent blocks and that the SNC for the current line comes from all the
-previously tested conditions.
-All the assumptions about the the current line of code must have been tested by an earlier
-conditional expression.
-A missing test will likely result in exception in subsequent execution.
-From this perspective, the right column in ~\autoref{tab:cumulative-tests-staircase conditional} would be a
-good aid for debugging---due to its explicit conditional expressions, it is more
-straightforward to spot untested assumptions made for a later case than its staircase conditional
-counterpart.
-
-\subsection{Tight Coupling}
-
-The conditional statements are so tightly coupled that
+The conditional statements in a staircase conditional are usually so tightly coupled that
 %there is no gap even for a needle.
 there is no place for foreign code remotely related to the main flow in a staircase conditional.
-For example creating an intermediate variable to be used in conditional expression in the middle
-of a staircase conditional is not only very hard but also not encouraged.
-Also, it is recommended that each conditional block in a staircase conditional
-usually consists of \emph{no more than} two statements.
+One drawback of the tight coupling is that developers occasionally need to create an intermediate
+variable to be used in conditional expressions and
+it is very inconvenient and sometimes impossible by design.
+Not only that, it is also recommended that each conditional block in a staircase conditional be
+simple.
+It had better consist of \emph{no more than} two statements.
 Anything more than that should be wrapped away as a function call.
 All these restrictions and recommendations are for the purpose of code coherence and readability.
 
-
-If one needs to create intermediate variable in the middle, one may have to refactor
-one's staircase.
-For example consider this problem ``Based on a given \code{sound}, construct an animal and add it
-to the \code{collection}.''
+What if one desperately needs to create intermediate variables in the middle?
+To demonstrate this, take a look at this problem ``Based on a list of animal's sound,
+construct a list of an animal.''
 The initial code snippet is as follows
 \lstinputlisting[language=Java,alsolanguage=Java,]{if-else/tight_staircase_conditional.java}
-Suppose that the sounds of snake and bee needs to be amplified in order to tell them apart,
-one wants to create an amplifier instance.
-But where should one create the amplifier instance?
+Now suppose that the sounds of snakes and bees have to be amplified in order to tell them apart,
+one wants to create an amplifier instance for that.
+But where can one do that?
 Before the staircase conditional?
+That's not a good choice as it is too far away from where it will used as possible.
 After all, the amplifier is not needed for any other sounds but that of snakes and bees.
-Or maybe there is no snake or bee in the list then creating an amplifier would be a total waste.
-Anyway one would want to create the amplifier as close to where it will used as possible.
-Creating an amplifier at the beginning is not a good choice.
-But on the other, there is no room for one to create amplifier instance
-in the middle of the watertight staircase construct either.
+Or maybe there is no snake or bee in the list and if so, creating an amplifier would be a total
+waste.
+In the middle just before the amplifier is needed?
+The staircase construct leaves no room for creating a new amplifier instance in the middle.
 
-There are more than one ways to overcome this dilemma.
-One can refactor the staircase into a separate function where the
+
+Well, a refactor will same one from this dilemma and there are at least two ways.
+First one can refactor the entire staircase into a separate function where the
 coupling among the conditional statements may be made less tight
-(~\autoref{lst:refactor_staircase_conditional}).
-Or one can resort to a helper function to wrap away the verbose amplification logic
-(~\autoref{lst:modified_tight_staircase_conditional}).
+(see ~\autoref{lst:refactor_staircase_conditional}).
+Secondly, one can resort to a helper function to wrap away the verbose amplification logic
+(see ~\autoref{lst:modified_tight_staircase_conditional}).
 
 
 \begin{clisting}
@@ -604,10 +586,10 @@ Or one can resort to a helper function to wrap away the verbose amplification lo
     \end{minipage}
 \end{clisting}
 
-\subsection{Case Study}
+\subsection{Case Study}\label{subsec:caseStudy}
 
-For some real-world examples, see ~\autoref{lst:if-stack-equals}, ~\autoref{lst:if-stack-lca},
-and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
+We have elaborated a lot about staircase above.
+Let us see some real-world use cases to demonstrate the effectiveness of staircase conditional.
 
 
 \begin{clisting}
@@ -615,23 +597,27 @@ and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all example
     caption={Example implementation overriding \code{equals} in a subclass}]
     {if-else/equals.java}
 \end{clisting}
-As a real-world example to demonstrate the effectiveness of staircase conditional,
-let's look at a typical \code{equals} method in a subclass that overrides
+Let's first take a look at a typical \code{equals} method in a subclass that overrides
 the default implementation in \java.
 As shown in ~\autoref{lst:if-stack-equals},
-The first test we do is the nullity of the argument.
-Only if it is not null do we move on to the second test---if it's of type \code{MyClass}.
-Only if it is not null and is of type \code{MyClass} do we cast it to type \code{MyClass}
+the first condition we test is the nullity of the argument.
+Only if it is not null will we move on to the second condition, namely, whether it is of type
+\code{MyClass}.
+Only if it is not null \emph{and} is of type \code{MyClass} will we do a type cast
 and perform pairwise equality tests between member variables of
 \code{this} instance and \code{that} instance.
-Once again, you see how the program progresses up a `staircases' step-by-step.
+Once again, you see how the program makes its way up a `staircases', one step at a time.
+Also you see that the staircase conditional construct we used here conveniently permits the creation
+of intermediate variables.
+
 
 \begin{clisting}
     \lstinputlisting[label={lst:if-stack-lca},
-    caption={An implementation of finding lowest common ancestor in a binary search tree.}]
+    caption={An solution for `Find the lowest common ancestor in a binary search
+    tree'.}]
     {if-else/lca.java}
 \end{clisting}
-Earlier we pointed out the strict ordering property of staircase conditional.
+Earlier we pointed out the strict ordering in staircase conditional.
 To illustrate how the order of tests affects the construct of staircase conditional,
 let's consider the problem:
 \begin{quote}
@@ -666,73 +652,86 @@ Generally speaking, building up the cases of an staircase conditional is ultimat
 Even the experienced developers may have to make a couple of attempts to get the optimal design.
 So go ahead and try this out this in your own practice and sharpen your instinct about it.
 
+
+
 \section{Conditional statements in a loop}\label{sec:branchinginloop}
 
-The keywords \code{break} and \code{continue}, usually used in conditional statements in a loop,
-brings interesting new possibilities to programming.
-This brings both challenges and opportunities.
-It makes logic simplification in a loop more challenging.
-But it also means skilled developers have new weapons to wield for simple, succinct logic.
+%\begin{clisting}[t]
+%    \lstinputlisting[caption={Zoological and veterinary API.},
+%    label={lst:veterinary_api}]
+%    {if-else/zoo_veterinary_api.py}
+%\end{clisting}
 
-Suppose that an imaginary zoo is conducting health exams for their animal collection:
-insects, fish, birds, mammals, \textit{etc}.
-All animals will have their overall health examined.
-Vertebrates will undergo radiography exams.
-Temperatures are taken for warm-blooded animals.
-Finally animals in each species will have their distinct body parts examined.
-All the needed veterinary API has been provided in ~\autoref{lst:veterinary_api}
-\begin{clisting}
-    \lstinputlisting[caption={Zoological and veterinary API.},
-    label={lst:veterinary_api}]
-    {if-else/zoo_veterinary_api.py}
-\end{clisting}
-Due to the complex relationships among hierarchical units of animal taxonomy,
-coding up a correct and elegant conditional statements,
-serving all applicable exams to all the animals,
-is not a straightforward task.
+We know that \code{break} and \code{continue} statements may be used in a loop.
+Since straightforward uses of such statements in loop rarely have little practical gain,
+\code{break} and \code{continue} statements are usually used within conditional blocks and this
+brings both challenges and opportunities to the latter.
+
+First, it makes logic simplification in a loop more challenging.
+But it also means skilled developers have new weapons to wield for simple, succinct logic.
+Let's illustrate this in the following problem
+\begin{quote}
+    Suppose an imaginary zoo is conducting health exams for their animal collection---insects,
+    fish, birds, mammals, \textit{etc}.
+    All animals will have their overall health examined;
+    vertebrates will undergo radiography exams;
+    temperatures are taken for warm-blooded animals;
+    finally, animals in each species will have their distinct body parts examined.
+    Suppose that the needed zoological and veterinary API has been provided with \textit{e.g.},
+    \code{isFish},
+    \code{isInsect}, \code{checkTemperature}, \code{checkExoskeleton}, \textit{etc.}
+\end{quote}
+
+
+Due to the complexity of animal taxonomy, coding up a correct and elegant conditional statements
+with no code duplication is not straightforward.
 Some developers may introduce `slightly' duplicate code as in
 ~\autoref{lst:dup-code-in-loop-conditional}.
-But those seemingly innocent, `slight' duplicate code will bite them as new
-species such as `reptiles' or `crustaceans' join the zoo.
-Some resorts to nested conditional statements such as
+However the seemingly innocent code duplication will bite at occasions, say,
+when new species such as `reptiles' or `crustaceans' join the zoo.
+Some may resort to nested conditional statements such as
 ~\autoref{lst:no-continue-in-loop-conditional}.
-\begin{clisting}
-    \lstinputlisting[caption={Conditional statements with tint of code duplication.},
+\begin{clisting}[t]
+    \lstinputlisting[caption={Conditional statements with hint of code duplication.},
     label={lst:dup-code-in-loop-conditional}]
     {if-else/zoo_animal_health_exam_dup_code.py}
 \end{clisting}
-The labyrinthine logic would cause developers to clench their teeth
-whoever dare to refactor the code.
-\begin{clisting}
+But the nested logic may be overly complicated to those who dig into the code.
+
+\begin{clisting}[t]
     \lstinputlisting[caption={Nested conditional statements in a loop.},
     label={lst:no-continue-in-loop-conditional}]
     {if-else/zoo_animal_health_exam_nested_cond.py}
 \end{clisting}
-Thankfully, keyword \code{continue} comes to rescue in this niche case and
-one does not have to face the dilemma between messy switching maze of
-~\autoref{lst:no-continue-in-loop-conditional}
-and risky duplicate code as in ~\autoref{lst:dup-code-in-loop-conditional}.
-simply use \code{continue} to skip the inapplicable part of the loop body.
-As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly
-sequential statements, bearing the essence of `staircase conditional'.
-\begin{clisting}
+
+
+Thankfully, keyword \code{continue} comes to rescue in this niche use case---\code{continue}
+is meant to skip the inapplicable part of the loop body.
+As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly aligned,
+compact, sequential statements, that essentually of a `staircase conditional'.
+\begin{clisting}[ht]
     \lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
     label={lst:continue-in-loop-conditional}]
     {if-else/zoo_animal_health_exam_continue.py}
 \end{clisting}
 If desired, one may easily refactor the loop-body in ~\autoref{lst:continue-in-loop-conditional}
-into a separate function---the only change needed is to use
-keyword \code{return} in place of \code{continue}
-(see ~\autoref{lst:refactored-in-loop-conditional}).
-\begin{clisting}
+into a separate function---the only change needed is to replace
+\code{continue} with \code{return} (see ~\autoref{lst:refactored-in-loop-conditional}).
+\begin{clisting}[ht]
     \lstinputlisting[caption={Use of \code{return} in refactored conditional statements.},
     label={lst:refactored-in-loop-conditional}]
     {if-else/zoo_animal_health_exam_refactored.py}
 \end{clisting}
-For a real-world application of conditional application in a loop,
-the solution in ~\fullref{lst:silhouette-skyline} would make an excellent example.
-Practical programming tips for loops will be more fully discussed in
-~\autoref{ch:loops} and ~\fullref{ch:loop-thinning}.
+
+
+
+Loop constructs will be discussed at length in ~\autoref{ch:loops} and ~\fullref{ch:loop-thinning}.
+So we are going to stop here and defer fuller presentation there.
+For a real-world application of conditional application in a loop, one may turn to
+~\pageref{lst:silhouette-skyline} for the solution of the `Skyline Problem'.
+
+%and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
+
 %Many of the topics overlap between here and there.
 %So we are going to stop here and defer fuller presentation accordingly.
 

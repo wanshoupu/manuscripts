@@ -19,7 +19,7 @@ def exam(animal):
         checkScale(animal)
         return
     # warm-blooded below
-    checkTempterature(animal)
+    checkTemperature(animal)
     if isBird(animal):
         checkFeather(animal)
     elif isMammal(animal):

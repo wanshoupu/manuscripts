@@ -15,7 +15,7 @@ def veterinaryExam(zoo):
                 checkScale(animal)
             else:
                 # warm-blooded below
-                checkTempterature(animal)
+                checkTemperature(animal)
                 if isBird(animal):
                     checkFeather(animal)
                 elif isMammal(animal):

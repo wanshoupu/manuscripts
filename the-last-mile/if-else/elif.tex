@@ -486,7 +486,7 @@ examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, \textit{etc.}
 Early we pointed out characteristics of a staircase conditional.
 Let us elaborate on them.
 
-\subsection{Cumulative Staircase Conditional Tests}\label{subsec:cumulativeStaircaseTests}
+\subsection{Cumulative Tests in Staircase Conditional}\label{subsec:cumulativeStaircaseTests}
 
 The tests in staircase conditional has cumulative effect.
 To understand what this is and why, let us see how staircase conditional is executed.
@@ -497,9 +497,9 @@ first conditional block is executed and the rest is skipped;
 otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-As can be seen, passing through a staircase conditional, the control progressively acquires a
-series of assertions as if one acquires a series of stamps in a scavenger hunt.
-This is what `cumulative effect' is about and
+As can be seen, the program acquires one assertion undergoing through each test in a staircase
+conditional, as if collecting a stamp in the course of a scavenger hunt.
+This is what I meant by `cumulative effect' and
 it is illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 
 
@@ -521,16 +521,42 @@ it is illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 
 
 On the one hand, the cumulative effect demands a strict ordering among its conditional statements.
-Coming up with that ordering takes some deliberation.
-On the other, the cumulative effect of staircase conditionals makes it quite challenging to
+On the other, the cumulative effect of staircase conditionals makes it more challenging to
 keep one's mind synchronized with one's code from time to time.
-To produce correct, optimal and succinct code, I almost always spend respectful time to
-arrange and rearrange the conditional blocks.
-After each arrangement or rearrangement, I would
-double-check that the assumptions for each line of code is asserted by earlier tests.
-The price for a missing test is likely an obnoxious exception.
+This put a demanding requirement on quality of developer in arranging
+conditional statements in a staircase.
+
+
+\subsection{How to Arrange Conditionals in Staircase}
+\label{subsec:orderingStaircaseConditional}
+
+%TODO
+
+Coming up with that ordering takes some deliberation.
+To produce correct, optimal and succinct code, I almost always advise developers to use due
+diligence.
+Many times it is necessary to arrange and rearrange the conditional blocks back and forth.
+After each arrangement or rearrangement, make sure that one
+double-checks the assumptions for each line of code is asserted by earlier tests.
+The price of a missing test is either an obnoxious exception or a silently incorrect result.
 From this perspective, sometimes the ~\autoref{lst:cumulative-tests-expanded-equivalent},
 straightforward to spot untested assumptions, makes a good worksheet for debugging.
+
+What are the critical aspects in arranging the conditional statements in a staircase fashion?
+First one needs to partition the multidimensional case space into complete, non-overlapping
+regions.
+To that end, Venn diagram will be your friend.
+
+Secondly, one needs to plan condition tests and decide their order.
+Note that more often than not, one does not need one test per region.
+
+First, coverage.
+Secondly, the non-overlapping
+Thirdly, the ordering
+
+
+Now how to order the conditional statements in a SC?
+What aspects should one consider when arranging conditional statements?
 
 
 \subsection{Tight Coupling among Conditional Statements}\label{subsec:tightCoupling}
@@ -587,6 +613,8 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
 \end{clisting}
 
 \subsection{Case Study}\label{subsec:caseStudy}
+%TODO
+%Remove redundant, exaggerating words or tones.
 
 We have elaborated a lot about staircase above.
 Let us see some real-world use cases to demonstrate the effectiveness of staircase conditional.
@@ -626,14 +654,14 @@ let's consider the problem:
 By the nature of binary search tree and the problem requirements, the number of `special' cases
 is large.
 If not designed properly, the code of handling all the cases can blow up like a nightmare.
-However, with a properly designed staircase conditional as we are going to show next, a couple of lines of
-code can handle the myriad possibilities like a breeze.
+However, with a properly designed staircase conditional as we are going to show next,
+a handful of lines are sufficient to handle the myriad possibilities.
 Take a look at ~\autoref{lst:if-stack-lca}.
 The cases are built from ground up like this:
 \begin{enumerate}
-    \item Test nullity;
-    \item Test for left branching;
-    \item Test for right branching;
+    \item Test for nullity;
+    \item Test for necessity of left branching;
+    \item Test for necessity of right branching;
     \item Test for existence of keys;
     \item Final case;
 \end{enumerate}
@@ -651,7 +679,6 @@ That way, the maximal solution space can be chopped off at the earliest possible
 Generally speaking, building up the cases of an staircase conditional is ultimately empirical.
 Even the experienced developers may have to make a couple of attempts to get the optimal design.
 So go ahead and try this out this in your own practice and sharpen your instinct about it.
-
 
 
 \section{Conditional statements in a loop}\label{sec:branchinginloop}

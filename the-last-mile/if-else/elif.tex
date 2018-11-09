@@ -497,10 +497,10 @@ first conditional block is executed and the rest is skipped;
 otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-As can be seen, the program acquires one assertion undergoing through each test in a staircase
+As can be seen, the program acquires one assertion through each test in a staircase
 conditional, as if collecting a stamp in the course of a scavenger hunt.
-This is what I meant by `cumulative effect' and
-it is illustrated in ~\autoref{lst:cumulative-tests-staircase}.
+This is the `cumulative effect' of tests in staircase conditional as
+illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 
 
 \begin{clisting}[tbh]
@@ -520,43 +520,132 @@ it is illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 \end{clisting}
 
 
-On the one hand, the cumulative effect demands a strict ordering among its conditional statements.
-On the other, the cumulative effect of staircase conditionals makes it more challenging to
+On the one hand, the cumulative effect of staircase conditionals demands a strict ordering among
+its conditional statements.
+On the other, because of the cumulative effect, one has to commit more information in memory when
+programming staircase conditionals and thus making it more challenging to
 keep one's mind synchronized with one's code from time to time.
-This put a demanding requirement on quality of developer in arranging
-conditional statements in a staircase.
+As explicit expansion of the staircase conditional,
+~\autoref{lst:cumulative-tests-expanded-equivalent}, the side-by-side companion of
+~\autoref{lst:cumulative-tests-staircase}, makes a straightforward worksheet for debugging and
+code inspection.
 
 
-\subsection{How to Arrange Conditionals in Staircase}
+\subsection{How to Arrange Conditionals in Staircase Construct}
 \label{subsec:orderingStaircaseConditional}
 
-%TODO
+Therefore arranging the conditionals in a staircase conditional construct is the key
+from every point of view.
+Apparently it will take considerable deliberation in order to produce correct, optimal and succinct
+staircase conditional.
+I strongly recommend that reader use due diligence to screen and arrange tests in a staircase
+conditional construct.
+%This exerts a demanding requirement on empirical development expertise when it comes to design of
+%staircase conditional.
 
-Coming up with that ordering takes some deliberation.
-To produce correct, optimal and succinct code, I almost always advise developers to use due
-diligence.
-Many times it is necessary to arrange and rearrange the conditional blocks back and forth.
-After each arrangement or rearrangement, make sure that one
-double-checks the assumptions for each line of code is asserted by earlier tests.
+
+The problem solving process goes as follows.
+First, brainstorm on all the possible cases based on the project/problem requirement.
+The key of this step is \emph{complete coverage} of all possibilities.
+These cases may overlap with one another and which may or may not requires separate handling later.
+Each problem has a unique set of conditions to be tested
+which is essentially a multidimensional binary space partitioning problem\cite{NAYLOR90,NAYLOR93}.
+As the cases are being tested, the solution space is also chopped in halves and
+ruled out much like that of a binary search (see ~\autoref{fig:bsp}).
+
+%These are usually the fundamental puzzle pieces which can be joined together to form larger parts.
+%To visualize the idea, it is helpful to borrow concepts from binary space partitioning
+%problem.
+%On the other, classification of the problems is usually based on multiple conditional tests
+%and partitions of them straddling across dimensions.
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=.6\textwidth]{if-else/binary-space-partition.jpg}
+    \caption{\label{fig:bsp}A sequence of tests performs binary space partitioning.
+    \code{test1} partitions the whole space $A$ into two halves (labeled as $B$ is
+    the `\code{true}' space);
+    \code{test2} continues to partition the other half into two halves (labeled as $C$ is
+    the `\code{true}' space);
+    \code{test3} then partitions the remaining half into $D$ (`\code{true}')) and $E$
+    (`\code{false}').}
+\end{figure}
+
+
+Secondly, examine the cases and attempt to eliminate or combine unnecessary cases.
+The key success index for this step is \emph{non-overlapping, non-fragmenting} cases.
+For example in programming for `binary search' based algorithms, one frequently faces a trichotomy
+situation: \textit{less than},\textit{equals}, or \textit{greater than}.
+Usually one does not need to test all three separately.
+Instead, one only need to test two of the three---\textit{e.g.}  test for \code{less than} and
+\code{greater than} and if both fail then it must be the third case.
+Similarly in ~\autoref{lst:if-stack-lca}, one faces the quadchotomy: both keys
+located on the left subtree, on the right subtree, key \code{a} on left subtree and key \code{b} on
+right, or vice versa.
+But I combined the cases such that only three cases are necessary: that both keys are located on
+the left, on the right, or that they straddle over the root node.
+
+
+Thirdly, with the consolidated distinct cases in hand, try to discover clues
+that suggest certain order for them.
+The most prominent clue is the dependency graph--some test is depended by others
+(like nullity check).
+This would form a directed acyclic graph among the tests.
+In my own experience, I rarely needed to draw a DAG for this---just a simple rule of thumb worked.
+But for complicated situations it may be beneficial to do so.
+So topological ordering among the tests will put a strong constraint on how we can arrange the
+tests within the staircase conditional.
+
+
+Another clue comes from trichotomy or quadchotomy logic as we considered in the second step.
+Using the example in ~\autoref{lst:if-stack-lca} again, I first test if both keys are
+located on the left or right.
+If neither, then it must be the straddling case.
+I did not start with the straddling case because that test is in the `middle of the thick'.
+If I do it first, I still have to chase down the left and back down the right.
+It is a total waste.
+Generally speaking, it is not the best choice to scoop out a case in the middle.
+Instead, we start with isolated, corner cases first and gradually working our way
+into the thick of the puzzle.
+
+
+More clues may be based on convenience or convention (following left \textit{v.s.}
+right branch first), performance considerations (\textit{e.g.}, postpone costly RPC calls to the
+last).
+You may noticed that I placed performance considerations \emph{at last}.
+Yes, performance is the last thing to consider at coding time, if considered at all,
+quoting Donald Knuth here ``\emph{Premature} optimization is the root of all evil in programming.''
+
+
+Finally don't expect a one-pass-fix-all strategy.
+More often than not, it is necessary to arrange and rearrange the conditional blocks back and forth
+multiple times.
+And don't forget this---after each arrangement or rearrangement, be sure to
+double-check, for each line, the assumptions have been asserted by earlier tests.
 The price of a missing test is either an obnoxious exception or a silently incorrect result.
-From this perspective, sometimes the ~\autoref{lst:cumulative-tests-expanded-equivalent},
-straightforward to spot untested assumptions, makes a good worksheet for debugging.
-
-What are the critical aspects in arranging the conditional statements in a staircase fashion?
-First one needs to partition the multidimensional case space into complete, non-overlapping
-regions.
-To that end, Venn diagram will be your friend.
-
-Secondly, one needs to plan condition tests and decide their order.
-Note that more often than not, one does not need one test per region.
-
-First, coverage.
-Secondly, the non-overlapping
-Thirdly, the ordering
 
 
-Now how to order the conditional statements in a SC?
-What aspects should one consider when arranging conditional statements?
+%Some source states that when doing tests to rule out cases in settings such as a staircase conditional, start
+%with the simplest one.
+%This observation is quite superficial.
+%The real criterion is to do the test that contains most entropy, the test that is most
+%informative, the test that is hinged with most stake first.
+%That way, the maximal solution space can be chopped off at the earliest possible time.
+%Generally speaking, building up the cases of an staircase conditional is ultimately empirical.
+%Even the experienced developers may have to make a couple of attempts to get the optimal design.
+%So go ahead and try this out this in your own practice and sharpen your instinct about it.
+
+
+%What are the critical aspects in arranging the conditional statements in a staircase fashion?
+%First one needs to partition the multidimensional case space into complete, non-overlapping
+%regions.
+%To that end, Venn diagram will be your friend.
+
+%Secondly, one needs to plan condition tests and decide their order.
+%Note that more often than not, one does not need one test per region.
+
+
+%Now how to order the conditional statements in a SC?
+%What aspects should one consider when arranging conditional statements?
 
 
 \subsection{Tight Coupling among Conditional Statements}\label{subsec:tightCoupling}
@@ -668,18 +757,14 @@ The cases are built from ground up like this:
 Note later statements are built on the assertions of previous tests---\textit{e.g.}, test for
 left/right branching requires the non-null attributes of root otherwise the code will throw
 \code{NullPointerException}.
-Also note that as the cases are being built up, the solution space is also being halved
-and ruled out much like that of a binary search.
-Some source states that when doing tests to rule out cases in settings such as a staircase conditional, start
-with the simplest one.
-This observation is quite superficial.
-The real criterion is to do the test that contains most entropy, the test that is most
-informative, the test that is hinged with most stake first.
-That way, the maximal solution space can be chopped off at the earliest possible time.
-Generally speaking, building up the cases of an staircase conditional is ultimately empirical.
-Even the experienced developers may have to make a couple of attempts to get the optimal design.
-So go ahead and try this out this in your own practice and sharpen your instinct about it.
 
+% TODO
+% Provide comparisons of alternative tests
+% for example,
+% test for nullity
+% test for straddling
+% test for left
+% test for right
 
 \section{Conditional statements in a loop}\label{sec:branchinginloop}
 

@@ -7,3 +7,7 @@ if (!test1 && test2) {
 if (!test1 && !test2 && test3) {
     statement3;
 }
+
+if (!test1 && !test2 && !test3) {
+    statement4;
+}

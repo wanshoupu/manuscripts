@@ -100,7 +100,7 @@ You may even realize that it is actually equivalent to ~\autoref{lst:simplified-
         firstline=1,lastline=4]
         {if-else/equivalent_statements_if_return.java}
     \end{minipage}
-    \hspace{1mm}
+    \hfill
     \begin{minipage}[t]{.45\textwidth}
         \lstinputlisting[caption={Simplified statement},
         label={lst:simplified-return-boolean},
@@ -318,7 +318,7 @@ that in ~\autoref{lst:exercise-simplified-conditional-statement}.
     \centering
     \includegraphics[width=.7\textwidth]{if-else/short-circuit.jpg}
     \caption{\label{fig:short-circuit-eval}  Short-circuit evaluation of the expression tree for
-    `\code{!(a || foo) && (bar || baz)}' when \code{a = true}.
+    `\code{!(a||foo)&&(bar||baz)}' when \code{a=true}.
     Solid gray nodes are evaluated whereas dashed blank ones omitted.
     }
 \end{figure}
@@ -434,21 +434,18 @@ especially with \code{return} or \code{break} statements.
 Regardless of the form, the distinguishing characteristics are
 the `tight coupling' and `sequential order' among the conditional statements.
 Similar structures even appears in programing primer books.
-We refer to such a train of conditional statements as `\emph{staircase conditional}', or simply
-`\emph{staircase}' or \emph{SC} in resemblance to a flight of stairs built on one another.
+Here we refer to such a train of conditional statements as `\emph{staircase conditional}',
+for its resemblance to a flight of stairs built on one another.
+Sometimes we refer to `\emph{staircase conditional}' simply as `\emph{staircase}', or its shorthand
+\emph{SC}.
 Below are some examples of staircase conditionals
 \begin{clisting}[h]
-    \begin{minipage}[t]{.3\textwidth}
-        \lstinputlisting[label={lst:staircaseCondJava},
-        caption={SC in \java}]
-        {if-else/case_stack_example.java}
-    \end{minipage}\hfill
-    \begin{minipage}[t]{.3\textwidth}
-        \lstinputlisting[label={lst:staircaseCondPython},
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:staircaseCondElif},
         caption={SC in \python}]
         {if-else/staircase_conditional.py}
     \end{minipage}\hfill
-    \begin{minipage}[t]{.3\textwidth}
+    \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:staircaseCondReturn},
         caption={SC with keyword \code{return}}]
         {if-else/staircase_conditional_return.py}
@@ -459,7 +456,6 @@ Below are some examples of staircase conditionals
 %with \code{return} statements in
 %the block, or \code{break} and \code{continue} statements if used in a loop construct
 %(conditional statement in loop will be discussed later in this chapter and in ~\autoref{ch:loops})
-
 
 Staircase conditional is offered as an alternative to nested conditionals
 when facing multi-branch switching.
@@ -504,31 +500,35 @@ illustrated in ~\autoref{lst:cumulative-tests-staircase}.
 
 
 \begin{clisting}[tbh]
-    \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Staircase conditional},
-        label={lst:cumulative-tests-staircase}]
-        {if-else/case_stack_example.java}
-    \end{minipage}
-    \hspace{2mm}
-    \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Expanded equivalent},
-        label={lst:cumulative-tests-expanded-equivalent}]
-        {if-else/case_stack_taken_apart.java}
-    \end{minipage}
+    \centering
+    \lstinputlisting[caption={Expanded conditionals equivalent to
+    ~\autoref{lst:staircaseCondElif} (in \java)},
+    label={lst:cumulative-tests-expanded-equivalent}]
+    {if-else/case_stack_taken_apart.java}
     %    \caption*{Cumulative effect of tests in a staircase conditional construct.
     %    Note the strict ordering on the left and loose grouping on the right.}
 \end{clisting}
 
+One of the key advantage of using staircase conditional is to reduce the number of cases one has
+to check.
+This reduction in number of tests would be made clear if one expands the staircase conditional
+into non-cascading conditionals.
+For example, in ~\autoref{lst:cumulative-tests-staircase} the number of tests checked is $3$
+whereas in its expanded non-cascading equivalent in
+~\autoref{lst:cumulative-tests-expanded-equivalent} it is $9$.
+Cumulative effect saves us from retesting what's already tested and thus is one of the key factors
+contributing to this test reduction.
 
-On the one hand, the cumulative effect of staircase conditionals demands a strict ordering among
+
+The cumulative effect of staircase conditionals put a strict ordering among
 its conditional statements.
-On the other, because of the cumulative effect, one has to commit more information in memory when
-programming staircase conditionals and thus making it more challenging to
-keep one's mind synchronized with one's code from time to time.
-As explicit expansion of the staircase conditional,
-~\autoref{lst:cumulative-tests-expanded-equivalent}, the side-by-side companion of
-~\autoref{lst:cumulative-tests-staircase}, makes a straightforward worksheet for debugging and
-code inspection.
+At the same time, because of the cumulative effect, one has to commit more information in memory
+at development time.
+It is more challenging to keep one's mind synchronized with one's code
+when programming staircase conditionals.
+From this point of view, working out an expanded non-cascading equivalent such as
+~\autoref{lst:cumulative-tests-expanded-equivalent} will be a useful exercise
+when debugging staircase conditional in ~\autoref{lst:cumulative-tests-staircase}.
 
 
 \subsection{How to Arrange Conditionals in Staircase Construct}
@@ -551,7 +551,8 @@ These cases may overlap with one another and which may or may not requires separ
 Each problem has a unique set of conditions to be tested
 which is essentially a multidimensional binary space partitioning problem\cite{NAYLOR90,NAYLOR93}.
 As the cases are being tested, the solution space is also chopped in halves and
-ruled out much like that of a binary search (see ~\autoref{fig:bsp}).
+ruled out much like that of a binary search.
+The BSP scheme for ~\autoref{lst:staircaseCondElif} is plotted in ~\autoref{fig:bsp}.
 
 %These are usually the fundamental puzzle pieces which can be joined together to form larger parts.
 %To visualize the idea, it is helpful to borrow concepts from binary space partitioning
@@ -693,7 +694,7 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
         alsolanguage=Java,label={lst:modified_tight_staircase_conditional},breaklines=false]
         {if-else/modified_tight_staircase_conditional.java}
     \end{minipage}
-    \hspace{4mm}
+    \hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[caption={Refactor SC to another function},language=Java,
         alsolanguage=Java,label={lst:refactor_staircase_conditional},breaklines=false]

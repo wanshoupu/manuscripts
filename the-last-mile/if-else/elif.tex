@@ -55,8 +55,8 @@ In this chapter, you are going to live through processes that turn bloated condi
 into simple logic.
 You will be exposed to plenty of examples and demonstrations on how to produce beautiful,
 succinct solution with simple techniques and due diligence.
-You will learn to how to avoid redundancy condition checking, how to construct `conditional
-staircases',
+You will learn to how to avoid redundancy condition checking, how to construct
+`cascading conditional',
 short-circuit evaluation and its application, how to restrain variable scopes, \textit{etc.}
 
 
@@ -198,9 +198,9 @@ versa.
 The reason for doing so will be clear in a moment.
 Now we can promote the nested \code{if (test2)} up to the first-level and turn the
 nested conditional statements into sequential conditional statements
-that are built on top of one another like a staircase \footnote{In fact,
+that are built on top of one another like a cascade \footnote{In fact,
 we just came across a pattern regarding conditional programming and
-~\autoref{sec:conditional-staircase} is going to tell you more.}.
+~\autoref{sec:conditional-cascade} is going to tell you more.}.
 
 
 The resulting code is shown in ~\autoref{lst:simpleBranching}.
@@ -422,7 +422,7 @@ We will talk more about function design in ~\fullref{ch:reusableFunctions} and
 idempotence and mutability in ~\fullref{ch:ood}.
 
 
-\section{Staircase Conditionals}\label{sec:conditional-staircase}
+\section{Cascading Conditionals}\label{sec:conditional-cascade}
 
 A sequence of three or more tightly coupled conditional statements as shown in
 ~\autoref{lst:simpleBranching} is probably familiar to reader.
@@ -434,20 +434,20 @@ especially with \code{return} or \code{break} statements.
 Regardless of the form, the distinguishing characteristics are
 the `tight coupling' and `sequential order' among the conditional statements.
 Similar structures even appears in programing primer books.
-Here we refer to such a train of conditional statements as `\emph{staircase conditional}',
+Here we refer to such a train of conditional statements as `\emph{cascading conditional construct}',
 for its resemblance to a flight of stairs built on one another.
-Sometimes we refer to `\emph{staircase conditional}' simply as `\emph{staircase}', or its shorthand
-\emph{SC}.
-Below are some examples of staircase conditionals
+Sometimes `\emph{cascading conditional}', `\emph{cascade}', or the shorthand \emph{CCC} will be
+used interchangeably in this book.
+Below are some examples of cascading conditionals
 \begin{clisting}[h]
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[label={lst:staircaseCondElif},
-        caption={SC in \python}]
+        \lstinputlisting[label={lst:cascadeCondElif},
+        caption={CCC in \python}]
         {if-else/staircase_conditional.py}
     \end{minipage}\hfill
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[label={lst:staircaseCondReturn},
-        caption={SC with keyword \code{return}}]
+        \lstinputlisting[label={lst:cascadeCondReturn},
+        caption={CCC with keyword \code{return}}]
         {if-else/staircase_conditional_return.py}
     \end{minipage}
 \end{clisting}
@@ -457,91 +457,91 @@ Below are some examples of staircase conditionals
 %the block, or \code{break} and \code{continue} statements if used in a loop construct
 %(conditional statement in loop will be discussed later in this chapter and in ~\autoref{ch:loops})
 
-Staircase conditional is offered as an alternative to nested conditionals
+Cascading conditional is offered as an alternative to nested conditionals
 when facing multi-branch switching.
 As ~\autoref{lst:nestedBranching} shows at the beginning of this chapter,
 nested conditionals may be used for multi-branch switching.
 However as the number of branches increases, nesting level as well as indentation level goes deeper.
 The logic becomes unwieldy before long.
-As ~\autoref{lst:simpleBranching} shows, staircase
+As ~\autoref{lst:simpleBranching} shows, cascading
 conditional offers compact logic and simple layout for multi-branch switching.
 
 
-Though staircase conditionals are ubiquitous in programming,
+Though cascading conditionals are ubiquitous in programming,
 developers' first experience with it often begins with haphazard stumbling upon,
 because seldom any systematic discussion exists to clarify the best practices surrounding it.
 Used in conjunction with loops or recursive functions,
-staircase conditional is an important programming construct for algorithmic implementations,
+cascading conditional is an important programming construct for algorithmic implementations,
 though it was not formally regarded as one in popular programming references.
-For practical reasons, I am going to explain the use patterns of staircase conditional in this
+For practical reasons, I am going to explain the use patterns of cascading conditional in this
 section.
 But you will see its applications throughout this book---with
 examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, \textit{etc.}
 
 
-Early we pointed out characteristics of a staircase conditional.
+Early we pointed out characteristics of a cascading conditional.
 Let us elaborate on them.
 
-\subsection{Cumulative Tests in Staircase Conditional}\label{subsec:cumulativeStaircaseTests}
+\subsection{Cumulative Tests in Cascading Conditional}\label{subsec:cumulativeTests}
 
-The tests in staircase conditional has cumulative effect.
-To understand what this is and why, let us see how staircase conditional is executed.
-Execution of a staircase conditional is analogous to stepping up a staircase.
+The tests in cascading conditional has cumulative effect.
+To understand what this is and why, let us see how cascading conditional is executed.
+Execution of a cascading conditional is analogous to stepping up a cascade.
 The control successively evaluates the conditional expression and builds up the cases---the
 leading conditional expression is checked and if evaluated to \code{true}, then the
 first conditional block is executed and the rest is skipped;
 otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-As can be seen, the program acquires one assertion through each test in a staircase
+As can be seen, the program acquires one assertion through each test in a cascading
 conditional, as if collecting a stamp in the course of a scavenger hunt.
-This is the `cumulative effect' of tests in staircase conditional as
-illustrated in ~\autoref{lst:cumulative-tests-staircase}.
+This is the `cumulative effect' of tests in cascading conditional as
+illustrated in ~\autoref{lst:cumulative-tests-cascade}.
 
 
 \begin{clisting}[tbh]
     \centering
     \lstinputlisting[caption={Expanded conditionals equivalent to
-    ~\autoref{lst:staircaseCondElif} (in \java)},
+    ~\autoref{lst:cascadeCondElif} (in \java)},
     label={lst:cumulative-tests-expanded-equivalent}]
     {if-else/case_stack_taken_apart.java}
-    %    \caption*{Cumulative effect of tests in a staircase conditional construct.
+    %    \caption*{Cumulative effect of tests in a cascading conditional construct.
     %    Note the strict ordering on the left and loose grouping on the right.}
 \end{clisting}
 
-One of the key advantage of using staircase conditional is to reduce the number of cases one has
+One of the key advantage of using cascading conditional is to reduce the number of cases one has
 to check.
-This reduction in number of tests would be made clear if one expands the staircase conditional
+This reduction in number of tests would be made clear if one expands the cascading conditional
 into non-cascading conditionals.
-For example, in ~\autoref{lst:cumulative-tests-staircase} the number of tests checked is $3$
+For example, in ~\autoref{lst:cumulative-tests-cascade} the number of tests checked is $3$
 whereas in its expanded non-cascading equivalent in
 ~\autoref{lst:cumulative-tests-expanded-equivalent} it is $9$.
 Cumulative effect saves us from retesting what's already tested and thus is one of the key factors
 contributing to this test reduction.
 
 
-The cumulative effect of staircase conditionals put a strict ordering among
+The cumulative effect of cascading conditionals put a strict ordering among
 its conditional statements.
 At the same time, because of the cumulative effect, one has to commit more information in memory
 at development time.
 It is more challenging to keep one's mind synchronized with one's code
-when programming staircase conditionals.
+when programming cascading conditionals.
 From this point of view, working out an expanded non-cascading equivalent such as
 ~\autoref{lst:cumulative-tests-expanded-equivalent} will be a useful exercise
-when debugging staircase conditional in ~\autoref{lst:cumulative-tests-staircase}.
+when debugging cascading conditional in ~\autoref{lst:cumulative-tests-cascade}.
 
 
-\subsection{How to Arrange Conditionals in Staircase Construct}
+\subsection{How to Arrange Conditionals in Cascading Construct}
 \label{subsec:orderingStaircaseConditional}
 
-Therefore arranging the conditionals in a staircase conditional construct is the key
+Therefore arranging the conditionals in a cascading conditional construct is the key
 from every point of view.
 Apparently it will take considerable deliberation in order to produce correct, optimal and succinct
-staircase conditional.
-I strongly recommend that reader use due diligence to screen and arrange tests in a staircase
+cascading conditional.
+It is strongly recommended that reader use due diligence to screen and arrange tests in a cascade
 conditional construct.
 %This exerts a demanding requirement on empirical development expertise when it comes to design of
-%staircase conditional.
+%cascading conditional.
 
 
 The problem solving process goes as follows.
@@ -552,7 +552,7 @@ Each problem has a unique set of conditions to be tested
 which is essentially a multidimensional binary space partitioning problem\cite{NAYLOR90,NAYLOR93}.
 As the cases are being tested, the solution space is also chopped in halves and
 ruled out much like that of a binary search.
-The BSP scheme for ~\autoref{lst:staircaseCondElif} is plotted in ~\autoref{fig:bsp}.
+The BSP scheme for ~\autoref{lst:cascadeCondElif} is plotted in ~\autoref{fig:bsp}.
 
 %These are usually the fundamental puzzle pieces which can be joined together to form larger parts.
 %To visualize the idea, it is helpful to borrow concepts from binary space partitioning
@@ -594,7 +594,7 @@ This would form a directed acyclic graph among the tests.
 In my own experience, I rarely needed to draw a DAG for this---just a simple rule of thumb worked.
 But for complicated situations it may be beneficial to do so.
 So topological ordering among the tests will put a strong constraint on how we can arrange the
-tests within the staircase conditional.
+tests within the cascading conditional.
 
 
 Another clue comes from trichotomy or quadchotomy logic as we considered in the second step.
@@ -625,18 +625,18 @@ double-check, for each line, the assumptions have been asserted by earlier tests
 The price of a missing test is either an obnoxious exception or a silently incorrect result.
 
 
-%Some source states that when doing tests to rule out cases in settings such as a staircase conditional, start
+%Some source states that when doing tests to rule out cases in settings such as a cascading conditional, start
 %with the simplest one.
 %This observation is quite superficial.
 %The real criterion is to do the test that contains most entropy, the test that is most
 %informative, the test that is hinged with most stake first.
 %That way, the maximal solution space can be chopped off at the earliest possible time.
-%Generally speaking, building up the cases of an staircase conditional is ultimately empirical.
+%Generally speaking, building up the cases of an cascading conditional is ultimately empirical.
 %Even the experienced developers may have to make a couple of attempts to get the optimal design.
 %So go ahead and try this out this in your own practice and sharpen your instinct about it.
 
 
-%What are the critical aspects in arranging the conditional statements in a staircase fashion?
+%What are the critical aspects in arranging the conditional statements in a cascade fashion?
 %First one needs to partition the multidimensional case space into complete, non-overlapping
 %regions.
 %To that end, Venn diagram will be your friend.
@@ -645,19 +645,19 @@ The price of a missing test is either an obnoxious exception or a silently incor
 %Note that more often than not, one does not need one test per region.
 
 
-%Now how to order the conditional statements in a SC?
+%Now how to order the conditional statements in a CCC?
 %What aspects should one consider when arranging conditional statements?
 
 
 \subsection{Tight Coupling among Conditional Statements}\label{subsec:tightCoupling}
 
-The conditional statements in a staircase conditional are usually so tightly coupled that
+The conditional statements in a cascading conditional are usually so tightly coupled that
 %there is no gap even for a needle.
-there is no place for foreign code remotely related to the main flow in a staircase conditional.
+there is no place for foreign code remotely related to the main flow in a cascading conditional.
 One drawback of the tight coupling is that developers occasionally need to create an intermediate
 variable to be used in conditional expressions and
 it is very inconvenient and sometimes impossible by design.
-Not only that, it is also recommended that each conditional block in a staircase conditional be
+Not only that, it is also recommended that each conditional block in a cascading conditional be
 simple.
 It had better consist of \emph{no more than} two statements.
 Anything more than that should be wrapped away as a function call.
@@ -671,33 +671,33 @@ The initial code snippet is as follows
 Now suppose that the sounds of snakes and bees have to be amplified in order to tell them apart,
 one wants to create an amplifier instance for that.
 But where can one do that?
-Before the staircase conditional?
+Before the cascading conditional?
 That's not a good choice as it is too far away from where it will used as possible.
 After all, the amplifier is not needed for any other sounds but that of snakes and bees.
 Or maybe there is no snake or bee in the list and if so, creating an amplifier would be a total
 waste.
 In the middle just before the amplifier is needed?
-The staircase construct leaves no room for creating a new amplifier instance in the middle.
+The cascade construct leaves no room for creating a new amplifier instance in the middle.
 
 
 Well, a refactor will same one from this dilemma and there are at least two ways.
-First one can refactor the entire staircase into a separate function where the
+First one can refactor the entire cascade into a separate function where the
 coupling among the conditional statements may be made less tight
-(see ~\autoref{lst:refactor_staircase_conditional}).
+(see ~\autoref{lst:refactor_cascade_conditional}).
 Secondly, one can resort to a helper function to wrap away the verbose amplification logic
-(see ~\autoref{lst:modified_tight_staircase_conditional}).
+(see ~\autoref{lst:modified_tight_cascade_conditional}).
 
 
 \begin{clisting}
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Use a helper function in SC},language=Java,
-        alsolanguage=Java,label={lst:modified_tight_staircase_conditional},breaklines=false]
+        \lstinputlisting[caption={Use a helper function in CCC},language=Java,
+        alsolanguage=Java,label={lst:modified_tight_cascade_conditional},breaklines=false]
         {if-else/modified_tight_staircase_conditional.java}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Refactor SC to another function},language=Java,
-        alsolanguage=Java,label={lst:refactor_staircase_conditional},breaklines=false]
+        \lstinputlisting[caption={Refactor CCC to another function},language=Java,
+        alsolanguage=Java,label={lst:refactor_cascade_conditional},breaklines=false]
         {if-else/refactor_staircase_conditional.java}
     \end{minipage}
 \end{clisting}
@@ -706,8 +706,8 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
 %TODO
 %Remove redundant, exaggerating words or tones.
 
-We have elaborated a lot about staircase above.
-Let us see some real-world use cases to demonstrate the effectiveness of staircase conditional.
+We have elaborated a lot about cascade above.
+Let us demonstrate the effectiveness of cascading conditional through real-world use cases.
 
 
 \begin{clisting}
@@ -724,8 +724,8 @@ Only if it is not null will we move on to the second condition, namely, whether 
 Only if it is not null \emph{and} is of type \code{MyClass} will we do a type cast
 and perform pairwise equality tests between member variables of
 \code{this} instance and \code{that} instance.
-Once again, you see how the program makes its way up a `staircases', one step at a time.
-Also you see that the staircase conditional construct we used here conveniently permits the creation
+Once again, you see how the program makes its way up a `staircase', one step at a time.
+Also you see that the cascading conditional construct we used here conveniently permits the creation
 of intermediate variables.
 
 
@@ -735,8 +735,8 @@ of intermediate variables.
     tree'.}]
     {if-else/lca.java}
 \end{clisting}
-Earlier we pointed out the strict ordering in staircase conditional.
-To illustrate how the order of tests affects the construct of staircase conditional,
+Earlier we pointed out the strict ordering in cascading conditional.
+To illustrate how the order of tests affects the construct of cascading conditional,
 let's consider the problem:
 \begin{quote}
     ``determining the lowest common ancestor of two values in a binary search tree.''
@@ -744,7 +744,7 @@ let's consider the problem:
 By the nature of binary search tree and the problem requirements, the number of `special' cases
 is large.
 If not designed properly, the code of handling all the cases can blow up like a nightmare.
-However, with a properly designed staircase conditional as we are going to show next,
+However, with a properly designed cascading conditional as we are going to show next,
 a handful of lines are sufficient to handle the myriad possibilities.
 Take a look at ~\autoref{lst:if-stack-lca}.
 The cases are built from ground up like this:
@@ -821,7 +821,7 @@ But the nested logic may be overly complicated to those who dig into the code.
 Thankfully, keyword \code{continue} comes to rescue in this niche use case---\code{continue}
 is meant to skip the inapplicable part of the loop body.
 As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly aligned,
-compact, sequential statements, that essentually of a `staircase conditional'.
+compact, sequential statements, that essentually of a `cascading conditional'.
 \begin{clisting}[ht]
     \lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
     label={lst:continue-in-loop-conditional}]
@@ -848,5 +848,5 @@ For a real-world application of conditional application in a loop, one may turn 
 %Many of the topics overlap between here and there.
 %So we are going to stop here and defer fuller presentation accordingly.
 
-%Like a complex protein molecule, the conditional statements are assembled into a staircase conditional in
+%Like a complex protein molecule, the conditional statements are assembled into a cascading conditional in
 %resemblance of hierarchical structures and together they perform the processing in a stateful loop.

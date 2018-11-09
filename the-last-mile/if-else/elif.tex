@@ -428,8 +428,11 @@ A sequence of three or more tightly coupled conditional statements as shown in
 ~\autoref{lst:simpleBranching} is probably familiar to reader.
 Many times, it begins with an \code{if}-conditional, optionally followed by one or more
 \code{else if} (or \code{elif}) blocks, and optionally ends with an \code{else} block.
-Occasionally it may do away with \code{else if} and simply be a series of \code{if}-conditional,
-especially with \code{return} or \code{break} statements.
+Occasionally, we may be able to get away with a sequence of
+\code{if} statements (instead of `\code{else if}' or \code{elif})
+with \code{return}, \code{continue}, or \code{break} statements,
+when the construct is the last statement to be executed in a function or a loop construct.
+
 
 Regardless of the form, the distinguishing characteristics are
 the `tight coupling' and `sequential order' among the conditional statements.
@@ -706,27 +709,26 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
 %TODO
 %Remove redundant, exaggerating words or tones.
 
-We have elaborated a lot about cascade above.
+We have elaborated how to construct optimal cascade conditional above.
 Let us demonstrate the effectiveness of cascading conditional through real-world use cases.
-
-
+The first example is a \java~ implementation of the `\code{equals}' method with a
+beautiful cascading conditional design shown in ~\autoref{lst:if-stack-equals}.
 \begin{clisting}
     \lstinputlisting[label={lst:if-stack-equals},
     caption={Example implementation overriding \code{equals} in a subclass}]
     {if-else/equals.java}
 \end{clisting}
-Let's first take a look at a typical \code{equals} method in a subclass that overrides
-the default implementation in \java.
-As shown in ~\autoref{lst:if-stack-equals},
-the first condition we test is the nullity of the argument.
-Only if it is not null will we move on to the second condition, namely, whether it is of type
-\code{MyClass}.
-Only if it is not null \emph{and} is of type \code{MyClass} will we do a type cast
-and perform pairwise equality tests between member variables of
-\code{this} instance and \code{that} instance.
-Once again, you see how the program makes its way up a `staircase', one step at a time.
-Also you see that the cascading conditional construct we used here conveniently permits the creation
-of intermediate variables.
+Here the first condition tested is the nullity of the argument for reasons detailed previously.
+Only if it survives the nullity test will the control flows on to the next condition.
+Next, it is type test---checking if the object is of type `\code{MyClass}'.
+These first two steps are like outposts guarding the vulnerable rest of the logic.
+Only after the program endures both tests do we perform the remaining logic, \textit{i.e.}, type
+cast and member variables equality checks.
+
+From this case, you can see how the program makes its way up a `staircase', one step at a time,
+marching straight through the key conditions wasting no resource on unnecessary or redundant checks.
+Also you see that the cascading conditional construct in this case permits
+convenient creation of intermediate variables.
 
 
 \begin{clisting}
@@ -735,12 +737,73 @@ of intermediate variables.
     tree'.}]
     {if-else/lca.java}
 \end{clisting}
-Earlier we pointed out the strict ordering in cascading conditional.
-To illustrate how the order of tests affects the construct of cascading conditional,
-let's consider the problem:
+Let us now consider a second example---
 \begin{quote}
-    ``determining the lowest common ancestor of two values in a binary search tree.''
+    ``Find the lowest common ancestor of given two keys in a binary search tree.''
 \end{quote}
+
+The `lowest common ancestor' (LCA) problem has many variations and the problem we are to solve
+here is a much simplified version.
+Even so, the numerous special cases enticing for a special treatment can be
+overwhelming to an unprepared mind.
+Among others, here is an incomplete list that bombard my head immediately:
+\begin{itemize}
+    \item Null BST
+    \item Identical keys
+    \item Duplicate keys in BST
+    \item Invalid BST
+    \item Skewness in BST
+    \item Non-existing keys
+    \item First key on the left subtree of root node, second key on the right subtree
+    (\textit{a.k.a} FLSR)
+    \item First key on the right subtree of root node, second key on the left subtree
+    (\textit{a.k.a} FRSL)
+    \item Two keys are on different subtrees of the root node.
+    (\textit{a.k.a} STRADDLING-KEYS)
+    \item Both keys on the left subtree (LEFT-SKEWED)
+    \item Both keys on the right subtree (RIGHT-SKEWED)
+\end{itemize}
+
+Equipped with the techniques explained earlier, we are chilled since we know that we need to
+go through the cases and eliminate some cases or renegotiate some as `non-special'.
+Our worksheet is presented in ~\autoref{tbl:case-walk-thru} and this will provide some insights
+for next step.
+
+
+\begin{table}[bth]
+    \begin{center}
+        \caption{
+        \label{tbl:case-walk-thru}}
+        \begin{tabular}{|p{.3\textwidth}|p{.4\textwidth}|p{.3\textwidth}|}
+            \hline
+            Case & Description & Replacement \\
+            \hline
+            `Identical keys' & No special handling & N/A \\
+            \hline
+            `Duplicate keys in BST' & Benign, slack behavior & N/A \\
+            \hline
+            `Invalid BST' & BST properties assumed to hold & N/A \\
+            \hline
+            `Skewness in BST' & This may cause deteriorated perf but no special handling & N/A  \\
+            \hline
+            `FLSR' & Two keys straddling the root & complement of `LEFT-SKEWED' or `RIGHT-SKEWED' \\
+            \hline
+            `FRSL' & \textit{ditto} & complement of `LEFT-SKEWED' or `RIGHT-SKEWED' \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+To sum up, the remaining `true' distinct cases needing special handling are
+\begin{itemize}
+    \item Null BST
+    \item Non-existing keys
+    \item `LEFT-SKEWED'
+    \item `RIGHT-SKEWED'
+    \item `STRADDLING-KEYS'
+\end{itemize}
+This is what we can handle.
+
 By the nature of binary search tree and the problem requirements, the number of `special' cases
 is large.
 If not designed properly, the code of handling all the cases can blow up like a nightmare.

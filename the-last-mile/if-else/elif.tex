@@ -582,7 +582,7 @@ situation: \textit{less than},\textit{equals}, or \textit{greater than}.
 Usually one does not need to test all three separately.
 Instead, one only need to test two of the three---\textit{e.g.}  test for \code{less than} and
 \code{greater than} and if both fail then it must be the third case.
-Similarly in ~\autoref{lst:if-stack-lca}, one faces the quadchotomy: both keys
+Similarly in ~\autoref{lst:lca-skew-first}, one faces the quadchotomy: both keys
 located on the left subtree, on the right subtree, key \code{a} on left subtree and key \code{b} on
 right, or vice versa.
 But I combined the cases such that only three cases are necessary: that both keys are located on
@@ -601,15 +601,14 @@ tests within the cascading conditional.
 
 
 Another clue comes from trichotomy or quadchotomy logic as we considered in the second step.
-Using the example in ~\autoref{lst:if-stack-lca} again, I first test if both keys are
+Using the example in ~\autoref{lst:lca-skew-first} again, I first test if both keys are
 located on the left or right.
 If neither, then it must be the straddling case.
 I did not start with the straddling case because that test is in the `middle of the thick'.
 If I do it first, I still have to chase down the left and back down the right.
 It is a total waste.
-Generally speaking, it is not the best choice to scoop out a case in the middle.
-Instead, we start with isolated, corner cases first and gradually working our way
-into the thick of the puzzle.
+Generally speaking, we should start with more `exposed', more accessible `edge cases' or `corner
+cases' and gradually working our way into the thick of the puzzle.
 
 
 More clues may be based on convenience or convention (following left \textit{v.s.}
@@ -731,21 +730,21 @@ Also you see that the cascading conditional construct in this case permits
 convenient creation of intermediate variables.
 
 
-\begin{clisting}
-    \lstinputlisting[label={lst:if-stack-lca},
-    caption={An solution for `Find the lowest common ancestor in a binary search
-    tree'.}]
-    {if-else/lca.java}
-\end{clisting}
 Let us now consider a second example---
 \begin{quote}
     ``Find the lowest common ancestor of given two keys in a binary search tree.''
+    The function signature can be
+    \begin{lstlisting}
+        Node findAncestor(Node root, int a, int b);
+    \end{lstlisting}
 \end{quote}
 
 The `lowest common ancestor' (LCA) problem has many variations and the problem we are to solve
 here is a much simplified version.
 Even so, the numerous special cases enticing for a special treatment can be
 overwhelming to an unprepared mind.
+By the nature of binary search tree, a linked data structure, and the combinations of two integers,
+the number of `special' cases is large.
 Among others, here is an incomplete list that bombard my head immediately:
 \begin{itemize}
     \item Null BST
@@ -754,22 +753,19 @@ Among others, here is an incomplete list that bombard my head immediately:
     \item Invalid BST
     \item Skewness in BST
     \item Non-existing keys
-    \item First key on the left subtree of root node, second key on the right subtree
+    \item Key \code{a} on the left subtree of \code{root} and key \code{b} on the right
     (\textit{a.k.a} FLSR)
-    \item First key on the right subtree of root node, second key on the left subtree
+    \item Key \code{b} on the left subtree of \code{root} and key \code{a} on the right
     (\textit{a.k.a} FRSL)
-    \item Two keys are on different subtrees of the root node.
-    (\textit{a.k.a} STRADDLING-KEYS)
+    \item Two keys are on different subtrees of the \code{root} (\textit{a.k.a} STRADDLING-KEYS)
     \item Both keys on the left subtree (LEFT-SKEWED)
     \item Both keys on the right subtree (RIGHT-SKEWED)
 \end{itemize}
 
+If not designed properly, the code of handling all the cases can blow up like a nightmare.
 Equipped with the techniques explained earlier, we are chilled since we know that we need to
 go through the cases and eliminate some cases or renegotiate some as `non-special'.
-Our worksheet is presented in ~\autoref{tbl:case-walk-thru} and this will provide some insights
-for next step.
-
-
+Our worksheet is presented in ~\autoref{tbl:case-walk-thru}.
 \begin{table}[bth]
     \begin{center}
         \caption{
@@ -793,42 +789,83 @@ for next step.
         \end{tabular}
     \end{center}
 \end{table}
-
-To sum up, the remaining `true' distinct cases needing special handling are
+As a result, there remains a handful of distinct cases needing special handling:
 \begin{itemize}
     \item Null BST
     \item Non-existing keys
+    \item `STRADDLING-KEYS'
     \item `LEFT-SKEWED'
     \item `RIGHT-SKEWED'
-    \item `STRADDLING-KEYS'
 \end{itemize}
-This is what we can handle.
+This is certainly what we can handle with a handful of lines.
 
-By the nature of binary search tree and the problem requirements, the number of `special' cases
-is large.
-If not designed properly, the code of handling all the cases can blow up like a nightmare.
-However, with a properly designed cascading conditional as we are going to show next,
-a handful of lines are sufficient to handle the myriad possibilities.
-Take a look at ~\autoref{lst:if-stack-lca}.
-The cases are built from ground up like this:
+
+Next, let's see in what order we should arrange these cases.
+Apparently, all other tests depends on a non-null \code{root}.
+So obviously we should perform nullity test of root before everything else.
+But What next?
+
+First, it seems that the existence in the BST of the keys \code{a} and \code{b} may be
+quite informative.
+If one or the other key or both do not exist in the tree, then we can simply return \code{null}.
+Alternatively, we can pursue `skewed' cases: if the two keys happen to lie on the same side of
+\code{root}, we can rule out the branch on the other side---and this is doable
+without first locating the keys.
+Talking about `skewed' cases, another way we can do is to rule out skewness if we can prove the keys
+actually `straddle' the \code{root} node.
+
+
+Which test should we pursue next?
+We probably don't know better until we work some examples out, at the price of implementing extra
+solutions only to be thrown away.
+But on the other hand, any further reasoning seems merely empty talk on the paper.
+So let's pay the price and implement all three arrangements (~\autoref{lst:lca-straddle-first},
+~\ref{lst:lca-skew-first}, and ~\ref{lst:lca-exist-first}).
+\begin{clisting}
+    \lstinputlisting[label={lst:lca-straddle-first},
+    caption={Solution for LCA---identifying straddling case first'.}]
+    {if-else/lca_straddle_first.java}
+    \lstinputlisting[label={lst:lca-skew-first},
+    caption={Solution for LCA---identifying skewness cases first'.}]
+    {if-else/lca.java}
+    \lstinputlisting[label={lst:lca-exist-first},
+    caption={Solution for LCA---identifying existence of keys first'.}]
+    {if-else/lca_existence_first.java}
+\end{clisting}
+
+By implementing the alternatives, we gain some insights.
+First of all, the redundant comparisons between key values and \code{root} node value in
+~\autoref{lst:lca-straddle-first} seems to indicate that
+finding out if the two keys straddle the \code{root} node first does not put us
+on better footing---we still have to determine if the skewness is to the left or the right
+afterward.
+This seems to corroborate our earlier analysis.
+Maybe cases in the middle should never be the first to attack.
+
+Secondly, identifying the existences of the keys seems independent from tracking down the
+skewness of the keys and both are needed and the order can be permuted.
+Code-wise, there is no apparent advantage either way.
+But there is a slight advantage of determining the skewness of keys---by narrowing down the
+subtree the keys are both located, if any, the search for keys will be easier.
+I say `slight' in the light of a balanced BST where the search for key has logarithmic runtime
+complexity.
+But in the extreme case when the BST is skewed, then the performance could be a significant issue.
+Do I risk of `premature optimization'?
+I don't think so.
+Quoting the full of Donald Knuth ``We should forget about small efficiencies,
+say about $97\%$ of the time: premature optimization is the root of all evil.
+Yet we should not pass up our opportunities in that critical $3\%$.''
+This case probably falls squarely in the $3\%$.
+
+So all in all, the best sequence of cases for the LCA as has been tested out is as follows:
 \begin{enumerate}
-    \item Test for nullity;
-    \item Test for necessity of left branching;
-    \item Test for necessity of right branching;
-    \item Test for existence of keys;
-    \item Final case;
+    \item Nullity test for \code{root};
+    \item Left skewness test;
+    \item Right skewness test;
+    \item Existence test for both keys;
+    \item Tail case (return \code{root});
 \end{enumerate}
-Note later statements are built on the assertions of previous tests---\textit{e.g.}, test for
-left/right branching requires the non-null attributes of root otherwise the code will throw
-\code{NullPointerException}.
 
-% TODO
-% Provide comparisons of alternative tests
-% for example,
-% test for nullity
-% test for straddling
-% test for left
-% test for right
 
 \section{Conditional statements in a loop}\label{sec:branchinginloop}
 
@@ -898,7 +935,6 @@ into a separate function---the only change needed is to replace
     label={lst:refactored-in-loop-conditional}]
     {if-else/zoo_animal_health_exam_refactored.py}
 \end{clisting}
-
 
 
 Loop constructs will be discussed at length in ~\autoref{ch:loops} and ~\fullref{ch:loop-thinning}.

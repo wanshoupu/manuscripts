@@ -426,21 +426,21 @@ idempotence and mutability in ~\fullref{ch:ood}.
 
 A sequence of three or more tightly coupled conditional statements as shown in
 ~\autoref{lst:simpleBranching} is probably familiar to reader.
+Similar structures are not uncommon even in programing primer books.
 Many times, it begins with an \code{if}-conditional, optionally followed by one or more
 \code{else if} (or \code{elif}) blocks, and optionally ends with an \code{else} block.
-Occasionally, we may be able to get away with a sequence of
-\code{if} statements (instead of `\code{else if}' or \code{elif})
-with \code{return}, \code{continue}, or \code{break} statements,
-when the construct is the last statement to be executed in a function or a loop construct.
+For the sake of discussion in this book, we refer to such a train of conditional statements
+collectively as `\emph{cascading conditional construct}';
+sometimes we use `\emph{cascading conditional}', even simply `\emph{cascade}',
+or shorthand \emph{CCC}  interchangeably.
 
-
-Regardless of the form, the distinguishing characteristics are
-the `tight coupling' and `sequential order' among the conditional statements.
-Similar structures even appears in programing primer books.
-Here we refer to such a train of conditional statements as `\emph{cascading conditional construct}',
-for its resemblance to a flight of stairs built on one another.
-Sometimes `\emph{cascading conditional}', `\emph{cascade}', or the shorthand \emph{CCC} will be
-used interchangeably in this book.
+Occasionally when it is the last statement to be executed in a function
+or a loop, cascading conditional may take the form of a sequence of \code{if} statements
+in conjunction with \code{return}, \code{continue},
+\code{break}, \code{exit}, \code{yield} and other branching statements (instead
+of `\code{if..elif..elif..}').
+Regardless of the form, the distinguishing characteristics of a cascading conditional are
+the `tight coupling' and `sequential order' among the constituent conditional statements.
 Below are some examples of cascading conditionals
 \begin{clisting}[h]
     \begin{minipage}[t]{.4\textwidth}
@@ -460,14 +460,14 @@ Below are some examples of cascading conditionals
 %the block, or \code{break} and \code{continue} statements if used in a loop construct
 %(conditional statement in loop will be discussed later in this chapter and in ~\autoref{ch:loops})
 
-Cascading conditional is offered as an alternative to nested conditionals
+Cascading conditional is often used as a superior alternative to nested conditionals
 when facing multi-branch switching.
 As ~\autoref{lst:nestedBranching} shows at the beginning of this chapter,
 nested conditionals may be used for multi-branch switching.
 However as the number of branches increases, nesting level as well as indentation level goes deeper.
 The logic becomes unwieldy before long.
-As ~\autoref{lst:simpleBranching} shows, cascading
-conditional offers compact logic and simple layout for multi-branch switching.
+In contrast, cascading conditional offers compact logic and simple layout,
+as shown in ~\autoref{lst:simpleBranching}.
 
 
 Though cascading conditionals are ubiquitous in programming,

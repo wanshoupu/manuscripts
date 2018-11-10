@@ -899,34 +899,21 @@ Let's illustrate this in the following problem
 Due to the complexity of animal taxonomy, coding up a correct and elegant conditional statements
 with no code duplication is not straightforward.
 Some developers may introduce `slightly' duplicate code as in
-~\autoref{lst:dup-code-in-loop-conditional}.
+\lstinputlisting{if-else/zoo_animal_health_exam_dup_code.py}
 However the seemingly innocent code duplication will bite at occasions, say,
 when new species such as `reptiles' or `crustaceans' join the zoo.
 Some may resort to nested conditional statements such as
-~\autoref{lst:no-continue-in-loop-conditional}.
-\begin{clisting}[t]
-    \lstinputlisting[caption={Conditional statements with hint of code duplication.},
-    label={lst:dup-code-in-loop-conditional}]
-    {if-else/zoo_animal_health_exam_dup_code.py}
-\end{clisting}
-But the nested logic may be overly complicated to those who dig into the code.
-
-\begin{clisting}[t]
-    \lstinputlisting[caption={Nested conditional statements in a loop.},
-    label={lst:no-continue-in-loop-conditional}]
-    {if-else/zoo_animal_health_exam_nested_cond.py}
-\end{clisting}
+\lstinputlisting{if-else/zoo_animal_health_exam_nested_cond.py}
+But the nested conditional statements makes the logic visually more complicated than it actually is.
 
 
 Thankfully, keyword \code{continue} comes to rescue in this niche use case---\code{continue}
 is meant to skip the inapplicable part of the loop body.
 As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly aligned,
 compact, sequential statements, that essentially of a `cascading conditional'.
-\begin{clisting}[ht]
-    \lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
-    label={lst:continue-in-loop-conditional}]
-    {if-else/zoo_animal_health_exam_continue.py}
-\end{clisting}
+\lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
+label={lst:continue-in-loop-conditional}]
+{if-else/zoo_animal_health_exam_continue.py}
 If desired, one may easily refactor the loop-body in ~\autoref{lst:continue-in-loop-conditional}
 into a separate function---the only change needed is to replace
 \code{continue} with \code{return} (see ~\autoref{lst:refactored-in-loop-conditional}).

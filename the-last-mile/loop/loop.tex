@@ -5,18 +5,26 @@
 
 \chapter{Tighten Up Slack Loops} \label{ch:loops}
 
-All major programming languages feature one or more loop types as control flow and
-it is one of the most widely used building block.
-Loop is a programing productivity amplifier---with a static loop body and
-a scarce of overhead code (\textit{e.g.}, loop variables), the loop may be executed as many
-times as needed.
-But many developers often haphazardly stumble upon a first-working loop and settle.
-Seldom anyone would try to think about the difference between the varieties of loops,
-even fewer people would try different loop structures and loop types and see
-which best fits the current situation.
-This is so not because these developers have no appetite for better code.
-A majority of them are not even aware that conscious choice of loop types and structures can make a
-marked difference in the quality of code.
+As one of the most widely used building block, loop is a programing productivity amplifier---with
+a static body and some nominal overheads (\textit{e.g.}, loop variables),
+a loop can be executed as many times as needed.
+Almost all major programming languages feature one or more loop constructs.
+
+Such a key building block of program deserves effort of every developer to study its best
+practices before moving on to more complex patterns.
+But as a matter of fact,  loops committed in production codebase were clearly poorly
+designed, surrounded with floppy code before and after.
+That is clearly the first `working' version a developer haphazardly stumbled upon without
+any optimization.
+
+Have you ever pondered why the varieties of loops constructs?
+Have you deliberately tried out a few loop constructs and chosen the best fit for a specific
+application?
+I wish your answer to these questions are both positive.
+%TODO
+%This is so not because these developers have no appetite for better code.
+%A majority of them are not even aware that conscious choice of loop types and structures can make a
+%marked difference in the quality of code.
 Therefore, I dedicate this chapter as a primer to the topic ``How to close your loop?''
 and I meant it literally.
 

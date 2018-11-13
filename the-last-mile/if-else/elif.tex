@@ -41,6 +41,9 @@ Then it will later become the roadblock for code refactor and reuse.
 Worse than that, hazy conditional condition often results in redundant/duplicate code.
 Gradually your business will be derailed from fast iteration.
 
+The following two segments of code does identical things:
+pop from one of the two ends of a \code{deque} and append it to a list \code{result}.
+\lstinputlisting{if-else/test1_test2_append.py}
 
 %I don't blame the author of twisted code and intertwined logic, which
 %are often the victorious output of a fierce battle fought by gallant developers.

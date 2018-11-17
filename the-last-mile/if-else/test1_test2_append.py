@@ -1,14 +1,14 @@
 # verbose
 if a < 0:
-    if interm[-1] > interm[0]:
-        result.append(interm.popleft())
+    if q[-1] > q[0]:
+        arr.append(q.popleft())
     else:
-        result.append(interm.pop())
+        arr.append(q.pop())
 else:
-    if interm[-1] < interm[0]:
-        result.append(interm.popleft())
+    if q[-1] < q[0]:
+        arr.append(q.popleft())
     else:
-        result.append(interm.pop())
+        arr.append(q.pop())
 
 #one-liner
-result.append(interm.popleft() if (a < 0) == (interm[-1] > interm[0]) else interm.pop())
+arr.append(q.popleft() if (a < 0) == (q[-1] > q[0]) else q.pop())

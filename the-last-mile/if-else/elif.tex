@@ -19,13 +19,37 @@ flow for pivoting execution path based on the on-the-fly evaluation of a boolean
 ``Are you going to reinvent the pedestrian or what?'' you may be wondering.
 %Just because some topic is `well-known' does not mean that folks can or will do it right.
 Sure enough, as a universal building block, ``\code{if..else}'' is in everyone's toolbox.
-But it is my observation that
-writing optimal conditional statements and succinct logic remains an ``advanced'' coding
-skill that remains a rare trait of top developers.
-As a result, `working' but convoluted logic makes it way to production codebase.
+In my case, about $40\%$ of my development time is spent on write
+conditionals like ``\code{if..else}'' (with the another $40\%$ goes to designing loops and $20\%$
+for everything else).
+But it is my observation that writing optimal conditional statements and
+succinct logic remains an ``advanced'' coding skill that remains a rare trait of top developers.
+As a result, `working' but convoluted logic makes its way to production codebase abundantly.
 % convoluted conditional
 %But it is seldom the case that the first version of implementation of any non-trivial logic, if
 %correct at all, is optimal.
+Doubt it?
+Let's take on a challenge---
+\begin{quote}
+    ``Given a \code{boolean} flag, a \code{deque}, and a \code{list}, one
+    needs to pop one item from either end of the \code{deque} and append it
+    to the \code{list} and the following is the rule for the pop operation:
+    \begin{enumerate}
+        \item if \code{flag = true}, pop from the minimum end of the \code{deque};
+        \item Otherwise, pop from the maximum end.
+    \end{enumerate}
+    One can assume the \code{deque} is non-empty.''
+\end{quote}
+%pop from one of the two ends of a \code{deque} and append the popped item to a list \code{result}.
+Please pause here for few minutes to think about what the code might look like before turning the
+page.
+\clearpage
+If you come up with the following solution, you scored $100\%$.
+\lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
+If you can turn this blob into a one-liner, you have my congratulations!
+\lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
+But if you haven't made it your habit to strive for this level of succinctness in coding,
+then the rest of this chapter is just for you.
 
 
 ``As long as it works, who cares if the logic is the simplest?'' some may insist.
@@ -40,10 +64,6 @@ Good programmers write code that humans can understand\cite{Fowler1999}.''
 Then it will later become the roadblock for code refactor and reuse.
 Worse than that, hazy conditional condition often results in redundant/duplicate code.
 Gradually your business will be derailed from fast iteration.
-
-The following two segments of code does identical things:
-pop from one of the two ends of a \code{deque} and append it to a list \code{result}.
-\lstinputlisting{if-else/test1_test2_append.py}
 
 %I don't blame the author of twisted code and intertwined logic, which
 %are often the victorious output of a fierce battle fought by gallant developers.
@@ -869,6 +889,12 @@ So all in all, the best sequence of cases for the LCA as has been tested out is 
     \item Tail case (return \code{root});
 \end{enumerate}
 
+\subsection{How to refactor nested conditionals to cascading conditionals}
+
+\code{lookup} is a dictionary (or a \code{HashMap}) with integer key and \code{Array} value.
+\lstinputlisting[lastline=12]{if-else/nested_conditional_2_cascading_conditional.py}
+\clearpage
+\lstinputlisting[firstline=14]{if-else/nested_conditional_2_cascading_conditional.py}
 
 \section{Conditional statements in a loop}\label{sec:branchinginloop}
 

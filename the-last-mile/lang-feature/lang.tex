@@ -10,6 +10,19 @@ tricks
 \lstinputlisting{lang-feature/reshape_double_comprehension.py}
 \lstinputlisting{lang-feature/reshape_iter.py}
 
+graph traversal iterator:
+    def graphIterator(self, i):
+        uncharted = [i]
+        discovered = set()
+        while uncharted:
+            j = uncharted.pop()
+            if j in discovered:
+                continue
+            discovered.add(j)
+            uncharted.extend(self.graph[j])
+            yield j
+
+
 \section{Java}\label{sec:java}
 \subsection{Streaming}\label{subsec:streaming}
 \subsection{Container}\label{subsec:container}

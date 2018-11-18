@@ -3,7 +3,7 @@
 %% 11/18/18
 %%
 
-\section{Cascading Conditionals}\label{sec:conditional-cascade}
+\chapter{Cascading Conditionals}\label{ch:conditional-cascade}
 
 A sequence of three or more tightly coupled conditional statements as shown in
 ~\autoref{lst:simpleBranching} is probably familiar to reader.
@@ -66,7 +66,7 @@ examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, \textit{etc.}
 Early we pointed out characteristics of a cascading conditional.
 Let us elaborate on them.
 
-\subsection{Cumulative Tests in Cascading Conditional}\label{subsec:cumulativeTests}
+\section{Cumulative Tests in Cascading Conditional}\label{sec:cumulativetests}
 
 The tests in cascading conditional has cumulative effect.
 To understand what this is and why, let us see how cascading conditional is executed.
@@ -115,8 +115,8 @@ From this point of view, working out an expanded non-cascading equivalent such a
 when debugging cascading conditional in ~\autoref{lst:cumulative-tests-cascade}.
 
 
-\subsection{How to Arrange Conditionals in Cascading Construct}
-\label{subsec:orderingStaircaseConditional}
+\section{How to Arrange Conditionals in Cascading Construct}
+\label{sec:orderingstaircaseconditional}
 
 Therefore arranging the conditionals in a cascading conditional construct is the key
 from every point of view.
@@ -232,7 +232,7 @@ The price of a missing test is either an obnoxious exception or a silently incor
 %What aspects should one consider when arranging conditional statements?
 
 
-\subsection{Tight Coupling among Conditional Statements}\label{subsec:tightCoupling}
+\section{Tight Coupling among Conditional Statements}\label{sec:tightcoupling}
 
 The conditional statements in a cascading conditional are usually so tightly coupled that
 %there is no gap even for a needle.
@@ -285,7 +285,7 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
     \end{minipage}
 \end{clisting}
 
-\subsection{Case Study}\label{subsec:caseStudy}
+\section{Case Study}\label{sec:casestudy-cascif}
 %TODO
 %Remove redundant, exaggerating words or tones.
 
@@ -447,7 +447,7 @@ So all in all, the best sequence of cases for the LCA as has been tested out is 
     \item Tail case (return \code{root});
 \end{enumerate}
 
-\subsection{Unnest nested conditionals}\label{subsec:unnestNestedConditionals}
+\section{Unnest nested conditionals}\label{sec:unnestnestedconditionals}
 
 Above, through case studies, we formed step-by-step formula on how to produce cascading
 conditionals from scratch.

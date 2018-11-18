@@ -13,7 +13,7 @@ Many times, it begins with an \code{if}-conditional, optionally followed by one 
 For the sake of discussion in this book, we refer to such a train of conditional statements
 collectively as `\emph{cascading conditional construct}';
 sometimes we use `\emph{cascading conditional}', even simply `\emph{cascade}',
-or shorthand \emph{CCC}  interchangeably.
+or shorthand \emph{CC}  interchangeably.
 
 Occasionally when it is the last statement to be executed in a function
 or a loop, cascading conditional may take the form of a sequence of \code{if} statements
@@ -26,12 +26,12 @@ Below are some examples of cascading conditionals
 \begin{clisting}[h]
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:cascadeCondElif},
-        caption={CCC in \python}]
+        caption={CC in \python}]
         {if-else/staircase_conditional.py}
     \end{minipage}\hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:cascadeCondReturn},
-        caption={CCC with keyword \code{return}}]
+        caption={CC with keyword \code{return}}]
         {if-else/staircase_conditional_return.py}
     \end{minipage}
 \end{clisting}
@@ -41,7 +41,7 @@ Below are some examples of cascading conditionals
 %the block, or \code{break} and \code{continue} statements if used in a loop construct
 %(conditional statement in loop will be discussed later in this chapter and in ~\autoref{ch:loops})
 
-Cascading conditional is often used as a superior alternative to nested conditionals
+Cascading conditional is often used as a better alternative to nested conditionals
 when facing multi-branch switching.
 As ~\autoref{lst:nestedBranching} shows at the beginning of this chapter,
 nested conditionals may be used for multi-branch switching.
@@ -52,15 +52,15 @@ as shown in ~\autoref{lst:simpleBranching}.
 
 
 Though cascading conditionals are ubiquitous in programming,
-developers' first experience with it often begins with haphazard stumbling upon,
+more often than not, developers' first experience with it begins with a `haphazard stumbling upon',
 because seldom any systematic discussion exists to clarify the best practices surrounding it.
 Used in conjunction with loops or recursive functions,
 cascading conditional is an important programming construct for algorithmic implementations,
 though it was not formally regarded as one in popular programming references.
 For practical reasons, I am going to explain the use patterns of cascading conditional in this
 section.
-But you will see its applications throughout this book---with
-examples in ~\fullref{ch:loops}, ~\fullref{ch:recursion}, \textit{etc.}
+But rest assured that you will see its applications throughout this book---in
+~\fullref{ch:loops}, ~\fullref{ch:recursion}, ~\fullref{lst:silhouette-skyline}, just to name a few.
 
 
 Early we pointed out characteristics of a cascading conditional.
@@ -228,7 +228,7 @@ The price of a missing test is either an obnoxious exception or a silently incor
 %Note that more often than not, one does not need one test per region.
 
 
-%Now how to order the conditional statements in a CCC?
+%Now how to order the conditional statements in a CC?
 %What aspects should one consider when arranging conditional statements?
 
 
@@ -273,13 +273,13 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
 
 \begin{clisting}
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Use a helper function in CCC},language=Java,
+        \lstinputlisting[caption={Use a helper function in CC},language=Java,
         alsolanguage=Java,label={lst:modified_tight_cascade_conditional},breaklines=false]
         {if-else/modified_tight_staircase_conditional.java}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{.4\textwidth}
-        \lstinputlisting[caption={Refactor CCC to another function},language=Java,
+        \lstinputlisting[caption={Refactor CC to another function},language=Java,
         alsolanguage=Java,label={lst:refactor_cascade_conditional},breaklines=false]
         {if-else/refactor_staircase_conditional.java}
     \end{minipage}

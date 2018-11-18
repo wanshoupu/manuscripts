@@ -3,7 +3,7 @@
 %% 7/14/18
 %%
 
-\chapter{Simplifying the Logic}\label{ch:organizeYourIfElse}
+\chapter{Simplifying Conditional Statements}\label{ch:organizeYourIfElse}
 
 %Conditional is a control switching mechanism to alter code execution path,
 %conditioned by boolean expressions.
@@ -35,10 +35,11 @@ Let's take on a challenge---
     needs to pop one item from either end of the \code{deque} and append it
     to the \code{list} and the following is the rule for the pop operation:
     \begin{enumerate}
-        \item if \code{flag = true}, pop from the minimum end of the \code{deque};
-        \item Otherwise, pop from the maximum end.
+        \item if \code{flag = true}, pop from the end of the \code{deque} where the value is
+        smaller;
+        \item Otherwise, the one larger.
     \end{enumerate}
-    One can assume the \code{deque} is non-empty.''
+    Assume the \code{deque} is non-empty.''
 \end{quote}
 %pop from one of the two ends of a \code{deque} and append the popped item to a list \code{result}.
 Please pause here for few minutes to think about what the code might look like before turning the
@@ -47,13 +48,18 @@ page.
 Now let's check each others' answers.
 The first solution is almost a literal translation of the rules:
 \lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
-The second solution is based on the first but is a refactored version.
+The second solution is based on the first but has turned it into a one-liner.
 \lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
 %But those who are not satisfied with the above solution and further simplified the blob
 %into a one-liner, \textit{e.g.}, have bonus.
-That is the difference between `good' and `great'.
-If you haven't made it your habit to strive for the `great' code, do not panic.
-The rest of this chapter is dedicated to show you how.
+Hopefully the difference is obvious to you.
+In my opinion, it is a difference between `good' and `great'.
+If you haven't made it a habit to strive for the `great' code, do not panic.
+I did not come up with the second solution from vacuum.
+Instead, I came up with the first one and by following a procedure, I `turned' it into the second
+one.
+This chapter is dedicated to the `How' question.
+
 
 ``As long as it works, who cares if the logic is the simplest?'' some may insist.
 'Barely working' solution often contains code that is buggy, brittle, verbose and/or smelly.
@@ -82,11 +88,10 @@ In this chapter, you are going to live through processes that turn bloated condi
 into simple logic.
 You will be exposed to plenty of examples and demonstrations on how to produce beautiful,
 succinct solution with simple techniques and due diligence.
-You will learn to how to avoid redundancy condition checking, how to construct
-`cascading conditional',
+You will learn to how to avoid redundancy condition checking,
 short-circuit evaluation and its application, how to restrain variable scopes, \textit{etc.}
-Especially, you will learn how to routinely arrive at the one-liner solution out
-of the `first working' one in the above challenge problem.
+You will gain skills that will routinely help you optimize your code from `good' to
+`great'.
 
 
 %Communicate clear, succinct code to colleagues and successors are much more efficient.

@@ -55,7 +55,13 @@ various levels of the hierarchy of matter, much information, functionalities of 
 as \emph{relationship between entities}, not the entities themselves.
 
 This following listing\ref{lst:longestDistinctCharSubstring} shows how to design away
-otherwise would-be messy code by creating small,powerful classes.
+otherwise would-be messy code by creating small, powerful classes.
+
+The behaviors of deleting entries if value is `empty' or some default value can be abstracted
+away by creating a specialty \code{dict} or \code{map} class.
+
+Not just `$0$' values, we can generalize the concept of `emptiness' to anything that evaluates to
+`\code{false}'---empty list, empty set, empty string, \code{None}, \code{null}, and so on.
 
 \lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
 label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/longest_k_uniq_char_substring.py}

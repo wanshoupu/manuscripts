@@ -44,26 +44,30 @@ Let's take on a challenge---
 Please pause here for few minutes to think about what the code might look like before turning the
 page.
 \clearpage
-If you come up with the following solution, you scored $100\%$.
+Now let's check each others' answers.
+The first solution is almost a literal translation of the rules:
 \lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
-If you can turn this blob into a one-liner, you have my congratulations!
+The second solution is based on the first but is a refactored version.
 \lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
-But if you haven't made it your habit to strive for this level of succinctness in coding,
-then the rest of this chapter is just for you.
-
+%But those who are not satisfied with the above solution and further simplified the blob
+%into a one-liner, \textit{e.g.}, have bonus.
+That is the difference between `good' and `great'.
+If you haven't made it your habit to strive for the `great' code, do not panic.
+The rest of this chapter is dedicated to show you how.
 
 ``As long as it works, who cares if the logic is the simplest?'' some may insist.
-Involved logic is like deposited grease, sooner or later it will get in
-your way.
-First, it fails the primary purpose of communication to other programmers
+'Barely working' solution often contains code that is buggy, brittle, verbose and/or smelly.
+It is like fat deposited over time, sooner or later they will get in your way.
 Steve McConnell said ``..the primary audience [of computer programs] is made up of humans,
 not computers\cite{Mcconnell.2004}.''
-Martin Fowler put it even more straightforward
+Martin Fowler puts it even more straightforward
 ``Any fool can write code that a computer can understand.
 Good programmers write code that humans can understand\cite{Fowler1999}.''
-Then it will later become the roadblock for code refactor and reuse.
-Worse than that, hazy conditional condition often results in redundant/duplicate code.
-Gradually your business will be derailed from fast iteration.
+So first it is an inefficient way of communication to other programmers.
+Even worse, it will later become the roadblock for code refactor and reuse.
+Hazy conditional condition often results in redundant/duplicate code.
+Gradually your business will be derailed from fast iteration due to the friction caused by
+long-standing technical debts.
 
 %I don't blame the author of twisted code and intertwined logic, which
 %are often the victorious output of a fierce battle fought by gallant developers.
@@ -81,6 +85,8 @@ succinct solution with simple techniques and due diligence.
 You will learn to how to avoid redundancy condition checking, how to construct
 `cascading conditional',
 short-circuit evaluation and its application, how to restrain variable scopes, \textit{etc.}
+Especially, you will learn how to routinely arrive at the one-liner solution out
+of the `first working' one in the above challenge problem.
 
 
 %Communicate clear, succinct code to colleagues and successors are much more efficient.
@@ -889,12 +895,36 @@ So all in all, the best sequence of cases for the LCA as has been tested out is 
     \item Tail case (return \code{root});
 \end{enumerate}
 
-\subsection{How to refactor nested conditionals to cascading conditionals}
+\subsection{Unnest nested conditionals}\label{subsec:unnestNestedConditionals}
 
-\code{lookup} is a dictionary (or a \code{HashMap}) with integer key and \code{Array} value.
-\lstinputlisting[lastline=12]{if-else/nested_conditional_2_cascading_conditional.py}
+Above, through case studies, we formed step-by-step formula on how to produce cascading
+conditionals from scratch.
+What if one works on existing code that contains suboptimal conditionals?
+For example condition the following code snippet where
+\code{lookup} is a dictionary (or a \code{HashMap}) with integer key and integer array value.
+Additionally, the integer arrays satisfy \code{heap} properties.
+\begin{clisting}
+    \lstinputlisting[label={lst:conditional-push-up-example},caption={},lastline=12]
+    {if-else/nested_conditional_2_cascading_conditional.py}
+\end{clisting}
+How do we go about to refactor nested conditionals to cascading conditionals?
+In this subsection, you are going to learn a technique dubbed as `construct push-up'.
+The key is to identify and promote a condition in the nested conditional so that it joins the
+upper level conditional to form a cascading conditional.
+
+Taking the ~\autoref{lst:conditional-push-up-example} as an example.
+%TODO
 \clearpage
 \lstinputlisting[firstline=14]{if-else/nested_conditional_2_cascading_conditional.py}
+
+Of course, cascading conditional may not be the best solution still.
+As you will learn later, the complexity of conditionals can usually be designed away with
+`object-oriented design'.
+This is indeed the case.
+The behaviors of deleting entries if value is `empty' or some default value can be abstracted
+away by creating a specialty \code{dict} or \code{map} class.
+We will talk about this in more details in ~\autoref{ch:ood}.
+
 
 \section{Conditional statements in a loop}\label{sec:branchinginloop}
 

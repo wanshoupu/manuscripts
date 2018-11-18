@@ -459,13 +459,31 @@ Additionally, the integer arrays satisfy \code{heap} properties.
     \lstinputlisting[label={lst:conditional-push-up-example},caption={},lastline=12]
     {if-else/nested_conditional_2_cascading_conditional.py}
 \end{clisting}
-How do we go about to refactor nested conditionals to cascading conditionals?
-In this subsection, you are going to learn a technique dubbed as `construct push-up'.
-The key is to identify and promote a condition in the nested conditional so that it joins the
-upper level conditional to form a cascading conditional.
+How do we go about with refactoring nested conditionals?
+We are going to present a technique, dubbed `conditional push-up', that is designed to convert
+a nested conditional to a cascading one.
+The technique is very simple.
+First, identify conditions in the targeted nested conditionals.
+Then, promote these conditionals to the upper level so that the conditions are merged.
+The rest of the task is identical to what we have discussed above in order
+to form a cascading conditional.
 
-Taking the ~\autoref{lst:conditional-push-up-example} as an example.
+
+Taking the ~\autoref{lst:conditional-push-up-example} as an example, let us go over the process.
+At first sight one may be intimidated by the fact that the nested if is buried in the
+middle of the block.
+Refactoring a nested conditional in the middle of a block is risky as it may introduce duplicate
+code.
+But just as a quantum tunneling is not guaranteed to find lower local minima,
+no refactor attempt is guaranteed to succeed.
+Particularly this one.
+One will never leave the starting point with excessive expectation of a guaranteed,
+luxurious happy ending.
+
+But observing the an overly unbalanced \code{if..else} blocks, I perceive a strong signal
+that compels me to refactor it.
 %TODO
+
 \clearpage
 \lstinputlisting[firstline=14]{if-else/nested_conditional_2_cascading_conditional.py}
 
@@ -474,13 +492,17 @@ Through the above example, I want to urge the reader to form a `code-sense', an 
 of thinking.
 When coming to a similar situation, if one know what lean code would look like, one is more
 likely motivated to achieve such level of neatness.
+For example, as to when should one trigger the `conditional push-up' process, it is not simply
+``As soon as you spot one.''
+Usually when I spot nested conditionals \emph{accompanied} by duplicate code smell, I would
+consider refactor the code.
 
 
-Of course, cascading conditional may not be the best solution still.
-As you will learn later, the complexity of conditionals can usually be designed away with
+Of course, cascading conditional may not be the best solution still in occasions.
+As you will learn later, the complexity of conditionals may also be designed away with
 `object-oriented design'.
-This is indeed the case.
-The behaviors of deleting entries if value is `empty' or some default value can be abstracted
-away by creating a specialty \code{dict} or \code{map} class.
+As to when to make a call on what to choose, I think aside from the degree of code reuse, it is
+also a personal taste.
+But for ~\autoref{lst:conditional-push-up-example}, it happens to be such a case that OOD is a
+great choice.
 We will talk about this in more details in ~\autoref{ch:ood}.
-

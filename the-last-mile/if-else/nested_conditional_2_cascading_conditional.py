@@ -20,5 +20,6 @@ elif len(lookup[n]) == 1:
 else:
     # pop the top element, increment it,
     newVal = heappop(lookup[n]) + 1
-# push newVal back
-heappush(lookup[n + 1], newVal)
+    # push newVal back
+    heappush(lookup[n + 1], newVal)
+

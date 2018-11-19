@@ -30,9 +30,12 @@ else
     exit 1
 fi
 
-echo "$SCRIPT_DIR/LatexClean $MAIN_SRC"
+echo "LatexClean $MAIN_SRC"
 
-cmd="'tell app \"Preview\" to close document \"$MAIN_SRC.pdf\"'"
+# This is Mac specific command
+#readerApp="/Applications/Adobe Acrobat Reader DC.app/Contents/MacOS/AdobeReader"
+readerApp=Preview
+cmd="'tell app \"$readerApp\" to close document \"$MAIN_SRC.pdf\"'"
 echo $cmd| xargs osascript -e
 $SCRIPT_DIR/LatexClean $MAIN_SRC
 
@@ -113,6 +116,7 @@ if [ -e $MAIN_SRC.idx ]; then
 fi
 
 if [ -e $MAIN_SRC.pdf ]; then
- # This is Mac specific command
-    open -a Preview $MAIN_SRC.pdf
+    echo "Opening $MAIN_SRC.pdf"
+    $SCRIPT_DIR/LatexOpen $MAIN_SRC.pdf 0 "$readerApp"
 fi
+exit 0

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+USAGE="
+# USAGE ############## USAGE ############## USAGE ############## USAGE ##############
+# Applescript to turn to page # on File                                             #
+# $1: file name                                                                     #
+# $2: page number (optional, default first page)                                    #
+# $3: the application to use when opening (optional, default 'Preview')             #
+# Exception: if file / page number does not exist, do nothing                       #
+#####################################################################################
+"
+
+FILE="$1"
+PAGE="${2:-1}"
+APPLICATION="${3:-Preview}"
+
+open -a "$APPLICATION" "$FILE"
+exit 0
+osascript <<EOF
+set pageNumber to $PAGE
+set fileName to "$FILE"
+set appName to "$APPLICATION"
+set posixFile to POSIX file fileName
+#tell application "Preview" to open posixFile
+
+tell application "System Events"
+    keystroke "g" using {option down, command down}
+    keystroke pageNumber
+    keystroke return
+end tell
+
+tell application "Preview"
+	activate
+end tell
+EOF

@@ -449,49 +449,83 @@ So all in all, the best sequence of cases for the LCA as has been tested out is 
 
 \section{Unnest nested conditionals}\label{sec:unnestnestedconditionals}
 
-Above, through case studies, we formed step-by-step formula on how to produce cascading
-conditionals from scratch.
-What if one works on existing code that contains suboptimal conditionals?
-For example condition the following code snippet where
-\code{lookup} is a dictionary (or a \code{HashMap}) with integer key and integer array value.
-Additionally, the integer arrays satisfy \code{heap} properties.
+So far we focused on producing cascading conditionals from scratch step-by-step.
+What if one wants to refactor existing code concerning suboptimal conditionals?
+For example, consider a code snippet where there
+is a dictionary (or a \code{HashMap}) `\code{lookup}' whose key and value types are
+`\code{integer}' and `\code{integer}-array', respectively.
+Besides, each value is a min-heap\footnote{\url{https://en.wikipedia.org/wiki/Heap_
+(data_structure)}}.
+Suppose the dictionary \code{lookup} has default value filling mechanism so that
+if one attempts to get value by key `\code{lookup[key]}' and the key does not exist, then the
+dictionary will create a default value and put the key-value pair in the dictionary.
+This behavior is the default in \cpp STL `\code{std::map}' and
+is made possible in \python if created by the following
+\begin{lstlisting}
+    lookup = collections.defaultdict(list)
+\end{lstlisting}
+Lastly, for better or for worse, you inherited the following code snippet from someone else:
 \begin{clisting}
     \lstinputlisting[label={lst:conditional-push-up-example},caption={},lastline=12]
     {if-else/nested_conditional_2_cascading_conditional.py}
 \end{clisting}
-How do we go about with refactoring nested conditionals?
-We are going to present a technique, dubbed `conditional push-up', that is designed to convert
-a nested conditional to a cascading one.
-The technique is very simple.
-First, identify conditions in the targeted nested conditionals.
-Then, promote these conditionals to the upper level so that the conditions are merged.
-The rest of the task is identical to what we have discussed above in order
-to form a cascading conditional.
+How would you go about with refactoring nested conditionals?
 
 
-Taking the ~\autoref{lst:conditional-push-up-example} as an example, let us go over the process.
-At first sight one may be intimidated by the fact that the nested if is buried in the
-middle of the block.
-Refactoring a nested conditional in the middle of a block is risky as it may introduce duplicate
-code.
-But just as a quantum tunneling is not guaranteed to find lower local minima,
-no refactor attempt is guaranteed to succeed.
-Particularly this one.
-One will never leave the starting point with excessive expectation of a guaranteed,
-luxurious happy ending.
+In general, refactor is a risky process.
+The result may be better or worse---no happy ending is guaranteed.
+Refactor process is, in a way, rather similar to quantum tunneling where electrons `proactively
+dive' into energy-inhibited region, the so-called energy barrier, in search of lower energy minima.
+So one must be prepared to see that before the code gets better, it may get worse in passing.
+Also it remains unknown whether a better solution exist until one emerges on the other end
+of the darkness.
 
-But observing the an overly unbalanced \code{if..else} blocks, I perceive a strong signal
-that compels me to refactor it.
-%TODO
+Nevertheless, one has to overcome one's fear or laziness---`no pain no gain'.
+To help cope with the hardship, I developed an `unnest' technique to convert a nested conditional
+to a cascading one---for reference purposes, let us call it `conditional push-up'.
+The technique is very simple:
+First, identify tests in the nested conditionals;
+Then, promote these tests to the upper level and mingle them with the other tests at that level.
+From here on, follow similar steps discussed in previous sections to solidify the code into a
+cascading conditional.
+
+
+Yeah, an example would be worth a thousand words.
+Let us go through the refactor process for ~\autoref{lst:conditional-push-up-example} in detail.
+First, observe that the nested \code{if} conditional is
+buried in the middle of the block and to bring it to the upper level, one risks introducing
+duplicate code.
+Just take note but do not be intimidated by that.
+What compels us to move forward is the overwhelmingly strong
+signal---the \code{if..else} blocks is overly unbalanced---and because of that there is no
+turning back.
+
+So let's what is the test for the nested conditional.
+It is not hard to see that the test is \code{len(lookup[key]) == 1} because before the nested
+conditional there is a \code{heappop} operation (and then if the list is empty, it is evicted out
+of the dictionary thereafter).
+So far so good.
+Let us then pull it out and promote it into the upper level conditional---we now have two tests
+at this level, \code{key not in lookup} and \code{len(lookup[key]) == 1}.
+
+Alright, please follow ~\fullref{sec:orderingstaircaseconditional} for the rest of this refactor
+to arrange the conditionals into a cascade.
+Shut up and code before turning the page.
 
 \clearpage
-\lstinputlisting[firstline=14]{if-else/nested_conditional_2_cascading_conditional.py}
+Now let's examine each other's code.
+Reader might have first arrived at the following cascade conditional
+\lstinputlisting[firstline=15,lastline=24]{if-else/nested_conditional_2_cascading_conditional.py}
+At this moment the previously inaccessible refactor regarding the duplicate code `\code{heappush
+(lookup[key + 1] = ..} was made easy
+\lstinputlisting[firstline=28]{if-else/nested_conditional_2_cascading_conditional.py}
+%TODO
 
-Most importantly,
-Through the above example, I want to urge the reader to form a `code-sense', an instinct, a habit
-of thinking.
-When coming to a similar situation, if one know what lean code would look like, one is more
-likely motivated to achieve such level of neatness.
+Through this example, I am hopeful that the reader forms a `code-sense', an instinct, a habit
+of optimization mindset.
+First, know what lean code would look like
+when coming to a similar situation, and then it would be more likely for one
+to achieve such level of neatness.
 For example, as to when should one trigger the `conditional push-up' process, it is not simply
 ``As soon as you spot one.''
 Usually when I spot nested conditionals \emph{accompanied} by duplicate code smell, I would

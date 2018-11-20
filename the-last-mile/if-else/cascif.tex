@@ -516,20 +516,26 @@ Shut up and code before turning the page.
 Now let's examine each other's code.
 Reader might have first arrived at the following cascade conditional
 \lstinputlisting[firstline=15,lastline=24]{if-else/nested_conditional_2_cascading_conditional.py}
-At this moment the previously inaccessible refactor regarding the duplicate code `\code{heappush
-(lookup[key + 1] = ..} was made easy
+Next, the previously inaccessible refactor regarding the duplicate code `\code{heappush
+(lookup[key + 1] = ..} was made easy now and I believe the reader is able to make something
+similar to the following
 \lstinputlisting[firstline=28]{if-else/nested_conditional_2_cascading_conditional.py}
-%TODO
+
 
 Through this example, I am hopeful that the reader forms a `code-sense', an instinct, a habit
 of optimization mindset.
-First, know what lean code would look like
-when coming to a similar situation, and then it would be more likely for one
-to achieve such level of neatness.
-For example, as to when should one trigger the `conditional push-up' process, it is not simply
-``As soon as you spot one.''
-Usually when I spot nested conditionals \emph{accompanied} by duplicate code smell, I would
-consider refactor the code.
+Awareness drives motivation.
+One would be more motivated to strive for such level of neatness if one knows
+what lean code looks like when facing a similar problem.
+Also form a good judgement on when to perform a refactor.
+As to the threshold beyond which one would be compelled to perform a refactor, this is a sense of
+personal judgement.
+One the one hand, one should not perform senseless refactor ``as soon as you spot a shadow.''
+On the other, one does not want to be lazy as creating lousy code and pushing off paying large
+technical debts.
+Usually when I spot `duplicate code smell' \emph{accompanied} by nested conditionals, I would
+consider refactor the code to cascading conditionals.
+But I would avoid writing code with `duplicate code smell' at the first place, if at all possible.
 
 
 Of course, cascading conditional may not be the best solution still in occasions.

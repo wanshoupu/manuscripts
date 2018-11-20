@@ -62,7 +62,14 @@ This chapter is dedicated to the `How' question.
 
 
 ``As long as it works, who cares if the logic is the simplest?'' some may insist.
-'Barely working' solution often contains code that is buggy, brittle, verbose and/or smelly.
+Take a look at the following code snippet, adapted and anonymized from a real example.
+Suppose you are tasked to modify, refactor, and modularize it into reusable functions for a library,
+do you care?
+\lstinputlisting{if-else/switching-smell-code-snippet.py}
+
+Maybe this example is a little bit too extreme.
+But `barely working' solution, if it works at all, often contains code that is buggy, brittle,
+verbose, and/or smelly.
 It is like fat deposited over time, sooner or later they will get in your way.
 Steve McConnell said ``..the primary audience [of computer programs] is made up of humans,
 not computers\cite{Mcconnell.2004}.''

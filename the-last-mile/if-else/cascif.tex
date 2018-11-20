@@ -459,33 +459,41 @@ Besides, each value is a min-heap\footnote{\url{https://en.wikipedia.org/wiki/He
 Suppose the dictionary \code{lookup} has default value filling mechanism so that
 if one attempts to get value by key `\code{lookup[key]}' and the key does not exist, then the
 dictionary will create a default value and put the key-value pair in the dictionary.
-This behavior is the default in \cpp STL `\code{std::map}' and
-is made possible in \python if created by the following
+This is the default behavior of `\code{std::map}' in \cpp STL and
+is rendered so by design in \python if the \code{dict} is created as
 \begin{lstlisting}
     lookup = collections.defaultdict(list)
 \end{lstlisting}
-Lastly, for better or for worse, you inherited the following code snippet from someone else:
-\begin{clisting}
-    \lstinputlisting[label={lst:conditional-push-up-example},caption={},lastline=12]
+Lastly, for better or for worse, you inherited the code snippet
+as in ~\autoref{lst:conditional-push-up-example} from someone else.
+How would you go about with refactoring nested conditionals?
+\begin{clisting}[htb]
+    \lstinputlisting[label={lst:conditional-push-up-example},caption={Code snippet containing
+    tint of duplicate code smell, unbalanced \code{if..else} blocks, and nested conditional},
+    lastline=12]
     {if-else/nested_conditional_2_cascading_conditional.py}
 \end{clisting}
-How would you go about with refactoring nested conditionals?
 
 
-In general, refactor is a risky process.
-The result may be better or worse---no happy ending is guaranteed.
-Refactor process is, in a way, rather similar to quantum tunneling where electrons `proactively
-dive' into energy-inhibited region, the so-called energy barrier, in search of lower energy minima.
+Before going ahead answering the question, I'd like to make a slight diversion on the
+psychological part.
+Generally speaking, refactor is a risky process.
+After all, no happy ending is guaranteed---the result may be better or worse.
+Refactor process is, in a way, rather similar to quantum tunneling, \textit{e.g.}, electrons
+`proactively dive into' energy-inhibited region, the so-called energy barrier,
+in search of lower energy minima.
 So one must be prepared to see that before the code gets better, it may get worse in passing.
-Also it remains unknown whether a better solution exist until one emerges on the other end
-of the darkness.
+Also one has to endure uncertainty anxiety as the result remains unknown until one come out on
+the other end of the darkness.
 
-Nevertheless, one has to overcome one's fear or laziness---`no pain no gain'.
+
+Nevertheless, one is to overcome fear and/or laziness---`no pain no gain'.
 To help cope with the hardship, I developed an `unnest' technique to convert a nested conditional
-to a cascading one---for reference purposes, let us call it `conditional push-up'.
+to a cascading one---for reference purposes, let us call it `test push-up'.
 The technique is very simple:
 First, identify tests in the nested conditionals;
-Then, promote these tests to the upper level and mingle them with the other tests at that level.
+Then, promote these tests to the upper level and mingle them with the other tests at that level,
+that is, `test push-up'.
 From here on, follow similar steps discussed in previous sections to solidify the code into a
 cascading conditional.
 
@@ -493,24 +501,29 @@ cascading conditional.
 Yeah, an example would be worth a thousand words.
 Let us go through the refactor process for ~\autoref{lst:conditional-push-up-example} in detail.
 First, observe that the nested \code{if} conditional is
-buried in the middle of the block and to bring it to the upper level, one risks introducing
-duplicate code.
-Just take note but do not be intimidated by that.
-What compels us to move forward is the overwhelmingly strong
-signal---the \code{if..else} blocks is overly unbalanced---and because of that there is no
-turning back.
+buried in the middle of the \code{else} block and to bring it to the upper level, one risks
+introducing duplicate code.
+Just take note but do not be intimidated.
+What compels us to move forward is overwhelmingly
+strong---the nested conditional and the overly unbalanced \code{if..else} blocks thereof---and
+because of that there is really no way back out for us.
 
-So let's what is the test for the nested conditional.
-It is not hard to see that the test is \code{len(lookup[key]) == 1} because before the nested
-conditional there is a \code{heappop} operation (and then if the list is empty, it is evicted out
-of the dictionary thereafter).
+
+So following first step in `test push-up' procedure, let's see what test is for the nested conditional.
+It is not hard to see that the test is \code{len(lookup[key]) == 1}.
+Here is why.
+The whole block reads like this ``If after \code{heappop}, the value corresponding to the
+`\code{key}' in dictionary, \code{lookup}, is empty, then evict it from the dictionary thereafter.
+So no empty value is possible in the dictionary before the \code{heappop}.
+Therefore the condition for the nested conditional is precisely \code{len(lookup[key]) == 1}.
 So far so good.
+
 Let us then pull it out and promote it into the upper level conditional---we now have two tests
 at this level, \code{key not in lookup} and \code{len(lookup[key]) == 1}.
+Alright, now follow ~\fullref{sec:orderingstaircaseconditional}
+for the rest of this refactor to arrange the conditionals into a cascade.
+Do not turn the page---shut up and code.
 
-Alright, please follow ~\fullref{sec:orderingstaircaseconditional} for the rest of this refactor
-to arrange the conditionals into a cascade.
-Shut up and code before turning the page.
 
 \clearpage
 Now let's examine each other's code.
@@ -522,27 +535,26 @@ similar to the following
 \lstinputlisting[firstline=28]{if-else/nested_conditional_2_cascading_conditional.py}
 
 
-Through this example, I am hopeful that the reader forms a `code-sense', an instinct, a habit
+Through this example, I am hopeful that the reader forms a `code-sense', an instinct, and a habit
 of optimization mindset.
-Awareness drives motivation.
-One would be more motivated to strive for such level of neatness if one knows
+Because awareness drives motivation,
+one would be more motivated to strive for such level of neatness if one knows
 what lean code looks like when facing a similar problem.
-Also form a good judgement on when to perform a refactor.
-As to the threshold beyond which one would be compelled to perform a refactor, this is a sense of
+As to the threshold beyond which one would be compelled to refactor, I believe it is a
 personal judgement.
-One the one hand, one should not perform senseless refactor ``as soon as you spot a shadow.''
-On the other, one does not want to be lazy as creating lousy code and pushing off paying large
-technical debts.
-Usually when I spot `duplicate code smell' \emph{accompanied} by nested conditionals, I would
+So it is important for developer to establish a good judgement on when to initiate a refactor
+process.
+One the one hand, one should not do senseless refactor ``as soon as you spot a speckle.''
+On the other, one does not want to creating or pushing off paying technical debts
+by writing lousy code.
+Usually when I smell `duplicate code smell' \emph{accompanied} by nested conditionals, I would
 consider refactor the code to cascading conditionals.
 But I would avoid writing code with `duplicate code smell' at the first place, if at all possible.
 
 
-Of course, cascading conditional may not be the best solution still in occasions.
+Of course, cascading conditional may not be the best solution still on occasions.
 As you will learn later, the complexity of conditionals may also be designed away with
 `object-oriented design'.
-As to when to make a call on what to choose, I think aside from the degree of code reuse, it is
-also a personal taste.
-But for ~\autoref{lst:conditional-push-up-example}, it happens to be such a case that OOD is a
-great choice.
-We will talk about this in more details in ~\autoref{ch:ood}.
+As to when to choose what, it will be our topic for ~\autoref{ch:ood}.
+As it will turn out, ~\autoref{lst:conditional-push-up-example} happens to be a great
+case for OOD if there is a lot of need for a light-weight counter utility class.

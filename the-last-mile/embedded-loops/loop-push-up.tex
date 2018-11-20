@@ -5,16 +5,48 @@
 
 \chapter{Flatten Nested Loops} \label{ch:loop-thinning}
 
-Nested loops are a complexity nuance that is hard to understand.
-Sometimes can cause bloated runtime complexity, \textit{e.g.} what could be $O(N)$ would be
-$O(N^2)$ .
-Programming loops is a complex work.
+Programming loops in a real-world application can be a fairly complex work.
+Although permitted by most programming languages, nested loops are nuisances
+when one tries to crack the semantic information in them.
+Sometimes one is compelled to use nested loops and the situation seems to make nested loops
+inevitable.
+Besides the bloated looking, nested loops may be suboptimal in runtime
+as well---\textit{e.g.} what could have been $O(N)$ might have become $O(N^2)$.
+
 First working version is seldom the best solution.
-This chapter is a spinoff of the ~\autoref{ch:loops}.
+This chapter is a spin-off of the ~\autoref{ch:loops}.
 We spend this chapter for the sole purpose of simplifying nested loops.
 The rule of thumb is ``avoid nested loops'.
 If nested loops can be simplified to one-layer loop, by using auxiliary data structures, better
 algorithm, and so on, that will be the first choice.
+Situations where nested loops may be avoided is when implementing algorithms over linear data
+structures---lists, arrays, sets, strings, associative arrays, hash tables, \textit{etc.}
+Only occasionally one may truly need nested loops to work with $2$D or higher dimensional
+data structures like list of lists, matrices, \textit{etc.}
+Even so, there are plenty of opportunities for one to refactor nested loops away from
+each other for better code readability.
+For example, instead of
+% TODO
+
+Then under what circumstances can one compress nested loops to thinner loops?
+There may be multiple scenarios where this may be possible.
+But one common case that I noticed almost guaranteed to succeed is when the outer loop is a
+complete, main loop while an inner loop acts as partial loop
+(usually from starting point to the current location) to provide an accumulated information.
+In this situation, one of the following approaches may help eliminate the need of the inner loop
+\begin{itemize}
+    \item Use of auxiliary data structures;
+    \item Use of additional conditional construct or additional test to existing ones;
+    \item Modify loop pacing from linear stepping to conditional stepping
+    \item Minor optimization in algorithm;
+\end{itemize}
+
+We are going to use a few examples to illustrate the ``loop thinning'' techniques.
+Because most of the methods we are presenting in this chapter are empirical, I cannot claim
+universal applicability for many of them.
+Instead, the techniques may be applied on a case by case basis.
+
+
 Otherwise, refactoring the code may be necessary to decouple subtasks from the main one.
 One may raise counter examples, say, iterating through $2$D array elements using indexes \code{i,j}.
 I would argue back that refactoring the inner index access into a separate function may still be
@@ -40,6 +72,9 @@ caption={Loop thinning example for skyline calculation.}]
 
 Many times nested loops can be combined into a single loop + if-else inside the loop body.
 In this chapter we are going to explain the technique in details.
+
+Many times nested loops are not necessary even in situations many deem as
+`compelling'.
 
 For example, the quick sort algorithm may be implemented as
 
@@ -90,7 +125,7 @@ Compact:
 
 \section{Conclusion}
 
-Nested loops are hard to understand and are generally considered unacceptable in production code.
+Nested loops are hard to understand and shall generally be avoided in production code.
 They should be avoided if at all possible.
 With the `loop thinning' technique discussed in this chapter, many cases of nested loops can be
 compactify and converted to simple loop.

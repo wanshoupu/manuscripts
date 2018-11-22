@@ -11,15 +11,13 @@ a loop can be executed as many times as needed.
 
 
 Almost all major programming languages feature one or more loop constructs.
-
-Such a key building block of program deserves effort of every developer to study its best
-practices before moving on to more complex patterns.
-It is unfortunate that loops committed in production codebase were clearly poorly
-designed, surrounded with floppy code before and after.
-That is clearly the first `working' version a developer haphazardly stumbled upon without
-any optimization.
-
-It seems that developers forget why the varieties of loop constructs were created in the first place.
+A key building block for programming as loop construct is, it should deserve every
+developer's effort to know the best practices.
+It is unfortunate to learn that many loops in algorithmic program were haphazardly implemented,
+with floppy code before and after.
+It seems to me that they are the first `working' version.
+Many developers forget why the varieties of loop constructs were created in the first place.
+%TODO
 Even fewer people would bother to try different loop constructs when facing a specific application.
 
 Have you ever pondered why the varieties of loops constructs?
@@ -135,8 +133,9 @@ We have touched the topic in ~\fullref{sec:branchinginloop} of ~\fullref{ch:orga
 For most of the simple cases, the functionality realized by using \code{continue} statement can be
 equivalently produced by adding an \code{else}-clause.
 But when used in a `cascading conditional' (see ~\fullref{ch:conditional-cascade})
-in a loop, \code{continue} can simplify the logic like a magic.
-We have shown the `Zoo health examination' example in ~\fullref{ch:organizeYourIfElse}.
+in a loop, `\code{continue}' can simplify the logic like a magic.
+Earlier in ~\fullref{ch:organizeYourIfElse}, we illustrated the use of \code{continue} statement in
+`Zoo animal health exams' problem.
 To corroborate your understanding, we want to provide yet another example.
 Suppose we are coding a game for two or more players with the following rules:
 \begin{enumerate}
@@ -164,8 +163,8 @@ Even worse, duplicate code may chip in by repeatedly invoking `\code{result.appe
 cases of `$2$' and `$3$', respectively.
 
 
-Now consider the loop implementation using a cascade conditional in conjunction with a
-`\code{continue}' statement:
+Now let us consider an implementation using `\code{continue}' statement in conjunction with a
+cascade conditional:
 \begin{clisting}
     \lstinputlisting[label={lst:loop-use-continue},
     caption={Example usage of \code{continue} to simplify the logic in a loop}]
@@ -173,12 +172,13 @@ Now consider the loop implementation using a cascade conditional in conjunction 
 \end{clisting}
 
 It is free from any of the problems listed above.
-That's truly magical.
+I think that is marvelous.
+
 
 \section{Refactoring loops}\label{sec:refactoringLoops}
 
 Refactoring a function with a loop that consists of intermediate variables into separate function
-often results in two simpler functions.
+often results in simpler functions.
 Use of \code{return} in loop sometimes saves intermediate variables from being declared.
 \begin{clisting}
     \lstinputlisting[label={lst:loop-use-continue},

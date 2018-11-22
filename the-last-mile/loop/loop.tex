@@ -160,6 +160,9 @@ For the first choice, it involves redundant tests.
 Suppose an additional rule regarding `$7$' is added, then the places to change would be doubled.
 For the second choice, the readability would be compromised with the `switching
 smell'\cite{Fowler1999}.
+Even worse, duplicate code may chip in by repeatedly invoking `\code{result.append(i)}' for the
+cases of `$2$' and `$3$', respectively.
+
 
 Now consider the loop implementation using a cascade conditional in conjunction with a
 `\code{continue}' statement:
@@ -218,9 +221,6 @@ The simplification of both lies in the use of \code{continue}:
     \lstinputlisting{loop/loop_cond_no_redundancy.java}
 \end{minipage}
 
-Without use of \code{continue}, it would be inevitable to have some duplicate code---one would
-either repeat the conditions accumulated up to the point of divisibility by $5$
-or repeatedly adding the \code{result.append(i)} in more than one blocks.
 
 Similar situations exist for the use of \code{break} to reduce redundant code.
 We are not going to repeat that with examples.

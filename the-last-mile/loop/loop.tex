@@ -3,19 +3,24 @@
 %% 7/14/18
 %%
 
-\chapter{Tighten Up Slack Loops} \label{ch:loops}
+\chapter{Construct Lean Loops} \label{ch:loops}
 
 As one of the most widely used building block, loop is a programing productivity amplifier---with
 a static body and some nominal overheads (\textit{e.g.}, loop variables),
 a loop can be executed as many times as needed.
+
+
 Almost all major programming languages feature one or more loop constructs.
 
 Such a key building block of program deserves effort of every developer to study its best
 practices before moving on to more complex patterns.
-But as a matter of fact,  loops committed in production codebase were clearly poorly
+It is unfortunate that loops committed in production codebase were clearly poorly
 designed, surrounded with floppy code before and after.
 That is clearly the first `working' version a developer haphazardly stumbled upon without
 any optimization.
+
+It seems that developers forget why the varieties of loop constructs were created in the first place.
+Even fewer people would bother to try different loop constructs when facing a specific application.
 
 Have you ever pondered why the varieties of loops constructs?
 Have you deliberately tried out a few loop constructs and chosen the best fit for a specific
@@ -25,10 +30,9 @@ I wish your answer to these questions are both positive.
 %This is so not because these developers have no appetite for better code.
 %A majority of them are not even aware that conscious choice of loop types and structures can make a
 %marked difference in the quality of code.
-Therefore, I dedicate this chapter as a primer to the topic ``How to close your loop?''
-and I meant it literally.
+Therefore, I dedicate a big part of this chapter to the topic ``How to tighten up slack loops?''
 
-``Why!'' you say, ``What's the point for you to talk about loops as a type of control flow
+``Why!'' you say, ``What's the point to talk about loops as a type of control flow
 outside of the language context?''
 Yes, there are so much to say about loops in their generic sense.
 Similar to the structure in ~\fullref{ch:organizeYourIfElse}, I will share mostly my first-hand
@@ -64,11 +68,14 @@ programmers to reflect on why they code the way they do and find out ways to imp
             A statement in loop body that breaks the loop and pass control to the next statement
             following the loop. \\
             \emph{\code{continue} statement} &
-            A statement in loop body that interrupt the execution of the remaining statements in the loop.
+            A statement in loop body that interrupt the execution of the remaining
+            statements in the loop.
             Note that this doesn't break the loop or pass control out of the loop. \\
+            \emph{\code{return}, \code{yield}, \textit{etc.}} & These statements are
+            not part of the loop construct yet they affect the control flow of the loop. \\
             \emph{Post-loop processing} &
-            This is a rare construct in loop, supported by languages such as \python as
-            \code{while..else} and \code{for..else}. \\
+            These are rare loop constructs, such as \code{while..else} and \code{for..else}
+            in \python. \\
             \hline
         \end{tabular}
     \end{center}
@@ -80,6 +87,7 @@ So practically all loop constructs are equipped with a test statement for that p
 The location of test statements is a distinguishing feature for a loop.
 Based on the location of the test statement, loop constructs can be
 classified as \emph{pre-test} and \emph{post-test}.
+For convenience, programming languages support one or more types of loop constructs.
 \code{for}-loop and \code{while}-loop are examples of pre-test loop constructs that
 almost all languages support.
 
@@ -87,31 +95,27 @@ almost all languages support.
 others (except \python).
 \code{do-while} loop attempts to execute the loop body at least once no matter what.
 
-For convenience, programming languages support one or more types of loop constructs.
-\@\autoref{tbl:loop-construct} describes the components of common loop constructs
+~\autoref{tbl:loop-construct} describes the components of common loop constructs
 in high-level languages.
 On top of the standard loop constructs, customizations are made possible with \code{break},
-\code{continue} or \code{return}, depending on the programming language of choice.
-These statements blend with the loop body and provide alternative execution paths to a standard
+\code{continue},  \code{return}, \textit{etc.}, depending on the programming language of choice.
+These statements blend into the loop body and provide alternative execution paths to a standard
 loop construct offers.
 
-Words may sound blurry and abstract to you.
-So let us use examples to illustrate the ideas.
-Feel free to pause and give them a thought yourself before reading my suggested approaches.
-
-Say, a bank allows customers to invest in stocks with their bank accounts.
-The rule is that one is allowed to take unlimited `\code{invest()}' actions
-if and only if one's balance is greater than zero.
-Each action of investment may result in gain or loss which is applied back to the account.
-Then for a particular account, the program would look like
+Words are abstract.
+Let us illustrate the ideas with examples.
+Say, in a cooking contest, each chef is to cook 3 dishes in a course---appetizer, main,
+and desert.
+Interested judges will approach the team and put an order of a full course.
+Other than judge orders, chef does not cook anything else.
+The competition process may be best coded with pre-test loop such as
 \lstinputlisting{loop/pre_test_loop.java}
-To ensure the enforcement of policy, pre-test loop is used so that
-each investment action is subject to a balance check before execution.
-If the rule is changed such that one is allowed to invest if and only if his balance is > zero
-\emph{or if the customer doesn't have investment history (first time investor)}.
-We would refactor the above code as
-\lstinputlisting{loop/pre_test_loop1.java}
-In either case, the pre-test loop is the best fit.
+
+Suppose, on the last night of the competition, the rule is changed so that each chef is to cook a
+course for display before judges' orders.
+One can do a `copy-n-paste' to solve the problem;
+or one can avoid `copy-n-paste' with a post-test loop:
+\lstinputlisting{loop/post_test_loop.java}
 
 For another example, suppose we are to develop a command line tool that takes input from
 \code{stdin}.
@@ -119,45 +123,56 @@ The tool interprets user input and does a bunch of cool stuff.
 It terminates when user types `exit' or simply hits `return' key
 (in which case the input string is empty).
 Then the best loop construct for that would be mid-test loop.
+But since \java does not have a specialized mid-test loop construct, we have to makeshift by using
+a \code{break} statement along with an infinite loop:
 \lstinputlisting{loop/mid_test_loop.java}
 
-For yet another example, in a cooking competition game, each chef is to cook 3-dish
-meal---appetizer, main, and desert---with the following rules:
-\begin{enumerate}
-    \item He or she first makes one as a display dish.
-    \item she then goes on to make same dishes for each referee who orders her meal for judgement
-    until all orders are finished.
-\end{enumerate}
-This program is best coded with \code{do-while} loop as
-\lstinputlisting{loop/post_test_loop.java}
 
 \section{A word on the usage of \code{continue}, \code{break}, and \code{return}}
 \label{sec:continue-and-break}
 
-Bare use of \code{continue} and \code{break} in a loop is very rare (maybe only for educational
-reasons).
-Use of \code{continue} and \code{break} in a loop is usually done within a \code{if}-branch.
-
+We have touched the topic in ~\fullref{sec:branchinginloop} of ~\fullref{ch:organizeYourIfElse}.
 For most of the simple cases, the functionality realized by using \code{continue} statement can be
 equivalently produced by adding an \code{else}-clause.
-But when there is a `case-stack' in a loop, use of \code{continue} has a magical power
-of logic simplification.
-For example, in ~\autoref{lst:loop-use-continue}, we code for a game for 2 or more players.
-All players take turn to enumerate through natural numbers starting from $1$ with the following
-rules:
+But when used in a `cascading conditional' (see ~\fullref{ch:conditional-cascade})
+in a loop, \code{continue} can simplify the logic like a magic.
+We have shown the `Zoo health examination' example in ~\fullref{ch:organizeYourIfElse}.
+To corroborate your understanding, we want to provide yet another example.
+Suppose we are coding a game for two or more players with the following rules:
 \begin{enumerate}
-    \item When the number is divisible by $2$, do a `clap' instead
-    \item Otherwise when the number is divisible by $3$, do a `stump' instead
-    \item Otherwise when the number is divisible by $5$, skip it altogether
-    \item Otherwise articulate the number loudly
+    \item All players take turn to enumerate natural numbers starting from $1$;
+    \item When the number is divisible by $2$, the player write the number down then claps their
+    hands;
+    \item Otherwise when the number is divisible by $3$, the player write the number down then
+    stump their feet;
+    \item Otherwise when the number is divisible by $5$, the player do nothing;
+    \item Otherwise the player write down the number and articulate the number loudly.
 \end{enumerate}
-For book keeping purposes, all numbers are recorded in a list unless skipped.
+These rules are applied in the order as they appear.
+Namely, a `$10$' is not be skipped;
+neither is `$15$';
+but `$25$' is.
+How would one solve the problem?
 
+Without using `\code{continue}', I see two choices---either use composite tests such as
+`\code{n \% 5 and not n \% 2 and not n \% 3}; or use nested conditionals somewhere.
+For the first choice, it involves redundant tests.
+Suppose an additional rule regarding `$7$' is added, then the places to change would be doubled.
+For the second choice, the readability would be compromised with the `switching
+smell'\cite{Fowler1999}.
+
+Now consider the loop implementation using a cascade conditional in conjunction with a
+`\code{continue}' statement:
 \begin{clisting}
     \lstinputlisting[label={lst:loop-use-continue},
     caption={Example usage of \code{continue} to simplify the logic in a loop}]
     {loop/use_of_continue.py}
 \end{clisting}
+
+It is free from any of the problems listed above.
+That's truly magical.
+
+\section{Refactoring loops}\label{sec:refactoringLoops}
 
 Refactoring a function with a loop that consists of intermediate variables into separate function
 often results in two simpler functions.
@@ -195,10 +210,13 @@ Use of \code{return} in loop sometimes saves intermediate variables from being d
 \end{clisting}
 But each has their own problem.
 The left column do redundant condition testing (test1), whereas the right column has repeated
-code (statement2).
+code (\code{statement2}).
 
-The simplification of both lies in the smart use of continue:
-\lstinputlisting{loop/loop_cond_no_redundancy.java}
+The simplification of both lies in the use of \code{continue}:
+
+\begin{minipage}[H]{\textwidth}
+    \lstinputlisting{loop/loop_cond_no_redundancy.java}
+\end{minipage}
 
 Without use of \code{continue}, it would be inevitable to have some duplicate code---one would
 either repeat the conditions accumulated up to the point of divisibility by $5$

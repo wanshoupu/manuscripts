@@ -1,3 +1,5 @@
-while(balance > 0) {
-    invest();
+while (refereeOrder()) {
+    cookAppetizer();
+    cookMainCourse();
+    cookDesert();
 }

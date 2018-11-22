@@ -1,6 +1,6 @@
-String str = "";
+String string = "";
 while(true) {
-    str = stdin.read();
-    if (str.isEmpty()) break;
-    cool_stuff(str);
+    string = stdin.read();
+    if (string.isEmpty()) break;
+    doCoolStuff(string);
 }

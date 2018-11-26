@@ -260,7 +260,12 @@ After all, the amplifier is not needed for any other sounds but that of snakes a
 Or maybe there is no snake or bee in the list and if so, creating an amplifier would be a total
 waste.
 In the middle just before the amplifier is needed?
-The cascade construct leaves no room for creating a new amplifier instance in the middle.
+For most all programming languages, the
+cascade construct leaves no room for creating a new amplifier instance in the middle
+\footnote{An exception is Golang where a new variable may be declared and remain visible
+thereafter \emph{within} the cascading conditionals for example:
+\lstinputlisting[basicstyle=\footnotesize]{if-else/intermediate_var.go}
+}.
 
 
 Well, a refactor will same one from this dilemma and there are at least two ways.

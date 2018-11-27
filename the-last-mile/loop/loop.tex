@@ -6,40 +6,44 @@
 \chapter{Construct Lean Loops} \label{ch:loops}
 
 As one of the most widely used building block, loop is a programing productivity amplifier---with
-a static body and some nominal overheads (\textit{e.g.}, loop variables),
-a loop can be executed as many times as needed.
-
-
+a static body and some nominal overheads (\textit{e.g.}, loop variables,
+which are used to register loop state), a loop can be executed as many times as needed.
 Almost all major programming languages feature one or more loop constructs.
-A key building block for programming as loop construct is, it should deserve every
-developer's effort to know the best practices.
-It is unfortunate to learn that many loops in algorithmic program were haphazardly implemented,
-with floppy code before and after.
-It seems to me that they are the first `working' version.
-Many developers forget why the varieties of loop constructs were created in the first place.
-%TODO
-Even fewer people would bother to try different loop constructs when facing a specific application.
+``What's the point to talk about loops as a type of control flow outside of
+the language context?'' you may be wondering.
 
-Have you ever pondered why the varieties of loops constructs?
-Have you deliberately tried out a few loop constructs and chosen the best fit for a specific
-application?
-I wish your answer to these questions are both positive.
-%TODO
-%This is so not because these developers have no appetite for better code.
-%A majority of them are not even aware that conscious choice of loop types and structures can make a
-%marked difference in the quality of code.
-Therefore, I dedicate a big part of this chapter to the topic ``How to tighten up slack loops?''
 
-``Why!'' you say, ``What's the point to talk about loops as a type of control flow
-outside of the language context?''
-Yes, there are so much to say about loops in their generic sense.
-Similar to the structure in ~\fullref{ch:organizeYourIfElse}, I will share mostly my first-hand
-coding experience throughout the presentation of the chapter.
-Beyond that, this chapter is also presented for completeness since
+A key building block for programming as loop is, it should have taken
+developers' best effort to study the best practices.
+It is unfortunate to see, however, that algorithmic implementations in production contain numerous
+haphazard loops with floppy code before and after.
+Many of them seem to just narrowly pass the `working' threshold
+as if the developers were oblivious with the varieties of loop constructs or bother to
+reduce the swollen initialization for their loop constructs.
+%Have you deliberately tried out a few loop constructs and chosen the best fit for a specific
+%application?
+%I wish your answer to these questions are both positive.
+This is so not because these developers have no appetite for better code.
+A majority of them are not even aware that conscious choice of loop types and structures can make a
+marked difference in the quality of code.
+
+
+For this reason that I would like to devote this chapter to clear out the clouds over the
+good practices of loops.
+A large part of this chapter is on the topic ``How to tighten up slack loops?''
+Another focus is on the question ``How to reduce nested loops to a single loop?''
+A third one is ``How to avoid inadvertent namespace contamination due to use of loop that have
+been the causes of many treacherous bugs?''
+
+
+For completeness, a summary of
 later discussions of the interactions between conditional statements and loop is built on
 top of reader's mastery of loop programming.
-But most importantly, I intend this chapter to serve as an inspiration to other enterprising
-programmers to reflect on why they code the way they do and find out ways to improve.
+As in ~\fullref{ch:organizeYourIfElse}, most of the techniques presented in this chapter are
+first-hand, based on the author's own coding experience.
+But most importantly, I intend this chapter can inspire enterprising
+programmers to habitually reflect on their code and discover new ways to improve.
+
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
 
@@ -79,29 +83,34 @@ programmers to reflect on why they code the way they do and find out ways to imp
     \end{center}
 \end{table}
 
-This section is an overview of loop constructs in mainstream programming languages.
-Before entering a loop, control must have a way to escape.
-So practically all loop constructs are equipped with a test statement for that purpose.
-The location of test statements is a distinguishing feature for a loop.
-Based on the location of the test statement, loop constructs can be
-classified as \emph{pre-test} and \emph{post-test}.
-For convenience, programming languages support one or more types of loop constructs.
+
+Let us begin with an overview of loop constructs from several mainstream programming languages.
+First off, one should ensure that control have a way to escape before entering a loop, otherwise
+inadvertent infinite loop would result.
+So all loop constructs are equipped with a conditional expression, a termination test.
+The location of termination test is a distinguishing feature for a loop.
+Based on its location, loop constructs can be classified as \emph{pre-test}, \emph{post-test},
+and somewhere in between, \emph{mid-test}.
+post-test loops attempt to execute the loop body at least once no matter what.
+Mid-test loops may execute part of the loop body.
+
+
+Many programming languages conveniently support more than one types of loop constructs.
 \code{for}-loop and \code{while}-loop are examples of pre-test loop constructs that
 almost all languages support.
-
 \code{do-while}-loop is a post-test loop construct supported by \java, \cpp, C, and many
-others (except \python).
-\code{do-while} loop attempts to execute the loop body at least once no matter what.
+others (excluding \python).
 
-~\autoref{tbl:loop-construct} describes the components of common loop constructs
-in high-level languages.
-On top of the standard loop constructs, customizations are made possible with \code{break},
-\code{continue},  \code{return}, \textit{etc.}, depending on the programming language of choice.
-These statements blend into the loop body and provide alternative execution paths to a standard
-loop construct offers.
 
-Words are abstract.
-Let us illustrate the ideas with examples.
+~\autoref{tbl:loop-construct} summarizes the common parts in loop constructs of most high-level
+programming languages.
+On top of the standard loop constructs, possible customizations may be made with \code{break},
+\code{continue}, \code{return}, \textit{etc.}, depending on the programming language of choice.
+These statements blend into the loop body and fine tune the execution paths of otherwise standard
+loops.
+
+
+Let us illustrate the abstract concepts with concrete examples.
 Say, in a cooking contest, each chef is to cook 3 dishes in a course---appetizer, main,
 and desert.
 Interested judges will approach the team and put an order of a full course.
@@ -109,11 +118,13 @@ Other than judge orders, chef does not cook anything else.
 The competition process may be best coded with pre-test loop such as
 \lstinputlisting{loop/pre_test_loop.java}
 
+
 Suppose, on the last night of the competition, the rule is changed so that each chef is to cook a
 course for display before judges' orders.
 One can do a `copy-n-paste' to solve the problem;
 or one can avoid `copy-n-paste' with a post-test loop:
 \lstinputlisting{loop/post_test_loop.java}
+
 
 For another example, suppose we are to develop a command line tool that takes input from
 \code{stdin}.
@@ -130,13 +141,14 @@ a \code{break} statement along with an infinite loop:
 \label{sec:continue-and-break}
 
 We have touched the topic in ~\fullref{sec:branchinginloop} of ~\fullref{ch:organizeYourIfElse}.
-For most of the simple cases, the functionality realized by using \code{continue} statement can be
-equivalently produced by adding an \code{else}-clause.
-But when used in a `cascading conditional' (see ~\fullref{ch:conditional-cascade})
-in a loop, `\code{continue}' can simplify the logic like a magic.
+For most cases, where \code{continue} statement is used may be
+equivalently realized by adding an \code{else}-clause.
+But when used in a `cascading conditional' (see ~\fullref{ch:conditional-cascade}),
+`\code{continue}' can simplify the loop body like a magic.
 Earlier in ~\fullref{ch:organizeYourIfElse}, we illustrated the use of \code{continue} statement in
 `Zoo animal health exams' problem.
-To corroborate your understanding, we want to provide yet another example.
+At the risk of repetition, I am going to provide yet another example if only this can inspire the
+reader to strive for optimal loop construction.
 Suppose we are coding a game for two or more players with the following rules:
 \begin{enumerate}
     \item All players take turn to enumerate natural numbers starting from $1$;
@@ -151,10 +163,11 @@ These rules are applied in the order as they appear.
 Namely, a `$10$' is not be skipped;
 neither is `$15$';
 but `$25$' is.
-How would one solve the problem?
 
+How would one solve the problem?
 Without using `\code{continue}', I see two choices---either use composite tests such as
 `\code{n \% 5 and not n \% 2 and not n \% 3}; or use nested conditionals somewhere.
+Interested readers may try this on their own.
 For the first choice, it involves redundant tests.
 Suppose an additional rule regarding `$7$' is added, then the places to change would be doubled.
 For the second choice, the readability would be compromised with the `switching
@@ -163,29 +176,10 @@ Even worse, duplicate code may chip in by repeatedly invoking `\code{result.appe
 cases of `$2$' and `$3$', respectively.
 
 
-Now let us consider an implementation using `\code{continue}' statement in conjunction with a
-cascade conditional:
-\begin{clisting}
-    \lstinputlisting[label={lst:loop-use-continue},
-    caption={Example usage of \code{continue} to simplify the logic in a loop}]
-    {loop/use_of_continue.py}
-\end{clisting}
-
-It is free from any of the problems listed above.
-I think that is marvelous.
-
-
-\section{Refactoring loops}\label{sec:refactoringLoops}
-
-Refactoring a function with a loop that consists of intermediate variables into separate function
-often results in simpler functions.
-Use of \code{return} in loop sometimes saves intermediate variables from being declared.
-\begin{clisting}
-    \lstinputlisting[label={lst:loop-use-continue},
-    caption={Refactoring the loop body into a separate function}]
-    {loop/refactor_conditional_in_loop.java}
-\end{clisting}
-
+Thankfully, an implementation using `\code{continue}' statement in conjunction
+with a cascade conditional is free from any of the problems listed above:
+\lstinputlisting{loop/use_of_continue.py}
+It is marvelous!
 
 %TODO settle down this presentation
 %% side-by-side two columns
@@ -201,97 +195,125 @@ Use of \code{return} in loop sometimes saves intermediate variables from being d
 %\end{clisting}
 
 % side-by-side two columns
-\begin{clisting}
-    \begin{minipage}[t]{.45\textwidth}
-        \lstinputlisting[caption={Unsimplified code}]
-        {loop/loop_cond_redundant_testing.java}
-    \end{minipage}\hfill
-    \begin{minipage}[t]{.45\textwidth}
-        \lstinputlisting[caption={Simplified code}]
-        {loop/loop_cond_repeated_block.java}
-    \end{minipage}
-\end{clisting}
-But each has their own problem.
-The left column do redundant condition testing (test1), whereas the right column has repeated
-code (\code{statement2}).
+%\begin{clisting}
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Unsimplified code}]
+%        {loop/loop_cond_redundant_testing.java}
+%    \end{minipage}\hfill
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Simplified code}]
+%        {loop/loop_cond_repeated_block.java}
+%    \end{minipage}
+%\end{clisting}
+%But each has their own problem.
+%The left column do redundant condition testing (test1), whereas the right column has repeated
+%code (\code{statement2}).
 
-The simplification of both lies in the use of \code{continue}:
+%The simplification of both lies in the use of \code{continue}:
+%
+%\begin{minipage}[H]{\textwidth}
+%    \lstinputlisting{loop/loop_cond_no_redundancy.java}
+%\end{minipage}
 
-\begin{minipage}[H]{\textwidth}
-    \lstinputlisting{loop/loop_cond_no_redundancy.java}
-\end{minipage}
+
+Similar situations may exist for the use of \code{break}, \code{return}, \textit{etc.} to reduce
+redundant code.
 
 
-Similar situations exist for the use of \code{break} to reduce redundant code.
-We are not going to repeat that with examples.
+\section{Refactoring loops}\label{sec:refactoringLoops}
 
-Use of \code{return} within a loop is often used in refactored functions.
-% TODO find examples where return is used in a loop.
+Many loops, embedded in a long functions, are there to search for a match and should be
+refactored into a function of its own.
+Doing so not only simplifies the original function, making the main logic stand out more, but
+also the factored out function is compact, single-purposed, and readily reusable.
+
+Another reason is the elimination of many intermediate, local variables.
+Intermediate variables in a long function often share the same scope as the function
+and thus contaminate the namespace for the rest of the code block.
+Eliminating them will prevent many mysterious bugs and spare developers from such concerns.
+
+The following example illustrates this.
+In the first version, the code in the main function \code{execute} was
+misappropriated---a large part of it was usurped for the search of a needle in a haystack in a loop.
+\lstinputlisting[lastline=12]{loop/refactor_conditional_in_loop.java}
+After refactoring related code the loop into a separate function, we greatly reduced the bulge.
+Most importantly, \code{target} and other intermediate variables, if any, may be eliminated and
+will never pollute the namespace in the remaining part of the function.
+
 
 \section{C-style For-loop}\label{sec:for-loop}
 
 Beside the universal \code{while}-loop, another pre-test loop is the conventional
-C-like \code{for}-loop as \lstinputlisting{loop/for_loop.java}
-This is not to be confused with the iterator-based \code{for}-loop such as
-\begin{lstlisting}
-    for (Object obj : list)
-\end{lstlisting}
-which has been largely made obsolete with stream-like coding styles in \java.
-
-There are some interesting aspects about \code{for}-loop header statements.
+C-like \code{for}-loop
+\footnote{This is not to be confused with the iterator-based foreach-loop such as
+\lstinputlisting[basicstyle=\footnotesize]{loop/foreach-loop.java}
+whose functionalities has been partly replaced by stream API as in \java.}
+which looks like
+\lstinputlisting{loop/for_loop.java}
+The distinguishing parts of a \code{for}-loop are its header statements---the
+initialization statement \code{<init>}, the loop continuation test
+\code{<test>}, and the afterthought statement \code{<aftrth}.
+Below is an explanation of each part:
 \begin{enumerate}
     \item The \code{<init>} is a statement to be executed only once as control is transferred to
     the loop.
     \item The \code{<test>} may be regarded as the \emph{first} statement of the loop body.
     \item The \code{<test>} are executed one more time than the rest of loop body
-    unless loop is terminated with a \code{break} statement.
+    unless loop execution is aborted with, say, \code{break}.
     \item The \code{<aftrtht>} is the afterthought statement executed at the end of each
-    round, unless loop terminates with a \code{break} statement.
-    \item The \code{<aftrtht>} is always executed as many times as the rest of loop body
-    even in the presence of \code{continue}.
+    iteration of loop body even in the presence of \code{continue}.
+    But in the presence of \code{break} statement, \code{<aftrtht>} will be skipped together with
+    part of the loop body.
     \item All three header statements are optional.
-    Namely, you may legally code `\code{for(;;);'} for infinite loop.
+    Namely, `\code{for(;;);'} is perfectly legal and represents an infinite loop.
 \end{enumerate}
 
 
 Design considerations for a \code{for}-loop are summarized below.
 \begin{itemize}
     \item
-    Preparation code for a loop is called initialization
-    and it determines the starting point of the loop.
-    What's the best initialization?
-    Should it be \code{int i = -1} or \code{int i = 0}?
+    What is the correct and minimal initialization?
+    For example, should we initialize \code{int i = -1} or \code{int i = 0}?
     \item
-    When and where should state updates?
+    Where to update loop state?
     For example, where should \code{i++} or \code{j--} be placed?
-    in the 3rd part of the \code{for} statement?
-    or in the body?
-    It's more flexible (sometimes necessary when certain condition
-    has to be met to increment/decrement)
-    if the increment/decrement is in the body.
-    But it's more concise if done in the afterthought of a for-statement.
+    in the afterthought of the \code{for} header statement or somewhere in the loop body?
     \item
-    What's the termination condition and How many termination points?
-    Many a time, infinite loop is resulted when incorrect assumption is made
-    about the termination condition.
+    What's the termination condition(s) how to arrange terminating statements if there are more
+    than one of them?
 \end{itemize}
 
-One desirable feature of a \code{for}-loop is the limited scope of its loop-variables---
-scope of loop-variables are contained within the loop.
+The answers to these questions are interrelated and
+shall be adjusted as a whole throughout the design and implementation of loops.
+For example it is more flexible (sometimes necessary when certain condition
+has to be met to increment/decrement)
+to increment/decrement state variables in loop body but it is seldom the more concise form.
+In a more concise loop, state updates are often done in the afterthought header statement.
+For another, infinite loop is often the result of a reasoning loophole,
+which causes incorrect termination condition.
+
+
+The single biggest reason for me to use a \code{for}-loop is its limited scope of
+loop variables.
+Scope of loop variables declared in the \code{<init>} part of header statements are contained
+within the loop.
 For example the following code wouldn't compile
 \begin{lstlisting}
     for (int i = 0; i < 10; ++i) {}
     System.out.println(i); // i is undefined
 \end{lstlisting}
 In contrast, loop variables used by the \code{while}-loop condition have to be declared
-outside of the loop and extends beyond thereafter.
-Sometimes this causes inadvertent namespace pollution that leads to treacherous bugs.
+before the loop.
+Therefore their scope last beyond the loop and this often cause problems for the subsequent
+program for the aforementioned reasons.
 
-Occasionally limited scope may be a hinder for post-processing with \code{for}-loop.
-I will often balance out the trade-offs and if I choose \code{for}-loop, I will use
-`one-more-loop' technique (see ~\autoref{subsec:one-more-loop} for more details) to beat
-post-processing outside of the loop.
-For \python users, \code{else}-clause for post-processing.
+
+Occasionally limited scope of \code{for}-loop may be a hinder for post-loop processing.
+If that is the case, one may resort to
+`one-more-loop' technique (see ~\autoref{subsec:one-more-loop} for more details) to solve the
+problem.
+Also for \python users, \code{for-else} or \code{while-else} is designed just for post-processing.
+
 
 In practice, I often
 start with \code{while (true)} or \code{for (; ;)} for prototyping and as a reminder to
@@ -301,19 +323,6 @@ Then I will start crafting the loop by trying different loop constructs, moving 
 variable increment statements,
 combining or annihilating \code{break} or \code{continue} statements \textit{etc.}
 
-% TODO illustrate use of different loop constructs with chicken-and-egg problem.
-% Given a chicken or an egg and the functions chicken hatch(egg), egg lay(chicken)
-% while(eggs) {
-%   hatch()
-%   if (has_hen()) {
-%        lay()
-%   }
-% }
-%
-% do {
-%   hatch()
-% } while(eggs);
-%
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 

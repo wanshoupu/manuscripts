@@ -315,39 +315,113 @@ problem.
 Also for \python users, \code{for-else} or \code{while-else} is designed just for post-processing.
 
 
-In practice, I often
-start with \code{while (true)} or \code{for (; ;)} for prototyping and as a reminder to
-myself that this piece of code is temporary.
-Once that is working, I often have gotten a good grasp of the problem and the solutions.
-Then I will start crafting the loop by trying different loop constructs, moving and fitting
-variable increment statements,
-combining or annihilating \code{break} or \code{continue} statements \textit{etc.}
-
-
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
 
-As discussed above, there are a variety of loop constructs and loop families such as
-pre-test loop and post-test loop.
+As discussed above, when it comes to programming with loops, there are a variety of constructs
+such as pre-test loop and post-test loop.
 Have you wondered why we need so many varieties and families?
-``Is there a one-size-fit-all loop?'' you ask.
-To answer this question, we need to start with a research dated back 1966.
+Is there a one-size-fit-all loop?
+
+
+To answer this question, let's dig into history a bit.
 In 1966, Corrado B\"{o}hm and Giuseppe Jacopini proved that \code{goto} statements are
 unnecessary and programs containing them can be transformed to use only conditional statements
 and loops\cite{Bohm:1966}.
 Along that line of thought, more researchers, who might have gone too far, attempted to remove
-other `nuances' in computer programming such as \code{break} and \code{return} in the middle of a
+other `nuisance' in computer programming such as \code{break} and \code{return} in the middle of a
 loop to reduce control flow complexity and promote code composability.
-But the price of doing so may not pay the benefit it brings.
-More local variables are needed.
-Even worse, it may require duplicate code before or after a loop.
-This is the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+But the benefit cannot pay for the price.
+For example, one result of doing so is that more local variables are needed.
+Even worse, it exacerbates problems with duplicate code in and around a loop.
+This is the origin of the so-called ``Loop and a half problem''\cite{Louden-Lambert-2011}.
+Today, ``\textit{loop-and-a-half} problem'' is still a pestering problem for suboptimal loop
+design and implementation.
 
-So in disguise, the \textit{loop-and-a-half} problem is code duplication problem
-caused by unnecessarily restricting immature termination within a loop.
-Variety of loop types are introduced to minimize the symptoms of the \textit{loop-and-a-half}
-problem.
+
+At the language level, a number of loop constructs have been introduced to
+minimize the symptoms of the ``\textit{loop-and-a-half} problem''.
+But that's not enough.
+Tt remains on developers to choose the right loop constructs.
+Further, finer level code tuning is beyond simple choices of loop constructs
+and must be hand-crafted at implementation time.
+In the section to follow, we will introduce a coding technique for loop optimization in this aspect.
+
+
+\section{Loop Rotation}\label{sec:LoopDesignConsideration}
+
+It is beneficial to visualize a loop construct as a roulette, a carousel, or a Ferris wheel.
+Mathematically speaking, there is a shared property among all four---circular sequences,
+a ring with certain rotational degrees of freedom.
+
+
+If pictured as a Ferris wheel, various statements are arranged around a loop
+(see ~\autoref{fig:loop-rotation}).
+When cut the loop open, any one of them may be the `first' statement, apart from a
+varying amount of code duplication.
+This freedom results from the rotational degrees of freedom of the circular sequence.
+Conversely, at design time, one can take advantage of this rotational degrees of freedom to
+fine tune the loop implementation by `rotating' the loop to match up and annex code at afinity
+of the loop.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
+    \caption{\label{fig:loop-rotation}Loop as a circular sequence.
+    The nodes \code{i++} and \code{print} are candidates that can matched and annexed into
+    the loop.}
+\end{figure}
+
+
+Another helpful pictorial image is to think of loops as spools and programs as threads---
+loops are introduced to help organize threads.
+Thus code that is duplicate from a loop body is like thread that can be wound up into a spool
+but is hanging around loosely.
+Therefore, when using a loop in a program, try to spool up slack threads as much as possible
+by `rotating the loop' to match and eliminate the duplicate part of the code.
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
+        \caption{\label{fig:loose-spool} Loop with loosely coupled, surrounding code is like a
+        loose spool.}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
+        \caption{\label{fig:tight-spool}A crafted loop is like a neatly tightened spool, free
+        from loose threads.}
+    \end{subfigure}
+    \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
+    threads using a spool.}
+\end{figure}
+Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
+duplicate initialization code or post-loop processing logic into the loop.
+This often requires developers to look for more general mathematical forms of the
+algorithm used.
+%TODO
+The main motivation for doing so is to minimize code duplication and
+this is one of the most important goal when designing a loop.
+
+
+In practice, one may first implement a non-discriminating loop,
+such as \code{while (true)} or \code{for (; ;)}, for prototyping purposes.
+Once that code is working, one often has gotten a good grasp of the problem and the solutions.
+Then one can start rotating the loop by picking the entrance and exit ports to spool up code into
+the loop as much as possible.
+In the end, one can try different loop constructs, moving and fitting
+state-updating statements, combining or annihilating \code{break} or
+\code{continue} statements, \textit{etc.}
+If needed, repeat the above steps until the code is acceptable both in its functionality and from
+aesthetic point of view.
+
+
+\lstinputlisting[]{loop/word_breaker.py}
+
+
+\section{Loop Initialization}\label{sec:loopInitialization}
 
 What is the simple boundary conditions to be used for initialization?
+In light of the above discussion of `loop rotations', we can reconsider this first tasks in the
+design of loops.
+
 It may not be so straightforward because it really depends on the specific problem.
 But more often than not, the initialization part of a loop is simple, effortless,
 intuitive values---integer $0$, empty list, zero-length string, array of simple values,
@@ -372,46 +446,6 @@ into the loop.
 what can you do to get rid of them?
 In the next couple of sections, we are going to present tips that can help you alleviate
 symptoms associated with `loop-and-a-half' problem.
-
-\section{Loop Rotation}\label{sec:LoopDesignConsideration}
-
-It is beneficial to visualize a loop construct as a roulette, a carousel, or a Ferris wheel, all
-three of which shares the properties of a circular sequence---an sequence with rotational
-degree of freedom.
-Even after everything has been laid out onboard, there are still rotations as degrees of
-freedom as shown in ~\autoref{fig:loop-rotation}.
-Thus, one of the task in
-loop design is to arrange loop logic in circular sequence and pick the best
-entrance and termination ports.
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
-    \caption{Loop as a circular sequence.\label{fig:loop-rotation}}
-\end{figure}
-
-Additionally, one can
-think of a program as a linear thread and a loop as a spool that helps organize loose thread.
-\begin{figure}[htb]
-    \centering
-    \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
-        \caption{\label{fig:loose-spool} Loop with loosely coupled, surrounding code is like a
-        loose spool.}
-    \end{subfigure}
-    \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
-        \caption{\label{fig:tight-spool}A crafted loop is like a neatly tightened spool, free
-        from loose threads.}
-    \end{subfigure}
-    \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
-    threads using a spool.}
-\end{figure}
-Thanks to the rotation degree of freedom, one can `rotate' the loop to match and spool up the
-duplicate initialization code or post-loop processing logic into the loop.
-This often requires developers to look for more general mathematical forms of the
-algorithm used.
-
-\lstinputlisting[]{loop/word_breaker.py}
 
 
 \section{`One-more-cycle' coding technique}\label{subsec:one-more-loop}

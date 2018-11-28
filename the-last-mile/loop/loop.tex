@@ -349,64 +349,76 @@ In the section to follow, we will introduce a coding technique for loop optimiza
 
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}
 
-It is beneficial to visualize a loop construct as a roulette, a carousel, or a Ferris wheel.
-Mathematically speaking, a property is shared by all four---they are circular sequences with
-certain rotational degrees of freedom.
+When implementing loops in programs, an important goal is to reduce duplicate code in and around
+loop---be it pre-loop initialization or post-loop processing.
+And one of the important techniques for that is `loop rotation'.
 
-If pictured as a Ferris wheel, distributed around are the statements of the loop
+
+It is beneficial to visualize a loop construct as a Ferris wheel, a carousel, or a spool.
+Mathematically speaking, a property is shared by all four---they are circular sequences, that is,
+a sequence with rotational symmetry with respect to circular shifts.
+If pictured as a Ferris wheel, distributed around the wheel are the conditional test,
+initialization, state update statements and other statements in the loop body.
 (see ~\autoref{fig:loop-rotation}).
-Counting counterclockwise starting from the lowest node, the nodes in a
-Ferris wheel may be ordered into linear sequence.
-But due to the rotational degrees of freedom of the circular sequence,
-Every statement can be the `first' (or `last') depending on which node is positioned lowest.
+
+
+As if a ring may be cut open, the nodes in a circular sequence may be ordered as a linear sequence
+if counting counterclockwise starting with the lowest node.
+In doing so, every statement may be the `first' (or `last') depending on which
+node is positioned lowest.
 One thus may take advantage of this rotational degrees of freedom to
-fine tune loop implementation by `rotating' the loop to match up and coalesce code in affinity
-of the loop.
+fine tune loop implementation by `rotating' the loop to match up and coalesce duplicate code in the
+affinity of the loop.
+This process is referred to as `Loop rotation'.
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
     \caption{\label{fig:loop-rotation}Loop as a circular sequence.
-    The nodes \code{i++} and \code{print} are candidates that can matched and annexed into
+    The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
     the loop.}
 \end{figure}
 
 
-Another helpful picture is to think of loops as spools and programs as threads---loops
-are introduced to help organize threads.
-Thus redundant code outside of the loop can coalesce into the loop body just like loose thread
-can be wound up into a spool.
-Therefore, when using a loop in a program, try to spool up slack threads as much as possible
-by `rotating the loop' to match and eliminate the duplicate part of the code.
+Another helpful picture is to think of loops as spools and programs as threads with loops
+introduced to help organize threads.
+Redundant code outside of the loop may coalesce into the loop body during a `loop rotation'
+like winding up loose thread onto a spool (~\autoref{fig:spool-loop}).
 \begin{figure}[htb]
     \centering
     \begin{subfigure}{.45\textwidth}
         \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
-        \caption{\label{fig:loose-spool} Loop with loosely coupled, surrounding code is like a
-        loose spool.}
+        \caption{\label{fig:loose-spool} Sloppy, duplicate code is analogous to loose, unorganized
+        thread near a spool.}
     \end{subfigure}
     \begin{subfigure}{.45\textwidth}
         \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
-        \caption{\label{fig:tight-spool}A crafted loop is like a neatly tightened spool, free
-        from loose threads.}
+        \caption{\label{fig:tight-spool} Coding technique, \textit{e.g.}, `loop rotation', can help
+        reduce duplicate code and is pictorially depicted as winding up threads neatly onto a
+        spool.}
     \end{subfigure}
     \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
     threads using a spool.}
 \end{figure}
 
-The main motivation for doing so is to minimize code duplication and
-this is one of the most important goal when designing a loop.
-
 
 In practice, one may first implement a non-discriminating loop,
 such as \code{while (true)} or \code{for (; ;)}, for prototyping purposes.
-Once that code is working, one often has gotten a good grasp of the problem and the solutions.
-Then one can start rotating the loop by picking the entrance and exit ports to spool up code into
-the loop as much as possible.
-In the end, one can try different loop constructs, moving and fitting
-state-updating statements, combining or annihilating \code{break} or
-\code{continue} statements, \textit{etc.}
-If needed, repeat the above steps until the code is acceptable both in its functionality and from
-aesthetic point of view.
+This will push all the statements into the loop body for ease of `loop rotation'.
+One can focus on coding up a working solution first.
+Once a working solution has been found, one often has gotten a good grasp of the ins and outs of the
+implementation.
+%to to try to spool up slack threads as much as possible by `rotating the loop' to match and
+%eliminate duplicate code.
+Then one can start `rotating the loop'---rotating the statements in the loop body, match up and
+eliminate `unwound', duplicate code before or after the loop.
+In the end, one can try different loop constructs, move and fit state-updating statements,
+combine or annihilate \code{continue} and \code{break} statements, \textit{etc.}
+If needed, repeat the above steps until the code is acceptable both functionally and
+aesthetically.
+
+
+It is not exaggerating to say that ``The majority of work of programming a loop is outside of the
+loop.''
 
 
 \lstinputlisting[]{loop/word_breaker.py}
@@ -417,6 +429,13 @@ aesthetic point of view.
 What is the simple boundary conditions to be used for initialization?
 In light of the above discussion of `loop rotations', we can reconsider this first tasks in the
 design of loops.
+
+Initialization is the gluing interface between code before the loop and the loop itself.
+Initialization is like a layer of primer coating---it prepares the substrate on which the loop
+carries on its further treatment.
+This may seem simple to you but it is a huge topic.
+When it comes to initialization, there are so much to talk about.
+Should we initialize \code{int i = -1} or \code{int i = 0}?
 
 Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
 duplicate initialization code or post-loop processing logic into the loop.
@@ -448,8 +467,27 @@ what can you do to get rid of them?
 In the next couple of sections, we are going to present tips that can help you alleviate
 symptoms associated with `loop-and-a-half' problem.
 
+Need examples:
+%TODO
 
-\section{`One-more-cycle' coding technique}\label{subsec:one-more-loop}
+Initialization changes (unexpectedly or more general) as a result of loop rotation, e.g.,
+int i = 0 --> int i = -1
+
+Shed heavy initialization the first iteration of the loop by backing off one `layer' and
+initializing a simple array of 0, per say.
+
+
+\section{Minimal Post-loop Processing}\label{subsec:one-more-loop}
+
+Conversely, the `loop rotation' technique may be applied to reduce redundant post-loop processing.
+
+If you find that after the loop, your code is doing similar things as a loop iteration does, then
+you should probably consider using the `One-more-cycle' coding technique that I am explaining next.
+
+Find ways to execute the loop one more time after the normal execution.
+At the same time, add logic in the loop to handle this if it has different logic than the normal
+loop.
+
 
 Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
 to final answer and that happy to share part of the logic of the loop body.
@@ -477,7 +515,14 @@ do the rest in post-loop logic and testify yourself for the duplicate code betwe
 logic and post-loop processing.
 
 
-\section{loop pacing}\label{sec:linearVs.NonlinearStepping}
+\section{Loop Pacing}\label{sec:linearVs.NonlinearStepping}
+
+Loop pacing is another aspect of a loop that has been largely ignored especially when tuning loop
+construct.
+Usually it is changed when the state-updating statements are changed, for example, when moved
+between the afterthought position and the loop body.
+
+
 Deterministic linear stepping \textit{vs.} nonlinear or conditional stepping.
 
 If viewed as a state machine automaton, loop variables, serving as state registers, may change
@@ -492,6 +537,15 @@ nonlinear stepping.
 If you use \code{for}-loop for linear stepping,
 please try your best to afterthought part for increment or decrement purposes.
 
+Below is a case study dynamic programming algorithm implemented with one loop.
+\begin{quote}
+    Given an array of non-negative integers, you are initially positioned at the first index of the array.
+    Each element in the array represents your maximum jump length at that position.
+    Determine if you are able to reach the last index.
+    For example:
+    A = [2,3,1,1,4], return true.
+    A = [3,2,1,0,4], return false
+\end{quote}
 \lstinputlisting[]{loop/array_jumper.java}
 
 In some other cases, loop state may even jumps back and forth.
@@ -519,9 +573,9 @@ is to get a \emph{working version} (WV).
 Once you get a WV, you can spot for areas of improvement:
 duplicate code of any severity, excessive customization such as \code{break} or \code{continue}
 \textit{etc}.
-Try the techniques we talked about in this chapter such as loop rotation, include
-`one-more-loop',
-try on different loop constructs and so on.
+Try the techniques we talked about in this chapter such as `loop rotation',
+`one-more-loop', initialization reduction techniques, \textit{etc.}
+Try on different loop constructs and so on.
 Also keep in mind opportunities of using sentinels for certain niched applications (see
 ~\autoref{ch:sentinels}).
 Finally, narrow down to a loop construct

@@ -350,17 +350,17 @@ In the section to follow, we will introduce a coding technique for loop optimiza
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}
 
 It is beneficial to visualize a loop construct as a roulette, a carousel, or a Ferris wheel.
-Mathematically speaking, there is a shared property among all four---circular sequences,
-a ring with certain rotational degrees of freedom.
+Mathematically speaking, a property is shared by all four---they are circular sequences with
+certain rotational degrees of freedom.
 
-
-If pictured as a Ferris wheel, various statements are arranged around a loop
+If pictured as a Ferris wheel, distributed around are the statements of the loop
 (see ~\autoref{fig:loop-rotation}).
-When cut the loop open, any one of them may be the `first' statement, apart from a
-varying amount of code duplication.
-This freedom results from the rotational degrees of freedom of the circular sequence.
-Conversely, at design time, one can take advantage of this rotational degrees of freedom to
-fine tune the loop implementation by `rotating' the loop to match up and annex code at afinity
+Counting counterclockwise starting from the lowest node, the nodes in a
+Ferris wheel may be ordered into linear sequence.
+But due to the rotational degrees of freedom of the circular sequence,
+Every statement can be the `first' (or `last') depending on which node is positioned lowest.
+One thus may take advantage of this rotational degrees of freedom to
+fine tune loop implementation by `rotating' the loop to match up and coalesce code in affinity
 of the loop.
 \begin{figure}[htb]
     \centering
@@ -371,10 +371,10 @@ of the loop.
 \end{figure}
 
 
-Another helpful pictorial image is to think of loops as spools and programs as threads---
-loops are introduced to help organize threads.
-Thus code that is duplicate from a loop body is like thread that can be wound up into a spool
-but is hanging around loosely.
+Another helpful picture is to think of loops as spools and programs as threads---loops
+are introduced to help organize threads.
+Thus redundant code outside of the loop can coalesce into the loop body just like loose thread
+can be wound up into a spool.
 Therefore, when using a loop in a program, try to spool up slack threads as much as possible
 by `rotating the loop' to match and eliminate the duplicate part of the code.
 \begin{figure}[htb]
@@ -392,11 +392,7 @@ by `rotating the loop' to match and eliminate the duplicate part of the code.
     \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
     threads using a spool.}
 \end{figure}
-Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
-duplicate initialization code or post-loop processing logic into the loop.
-This often requires developers to look for more general mathematical forms of the
-algorithm used.
-%TODO
+
 The main motivation for doing so is to minimize code duplication and
 this is one of the most important goal when designing a loop.
 
@@ -421,6 +417,11 @@ aesthetic point of view.
 What is the simple boundary conditions to be used for initialization?
 In light of the above discussion of `loop rotations', we can reconsider this first tasks in the
 design of loops.
+
+Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
+duplicate initialization code or post-loop processing logic into the loop.
+This often requires developers to look for more general mathematical forms of the
+algorithm used.
 
 It may not be so straightforward because it really depends on the specific problem.
 But more often than not, the initialization part of a loop is simple, effortless,

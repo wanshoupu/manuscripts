@@ -441,13 +441,12 @@ Instead, you can skip some of the intermediate steps to quicken the process.
 But in case you are lost you can always find your way back if you come closer to the detailed
 steps.
 
-Many times, duplication may not be so obvious as `copy-n-paste'.
-Two code blocks may contain `soft duplication'---hidden, `quavery', and partially duplicate
-code, for example,
-\lstinputlisting[]{loop/soft_dup.py}
-`Soft duplication' is tougher to detect and remove.
-It is only manifest and accessible after a round of pre-refactors.
-In that case, one should perform due pre-refactors before applying loop rotation.
+
+Many times, the culprit code snippet manifest the `soft duplication' symptoms---two
+code blocks may contain hidden, `quavery', and partially duplicate code.
+In comparison with hard duplication, `soft duplication' is tougher to detect and remove.
+In that case, one should perform due pre-refactors to make the duplicate parts manifest and
+accessible before applying loop rotation.
 
 
 \section{Loop Initialization}\label{sec:loopInitialization}

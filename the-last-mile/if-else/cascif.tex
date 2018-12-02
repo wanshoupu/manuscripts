@@ -527,16 +527,21 @@ Let us then pull it out and promote it into the upper level conditional---we now
 at this level, \code{key not in lookup} and \code{len(lookup[key]) == 1}.
 Alright, now follow ~\fullref{sec:orderingstaircaseconditional}
 for the rest of this refactor to arrange the conditionals into a cascade.
-Do not turn the page---shut up and code.
+Do not turn the page---I shut up and you code.
 
 
 \clearpage
 Now let's examine each other's code.
 Reader might have first arrived at the following cascade conditional
 \lstinputlisting[firstline=15,lastline=24]{if-else/nested_conditional_2_cascading_conditional.py}
-Next, the previously inaccessible refactor regarding the duplicate code `\code{heappush
-(lookup[key + 1] = ..} was made easy now and I believe the reader is able to make something
-similar to the following
+
+Instead of hard, `copy-n-paste' duplication, this code block contains `soft
+duplication'---hidden, `quavery', and partially duplicate code.
+`Soft duplication' is often tougher to detect and remove.
+The above code has repeating fragments such as `\code{heappush(...)}'.
+We first introduce an intermediate variable for the argument of '\code{heappush}' operation.
+Then the duplicate code becomes manifest and accessible and we can easily `factor' it out.
+Finally, we get:
 \lstinputlisting[firstline=28]{if-else/nested_conditional_2_cascading_conditional.py}
 
 

@@ -341,13 +341,22 @@ design and implementation.
 At the language level, a number of loop constructs have been introduced to
 minimize the symptoms of the ``\textit{loop-and-a-half} problem''.
 But that's not enough.
-Tt remains on developers to choose the right loop constructs.
-Further, finer level code tuning is beyond simple choices of loop constructs
+It remains on developers to choose the most suitable loop constructs.
+Further, code fine-tuning is beyond simple choices of loop constructs
 and must be hand-crafted at implementation time.
-In the section to follow, we will introduce a coding technique for loop optimization in this aspect.
+In the section to follow, we will introduce `loop rotation', a technique for loop
+optimization that helps alleviate `loop-and-a-half' symptoms.
 
 
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
+    \caption{\label{fig:loop-rotation}Loop as a circular sequence.
+    The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
+    the loop.}
+\end{figure}
+
 
 When implementing loops in programs, an important goal is to reduce duplicate code in and around
 loop---be it pre-loop initialization or post-loop processing.
@@ -362,27 +371,6 @@ initialization, state update statements and other statements in the loop body.
 (see ~\autoref{fig:loop-rotation}).
 
 
-As if a ring may be cut open, the nodes in a circular sequence may be ordered as a linear sequence
-if counting counterclockwise starting with the lowest node.
-In doing so, every statement may be the `first' (or `last') depending on which
-node is positioned lowest.
-One thus may take advantage of this rotational degrees of freedom to
-fine tune loop implementation by `rotating' the loop to match up and coalesce duplicate code in the
-affinity of the loop.
-This process is referred to as `Loop rotation'.
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
-    \caption{\label{fig:loop-rotation}Loop as a circular sequence.
-    The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
-    the loop.}
-\end{figure}
-
-
-Another helpful picture is to think of loops as spools and programs as threads with loops
-introduced to help organize threads.
-Redundant code outside of the loop may coalesce into the loop body during a `loop rotation'
-like winding up loose thread onto a spool (~\autoref{fig:spool-loop}).
 \begin{figure}[htb]
     \centering
     \begin{subfigure}{.45\textwidth}
@@ -401,6 +389,22 @@ like winding up loose thread onto a spool (~\autoref{fig:spool-loop}).
 \end{figure}
 
 
+As if a ring may be cut open, the nodes in a circular sequence may be ordered as a linear sequence
+if counting counterclockwise starting with the lowest node.
+In doing so, every statement may be the `first' (or `last') depending on which
+node is positioned lowest.
+One thus may take advantage of this rotational degrees of freedom to
+fine tune loop implementation by `rotating' the loop to match up and coalesce duplicate code in the
+affinity of the loop.
+This process is referred to as `Loop rotation'.
+
+
+Another helpful picture is to think of loops as spools and programs as threads with loops
+introduced to help organize threads.
+Redundant code outside of the loop may coalesce into the loop body during a `loop rotation'
+like winding up loose thread onto a spool (~\autoref{fig:spool-loop}).
+
+
 In practice, one may first implement a non-discriminating loop,
 such as \code{while (true)} or \code{for (; ;)}, for prototyping purposes.
 This will push all the statements into the loop body for ease of `loop rotation'.
@@ -417,23 +421,49 @@ If needed, repeat the above steps until the code is acceptable both functionally
 aesthetically.
 
 
-It is not exaggerating to say that ``The majority of work of programming a loop is outside of the
-loop.''
+As you can see, a large part of the hard work for programming a loop lies outside of the loop.
 
+\lstinputlisting[]{loop/board_game_dupcode.py}
+First, let's smooth up the loop to prepare for rotations by `internalize' the loop condition and
+make it a \code{while(True)} loop:
+\lstinputlisting[]{loop/board_game_dupcode-0.py}
+Now watch closely---the last statement in the loop and the immediate statement before the loop are
+identical so we can `roll up' the immediate statement before the loop and produce an equivalent
+code:
+\lstinputlisting[]{loop/board_game_dupcode-1.py}
+We have coalesced one line of duplicate code and again, the last statement in the loop and the
+immediate statement before the loop are identical\ldots
+After $4$ loop rotations, we spool up all the duplicate code:
+\lstinputlisting[]{loop/board_game_rotated.py}
+Once you grasp the idea and becomes skillful at it, you don't have to strictly go through each and
+every step.
+Instead, you can skip some of the intermediate steps to quicken the process.
+But in case you are lost you can always find your way back if you come closer to the detailed
+steps.
 
-\lstinputlisting[]{loop/word_breaker.py}
+Many times, duplication may not be so obvious as `copy-n-paste'.
+Two code blocks may contain `soft duplication'---hidden, `quavery', and partially duplicate
+code, for example,
+\lstinputlisting[]{loop/soft_dup.py}
+`Soft duplication' is tougher to detect and remove.
+It is only manifest and accessible after a round of pre-refactors.
+In that case, one should perform due pre-refactors before applying loop rotation.
 
 
 \section{Loop Initialization}\label{sec:loopInitialization}
 
-What is the simple boundary conditions to be used for initialization?
-In light of the above discussion of `loop rotations', we can reconsider this first tasks in the
-design of loops.
+\lstinputlisting[]{loop/word_breaker.py}
+\lstinputlisting[]{loop/the-last-mile/loop/word_breaker_other_imp.py}
 
-Initialization is the gluing interface between code before the loop and the loop itself.
-Initialization is like a layer of primer coating---it prepares the substrate on which the loop
-carries on its further treatment.
+In light of the above discussion of `loop rotations', let us now examine the impact of
+initialization on a loop.
+
+Initialization is a preclude, a bridge to the loop body,
+It is also a preparatory primer coating that prepares the substrate for a loop.
+
+What is the simple boundary conditions to be used for initialization?
 This may seem simple to you but it is a huge topic.
+
 When it comes to initialization, there are so much to talk about.
 Should we initialize \code{int i = -1} or \code{int i = 0}?
 
@@ -453,19 +483,15 @@ caption={A cached solution for the $n$th Fibonacci numbers.}]
 {loop/fibonacci.py}
 Note that we have `back-filled' the Fibonacci numbers to the $0$th element as $0$.
 You will see more cases later where some generalization of the algorithm and/or the mathematical
-concept behind will make the coding much easier.
+concept behind will make the coding, and particularly initialization, easier.
 This effort of simplifying initialization process is especially important for dynamic programming
 where often the boundary conditions are
 usually an array of simple values.
 See ~\autoref{ch:dp} for more information.
 If you find that your initialization code actually repeats the loop body in whole or in part,
-or that the post-processing logic does similar things that
-the loop does,
-That's a sign to `tighten' your loop, to absorb the pre-loop and post-loop logic
+or that the post-processing logic does similar things that the loop does,
+That's a sign that you should `tighten' your loop, to coalesce the pre-loop and post-loop logic
 into the loop.
-what can you do to get rid of them?
-In the next couple of sections, we are going to present tips that can help you alleviate
-symptoms associated with `loop-and-a-half' problem.
 
 Need examples:
 %TODO

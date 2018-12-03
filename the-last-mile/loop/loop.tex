@@ -454,11 +454,16 @@ accessible before applying loop rotation.
 \lstinputlisting[]{loop/word_breaker.py}
 \lstinputlisting[]{loop/the-last-mile/loop/word_breaker_other_imp.py}
 
-In light of the above discussion of `loop rotations', let us now examine the impact of
-initialization on a loop.
+In light of the `loop rotation' technique, let us now focus on how to optimize
+loop initialization.
+One can think of initialization as a preclude, a bridge to the loop body.
+It is a `primer coating' that makes a substrate for the loop to work on.
 
-Initialization is a preclude, a bridge to the loop body,
-It is also a preparatory primer coating that prepares the substrate for a loop.
+The requirement for loop initialization is `small'.
+Let initialization be light-weight, do the minimal preparatory work and let the loop body do the
+weight-lifting.
+Achieving light-weight initialization accounts for a big portion of the work in programming a loop.
+It reduce risk of explicit and hidden code duplication.
 
 What is the simple boundary conditions to be used for initialization?
 This may seem simple to you but it is a huge topic.

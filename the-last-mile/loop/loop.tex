@@ -451,25 +451,103 @@ accessible before applying loop rotation.
 
 \section{Loop Initialization}\label{sec:loopInitialization}
 
-\lstinputlisting[]{loop/word_breaker.py}
-\lstinputlisting[]{loop/the-last-mile/loop/word_breaker_other_imp.py}
-
-In light of the `loop rotation' technique, let us now focus on how to optimize
+In light of the `loop rotation' technique, let us now go into details about
 loop initialization.
-One can think of initialization as a preclude, a bridge to the loop body.
+Initialization is a preclude, a bridge to the main loop body.
 It is a `primer coating' that makes a substrate for the loop to work on.
 
-The requirement for loop initialization is `small'.
-Let initialization be light-weight, do the minimal preparatory work and let the loop body do the
-weight-lifting.
-Achieving light-weight initialization accounts for a big portion of the work in programming a loop.
-It reduce risk of explicit and hidden code duplication.
+The single most important requirement for loop initialization, apart from being `correct', is
+`small'.
+Each has its focus---let a minimal, light-weight initialization do the preparatory work
+and the rest of the loop do the weight-lifting work.
+
+Simple?
+Simple.
+This may sounds hard but actually simple.
+But to achieve this goal it is required that one form a habit of striving for the simplest
+initialization when facing similar situations.
+
+Let us take a look at the 'spiral termination' problem:
+\begin{quote}
+    Given the dimensions, $m, n$, of a matrix,
+    suppose one is to visit each and every cell of the matrix in
+    a clock-wise spiral fashion starting from $[0,0]$.
+    Determine where the process terminates.
+    For example, when $m=1,n=1$, it terminates at $[0,0]$
+\end{quote}
+
+There are more than one solutions to this problems---iterative and recursive.
+But apparently we are here to demonstrate an iterative solution with a loop.
+Note that the problem only asks for the terminating position and
+cells passed by along the way are irrelevant.
+Skipping the rationale, I am going to state the algorithm to be implemented:
+\begin{quote}
+    We are going to `stride' toward the terminating position.
+    In each stride, we leap passing one `layer' of cells.
+    A `layer' here consists of all the cells not yet visited but not completely surrounded by
+    unvisited neighbors.
+\end{quote}
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=.4\textwidth]{loop/spiral-term.jpg}
+    \caption{\label{fig:spiral-term-iter}
+    Iteration after one `spiral stride' in the `Spiral termination' problem.}
+\end{figure}
+In a big enough matrix, if we start off at $[i,j]$, then after we finish going
+around and visiting all the cells in one `layer', we would end up at $[i+1,j+1]$
+as shown in ~\autoref{fig:spiral-term-iter}.
+Please note that there is a special case---when the matrix is an array
+(either columnar or row) or, after being peeled off, becomes one,
+what remains are cells forming a straight line.
+In that case, the terminating cell is at end of the line.
+For now, we are going to handle this extra complication with post-loop processing.
+All put together, our code would look like this
+\lstinputlisting[]{loop/spiral_termination_todo.py}
+Note that the initialization is left as `TODO'.
+Now the question: ``Where to start?''
+
+At the first glance, initializing $i=0,j=0$ seems reasonably simple.
+For example, when $m=3,n=3$, after `peeling off' the outer layer, \code{i,j} becomes
+$[1,1]$ and indeed the process terminates on $[1,1]$.
+However we will encounter problem for case $m=2,n=2$, for after the outer layer, there is nothing
+left for termination!
+As a result, our program erroneously terminates on $[1,1]$.
+(The correct answer is $[1,0]$)
+This teaches us a lesson---initializing \code{i,j} to the starting cell of a layer
+may result in a scary termination---on nothing!
+
+How about we % TODO
+We are forced to initialize
+A few more test cases may provide insights apart from the one given in the problem statement.
+
+When $m=1,n=5$, the termination position is also straightforward---$[0,4]$.
+
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=.4\textwidth]{loop/spiral-term-init.png}
+    \caption{\label{fig:spiral-term-init}
+    Initialization virtual cell for the `Spiral termination' problem.}
+\end{figure}
+
+
+As a matter of fact, there is a 3-liner solution to the problem.
+\lstinputlisting[]{loop/spiral_termination_two_liner.py}
+But suppose you haven't figured out this 3-line solution and you are convinced that an
+iterative solution makes all the sense, you ought to treat it whole-heartedly.
+
+
+\lstinputlisting[]{loop/word_breaker.py}
+\lstinputlisting[]{loop/word_breaker_other_imp.py}
+
 
 What is the simple boundary conditions to be used for initialization?
-This may seem simple to you but it is a huge topic.
-
 When it comes to initialization, there are so much to talk about.
 Should we initialize \code{int i = -1} or \code{int i = 0}?
+
+Achieving light-weight initialization accounts for a big portion of the work in programming a loop.
+It reduce risk of explicit and hidden code duplication.
+This may seem simple to you but it is a huge topic.
+
 
 Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
 duplicate initialization code or post-loop processing logic into the loop.
@@ -518,6 +596,8 @@ Find ways to execute the loop one more time after the normal execution.
 At the same time, add logic in the loop to handle this if it has different logic than the normal
 loop.
 
+%TODO
+\lstinputlisting[]{loop/spiral_termination_final.py}
 
 Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
 to final answer and that happy to share part of the logic of the loop body.

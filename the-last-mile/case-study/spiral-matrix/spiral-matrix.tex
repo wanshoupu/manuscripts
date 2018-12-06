@@ -38,6 +38,18 @@ to meaningfully decouple and manage complexities, striving for better code coher
 
 \section{Outline of the algorithm}\label{sec:spiral-matrix-Algorithm}
 
+Intuitively, the process is like shaving off a potato---it
+terminates when there is nothing left to shave.
+But unlike continuous material, there is the `quantum size' effect---when the matrix is reduced
+to a one-dimensional array, column or row, one simply walks down to the other end!
+There are many solutions to this problems---iterative and recursive.
+Suppose we are to attack the problem iteratively.
+We can walk down the matrix, cell by cell, making left turns when encountering corners.
+Or we can walk all the way down a straight line as much as possible in one stride and then make a
+left turn and repeat.
+Finally, one can complete one 'round' of walk---walk all the cells on the
+outermost layer---at each iteration.
+
 Unless for some special cases and/or special form of questions,
 a general algorithm for the family of spiral matrix problems may be as shown in
 ~\autoref{alg:spiral-matrix}.

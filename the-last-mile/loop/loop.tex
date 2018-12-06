@@ -451,15 +451,13 @@ accessible before applying loop rotation.
 
 \section{Loop Initialization}\label{sec:loopInitialization}
 
-In light of the `loop rotation' technique, let us now go into details about
-loop initialization.
 Initialization is a preclude, a bridge to the main loop body.
 It is a `primer coating' that makes a substrate for the loop to work on.
 
-The single most important requirement for loop initialization, apart from being `correct', is
-`small'.
-Each has its focus---let a minimal, light-weight initialization do the preparatory work
-and the rest of the loop do the weight-lifting work.
+The single most important requirement for loop initialization, apart from `Be correct', is
+`Be small'.
+Let each maintain its focus---a minimal, light-weight initialization focus on the preparatory work
+and the rest of the loop on the weight-lifting work.
 
 Simple?
 Simple.
@@ -511,24 +509,39 @@ For example, when $m=3,n=3$, after `peeling off' the outer layer, \code{i,j} bec
 $[1,1]$ and indeed the process terminates on $[1,1]$.
 However we will encounter problem for case $m=2,n=2$, for after the outer layer, there is nothing
 left for termination!
-As a result, our program erroneously terminates on $[1,1]$.
-(The correct answer is $[1,0]$)
+As a result, our program would terminates on $[1,1]$ erroneously.
+(The correct answer is $[1,0]$.)
 This teaches us a lesson---initializing \code{i,j} to the starting cell of a layer
 may have a spooky ending---termination on void!
 In fact, when \code{min(m, n)} is an even number, `landing on void' would be inevitable
-\ldots unless, of course, we abstain from the last iteration.
-If we do so, the following condition would hold true at loop termination:
+\ldots unless some remedy is made.
+One remedial measure we can take is to abstain from the last iteration which throws us off the
+cliff.
+By doing so, the following condition would hold true after loop termination:
 \code{1 <= min(m, n) <= 2}.
 Then we can handle whatever is left in post-loop processing.
 Finally here is the completed code:
 \lstinputlisting[]{loop/spiral_termination_final.py}
 The initialization is minimal, natural, and effortless to get.
 
-So far so good.
-But this not the only possible initialization.
-To see a second way, let us step back for a moment and ask this question:
-``What's the return value if a $0\times 0$ matrix is given?''
-This nearly philosophical question throws many into contemplation.
+
+This is far from the only possible solution.
+Possibly nor is it the best.
+Let us step back from initializing \code{i, j = (0, 0)}, the first cell in the next iteration.
+Instead, what if we flip the upside down and initialize \code{i, j} to `the last cell in the
+previous iteration'.
+For example,  $[1,0]$ is one of `the last cells of iterations' in ~\autoref{fig:spiral-term-iter}.
+But the new problem is, ``Without an iteration in the first place, how do we get `the last cell of
+previous iteration'?''
+As a matter of fact, for a big enough matrix, [1,0] is always `the last cell of an iteration'.
+If this is not the case, the matrix is not big enough to even need a loop.
+So presumably, the code may look like this:
+\lstinputlisting[]{loop/spiral_term_pseudo_code.py}
+You may notice that the code before and after the loop deals with similar scenarios, shares
+commonality, and thus are inevitably duplicate to some degree.
+How to get rid of the duplicate code before and after the loop?
+
+
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=.4\textwidth]{loop/spiral-term-init.png}
@@ -537,75 +550,103 @@ This nearly philosophical question throws many into contemplation.
 \end{figure}
 
 
-The `path' taken by the loop, the sequence of `snapshots' after each iteration of the loop
-provides us a hint.
+The key lies in if we can `backtrack' the initialization.
+Let us ask this question: ``What's the return value if a $0\times 0$ matrix is given?''
+This question almost seems too philosophical to be answered.
+But it aligns with our `Be small' requirement for loop initialization.
+The `path' taken by the loop, the stops after each iteration of the loop give us a hint.
 As in ~\autoref{fig:spiral-term-init}, if we extrapolate the path backwards
-(against the arrow), we serendipitously discover `$[0,-1]$'.
-This is not a valid cell for any real matrix.
-But closer examining of it shows that it may be used as
-a virtual cell, a `sentinel', that stands for non-existent result for a zero-sized matrix, the same
+(in the opposite direction to the arrows), we serendipitously discover the cell `$[0,-1]$'.
+What is the significance of this cell given that it is not a valid cell for any real matrix?
+But closer examination reveals that it is the virtual cell, a `sentinel', that stands for
+non-existent result for a zero-sized matrix, the same
 way as \code{null} stands for the `lack of an \code{Object}'.
+So `$[0,-1]$' can be deemed as the sentinel value for zero-sized matrix.
 
 
-Moreover, this virtual cell may serve the starting point of yet another iterative solution.
+More importantly, we have found the key to get rid of the duplicate code before and after the
+loop---initialize \code{i, j} to `$[0,-1]$'.
+Without much ado, here is the new iterative solution:
 \lstinputlisting[]{loop/spiral_termination_virtual_init.py}
-This latter solution has a shoulder above the former solution in that it can handle zero-sized
-matrix and return a sentinel value `$[0,-1]$'.
+This solution has an advantage over the previous one in that it has an extended input range which
+enables it to handle zero-sized matrices.
+This is analogous to concept of `analytic continuation' in complex analysis if
+reader is familiar with the topic.
 
 
-As a matter of fact, there is a 3-line solution to the problem.
-\lstinputlisting[]{loop/spiral_termination_two_liner.py}
-But suppose you haven't figured out this 3-line solution and you are convinced that an
-iterative solution makes all the sense, you ought to treat it whole-heartedly.
 
 
 \lstinputlisting[]{loop/word_breaker.py}
 \lstinputlisting[]{loop/word_breaker_other_imp.py}
 
-
-What is the simple boundary conditions to be used for initialization?
-When it comes to initialization, there are so much to talk about.
-Should we initialize \code{int i = -1} or \code{int i = 0}?
-
+Through the `spiral termination' problem, we see that initialization plays a key role in loop
+implementation.
 Achieving light-weight initialization accounts for a big portion of the work in programming a loop.
-It reduce risk of explicit and hidden code duplication.
-This may seem simple to you but it is a huge topic.
-
-
-Thanks to the rotational degree of freedom, one can `rotate' the loop to match and spool up the
-duplicate initialization code or post-loop processing logic into the loop.
-This often requires developers to look for more general mathematical forms of the
-algorithm used.
-
-It may not be so straightforward because it really depends on the specific problem.
-But more often than not, the initialization part of a loop is simple, effortless,
+A simple initialization helps reduce explicit and hidden code duplication.
+More often than not, loop initialization takes simple, effortless,
 intuitive values---integer $0$, empty list, zero-length string, array of simple values,
 \textit{etc}.
-As an example, ~\autoref{lst:fibonacci} illustrates the initialization of the Fibonacci sequence
-with its first two elements: $0$ and $1$.
-\lstinputlisting[label={lst:fibonacci},
-caption={A cached solution for the $n$th Fibonacci numbers.}]
-{loop/fibonacci.py}
-Note that we have `back-filled' the Fibonacci numbers to the $0$th element as $0$.
-You will see more cases later where some generalization of the algorithm and/or the mathematical
-concept behind will make the coding, and particularly initialization, easier.
-This effort of simplifying initialization process is especially important for dynamic programming
-where often the boundary conditions are
-usually an array of simple values.
-See ~\autoref{ch:dp} for more information.
+But occasionally, initialization \code{int i = -1} may have an edge over \code{int i = 0}.
+This requires one to push the boundary to achieve a simpler initialization.
+
+
+As another example, usually people think Fibonacci sequence starts at $1$:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c}
+        \hline
+        $i$ & 1 & 2 & 3 & 4 & \ldots \\
+        \hline
+        $f(i)$ & 1 & 1 & 2 & 3 & \ldots \\
+        \hline
+    \end{tabular}
+\end{table}
+But add a zeroth-element to Fibonacci sequence opens new possibilities.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c|c}
+        \hline
+        $i$ & 0 & 1 & 2 & 3 & 4 & \ldots \\
+        \hline
+        $f(i)$ & 0 & 1 & 1 & 2 & 3 & \ldots \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+Similarly, many people think of the factorial, $0!=1$, as a brain-teaser.
+But it is actually a critical step toward the analytic continuation of factorial
+functions, also known as $\Gamma$-function.
+
+
+You will see more cases later where generalization of the algorithm and/or the mathematical
+concept will make the coding, and particularly initialization, easier.
+As in the `spiral termination' problem, sometimes backing off the most `intuitive'
+initialization to look for more general mathematical forms may get you in a new level of code
+simplicity.
+The simplifying initialization process is especially important for dynamic programming.
+Interested readers may skip to ~\autoref{ch:dp} to look for more information.
+
+
+In light of the `loop rotation' technique, in some cases one can take advantage of the rotational
+degree of freedom of a loop to coalesce duplicate initialization
+or post-loop processing code into the loop.
 If you find that your initialization code actually repeats the loop body in whole or in part,
 or that the post-processing logic does similar things that the loop does,
-That's a sign that you should `tighten' your loop, to coalesce the pre-loop and post-loop logic
-into the loop.
+that's a sign that you should `tighten' your loop.
 
-Need examples:
-%TODO
 
-Initialization changes (unexpectedly or more general) as a result of loop rotation, e.g.,
-int i = 0 --> int i = -1
-
-Shed heavy initialization the first iteration of the loop by backing off one `layer' and
-initializing a simple array of 0, per say.
+Before we conclude this section, I want to let you know that there is a 3-line solution to the
+`spiral termination' problem:
+\lstinputlisting[]{loop/spiral_termination_two_liner.py}
+Or may be even simpler solutions that I don't know.
+By telling you this 3-line solution, the least thing I want is to make you feel
+our work of optimization looks like a total waste.
+On the opposite, even optimization that only have transient value has value before a
+breakthrough was made.
+In this case, optimizations should be taken in relative sense.
+Before one knows the existence of a 3-line solution, try to write an optimized iterative solution
+is worth the effort.
 
 
 \section{Minimal Post-loop Processing}\label{subsec:one-more-loop}

@@ -506,7 +506,7 @@ All put together, our code would look like this
 Note that the initialization is left as `TODO'.
 Now the question: ``Where to start?''
 
-At the first glance, initializing $i=0,j=0$ seems reasonably simple.
+At the first glance, initializing $i=0,j=0$ seems straightforward and reasonable.
 For example, when $m=3,n=3$, after `peeling off' the outer layer, \code{i,j} becomes
 $[1,1]$ and indeed the process terminates on $[1,1]$.
 However we will encounter problem for case $m=2,n=2$, for after the outer layer, there is nothing
@@ -514,14 +514,21 @@ left for termination!
 As a result, our program erroneously terminates on $[1,1]$.
 (The correct answer is $[1,0]$)
 This teaches us a lesson---initializing \code{i,j} to the starting cell of a layer
-may result in a scary termination---on nothing!
+may have a spooky ending---termination on void!
+In fact, when \code{min(m, n)} is an even number, `landing on void' would be inevitable
+\ldots unless, of course, we abstain from the last iteration.
+If we do so, the following condition would hold true at loop termination:
+\code{1 <= min(m, n) <= 2}.
+Then we can handle whatever is left in post-loop processing.
+Finally here is the completed code:
+\lstinputlisting[]{loop/spiral_termination_final.py}
+The initialization is minimal, natural, and effortless to get.
 
-How about we % TODO
-We are forced to initialize
-A few more test cases may provide insights apart from the one given in the problem statement.
-
-When $m=1,n=5$, the termination position is also straightforward---$[0,4]$.
-
+So far so good.
+But this not the only possible initialization.
+To see a second way, let us step back for a moment and ask this question:
+``What's the return value if a $0\times 0$ matrix is given?''
+This nearly philosophical question throws many into contemplation.
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=.4\textwidth]{loop/spiral-term-init.png}
@@ -530,7 +537,23 @@ When $m=1,n=5$, the termination position is also straightforward---$[0,4]$.
 \end{figure}
 
 
-As a matter of fact, there is a 3-liner solution to the problem.
+The `path' taken by the loop, the sequence of `snapshots' after each iteration of the loop
+provides us a hint.
+As in ~\autoref{fig:spiral-term-init}, if we extrapolate the path backwards
+(against the arrow), we serendipitously discover `$[0,-1]$'.
+This is not a valid cell for any real matrix.
+But closer examining of it shows that it may be used as
+a virtual cell, a `sentinel', that stands for non-existent result for a zero-sized matrix, the same
+way as \code{null} stands for the `lack of an \code{Object}'.
+
+
+Moreover, this virtual cell may serve the starting point of yet another iterative solution.
+\lstinputlisting[]{loop/spiral_termination_virtual_init.py}
+This latter solution has a shoulder above the former solution in that it can handle zero-sized
+matrix and return a sentinel value `$[0,-1]$'.
+
+
+As a matter of fact, there is a 3-line solution to the problem.
 \lstinputlisting[]{loop/spiral_termination_two_liner.py}
 But suppose you haven't figured out this 3-line solution and you are convinced that an
 iterative solution makes all the sense, you ought to treat it whole-heartedly.

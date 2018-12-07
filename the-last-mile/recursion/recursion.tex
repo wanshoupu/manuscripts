@@ -115,11 +115,11 @@ What if the matrix is a one-cell matrix?
 Extreme question: what if the matrix is empty?
 Do you just throw exception?
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:matrix-spiral-term},
     caption={Matrix spiral print termination position.}]
     {recursion/spiral_termination_position.py}
-\end{minipage}
+\end{clisting}
 
 \section{Convert Recursive Solutions to Iterative}\label{sec:recursiveToIterative}
 
@@ -150,7 +150,7 @@ A beautiful example may be found in the book ~\cite{Beautiful-Code:2007} chapter
 expression \code{grep} function.
 For an example in this book, reader can refer the JSON parser of ~\fullref{ch:json-prettifier}.
 
-Topology for multi-function recursion are usually star-shaped---a main function for dispatching,
+Topology for mutual recursion is usually star-shaped---a main function for dispatching,
 one or more leaf functions that only interact with the main function.
 
 \begin{figure}[H]
@@ -166,5 +166,17 @@ When other functions need to perform this duty, they have to defer it to the des
 
 
 \section{Connection with dynamic programming}
+\label{sec:recursion&DynamicProgramming}
 
 Recursive function has a close connection with dynamic programming.
+
+\section{Function argument}\label{sec:functionArgument}
+Function argument as a way of communication between frames.
+With an adjacency list representation of a tree structure, one wish to iterate through it
+recursively.
+But one difficulty is parent node is also present in the adjacency list of its children.
+One solution is to remove those redundant, troublesome parent node from the adjacency list.
+A even better way is to pass in \code{parent} as a function argument.
+\begin{lstlisting}
+    def dfs(node = 0, parent = None):
+\end{lstlisting}

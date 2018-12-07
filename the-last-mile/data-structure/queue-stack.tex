@@ -23,6 +23,36 @@ A stack is a mimick of the stack used by operating system to manage stack memory
     \item Graph exploring patterns
 \end{itemize}
 
+Using stack have less memory pressure.
+DFS vs BFS
+
+\subsection{Advantage of BFS}
+Starting from a root node, it puts breadth over depth.
+This means when reaching any node, the number of edges leading to the node is the minimum.
+
+This is useful when exploring for a spanning tree as this method will produce the most balanced
+spanning tree.
+
+\subsection{Advantage of DFS}
+
+It explores depth first which means it prioritize reaching the goal over a full exploration of
+the graph.
+
+This is useful when path finding where the goal is to find A path not to optimize the path.
+Another application of it is branch-and-bound algorithm as it facilitate branch cutting.
+
+
+\subsection{Advantage of DFS in terms of memory footprint}
+
+Another advantage of DFS is that it's memory usage is usually smaller.
+DFS usually involves a stack (either user allocated or stack frame from operating system).
+When exploring combinatorial problems or tree-like graph, the memory usage is O(D) where D is the
+depth of the tree or number of dimensions in a combinatorial problem.
+While BFS memory usage is O(B) where B is the breadth of the graph and for a tree-like structure,
+that's usually O(N) where N is the total number of nodes.
+The difference is HUGE!!
+
+\section{Cases}
 
 \label{Evernote:Versioned Stack algorithm}
 You need to implement a versioned stack, i.e. version of stack will increment after each push/pop. Apart from push/pop, implement a method print(n) which would print stack state corresponding to version 'n'. For example:
@@ -36,5 +66,20 @@ And so on.
 
 Print(n) should print state at version 'n'.
 
-Here 1 should print 11, 2 should print 8, 11...
+Here 1 should print 11, 2 should print 8, 11\ldots
 All methods should be as efficient as possible.
+
+\lstinputlisting[]{data-structure/iterative_graph_traversal.java}
+
+Here is an example of using \code{queue} data structure to simplify implementation.
+The problem stems from an ancient Chinese story `Ji Tian's strategy' for races in sports or
+political election,
+\textit{etc.}:
+\begin{quote}
+    ``Given two sorted integer arrays of equal size, return a permute of the first array
+    such that its dominance score over the second is maximized.
+    Here dominance score refers to the number of indexes such that the corresponding elements at
+    those indexes in first is larger than that in second.''
+\end{quote}
+
+\lstinputlisting{data-structure/advantage_count_use_queue.py}

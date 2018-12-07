@@ -3,7 +3,7 @@
 %% 8/22/18
 %%
 
-\chapter{Longest Palindrome Substrings}
+\chapter{Case Study: Longest Palindrome Substrings}\label{ch:longestPalindromeSubstrings}
 
 The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
 question.
@@ -29,8 +29,8 @@ The problem of finding palindromic substring has various forms and has been stud
 The optimal algorithm for detecting the LPS in a string originates from
 idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
 
-Although algorithm is not the focus, you need a good understanding of it before moving on to the
-rest of the chapter.
+Although it is not the focus of this chapter, the Manacher's algorithm itself is worth a
+good understanding for the reader before moving on to implementations.
 The basic idea has is mathematical origin from reflection symmetry in one-dimensional ($1$D) space,
 \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}}.
@@ -106,17 +106,16 @@ palindrome of the string.
 All in all, for a string of length $n$, there are $(2 * n + 1)$ palindromic centers.
 On each one of the centers, the longest palindrome can be found by extending the left and right
 boundaries as far as the equally distant pairs of \code{char}s match.
-It is interesting to consider the collective effect among these palindromic substrings---
-nearby palindromes may overlap with one another, smaller palindromes may be nested within bigger
-ones, and especially a substring $S$ may be part of more than one palindromes at
-once.
-When this happens, the corresponding symmetry transformation of each palindrome may be applied in
-any combination, any
-order, and thus relates the substring $S$ to a group of its mirror images, images of images, and
-so on.
+It is interesting to consider the collective effect among these palindromic substrings.
+The left and right wings of a palindromic string may host smaller palindromes.
+When nearby palindromic substrings overlap, dwelling palindromes in the overlapping areas will be
+mirrored to other parts of the string by symmetry,
+When this happens, symmetric operations in the palindromic symmetry group may be
+applied in again and again, in any combination by any order.
+As a result, a substring $S$ may be mapped to mirror images $S^\prime$'s, images of images
+$S^{\prime\prime}$'s, and so on.
 This is the same effect as
-you step into two parallel mirrors, if you ever did, a multitude of `you' and mirror-images
-of you appear aligned and coordinated.
+one steps into two parallel mirrors---a periodic array of `you' appear, aligned and coordinated.
 This intuition of the multiple reflection symmetry is the key to understand Manacher's algorithm.
 
 \begin{figure}[htb]
@@ -127,6 +126,9 @@ This intuition of the multiple reflection symmetry is the key to understand Mana
     \label{fig:bananas.palindrome}
 \end{figure}
 
+The paradigm of dynamic programming readily lends itself as the calculation of new
+uses the result of old.
+Properly cached results is the key to reduce the time complexity to polynomial.
 Taking string ``bananas'' as an example, a few of its palindromic substrings are shown in
 ~\autoref{fig:bananas.palindrome}.
 Note that these substrings overlap with one another.
@@ -166,7 +168,7 @@ Then all the palindromic substrings are centered on one of the \code{char} in th
 string for sake of implementation.
 Algorithm outline is as follows, where $PS(i)$ denotes the LPS centered at \code{i}, and $LPS(i)$
 denotes length of it.
-\begin{clist}
+\begin{alisting}
     \caption{Algorithm for calculating the length of LPS based on Manacher's algorithm}
     \begin{enumerate}
         \item Initialize an array \code{lengths} of size $2 * n + 1$ that stores $LPL(i)$,
@@ -189,9 +191,16 @@ denotes length of it.
             palindrome centered on \code{j}.
         \end{enumerate}
     \end{enumerate}
-\end{clist}
+\end{alisting}
 
 \section{Implementations}\label{sec:implementation.longestPalindrome}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:LongestPalindromeAugment.java},
+    caption={Java implementation of longest
+    palindrome substring Manacher's aglorithm with augmented string.}]
+    {case-study/longest-palindrome/LongestPalindromeAugment.java}
+\end{clisting}
 
 Published on the Internet are several implementations---
 A \java version by CS department of Princeton
@@ -205,44 +214,42 @@ and others.
 
 \subsection{Augmented string}\label{subsec:palindrom.augmentedString}
 
-Firstly, the most common practice is to augment the input string before running the main loop to
-calculate the palindromic substrings.
-
-There the prescription of the algorithm was literally translated into code---the original string
-ws preprocessed to fill with blanks.
-\newpage
-\lstinputlisting[label={lst:LongestPalindrom.java},
-caption={Java implementation of longest
-palindrome substring Manacher's aglorithm with augmented string.}]
-{case-study/longest-palindrome/LongestPalindromeAugment.java}
+The most common implementation is literal translation of Manacher's algorithm, namely,
+the original string was augmented with alternating special characters as dummy palindromic center
+and palindromic search is constrained to odd-length palindromes.
+One thing to observe is that the choice of special characters must not be present in the original
+string.
+One such implementation has been presented in ~\autoref{lst:LongestPalindromeAugment.java}.
 
 \subsection{Virtual mapping for augmented string}\label{subsec:virtualMapping}
 
-But with a little maneuver, one can create a `virtual filling' among the characters of the
-original string and save on physical memory footprint.
+Interestingly, one can virtualize the augmentation process by creating an arithmetic
+mapping between the characters in the original and the augmented string.
+In doing so, lengths of substrings are also altered.
+With the `index mapping' maneuver of this kind, one can simulate a `virtual augmentation' of the
+original string without actually doing it.
+This will get rid of augmentation code and greatly reduces memory footprint, with slight overhead of
+extra arithmetic operation for the
+index mapping between the original string and the `virtually augmented' string.
 ~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
-implementations in \python and \java respectively based on string `virtual filling'.
-The price for doing that is a mapping of indexes of \code{char}s in the the original string.
+implementations in \python and \java respectively based on `virtual augmentation'.
 
-We can make the augmented char array purely virtual / conceptual by rearrange the loop-index.
-Also redefining the lengths array to be the length of the original array
-
-\newpage
-\lstinputlisting[label={lst:longest_palindromic_substring.py},
-caption={A \python implementation of ongest palindromic substring.}]
-{case-study/longest-palindrome/longest_palindromic_substring.py}
+\begin{clisting}
+    \lstinputlisting[label={lst:longest_palindromic_substring.py},
+    caption={A \python implementation of ongest palindromic substring.}]
+    {case-study/longest-palindrome/longest_palindromic_substring.py}
+\end{clisting}
 
 ~\autoref{lst:LongestPalindrom.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.
 We think this way the code is easier to read and refactor.
-
-\newpage
-\lstinputlisting[label={lst:LongestPalindrom.java},
-caption={A \java implementation of LPS Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindrome.java}
-
+\begin{clisting}
+    \lstinputlisting[label={lst:LongestPalindrom.java},
+    caption={A \java implementation of LPS Manacher's aglorithm.}]
+    {case-study/longest-palindrome/LongestPalindrome.java}
+\end{clisting}
 Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space).
 This is one of the most performing implementations known so far.
 

@@ -3,7 +3,7 @@
 %% 8/22/18
 %%
 
-\chapter{Minimum Containing Window}\label{ch:minimumContainingWindow}
+\chapter{Case Study: Minimum Containing Window}\label{ch:minimumContainingWindow}
 
 In this chapter, I will demonstrate through a coding practice question
 how to start with some rough ideas, make improvements progressively, and arrive at a neat, readable
@@ -43,13 +43,16 @@ The problem is stated as follows:
 \section{Analysis of the problem}\label{sec:analysis.min-window}
 
 We zoom in straight to a greedy algorithm with the following ideas behind:
-\begin{enumerate}
-    \item Find a containing window starting at the left end.
-    \item Then attempts to `push-and-squash' the containing window toward the right one element
-    at a time.
-    \item At each step, record the \emph{smallest containing window} so far.
-    \item Return the smallest containing window.
-\end{enumerate}
+\begin{alisting}
+    \caption{Greedy algorithm for the `minimum window' problem.}
+    \begin{enumerate}
+        \item Find a containing window starting at the left end.
+        \item Then attempts to `push-and-squash' the containing window toward the right one element
+        at a time.
+        \item At each step, record the \emph{smallest containing window} so far.
+        \item Return the smallest containing window.
+    \end{enumerate}
+\end{alisting}
 
 Once initialized, the containing window, while maintaining the containment invariant, moves like an
 earthworm---it pushes itself way forward with longitudinal waves starting from the behind.
@@ -174,7 +177,7 @@ Let's see how we can improve on these identified issues.
 First of all, we can attempt to remove the duplicate code from the `loop and a half' problem.
 Using the techniques discussed in ~\autoref{ch:loops}, particularly
 ~\autoref{sec:loop-and-a-half-Problem}, we can solve this problem by choosing the right loop
-construct and use the `one-more-loop' technique(see ~\autoref{subsec:one-more-loop}).
+construct and use the `one-more-loop' technique(see ~\autoref{sec:one-more-loop}).
 Also the `exposed loop variables' problem may also be solved if we use \code{for}-loop properly
 restrict the scopes of relevant variables to the loop body.
 

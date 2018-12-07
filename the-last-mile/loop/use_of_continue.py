@@ -1,4 +1,4 @@
-def foo(n):
+def game(n):
     result = []
     for i in range(n):
         if 0 == i % 2:
@@ -11,8 +11,3 @@ def foo(n):
             print i
         result.append(i)
     return result
-
-
-if __name__ == '__main__':
-    print foo(100)
-

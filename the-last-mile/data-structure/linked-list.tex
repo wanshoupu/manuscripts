@@ -7,6 +7,9 @@
 
 \label{Evernote:Reorder List}
 
+Most linked list algorithms work in an `inch worm' fashion---it pushes its way forward one node
+at a time.
+
 \subsection{Packing and Unpacking}\label{subsec:packingAndUnpacking}
 \begin{lstlisting}[language=Python]
     a,b,c=3,4,5
@@ -18,10 +21,10 @@
 This can be very useful when implementing linked lists algorithms, where rotation of
 values among multiple variables is almost always needed.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:linkedListRealCode},
     caption={Linked list real code.}]{data-structure/LinkedListAlgorithms.java}
-\end{minipage}
+\end{clisting}
 
 
 \begin{figure}

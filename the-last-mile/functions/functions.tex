@@ -2,7 +2,9 @@
 %% Author: shoupu_wan
 %% 7/14/18
 %%
-\chapter{Make Functions Reusable}\label{ch:reusableFunctions}
+\chapter{Make Reusable Functions}\label{ch:reusableFunctions}
+
+Yes single responsibility principle (SRP) is applicable to functions.
 
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
@@ -18,16 +20,16 @@ program is beyond anyone's capability.
 %Is that necessary?
 %Why are they the way they are?
 
-Fortunately, no one needs to understand that amount of details all at once.
-When one takes medicine, one does not need to study the chemical ingredients or the molecular
-structure of the pills.
-The label on the bottle provides pretty much all that is needed.
-This is an example of abstraction, a key trait of human knowledge.
-In the same way, abstraction and encapsulation is the key in software design-a fairly complex
-application is made up of a number of components.
-The whole process is recursive-the components used by an application
-may, in turn, be encapsulations of components at yet another level of abstraction.
-\@\autoref{fig:hierarchy-of-encap} illustrates the idea of recursive abstraction.
+Fortunately, no one needs to understand that amount of details all at once as the computation
+details have been wrapped into reusable modules in a hierarchical architecture.
+Just as one does not need a degree in biochemistry to take a medicine, developers at one
+level of the hierarchy does not need domain knowledge of the level below.
+This is the power of abstraction, a key trait of human being.
+Abstraction and encapsulation plays a key roll in software engineering.
+Abstraction and encapsulation is recursive.
+As illustrated in ~\autoref{fig:hierarchy-of-encap}, a fairly complex system
+is usually made up of a number of components and each component may be yet
+another complex system and so on.
 
 \begin{figure}[htb]
     \begin{center}
@@ -39,9 +41,9 @@ may, in turn, be encapsulations of components at yet another level of abstractio
 
 When we develop a piece of software, we seldom do it from ground up but utilizing existing,
 pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
-when one uses these pre-built modules, one doesn't need to know anything more than the
+when one uses these pre-built modules, one usually doesn't need to know more detail than the
 documentations of the API of the module.
-
+Among all, function design is the foundation of everything else, especially object-oriented design.
 In this chapter, we are to study how to write clean, reusable functions as the building blocks of
 larger pieces.
 
@@ -144,11 +146,11 @@ numbers occur: some advises `Beat all the odds to keep it no more than 2', some 
 saying that's too strick make it $<5$, still some other say $8$ as they claim that some Linux
 kernel functions has up to that number of parameters.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:allocate_resource},caption={A Linux kernel function
     allocating resources for the purpose of illustrating parameter size.},language=C]
     {functions/allocate_resource.c}
-\end{minipage}
+\end{clisting}
 
 For me, I've seen functions on both end of the spectrum: majority of functions have $0$, $1$, $2$,
 parameters and some extremely rare but real-world applications, functions with up to $8$
@@ -218,10 +220,10 @@ is shown in ~\autoref{lst:functree}.
     \end{center}
 \end{figure}
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:functree},caption={Illustrative function tree.}]
     {functions/functree.py}
-\end{minipage}
+\end{clisting}
 
 It's a common problem among beginners to stuff all the logic into a monolithic function.
 But it is a fairly subtle mistake for intermediate professionals to arbitrarily chop
@@ -339,14 +341,7 @@ idempotent: denoting an element of a set which is unchanged in value when multip
 immutable: constant function has no state altering operation whatsoever
 idempotent: 1+ call of the function are equivalent to 1 call.
 
-
-\section{Case Study--Spiral Matrix} \label{sec:case-spiral-matrix}
-
-\label{Evernote:Refactor process example - Spiral Matrix}
-
-\section{Spiral printing of matrix elements}
-
-Spiral Printing of an 2D matrix. See EverNote
+See ~\fullref{ch:spiralMatrix} for a refactor example on the solution of `Spiral Matrix' problem.
 
 \section{Modularity}
 
@@ -356,7 +351,7 @@ That only makes it worse.
 The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
 how they are created to be reused.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:ValidNumber.java},
     caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
-\end{minipage}
+\end{clisting}

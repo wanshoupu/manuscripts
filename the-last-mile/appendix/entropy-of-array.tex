@@ -1,0 +1,19 @@
+%%
+%% Author: shoupu_wan
+%% 11/3/18
+%%
+
+\chapter{On Sorting Time Complexity}\label{ch:timeComplexityOfSorting}
+
+A closed $N$-particle system is frequently used in statistical mechanics as a toy model
+whose equilibrium entropy is \[S = \log \Omega,\] where $\Omega$ is the
+number of `accessible microstates' of the system\cite{kittel1980thermal}.
+`Microstate', also known as quantum state, refers to microscopic configurations of the system.
+It was first developed by Ludwig Boltzmann in the 19th century.
+Time complexity of an optimal sorting algorithm is proportional to the number of comparison
+operations which is in turn proportional to its entropy
+\begin{align*}
+    S &= \log\left( N! \right) & \\
+    &= O(N\log N-N + \log N), & \text{// Stirling's formula}
+\end{align*}
+where the dominate term is $O(N\log N)$.

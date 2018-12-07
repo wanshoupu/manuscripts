@@ -14,15 +14,8 @@ def xRay(vertebrate):
     pass
 def bodyWeight(animal):
     pass
+def checkTemperature(warmBlooded):
+    pass
 def checkExoskeleton(insect):
     pass
-def checkThorax(insect):
-    pass
-def checkFin(fish):
-    pass
-def checkScale(fish):
-    pass
-def checkTempterature(warmBlooded):
-    pass
-def checkFeather(bird):
-    pass
+...

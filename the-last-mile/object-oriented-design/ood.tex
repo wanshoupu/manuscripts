@@ -5,6 +5,10 @@
 
 \chapter{Object-Oriented Design} \label{ch:ood}
 
+When to choose OOD?
+When not to?
+It depends on the purpose of the code---to how much degree will the code be reused.
+
 Even though object-oriented design belongs to higher level of software design, I find it is
 fruitful to think of it in connection with algorithm design
 \footnote{\url{https://en.wikipedia.org/wiki/Algorithm}} across the hierarchical levels.
@@ -55,7 +59,13 @@ various levels of the hierarchy of matter, much information, functionalities of 
 as \emph{relationship between entities}, not the entities themselves.
 
 This following listing\ref{lst:longestDistinctCharSubstring} shows how to design away
-otherwise would-be messy code by creating small,powerful classes.
+otherwise would-be messy code by creating small, powerful classes.
+
+The behaviors of deleting entries if value is `empty' or some default value can be abstracted
+away by creating a specialty \code{dict} or \code{map} class.
+
+Not just `$0$' values, we can generalize the concept of `emptiness' to anything that evaluates to
+`\code{false}'---empty list, empty set, empty string, \code{None}, \code{null}, and so on.
 
 \lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
 label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/longest_k_uniq_char_substring.py}
@@ -85,11 +95,15 @@ number $k$, find $k$ closest keys.
 caption={First implementation.}]
 {object-oriented-design/closest_binary_tree_II_2018.py}
 
+%TODO
+Find examples that shows how to place certain methods member variables in the subclassing
+hierarchy.
+The protobufVisitor example.
 
-\begin{minipage}{\linewidth}
+\begin{clisting}
     \lstinputlisting[label={lst:jump_game_ii},firstline=10,lastline=31,
     caption={First implementation.}]{object-oriented-design/bound_heap.py}
-\end{minipage}
+\end{clisting}
 
 \section{Case Study: flatten $2$D array}\label{sec:caseStudy:FlattenArray}
 

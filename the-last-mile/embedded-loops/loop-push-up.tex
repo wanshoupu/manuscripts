@@ -61,6 +61,17 @@ operations instead of using nested loops.
 Nested loop thinning \label{Evernote:Max area under histogram}
 ~\autoref{lst:largest-rectangle-histogram}.
 
+\@\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
+`largest rectangle in histogram' problem
+\@\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}.
+
+\lstinputlisting[label={lst:largest-rectangle-histogram},
+caption={Maximum area under histogram}]
+{loop/histogram.java}
+To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.length} times and
+do the rest in post-loop logic and testify yourself for the duplicate code between loop
+logic and post-loop processing.
+
 % TODO research more on when loop thinning is possible and effective
 % TODO Find a few cases
 \label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}

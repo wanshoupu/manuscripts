@@ -651,42 +651,49 @@ is worth the effort.
 
 \section{Minimal Post-loop Processing}\label{sec:one-more-loop}
 
-Conversely, the `loop rotation' technique may be applied to reduce redundant post-loop processing.
+Sometimes after loop termination, non-trivial post-processing is needed to transform the output
+to final result.
+If you find that the post-loop code shares similar functionalities, repeat certain steps in part
+or in whole with the loop body,
+consider reduce code duplication using a coding technique to be explained below.
 
-If you find that after the loop, your code is doing similar things as a loop iteration does, then
-you should probably consider using the `One-more-cycle' coding technique that I am explaining next.
+This technique, named `one-more-cycle', change the loop-termination condition so that
+the iteration length is extended by one, the loop body is executed \emph{one more time}
+than it is otherwise.
+More often than not, extra logic in the loop body is needed to handle the extra iteration
+differently.
+This is especially true if it is only partial duplication.
 
-Find ways to execute the loop one more time after the normal execution.
-At the same time, add logic in the loop to handle this if it has different logic than the normal
-loop.
-
+Again, let us illustrate the effect with an example.
+What we are considering here the problem of calculating the `maximum rectangular area under
+histogram' (There are several sources for this problem, \textit{e.g.},
+GeeksforGeeks\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}
+or LeetCode\footnote{\url{https://www.geeksforgeeks.org/largest-rectangle-under-histogram}}).
 %TODO
-\lstinputlisting[]{loop/spiral_termination_final.py}
+Out of various algorithms, the optimal is one using an auxiliary \code{Stack<Integer>}
+(refer to the above mentioned sources for a detailed discussion of this algorithm).
+But here is a brief summary of the algorithm:
+\begin{alisting}[H]
+    \caption{\label{enum:stack-limited-mining-algo}}
+    \begin{enumerate}
+        \item Initialize an empty stack \code{stack} which is to contain indexes
+        of a stack of ascending heights.
+        \item Initialize a global max result \code{maxRec=0};
+        \item for each (index, element) in the histogram
+        \begin{enumerate}
+            \item calculate
+        \end{enumerate}
+        \item for each possible starting index in \code{stack}
+        \begin{enumerate}
+            \item
+        \end{enumerate}
+    \end{enumerate}
+\end{alisting}
 
-Sometimes after loop is completed, non-trivial post-processing is needed to transform the output
-to final answer and that happy to share part of the logic of the loop body.
-To reduce duplication of code, one can use the `one-more-cycle' technique---
-instead of
-\begin{lstlisting}
-    for (int i = 0; i < list.size(); ++i)
-\end{lstlisting}
-and then repeat part of the loop body in post-loop processing logic,
-do
-\begin{lstlisting}
-    for (int i = 0; i < 1 + list.size(); ++i)
-\end{lstlisting}
-and with an \code{if}-branching, hitchhiking part of the loop body to do the processing
-for the last iteration and return the final result.
-\@\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
-`largest rectangle in histogram' problem
-\@\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}.
+\lstinputlisting[]{loop/histogram_verbose.java}
 
-\lstinputlisting[label={lst:largest-rectangle-histogram},
-caption={Maximum area under histogram}]
-{loop/histogram.java}
-To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.length} times and
-do the rest in post-loop logic and testify yourself for the duplicate code between loop
-logic and post-loop processing.
+\lstinputlisting[]{loop/histogram_oneMoreLoop.java}
+
 
 
 \section{Loop Pacing}\label{sec:linearVs.NonlinearStepping}

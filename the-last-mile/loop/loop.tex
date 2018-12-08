@@ -657,43 +657,73 @@ If you find that the post-loop code shares similar functionalities, repeat certa
 or in whole with the loop body,
 consider reduce code duplication using a coding technique to be explained below.
 
-This technique, named `one-more-cycle', change the loop-termination condition so that
+
+This technique, named `one-more-cycle', changes the loop-termination condition so that
 the iteration length is extended by one, the loop body is executed \emph{one more time}
 than it is otherwise.
 More often than not, extra logic in the loop body is needed to handle the extra iteration
 differently.
 This is especially true if it is only partial duplication.
 
-Again, let us illustrate the effect with an example.
-What we are considering here the problem of calculating the `maximum rectangular area under
-histogram' (There are several sources for this problem, \textit{e.g.},
+
+Again, let us illustrate the whole process with a real example.
+What we will study here is the `maximum rectangular area under
+histogram' problem (problem statement is available on several sources, \textit{e.g.},
 GeeksforGeeks\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}
 or LeetCode\footnote{\url{https://www.geeksforgeeks.org/largest-rectangle-under-histogram}}).
-%TODO
-Out of various algorithms, the optimal is one using an auxiliary \code{Stack<Integer>}
-(refer to the above mentioned sources for a detailed discussion of this algorithm).
-But here is a brief summary of the algorithm:
+
+Out of the various algorithms, the one using an auxiliary \code{Stack<Integer>} is optimal
+Take a heed in the above mentioned sources for a detailed discussion of the algorithm.
+Here is a brief summary of it (suppose input is an array of integers \code{heights}):
 \begin{alisting}[H]
-    \caption{\label{enum:stack-limited-mining-algo}}
+    \caption{\label{enum:stack-limited-mining-algo}Stack-based algorithm for
+    the `maximum rectangular area under histogram' problem}
     \begin{enumerate}
-        \item Initialize an empty stack \code{stack} which is to contain indexes
-        of a stack of ascending heights.
-        \item Initialize a global max result \code{maxRec=0};
-        \item for each (index, element) in the histogram
+        \item Initialize an empty stack \code{stack}, the whole purpose of
+        which is to store indexes of an ascending subsequence of heights.
+        \item Store a progressive max result initialized as \code{maxRec=0};
+        \item For each \code{(index, height)} in the histogram
         \begin{enumerate}
-            \item calculate
+            \item Pop all the indexes on \code{stack} whose corresponding heights are
+            $\geq \mbox{\code{height}}$
+            \item For each popped index \code{i}, update \code{maxRec} with the
+            rectangular area formed between $[\mbox{\code{top}}, \mbox{\code{index}}]$
+            with a height of \code{heights[i]}, where \code{top} is top of \code{stack}.
+            (Watch out for boundary cases!) \label{itm:pop-update-maxRec}
+            \item Push \code{index} onto \code{stack}.
         \end{enumerate}
-        \item for each possible starting index in \code{stack}
-        \begin{enumerate}
-            \item
-        \end{enumerate}
+        \item For each remaining index in \code{stack}, do the calculation
+        as ~\ref{itm:pop-update-maxRec}, replace \code{index} with length of input array.
+        \item Return \code{maxRec} as the final result.
     \end{enumerate}
 \end{alisting}
 
+Based on a random sample of submissions following the ~\autoref{enum:stack-limited-mining-algo}
+on LeetCode, implementations more or less like the following are common:
 \lstinputlisting[]{loop/histogram_verbose.java}
+While it is $100\%$ accepted by the LeetCode Online Judge, this solution has various smells.
+The smelliest is the post-process code, the \code{while}-loop---it is almost a repetition of the
+inner loop.
+If we can get rid of this code duplication, the code quality would be greatly boosted.
 
+
+The `one-more-cycle' technique can help!
+First, let us extend the number of iterations in \code{for}-loop by one---instead of loop
+continuation condition `\code{i < heights.length}', we use `\code{i <= heights.length}'.
+Then, we can safely delete the post-process \code{while}-loop.
+
+Of course, the code, as is now, does not work.
+Why?
+Because the last index \code{heights.length} has no corresponding element in array \code{heights}!
+As such, one always gets an `ArrayIndexOutOfBoundsException'.
+Once we know that, the `extra logic' needed is to shield the part of the code `\code{heights[i]}'
+with a check to see if \code{i == heights.length}.
+So here we go---a working-again solution after the refactoring:
 \lstinputlisting[]{loop/histogram_oneMoreLoop.java}
 
+
+At this point, we have accomplished our goal for this round of refactoring.
+Mission complete.
 
 
 \section{Loop Pacing}\label{sec:linearVs.NonlinearStepping}

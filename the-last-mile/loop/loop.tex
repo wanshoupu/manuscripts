@@ -728,25 +728,38 @@ Mission complete.
 
 \section{Loop Pacing}\label{sec:loop-pacing}
 
-Loop pacing is another tuning dial when it comes to optimize a loop construct.
+Loop pacing is another dial, a degree of freedom, when it comes to optimize a loop construct.
 It refers to the dynamic aspect of a loop---how should loop state be updated with
 respect to each iteration.
+Linear pacing refers to trivial, deterministic loop update at a fixed step size for every
+iteration until the end of the loop.
+A typical example is the C-style \code{for}-loop: \code{for(int i=0; i<list.size(); i++)}.
 %If viewed as a state machine automaton, loop variables, serving as state registers, may change
 %linearly as loop is executed, or not.
+
 In some cases, a loop iterates linearly, one element at a time.
-In others, a loop has to iterate with a varying pace depending on the elements encountered,
-Nonlinear stepping has important applications in implementation of complex algorithms.
+In others, a loop has to iterate with a varying pace depending on the elements encountered.
+Linear stepping suffices for a majority of daily use cases such as iterating through a collection.
+Nonlinear stepping, however, finds important applications in algorithmic implementation.
+
+
 \code{while}-loop is more accommodating for all kinds of stepping.
-For \code{for}-loop, if you see the afterthought part missing, that's probably a sign for
-nonlinear stepping.
-When using C-style \code{for}-loop for linear stepping,
-do try to fit loop-state updating statements in the afterthought.
+But \code{for}-loop, on the other hand, has niches for both initialization and the afterthought
+statement.
+Tuning the pace of a loop may be as simple as changing the location of the state-updating
+statements, \textit{e.g.}, from an afterthought statement to a conditional block
+in the middle of the loop body.
+There is an unsaid convention regarding C-style \code{for}-loop---when the loop paces linearly
+with a simple loop-state updating statement, it should be placed in the afterthought section of
+the loop header.
+Conversely, when you see the afterthought part missing, it should be a sign for nonlinear
+stepping (or conditional stepping).
 
 
-For simple use cases, the usual choices can be anywhere between deterministic linear stepping like
-\code{for(int i=0; i<list.size();i++)}, or nonlinear, conditional stepping.
-For complex cases, the loop updating model can be like that of an automaton, a state machine.
-For an extreme case of nonlinear stepping, consider the `Happy number'
+For simple use cases, the usual choices can be anywhere between deterministic linear stepping
+and conditional stepping.
+For complex cases, the loop updating model may be like that of an automaton, a state machine.
+As an extreme example of nonlinear stepping, consider the `Happy number'
 problem\footnote{\url{https://en.wikipedia.org/wiki/Happy_number}}:
 \begin{quote}
     A happy number is defined by the following process: Starting with any positive integer,
@@ -772,12 +785,12 @@ executes for $n=7$.
     \includegraphics[width=.7\textwidth]{loop/happy_number.png}
     \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
 \end{figure}
-One can get a sense of how `nonlinear' it can be for a loop pacing through this case.
+Through this case, one can get a sense of a `nonlinear' pacing of a loop.
 
-Tuning how a loop is implemented my involve changing where the state-updating statements is
-placed---in afterthought of a \code{for}-loop or in a conditional block within the loop body.
-This can be particularly helpful when one performs `loop rotations' or compacting nested loops
-(see ~\autoref{ch:loop-thinning}).
+Trying different ways that a loop paces provides one more opportunity for it to best suit the
+application.
+This can be particularly helpful for `loop rotations' and compacting nested loops.
+We will discuss more on this topic in ~\autoref{ch:loop-thinning}.
 
 
 Below is a case study dynamic programming algorithm implemented with one loop.

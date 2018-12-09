@@ -712,7 +712,7 @@ First, let us extend the number of iterations in \code{for}-loop by one---instea
 continuation condition `\code{i < heights.length}', we use `\code{i <= heights.length}'.
 Then, we can safely delete the post-process \code{while}-loop.
 
-Of course, the code, as is now, does not work.
+Of course, the code does not work as is.
 Why?
 Because the last index \code{heights.length} has no corresponding element in array \code{heights}!
 As such, one always gets an `ArrayIndexOutOfBoundsException'.
@@ -726,27 +726,59 @@ At this point, we have accomplished our goal for this round of refactoring.
 Mission complete.
 
 
-\section{Loop Pacing}\label{sec:linearVs.NonlinearStepping}
+\section{Loop Pacing}\label{sec:loop-pacing}
 
-Loop pacing is another aspect of a loop that has been largely ignored especially when tuning loop
-construct.
-Usually it is changed when the state-updating statements are changed, for example, when moved
-between the afterthought position and the loop body.
-
-
-Deterministic linear stepping \textit{vs.} nonlinear or conditional stepping.
-
-If viewed as a state machine automaton, loop variables, serving as state registers, may change
-linearly as loop is executed, or not.
-In some cases, one can simply step through linearly, one element at a time.
-In others, one need to step through with a varying pace conditioned by the elements encountered,
-and this is called `nonlinear stepping' in the following context.
+Loop pacing is another tuning dial when it comes to optimize a loop construct.
+It refers to the dynamic aspect of a loop---how should loop state be updated with
+respect to each iteration.
+%If viewed as a state machine automaton, loop variables, serving as state registers, may change
+%linearly as loop is executed, or not.
+In some cases, a loop iterates linearly, one element at a time.
+In others, a loop has to iterate with a varying pace depending on the elements encountered,
 Nonlinear stepping has important applications in implementation of complex algorithms.
 \code{while}-loop is more accommodating for all kinds of stepping.
 For \code{for}-loop, if you see the afterthought part missing, that's probably a sign for
 nonlinear stepping.
-If you use \code{for}-loop for linear stepping,
-please try your best to afterthought part for increment or decrement purposes.
+When using C-style \code{for}-loop for linear stepping,
+do try to fit loop-state updating statements in the afterthought.
+
+
+For simple use cases, the usual choices can be anywhere between deterministic linear stepping like
+\code{for(int i=0; i<list.size();i++)}, or nonlinear, conditional stepping.
+For complex cases, the loop updating model can be like that of an automaton, a state machine.
+For an extreme case of nonlinear stepping, consider the `Happy number'
+problem\footnote{\url{https://en.wikipedia.org/wiki/Happy_number}}:
+\begin{quote}
+    A happy number is defined by the following process: Starting with any positive integer,
+    replace the number by the sum of the squares of its digits in base-ten,
+    and repeat the process until the number either equals 1 (where it will stay),
+    or it loops endlessly in a cycle that does not include 1.
+    Write code to determine if a given number \code{n} is happy.
+\end{quote}
+
+This problem is relatively straightforward to solve.
+In a loop, one keeps all the numbers discovered along the `path' along of the mapping from the
+starting point.
+When a number is detected to be repetition of an earlier one, terminate the loop.
+Check if the terminating value of \code{n} is one.
+A naïve implementation is as follows.
+\lstinputlisting[label={lst:nonlinear-stepping},
+caption={Nonlinear stepping in a loop}]{loop/nonlinear_stepping_example.py}
+The state of the loop is entirely encoded in the variable \code{n}.
+The chart in ~\autoref{fig:happy-number} shows how the loop state changes as the program
+executes for $n=7$.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/happy_number.png}
+    \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
+\end{figure}
+One can get a sense of how `nonlinear' it can be for a loop pacing through this case.
+
+Tuning how a loop is implemented my involve changing where the state-updating statements is
+placed---in afterthought of a \code{for}-loop or in a conditional block within the loop body.
+This can be particularly helpful when one performs `loop rotations' or compacting nested loops
+(see ~\autoref{ch:loop-thinning}).
+
 
 Below is a case study dynamic programming algorithm implemented with one loop.
 \begin{quote}
@@ -759,29 +791,11 @@ Below is a case study dynamic programming algorithm implemented with one loop.
 \end{quote}
 \lstinputlisting[]{loop/array_jumper.java}
 
-In some other cases, loop state may even jumps back and forth.
-This is an extreme case of nonlinear stepping and is often used in solving math problems.
-Consider this coding question:
-\begin{quote}
-    ``Given an array of integers where each element is the index of an element in the array.
-    How would you detect if there is a cycle in this array?
-    A cycle is a circular path with at least 2 nodes.
-    ''
-\end{quote}
-\lstinputlisting[label={lst:nonlinear-stepping},
-caption={Nonlinear stepping in a loop}]{loop/nonlinear_stepping_example.java}
-%TODO finish the presentation of GOOGLE problem
-
-This is a specialized graph problem in nature.
-It is specialized because there are exactly one outgoing edge from each node.
-Because of this specialty, the normal graph algorithms such as DFS or BFS would be an overkill.
-
 
 \section{Conclusion}
 
-The best practice when it comes to programming with loops, as any other types of coding,
-is to get a \emph{working version} (WV).
-Once you get a WV, you can spot for areas of improvement:
+The best practice when it comes to programming loops is to get a \emph{working version} (WV).
+Once you get a WV, you can start to iterate for improvements:
 duplicate code of any severity, excessive customization such as \code{break} or \code{continue}
 \textit{etc}.
 Try the techniques we talked about in this chapter such as `loop rotation',

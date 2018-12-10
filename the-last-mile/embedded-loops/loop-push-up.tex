@@ -5,21 +5,36 @@
 
 \chapter{Flatten Nested Loops} \label{ch:loop-thinning}
 
-Programming loops in a real-world application can be a fairly complex work.
-Although permitted by most programming languages, nested loops are nuisances
-when one tries to crack the semantic information in them.
-Sometimes one is compelled to use nested loops and the situation seems to make nested loops
-inevitable.
-Besides the bloated looking, nested loops may be suboptimal in runtime
-as well---\textit{e.g.} what could have been $O(N)$ might have become $O(N^2)$.
+One of the common mistake that an inexperienced developer tend to make is using
+nested loops in situations where it could have been avoided.
+Although permitted by most programming languages, nested loops almost always cause
+hindrance to better readability and maintainability.
+More often than not, they are mere nuisances when one tries to understand the semantics
+or analyze the runtime complexity.
+Occasionally, they may result in suboptimal implementation with degenerate runtime
+complexity---\textit{e.g.}, turning a $O(N)$ algorithm into one of $O(N^2)$. %TODO example?
 
-First working version is seldom the best solution.
-This chapter is a spin-off of the ~\autoref{ch:loops}.
-We spend this chapter for the sole purpose of simplifying nested loops.
-The rule of thumb is ``avoid nested loops'.
+
+The difficulty of adopting a new programming habit in this regard is
+awareness---when compelled to use a nested loop, developers need to take a step back
+and think over it instead of jump into conviction.
+
+
+%More often than not, situations that makes the use of nested loops so compelling
+%and the situation seems to make nested loops inevitable.
+%of the inevitability.
+%First working version is seldom the best solution.
+
+
+This chapter is a spin-off of the ~\autoref{ch:loops} so that
+we may dedicate this chapter to the study of study of simplifying nested loops.
+
+The rule of thumb is ``Be cautious when using nested loops'.
 If nested loops can be simplified to one-layer loop, by using auxiliary data structures, better
 algorithm, and so on, that will be the first choice.
-Situations where nested loops may be avoided is when implementing algorithms over linear data
+Sometimes, situations that make nested loops appear so compelling or even inevitable are not so
+if done with careful consideration.
+where nested loops may be avoided is when implementing algorithms over linear data
 structures---lists, arrays, sets, strings, associative arrays, hash tables, \textit{etc.}
 Only occasionally one may truly need nested loops to work with $2$D or higher dimensional
 data structures like list of lists, matrices, \textit{etc.}
@@ -47,6 +62,20 @@ universal applicability for many of them.
 Instead, the techniques may be applied on a case by case basis.
 
 
+The bare bone changes for flattening nested loops is simple---identify the conditions for the
+inner loop, convert the inner loop construct to a conditional or piggyback to an existing
+conditional (and make cascade conditionals, see ~\autoref{ch:conditional-cascade}),
+relocate the state-updating statement(s) of the outer loop to a conditional block
+(possibly an \code{else}-block in the newly formed conditional statement).
+
+
+Other changes may be performed after these in conformation to conventions and syntactic aesthetics.
+Most importantly, following the removal of nested loops, other optimizations may be unlocked to
+further the code quality to another level.
+Like a critical piece is added in a candy crush game which causes chains of avalanches.
+That is the true value of of code optimization.
+
+
 Otherwise, refactoring the code may be necessary to decouple subtasks from the main one.
 One may raise counter examples, say, iterating through $2$D array elements using indexes \code{i,j}.
 I would argue back that refactoring the inner index access into a separate function may still be
@@ -58,16 +87,19 @@ My answer to that is that ``By that argument you do not really care about perfor
 Because if you really care about performance you would have vectorized your code using matrix
 operations instead of using nested loops.
 
+
+Continuing with the example ~\autoref{lst:histogram-oneMoreCycle} in ~\autoref{ch:loops}
 Nested loop thinning \label{Evernote:Max area under histogram}
 ~\autoref{lst:largest-rectangle-histogram}.
 
-\@\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
+
+~\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
 `largest rectangle in histogram' problem
 \@\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}.
 
 \lstinputlisting[label={lst:largest-rectangle-histogram},
 caption={Maximum area under histogram}]
-{loop/histogram.java}
+{embedded-loops/histogram.java}
 To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.length} times and
 do the rest in post-loop logic and testify yourself for the duplicate code between loop
 logic and post-loop processing.
@@ -135,6 +167,12 @@ Compact:
 \end{clisting}
 
 \section{Conclusion}
+
+As can be seen, where nested loops occur are mostly related to  dynamics adjustment to a
+streamlined processing code.
+What used to be one loop per data structure can actually be achieved with a one-layer loop plus
+cascade conditionals.
+
 
 Nested loops are hard to understand and shall generally be avoided in production code.
 They should be avoided if at all possible.

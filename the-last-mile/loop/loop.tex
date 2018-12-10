@@ -310,7 +310,7 @@ program for the aforementioned reasons.
 
 Occasionally limited scope of \code{for}-loop may be a hinder for post-loop processing.
 If that is the case, one may resort to
-`one-more-loop' technique (see ~\autoref{sec:one-more-loop} for more details) to solve the
+`one-more-cycle' technique (see ~\autoref{sec:one-more-cycle} for more details) to solve the
 problem.
 Also for \python users, \code{for-else} or \code{while-else} is designed just for post-processing.
 
@@ -649,13 +649,13 @@ Before one knows the existence of a 3-line solution, try to write an optimized i
 is worth the effort.
 
 
-\section{Dedupe Post-loop Processing}\label{sec:one-more-loop}
+\section{Dedupe Post-loop Processing}\label{sec:one-more-cycle}
 
 Sometimes after loop termination, non-trivial post-processing is needed to transform the output
 to final result.
 If you find that the post-loop code shares similar functionalities, repeat certain steps in part
 or in whole with the loop body,
-consider reduce code duplication using a coding technique to be explained below.
+consider deduplicate the post-loop code using a technique to be explained below.
 
 
 This technique, named `one-more-cycle', changes the loop-termination condition so that
@@ -718,8 +718,10 @@ Because the last index \code{heights.length} has no corresponding element in arr
 As such, one always gets an `ArrayIndexOutOfBoundsException'.
 Once we know that, the `extra logic' needed is to shield the part of the code `\code{heights[i]}'
 with a check to see if \code{i == heights.length}.
-So here we go---a working-again solution after the refactoring:
-\lstinputlisting[]{loop/histogram_oneMoreLoop.java}
+So here we go---a working-again solution after the refactoring
+\lstinputlisting[label={lst:histogram-oneMoreCycle},caption={Dedupe post-processing code with
+`one-more-cycle' technique}]
+{loop/histogram_oneMoreCycle.java}
 
 
 At this point, we have accomplished our goal for this round of refactoring.
@@ -793,18 +795,6 @@ This can be particularly helpful for `loop rotations' and compacting nested loop
 We will discuss more on this topic in ~\autoref{ch:loop-thinning}.
 
 
-Below is a case study dynamic programming algorithm implemented with one loop.
-\begin{quote}
-    Given an array of non-negative integers, you are initially positioned at the first index of the array.
-    Each element in the array represents your maximum jump length at that position.
-    Determine if you are able to reach the last index.
-    For example:
-    A = [2,3,1,1,4], return true.
-    A = [3,2,1,0,4], return false
-\end{quote}
-\lstinputlisting[]{loop/array_jumper.java}
-
-
 \section{Conclusion}
 
 The best practice when it comes to programming loops is to get a \emph{working version} (WV).
@@ -812,7 +802,7 @@ Once you get a WV, you can start to iterate for improvements:
 duplicate code of any severity, excessive customization such as \code{break} or \code{continue}
 \textit{etc}.
 Try the techniques we talked about in this chapter such as `loop rotation',
-`one-more-loop', initialization reduction techniques, \textit{etc.}
+`one-more-cycle', initialization reduction techniques, \textit{etc.}
 Try on different loop constructs and so on.
 Also keep in mind opportunities of using sentinels for certain niched applications (see
 ~\autoref{ch:sentinels}).

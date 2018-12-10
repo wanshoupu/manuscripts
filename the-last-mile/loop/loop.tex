@@ -667,7 +667,7 @@ This is especially true if it is only partial duplication.
 
 
 Again, let us illustrate the whole process with a real example.
-What we will study here is the `maximum rectangular area under
+What we will study here is the `Maximum rectangular area under
 histogram' problem (problem statement is available on several sources, \textit{e.g.},
 GeeksforGeeks\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}
 or LeetCode\footnote{\url{https://www.geeksforgeeks.org/largest-rectangle-under-histogram}}).
@@ -712,20 +712,23 @@ First, let us extend the number of iterations in \code{for}-loop by one---instea
 continuation condition `\code{i < heights.length}', we use `\code{i <= heights.length}'.
 Then, we can safely delete the post-process \code{while}-loop.
 
+
 Of course, the code does not work as is.
 Why?
 Because the last index \code{heights.length} has no corresponding element in array \code{heights}!
 As such, one always gets an `ArrayIndexOutOfBoundsException'.
 Once we know that, the `extra logic' needed is to shield the part of the code `\code{heights[i]}'
 with a check to see if \code{i == heights.length}.
-So here we go---a working-again solution after the refactoring
-\lstinputlisting[label={lst:histogram-oneMoreCycle},caption={Dedupe post-processing code with
-`one-more-cycle' technique}]
+
+
+Shown below in ~\autoref{lst:histogram-oneMoreCycle} is
+a refactored and deduped solution for the `Maximum rectangular area under
+histogram' problem using the `one-more-cycle' technique.
+We have accomplished our goal designated for this round of refactoring, namely,
+reducing code duplication between loop and the post-loop processing code.
+\lstinputlisting[label={lst:histogram-oneMoreCycle},caption={A deduped solution for
+`Maximum rectangular area under histogram' problem}]
 {loop/histogram_oneMoreCycle.java}
-
-
-At this point, we have accomplished our goal for this round of refactoring.
-Mission complete.
 
 
 \section{Loop Pacing}\label{sec:loop-pacing}

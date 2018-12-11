@@ -741,30 +741,32 @@ iteration until the end of the loop.
 A typical example is the C-style \code{for}-loop: \code{for(int i=0; i<list.size(); i++)}.
 %If viewed as a state machine automaton, loop variables, serving as state registers, may change
 %linearly as loop is executed, or not.
+Dynamically paced loop, on the other hand, refers to loop constructs that iterate
+with a varying pace depending on the elements encountered.
 
-In some cases, a loop iterates linearly, one element at a time.
-In others, a loop has to iterate with a varying pace depending on the elements encountered.
-Linear stepping suffices for a majority of daily use cases such as iterating through a collection.
-Nonlinear stepping, however, finds important applications in algorithmic implementation.
+In most cases, a linearly paced loop, iterating one element at a time, suffices
+for a majority of daily use cases such as iterating through a collection.
+But in certain situations, the state of loop may not be updated at a steady pace for every
+iteration which finds important applications in non-trivial algorithmic implementation.
 
-
+From the perspective of choice of loop constructs,
 \code{while}-loop is more accommodating for all kinds of stepping.
-But \code{for}-loop, on the other hand, has niches for both initialization and the afterthought
-statement.
-Tuning the pace of a loop may be as simple as changing the location of the state-updating
-statements, \textit{e.g.}, from an afterthought statement to a conditional block
-in the middle of the loop body.
+\code{for}-loop, on the other hand, has niches for both initialization and the afterthought
+statement;
+When using a \code{for}-loop, tuning the pace of iteration may be as simple as changing
+the location of the state-updating statements, \textit{e.g.},
+from an afterthought statement to a conditional block in the middle of the loop body.
 There is an unsaid convention regarding C-style \code{for}-loop---when the loop paces linearly
 with a simple loop-state updating statement, it should be placed in the afterthought section of
 the loop header.
-Conversely, when you see the afterthought part missing, it should be a sign for nonlinear
+Conversely, when you see the afterthought part missing, it should be a sign for dynamic
 stepping (or conditional stepping).
 
 
 For simple use cases, the usual choices can be anywhere between deterministic linear stepping
 and conditional stepping.
 For complex cases, the loop updating model may be like that of an automaton, a state machine.
-As an extreme example of nonlinear stepping, consider the `Happy number'
+As an extreme example of dynamic stepping, consider the `Happy number'
 problem\footnote{\url{https://en.wikipedia.org/wiki/Happy_number}}:
 \begin{quote}
     A happy number is defined by the following process: Starting with any positive integer,
@@ -781,7 +783,7 @@ When a number is detected to be repetition of an earlier one, terminate the loop
 Check if the terminating value of \code{n} is one.
 A naïve implementation is as follows.
 \lstinputlisting[label={lst:nonlinear-stepping},
-caption={Nonlinear stepping in a loop}]{loop/nonlinear_stepping_example.py}
+caption={Dynamic stepping in a loop}]{loop/nonlinear_stepping_example.py}
 The state of the loop is entirely encoded in the variable \code{n}.
 The chart in ~\autoref{fig:happy-number} shows how the loop state changes as the program
 executes for $n=7$.
@@ -790,7 +792,8 @@ executes for $n=7$.
     \includegraphics[width=.7\textwidth]{loop/happy_number.png}
     \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
 \end{figure}
-Through this case, one can get a sense of a `nonlinear' pacing of a loop.
+Through this case, one can get a sense of how `dynamic' the pacing of a loop can be.
+
 
 Trying different ways that a loop paces provides one more opportunity for it to best suit the
 application.

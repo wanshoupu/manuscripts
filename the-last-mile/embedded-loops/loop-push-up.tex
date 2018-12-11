@@ -6,60 +6,68 @@
 \chapter{Flatten Nested Loops} \label{ch:loop-thinning}
 
 One of the common mistake that an inexperienced developer tend to make is using
-nested loops in situations where it could have been avoided.
-Although permitted by most programming languages, nested loops almost always cause
-hindrance to better readability and maintainability.
-More often than not, they are mere nuisances when one tries to understand the semantics
-or analyze the runtime complexity.
-Occasionally, they may result in suboptimal implementation with degenerate runtime
-complexity---\textit{e.g.}, turning a $O(N)$ algorithm into one of $O(N^2)$. %TODO example?
+nested loop in situations where it could have been avoided.
+Although permitted by most programming languages, nested loops almost always bring about
+hindrance to code readability and maintainability.
+%More often than not, they are mere nuisances when one tries to understand the semantics
+%or analyze the runtime complexity.
+Occasionally, they may be the cause of degenerate runtime for suboptimal
+implementations---\textit{e.g.}, turning a $O(N)$ algorithm into one of $O(N^2)$. %TODO example?
 
 
 The difficulty of adopting a new programming habit in this regard is
 awareness---when compelled to use a nested loop, developers need to take a step back
-and think over it instead of jump into conviction.
-
-
-%More often than not, situations that makes the use of nested loops so compelling
-%and the situation seems to make nested loops inevitable.
-%of the inevitability.
-%First working version is seldom the best solution.
-
+and think over the options instead of jump into conviction.
+When it comes to algorithmic implementation using nested loops, the rule of thumb is ``Be cautious'.
+More often than not, nested loops are not necessary and can be compressed into single-layer,
+dynamically paced loops with the help of auxiliary data structures, cascade conditionals, and so on.
 
 This chapter is a spin-off of the ~\autoref{ch:loops} so that
-we may dedicate this chapter to the study of study of simplifying nested loops.
+we may dedicate this chapter to the study of simplifying nested loops.
 
-The rule of thumb is ``Be cautious when using nested loops'.
-If nested loops can be simplified to one-layer loop, by using auxiliary data structures, better
-algorithm, and so on, that will be the first choice.
-Sometimes, situations that make nested loops appear so compelling or even inevitable are not so
-if done with careful consideration.
-where nested loops may be avoided is when implementing algorithms over linear data
-structures---lists, arrays, sets, strings, associative arrays, hash tables, \textit{etc.}
-Only occasionally one may truly need nested loops to work with $2$D or higher dimensional
-data structures like list of lists, matrices, \textit{etc.}
-Even so, there are plenty of opportunities for one to refactor nested loops away from
-each other for better code readability.
-For example, instead of
-% TODO
 
-Then under what circumstances can one compress nested loops to thinner loops?
-There may be multiple scenarios where this may be possible.
-But one common case that I noticed almost guaranteed to succeed is when the outer loop is a
-complete, main loop while an inner loop acts as partial loop
-(usually from starting point to the current location) to provide an accumulated information.
-In this situation, one of the following approaches may help eliminate the need of the inner loop
+\section{Empirical Loop-thinning Technique}\label{sec:avoidable-scenarios-nested-loop}
+
+
+%First working version is seldom the best solution.
+%Let us ask this question: ``Under what circumstances can nested loops be replaced by thinner
+%loops?''
+Many situations that nested loops appear so compelling or even inevitable are not so
+in retrospection.
+Speaking empirically, nested loops may possibly be avoided in these scenarios---algorithmic
+implementations where the data is moved down more than one data structures,
+like in the settings of an assembly line.
+
+
+The only scenario where I found myself needing nested loops is when working with $2$D or higher
+dimensional data structures like list of lists, matrices, \textit{etc.}, where use of index
+tuples such as \code{i,j} seemingly necessitates nested loops.
+Even so, there are plenty of opportunities for one to refactor nested loops into more meaningful
+functions with meaningful names for better code readability and reusability,
+each containing a single loop.
+Some may argue that function invocation overhead may hurt performance especially inside a loop.
+My answer to that is that if you really care about performance you would have vectorized
+your code to use built-in matrix operations instead of nested loops.
+%But whichever way you go, it involves function calls.
+
+
+One particular case that almost comes with guaranteed success is nested loop where on the
+outside is an end-to-end, evenly paced loop while on the inside is a loop that does partial
+lookup either on an auxiliary data structure or from a `slice' of the same data
+structure (for example, an array slice from the starting point to the current index).
+When an auxiliary data structure is used, it is used to provide cumulative, partial
+information in addition to the main data structure.
+
+
+In this situation, one or more of the following measures may be taken to eliminate
+the nested, inner loop
 \begin{itemize}
-    \item Use of auxiliary data structures;
+    \item Use of auxiliary data structures such as a queue or stack to facilitate with
+    dynamic paced iteration;
     \item Use of additional conditional construct or additional test to existing ones;
-    \item Modify loop pacing from linear stepping to conditional stepping
-    \item Minor optimization in algorithm;
+    \item Make loop pacing to be more dynamic;
+    \item Other changes necessary for boundary condition handling.
 \end{itemize}
-
-We are going to use a few examples to illustrate the ``loop thinning'' techniques.
-Because most of the methods we are presenting in this chapter are empirical, I cannot claim
-universal applicability for many of them.
-Instead, the techniques may be applied on a case by case basis.
 
 
 The bare bone changes for flattening nested loops is simple---identify the conditions for the
@@ -76,16 +84,18 @@ Like a critical piece is added in a candy crush game which causes chains of aval
 That is the true value of of code optimization.
 
 
-Otherwise, refactoring the code may be necessary to decouple subtasks from the main one.
-One may raise counter examples, say, iterating through $2$D array elements using indexes \code{i,j}.
-I would argue back that refactoring the inner index access into a separate function may still be
-a better choice as it makes the inner loop more meaningful with a separate function with a
-meaningful name.
-Some one may argue about performance, saying that function call has overhead especially made in a
-loop.
-My answer to that is that ``By that argument you do not really care about performance.''
-Because if you really care about performance you would have vectorized your code using matrix
-operations instead of using nested loops.
+Put together, we refer to the coding strategies to coalesce a nested loop into a
+single-layer one as `loop thinning' technique.
+In what follows, we are going to demonstrate application of `loop thinning' technique through
+a few examples adapted from real-world programming projects.
+
+
+Because most of the methods we present in this chapter are empirical, I cannot claim
+universal applicability for many of them.
+Instead, the techniques may be applied on a case by case basis.
+
+
+\section{Case Study: I}\label{sec:nested-loop-histogram}
 
 
 Continuing with the example ~\autoref{lst:histogram-oneMoreCycle} in ~\autoref{ch:loops}
@@ -104,29 +114,47 @@ To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.
 do the rest in post-loop logic and testify yourself for the duplicate code between loop
 logic and post-loop processing.
 
-% TODO research more on when loop thinning is possible and effective
-% TODO Find a few cases
-\label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
+\section{Case Study: II}\label{sec:nested-loop-skyline}
+
+%\label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
 \lstinputlisting[label={lst:silhouette-skyline},
 caption={Loop thinning example for skyline calculation.}]
 {embedded-loops/silhouette.py}
+
 \label{Evernote:Server peak load problem}
 \label{Evernote:for-loop Loop compactification examples}
 
-Many times nested loops can be combined into a single loop + if-else inside the loop body.
-In this chapter we are going to explain the technique in details.
 
-Many times nested loops are not necessary even in situations many deem as
-`compelling'.
+\section{Case Study: III}\label{sec:nested-loop-quick-sort}
+
+This is a classical example for demonstration of simplicity in programming\cite{Bentley:1986:PP}.
+Interested reader may refer to that classical book by Bentley for more detail.
 
 For example, the quick sort algorithm may be implemented as
 
 \begin{clisting}
     \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with nested for loops.}]{embedded-loops/for_loop_nested.java}
+    caption={Code snippet with nested for loops.}]{embedded-loops/quicksort_outline.java}
 \end{clisting}
 
 The for condition and the while condition bear some similarity, so we can combined them into one
+
+Example
+
+\begin{clisting}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/quicksort_outline.java}
+\end{clisting}
+
+May be made more compact using the above technique as
+
+\begin{clisting}
+    \lstinputlisting[label={lst:nestedForLoop},
+    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
+\end{clisting}
+
+
+\section{Case Study: IV}\label{sec:nested-loop-numeral-conversion-roman}
 
 \begin{clisting}
     \lstinputlisting[label={lst:nestedForLoop},
@@ -137,20 +165,8 @@ The for condition and the while condition bear some similarity, so we can combin
     caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_thinned_loop.java}
 \end{clisting}
 
-Example
 
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_nested.java}
-\end{clisting}
-
-May be made more compact using the above technique as
-
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
-\end{clisting}
-
+\section{Case Study: V}\label{sec:nested-loop-pattern-matching}
 
 Uncompact:
 
@@ -166,17 +182,17 @@ Compact:
     caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_thinned_loop.java}
 \end{clisting}
 
-\section{Conclusion}
 
-As can be seen, where nested loops occur are mostly related to  dynamics adjustment to a
-streamlined processing code.
-What used to be one loop per data structure can actually be achieved with a one-layer loop plus
-cascade conditionals.
+\section{Conclusion}\label{sec:loop-push-up-conclusion}
+
+%What used to be one loop per data structure can actually be achieved with a one-layer loop plus
+%cascade conditionals.
 
 
 Nested loops are hard to understand and shall generally be avoided in production code.
-They should be avoided if at all possible.
-With the `loop thinning' technique discussed in this chapter, many cases of nested loops can be
-compactify and converted to simple loop.
-If this is not possible or the resulting code is even harder to understand, one should consider
-refactor nested loop into smaller functions.
+As can be seen, where nested loops occur are mostly related to dynamics adjustment to a
+streamlined processing code.
+With the `loop thinning' technique discussed in this chapter, many cases of nested loop can be
+compressed into single-layer loops.
+If this is not possible or the resulting code is harder to understand, one may still consider
+refactor inner loops into more meaningful, reusable functions.

@@ -26,7 +26,7 @@ This chapter is a spin-off of the ~\autoref{ch:loops} so that
 we may dedicate this chapter to the study of simplifying nested loops.
 
 
-\section{Empirical Loop-thinning Technique}\label{sec:avoidable-scenarios-nested-loop}
+\section{Empirical Loop-thinning Technique}\label{sec:loop-thinning-technique}
 
 
 %First working version is seldom the best solution.
@@ -95,46 +95,21 @@ universal applicability for many of them.
 Instead, the techniques may be applied on a case by case basis.
 
 
-\section{Case Study: I}\label{sec:nested-loop-histogram}
+\section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
 
+This is a classical example that I borrowed from the book `Programming Pearls' for demonstration of
+the simplicity programming loops can be\cite{Bentley:1986:PP}.
 
-Continuing with the example ~\autoref{lst:histogram-oneMoreCycle} in ~\autoref{ch:loops}
-Nested loop thinning \label{Evernote:Max area under histogram}
-~\autoref{lst:largest-rectangle-histogram}.
-
-
-~\autoref{lst:largest-rectangle-histogram} is an example of such usage for solving the
-`largest rectangle in histogram' problem
-\@\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}.
-
-\lstinputlisting[label={lst:largest-rectangle-histogram},
-caption={Maximum area under histogram}]
-{embedded-loops/histogram.java}
-To see the benefit of using the `one-more-cycle' technique, try iterate \code{h.length} times and
-do the rest in post-loop logic and testify yourself for the duplicate code between loop
-logic and post-loop processing.
-
-\section{Case Study: II}\label{sec:nested-loop-skyline}
-
-%\label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
-\lstinputlisting[label={lst:silhouette-skyline},
-caption={Loop thinning example for skyline calculation.}]
-{embedded-loops/silhouette.py}
-
-\label{Evernote:Server peak load problem}
-\label{Evernote:for-loop Loop compactification examples}
-
-
-\section{Case Study: III}\label{sec:nested-loop-quick-sort}
-
-This is a classical example for demonstration of simplicity in programming\cite{Bentley:1986:PP}.
+Before reading this book, I implemented several versions of the quick sort algorithm.
 Interested reader may refer to that classical book by Bentley for more detail.
 
-For example, the quick sort algorithm may be implemented as
+For example, my first implementation of a quick sort algorithm was in
 
 \begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with nested for loops.}]{embedded-loops/quicksort_outline.java}
+    \lstinputlisting[label={lst:QuickSortOutline},
+    caption={Quicksort implementation outline with the partition function `\code{part}' to be
+    implemented.}]
+    {embedded-loops/quicksort_outline.c}
 \end{clisting}
 
 The for condition and the while condition bear some similarity, so we can combined them into one
@@ -142,8 +117,15 @@ The for condition and the while condition bear some similarity, so we can combin
 Example
 
 \begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/quicksort_outline.java}
+    \lstinputlisting[label={lst:nestedLoopTwoPointer},
+    caption={Implementation of partition function for Quicksort using two pointers.}]
+    {embedded-loops/quicksort_partition_two_pointer.c}
+\end{clisting}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:nestedLoopOnePointer},
+    caption={Implementation of partition function for Quicksort using one pointer.}]
+    {embedded-loops/quicksort_partition_one_pointer.c}
 \end{clisting}
 
 May be made more compact using the above technique as
@@ -154,19 +136,80 @@ May be made more compact using the above technique as
 \end{clisting}
 
 
-\section{Case Study: IV}\label{sec:nested-loop-numeral-conversion-roman}
+\section{Case Study: `Maximum Rectangular Area Under Histogram'
+Problem}\label{sec:nested-loop-histogram}
 
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_nested_loop.java}
-\end{clisting}
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_thinned_loop.java}
-\end{clisting}
+Let us first finish up the leftover from last chapter---~\autoref{ch:loops}.
+In the code snippet of ~\autoref{lst:histogram-oneMoreCycle}, we removed duplicate post-loop
+processing code.
+But the solution contains a nested loop.
+Let us see how to coalesce the nesting loops to single layer.
+First, the condition for the \code{while}-loop can be used as is for a conditional block.
+So in the end we simply replace keyword \code{while} with \code{if}.
+Secondly, we append an \code{else}-clause for the newly created conditional statement and place
+the \code{stack.push(i);} in it.
+Thirdly, we relocate the increment statement \code{++i} from the \code{for}-loop afterthought
+header also to the \code{else}-block.
+That is it and the code looks like
+\lstinputlisting[label={lst:histogram-coalesced-loop},
+caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
+{embedded-loops/histogram.java}
+
+In comparison with ~\autoref{lst:histogram-oneMoreCycle}, solution in
+~\autoref{lst:histogram-coalesced-loop} is more straightforward, comfortable to look as it is a
+simple loop with conditional statement within.
+Its runtime is clearly and unambiguously $O(N)$.
+
+Other changes may be applied to make the code look better.
+For example, one may combine the two statement in the \code{else}-block into one:
+\begin{lstlisting}
+    stack.push(i++);
+\end{lstlisting}
+Further, one may use sentinels to do away with the boundary condition checks, \textit{e.g.},
+\code{stack.isEmpty()} and \code{i == heights.length} (See ~\autoref{ch:sentinels}).
+
+But remember that these latter changes are not essential for the `loop thinning' technique and
+shall be considered as optional.
 
 
-\section{Case Study: V}\label{sec:nested-loop-pattern-matching}
+%\section{Case Study: Skyline Problem}\label{sec:nested-loop-skyline}
+%
+%%\label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
+%\lstinputlisting[label={lst:silhouette-skyline},
+%caption={Loop thinning example for skyline calculation.}]
+%{embedded-loops/silhouette.py}
+%
+%\label{Evernote:Server peak load problem}
+%\label{Evernote:for-loop Loop compactification examples}
+
+
+
+%
+%\section{Case Study: IV}\label{sec:nested-loop-numeral-conversion-roman}
+%
+%\begin{clisting}
+%    \lstinputlisting[label={lst:nestedForLoop},
+%    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_nested_loop.java}
+%\end{clisting}
+%\begin{clisting}
+%    \lstinputlisting[label={lst:nestedForLoop},
+%    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_thinned_loop.java}
+%\end{clisting}
+
+
+\section{Case Study: Substring Matching Problem}\label{sec:nested-loop-pattern-matching}
+
+Let us consider the `Search for a needle in Haystack' problem:
+\begin{quote}
+    Given two strings \code{p} and \code{s}, search for the occurrences of \code{p} in \code{s}.
+\end{quote}
+
+
+For this discussion, we are not going to talk about the fancy implementation of the `KMP
+algorithm'\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
+Instead, we will consider a rudimentary implementation with runtime $O(MN)$ where $M$ and $N$ are
+the lengths of \code{p} and \code{s}.
+
 
 Uncompact:
 

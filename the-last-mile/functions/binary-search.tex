@@ -25,6 +25,50 @@ Which half to turn to and under what condition?
 How to use binary search in combination with other tasks?
 How to adapt binary search for more complex tasks?
 
+What about equal values?
+The treatment of equal values in binary search is subtle and can be very tricky.
+All the options are coupled together.
+
+If the symmetry is broken, then it need to broken in a consistent way.
+If you leave equal elements on the left partition, then you should compensate for this by
+shortening the partition to the left, and vice versa.
+
+int* part(int* s, int*e) {
+    int* const pivot = s;
+    swap(s, s + rand() % (e - s));
+    while(true) {
+         // the left partition is strictly less than the pivot
+         while(s < e && *++s < *pivot); // find the next element >= pivot
+         // the right partition is  greater than or equal to the pivot
+         while(s < e && *--e >= *pivot); // find the prev element < pivot
+         if (e <= s) {
+             swap(pivot, s - 1); // insert the pivot element
+             return s - 1; // shortening the left partition by shrink back the pivot element
+         }
+         swap(s, e); //swap the out-of-place elements
+    }
+}
+
+int* part1(int* s, int*e) {
+    int * p = s + rand() % (e - s);
+    swap(s, p);
+    p = s;
+    for(int* i = s; i < e; i++ ) {
+        if (*i < *s) {
+            swap(++p, i); //swap the out-of-place elements
+        }
+    }
+    swap(s, p);
+    return p;
+}
+
+void qSort(int* s, int* e) {
+     if (e - s < 2) return;
+     int* p = part(s, e);
+     qSort(s, p);
+     qSort(p + 1, e);
+}
+
 Quick sort and binary search are closely related
 
 Binary search may be implemented highly structured

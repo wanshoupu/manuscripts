@@ -97,58 +97,125 @@ Instead, the techniques may be applied on a case by case basis.
 
 \section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
 
-This is a classical example that I borrowed from the book `Programming Pearls'\cite{Bentley:1986:PP}.
+This is a classical example that was discussed in details in several classical books, `Programming
+Pearls' and `Numerical Recipes' in particular\cite{Bentley:1986:PP, NumericalRecipes:1992}.
 It is this example that inspired me of what a simple program looks like and what it means to
 pursue for simplicity for coding.
 
 
-Honestly, before I encountered `Programming Pearls', I have implemented a quick
-sort program in C based off the traditional `Hoare's partitioning' scheme, as presented
+My first implementation of the quick sort algorithm was in C based off
+the traditional `Hoare's partitioning' scheme, as presented
 in `Numerical Recipes' (minus the sentinel part which is to be explained in
-~\autoref{ch:sentinels})\cite{NumericalRecipes:1992}.
+~\autoref{ch:sentinels}).
 
-
-Here is the entry function.
+The main entry to the quick sort function is as follows.
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
 caption={An implementation of quick sort algorithm.}]
 {embedded-loops/quicksort_outline.c}
 where function \code{part} is the quick sort partition function.
-With the Hoare's partitioning scheme, the function \code{part} of my first implementation is as
-follows:
+It is a recursive function whose base case is the no-op case---arrays with fewer
+than two elements.
+Passing the base-case hurdle, an array would be undergone the partitioning operation.
+
+It is critical that partitioning operation divide an array into three
+parts---the left (lesser or equal) partition, the pivot element,
+and the right (greater or equal) partition.
+The pivot element is pointed to by \code{p}, the return value of the partition function.
+One of the left and right partitions may be empty.
+
+
+With the Hoare's partitioning scheme, the function \code{part} in my implementation is as
+follows.
 \lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
 caption={Implementation of Hoare's partition scheme for quick sort.}]
 {embedded-loops/quicksort_partition_sym.c}
+First, we randomly select a pivot element and swap it to the beginning of the array
+(why beginning of array?
+Why not end?).
+Then two pointers, \code{s} and \code{e}, scan through the array toward each other starting from
+opposite ends.
+They make stops when they see out-of-place elements.
+When both stop, a swap is made and the process repeats until they meet or cross.
+Then the pivot element (at the beginning of the array) is swapped into its final position and the
+pointer to this final position is returned.
 
 
-This implementation is very tricky to me and it took me a good 2 days to debug the issues that
-can be easily uncovered to me.
+The algorithm sounds simple but the implementation is actually very tricky so much so that
+it took me a good two days to get rid of bugs that I can uncover.
+Among all the bugs here is a partial list that shocked me with a `Gotcha':
+\begin{enumerate}
+    %    \item Bug in pivot election (failed to swap)
+    \item Bug in left pointer increment (each execution of the inner \code{while}-loop should
+    cause at least one increment (decrement) operation unless boundary is met.)
+    \item Boundary condition for pointer \code{e} was incorrectly set to \code{s < e}.
+    \item When to terminate the outer loop.
+    \item Fail to make the final swap to put pivot element in its final position.
+\end{enumerate}
 In fact just to figure out that the second \code{while}-loop condition should use \code{pivot <
-e} instead of \code{s < e} took me hours of debugging.
+e} instead of \code{s < e} took me hours of debugging time.
+Also, in the function \code{qsort}, the arguments to the recursive calls took a long time of
+deliberation before I finally got them right.
 
 
-So why is it so hard to get this seemingly simple partitioning function implemented correctly?
-On the one hand, the problem lends itself to complications---there are many edge cases that can
-slip one's mind.
-On the other, it is the way we approach the problem---by fighting at two frontiers at the same time.
+To make the situation more complicated, different parts of the code are tightly
+coupled---changing one would demand changes in other places.
+For example, the returned pointer was switched among \code{s}, \code{s+1}, \code{e}, and
+\code{e-1} multiple times.
+Accompanying these changes, adjustments for the recursive calls are made from \code{qsort(s, p),
+qsort(p, e)} to \code{qsort(s , p - 1), qsort(p, e)}, to \code{qsort(s, p + 1), qsort(p + 2, e)},
+so on and on.
+The number of combinations explodes.
 
 
-So following the Lomuto's partitioning scheme, one can simplify the scenario by approaching from
-one side of the array---a single \code{for}-loop suffices to the cause of correctness.
+This explains why it is so hard to get this seemingly simple partitioning function implemented
+correctly.
+On the one hand, the problem itself is complicated.
+On the other, however, it is the way that we approach the problem---we are simultaneously fighting
+two wars at two frontiers.
 
 
+So is there a more straightforward way to implement the quick sort algorithm?
+Yes!
+The Lomuto's partitioning scheme, popularized by the book `Programming Pearls', simplifies the
+process by dispatching two pointers from the left end of the array, scanning toward the right.
+The front pointer makes stop at out-of-place elements and the hind pointer guards
+the partition boundary.
+More importantly, a single \code{for}-loop suffices for Lomuto's partitioning.
+An implementation for this new partitioning function is given below.
 \lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
 caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_asym.c}
 
 
-How does this work?
-blah...
+This code is inspiring in both its simplicity and elegance while performing the same
+task that a tricky, complicated program does.
+Looking at ~\autoref{lst:nestedLoopHoareMethod} and the arduous debugging process,
+one can't help but thinking ``Three nested loops simplified to a single-loop?
+That's too good to be true!''
 
 
-Of course, this coding simplicity comes with prices under peculiar situations.
-One such scenario is when the array comes in with lots of equal-valued elements.
-The Lomuto's partitioning scheme would result in a degradation of sorting performance to $O(N^2)$.
-For this reason, it is not recommended for general library implementation.
+It is pointed out that the simplicity of this program comes with performance penalty,
+especially for large arrays with many equal-valued elements in which case
+the Lomuto's partitioning scheme would result in a runtime degradation to $O(N^2)$
+\footnote{The reason is as follows.
+When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
+and ~\autoref{lst:nestedLoopOnePointer} still do pair-wise swap among two equal elements.
+But the ending position for the pivot element is seriously off to the right end of the array for
+Lomuto's partitioning scheme whereas that of the Hoare's ends up at the middle.}.
+For this reason, Lomuto's partitioning scheme is not suitable for general-purpose libraries.
+
+
+Is there a single-loop implementation whose worst case runtime is guaranteed to be $O(N \log N)$?
+Yes.
+The loop thinning technique comes to the rescue.
+Let us next try to use it to simplify the Hoare's partitioning algorithm,
+particularly the implementation in ~\autoref{lst:nestedLoopHoareMethod}.
+
+
+%TODO
+\lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
+caption={Implementation of partition function for Quicksort using one pointer.}]
+{embedded-loops/quicksort_partition_single_loop.c}
 
 
 \section{Case Study: `Maximum Rectangular Area Under Histogram'

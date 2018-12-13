@@ -97,43 +97,58 @@ Instead, the techniques may be applied on a case by case basis.
 
 \section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
 
-This is a classical example that I borrowed from the book `Programming Pearls' for demonstration of
-the simplicity programming loops can be\cite{Bentley:1986:PP}.
+This is a classical example that I borrowed from the book `Programming Pearls'\cite{Bentley:1986:PP}.
+It is this example that inspired me of what a simple program looks like and what it means to
+pursue for simplicity for coding.
 
-Before reading this book, I implemented several versions of the quick sort algorithm.
-Interested reader may refer to that classical book by Bentley for more detail.
 
-For example, my first implementation of a quick sort algorithm was in
+Honestly, before I encountered `Programming Pearls', I have implemented a quick
+sort program in C based off the traditional `Hoare's partitioning' scheme, as presented
+in `Numerical Recipes' (minus the sentinel part which is to be explained in
+~\autoref{ch:sentinels})\cite{NumericalRecipes:1992}.
 
-\begin{clisting}
-    \lstinputlisting[label={lst:QuickSortOutline},
-    caption={Quicksort implementation outline with the partition function `\code{part}' to be
-    implemented.}]
-    {embedded-loops/quicksort_outline.c}
-\end{clisting}
 
-The for condition and the while condition bear some similarity, so we can combined them into one
+Here is the entry function.
+\lstinputlisting[label={lst:QuickSortOutline},language=C,
+caption={An implementation of quick sort algorithm.}]
+{embedded-loops/quicksort_outline.c}
+where function \code{part} is the quick sort partition function.
+With the Hoare's partitioning scheme, the function \code{part} of my first implementation is as
+follows:
+\lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
+caption={Implementation of Hoare's partition scheme for quick sort.}]
+{embedded-loops/quicksort_partition_sym.c}
 
-Example
 
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedLoopTwoPointer},
-    caption={Implementation of partition function for Quicksort using two pointers.}]
-    {embedded-loops/quicksort_partition_two_pointer.c}
-\end{clisting}
+This implementation is very tricky to me and it took me a good 2 days to debug the issues that
+can be easily uncovered to me.
+In fact just to figure out that the second \code{while}-loop condition should use \code{pivot <
+e} instead of \code{s < e} took me hours of debugging.
 
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedLoopOnePointer},
-    caption={Implementation of partition function for Quicksort using one pointer.}]
-    {embedded-loops/quicksort_partition_one_pointer.c}
-\end{clisting}
 
-May be made more compact using the above technique as
+So why is it so hard to get this seemingly simple partitioning function implemented correctly?
+On the one hand, the problem lends itself to complications---there are many edge cases that can
+slip one's mind.
+On the other, it is the way we approach the problem---by fighting at two frontiers at the same time.
 
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedForLoop},
-    caption={Code snippet with thinned for loops.}]{embedded-loops/for_loop_thinned.java}
-\end{clisting}
+
+So following the Lomuto's partitioning scheme, one can simplify the scenario by approaching from
+one side of the array---a single \code{for}-loop suffices to the cause of correctness.
+
+
+\lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
+caption={Implementation of partition function for Quicksort using one pointer.}]
+{embedded-loops/quicksort_partition_asym.c}
+
+
+How does this work?
+blah...
+
+
+Of course, this coding simplicity comes with prices under peculiar situations.
+One such scenario is when the array comes in with lots of equal-valued elements.
+The Lomuto's partitioning scheme would result in a degradation of sorting performance to $O(N^2)$.
+For this reason, it is not recommended for general library implementation.
 
 
 \section{Case Study: `Maximum Rectangular Area Under Histogram'

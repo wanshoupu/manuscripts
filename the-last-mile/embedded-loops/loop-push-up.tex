@@ -346,19 +346,24 @@ We are going to leave alone fancier algorithms and implementations, such as the 
 \footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
 %TODO
 
-Uncompact:
-
+Nested loop solution:
 \begin{clisting}
     \lstinputlisting[label={lst:nestedLoop},
     caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_nested_loop.java}
 \end{clisting}
 
-Compact:
-
+Using the `loop thinning' technique, we can implement the programming with a single loop:
 \begin{clisting}
     \lstinputlisting[label={lst:thinnedLoop},
     caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_thinned_loop.java}
 \end{clisting}
+Note that we initialized the loop variables \code{i,j} in the initialization header section of
+the \code{for}-loop so that their scope is contained within the loop.
+
+
+While it is arguable as to which code is simpler, the `loop thinning' technique provides us a
+tool that brings us to different perspectives for coding.
+Developers can use this technique to gain more choices and fresh insights.
 
 
 \section{Conclusion}\label{sec:loop-push-up-conclusion}

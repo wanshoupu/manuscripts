@@ -1,7 +1,7 @@
 int* part(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s++;
-    e--;
+    --e;
     while(true) {
          if (s < e && *s < *pivot) {  // find the next element >= pivot
              ++s;

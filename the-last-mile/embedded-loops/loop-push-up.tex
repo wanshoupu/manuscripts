@@ -62,19 +62,18 @@ information in addition to the main data structure.
 In this situation, one or more of the following measures may be taken to eliminate
 the nested, inner loop
 \begin{itemize}
-    \item Use of auxiliary data structures such as a queue or stack to facilitate with
-    dynamic paced iteration;
-    \item Use of additional conditional construct or additional test to existing ones;
-    \item Make loop pacing to be more dynamic;
-    \item Other changes necessary for boundary condition handling.
+    \item Use of auxiliary data structures, such as a queue or stack, to help with dynamic pacing;
+    \item Use of extra conditional construct or test;
+    \item Make loop pacing more dynamic;
+    \item Changes for boundary condition handling.
 \end{itemize}
 
 
-The bare bone changes for flattening nested loops is simple---identify the conditions for the
+The bare bone changes for flattening nested loops is simple---\emph{identify the conditions for the
 inner loop, convert the inner loop construct to a conditional or piggyback to an existing
-conditional (and make cascade conditionals, see ~\autoref{ch:conditional-cascade}),
-relocate the state-updating statement(s) of the outer loop to a conditional block
-(possibly an \code{else}-block in the newly formed conditional statement).
+conditional} (and make cascade conditionals, see ~\autoref{ch:conditional-cascade}),
+\emph{relocate the state-updating statement(s) of the outer loop into a conditional block}
+(possibly an \code{else}-block in the newly formed conditionals).
 
 
 Other changes may be performed after these in conformation to conventions and syntactic aesthetics.
@@ -95,6 +94,45 @@ universal applicability for many of them.
 Instead, the techniques may be applied on a case by case basis.
 
 
+\section{Case Study: `Maximum Rectangular Area Under Histogram'Problem}
+\label{sec:nested-loop-histogram}
+
+Let us first finish up the leftover from last chapter---~\autoref{ch:loops}.
+In the code snippet of ~\autoref{lst:histogram-oneMoreCycle}, we removed duplicate post-loop
+processing code.
+But the solution contains a nested loop.
+Let us see how to coalesce the nesting loops to single layer.
+First, the condition for the \code{while}-loop can be used as is for a conditional block.
+So in the end we simply replace keyword \code{while} with \code{if}.
+Secondly, we append an \code{else}-clause for the newly created conditional statement and place
+the \code{stack.push(i);} in it.
+Thirdly, we relocate the increment statement \code{++i} from the \code{for}-loop afterthought
+header also to the \code{else}-block.
+That is it and the code looks like
+\lstinputlisting[label={lst:histogram-coalesced-loop},
+caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
+{embedded-loops/histogram.java}
+
+
+In comparison with ~\autoref{lst:histogram-oneMoreCycle}, solution in
+~\autoref{lst:histogram-coalesced-loop} is more straightforward, comfortable to look as it is a
+simple loop with conditional statement within.
+Its runtime is clearly and unambiguously $O(N)$.
+
+
+Other changes may be applied to make the code look better.
+For example, one may combine the two statement in the \code{else}-block into one:
+\begin{lstlisting}
+    stack.push(i++);
+\end{lstlisting}
+Further, one may use sentinels to do away with the boundary condition checks, \textit{e.g.},
+\code{stack.isEmpty()} and \code{i == heights.length} (See ~\autoref{ch:sentinels}).
+
+
+But remember that these latter changes are not essential for the `loop thinning' technique and
+shall be considered as optional.
+
+
 \section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
 
 This is a classical example that was discussed in details in several classical books, `Programming
@@ -108,6 +146,7 @@ the traditional `Hoare's partitioning' scheme, as presented
 in `Numerical Recipes' (minus the sentinel part which is to be explained in
 ~\autoref{ch:sentinels}).
 
+
 The main entry to the quick sort function is as follows.
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
 caption={An implementation of quick sort algorithm.}]
@@ -116,6 +155,7 @@ where function \code{part} is the quick sort partition function.
 It is a recursive function whose base case is the no-op case---arrays with fewer
 than two elements.
 Passing the base-case hurdle, an array would be undergone the partitioning operation.
+
 
 It is critical that partitioning operation divide an array into three
 parts---the left (lesser or equal) partition, the pivot element,
@@ -205,53 +245,67 @@ Lomuto's partitioning scheme whereas that of the Hoare's ends up at the middle.}
 For this reason, Lomuto's partitioning scheme is not suitable for general-purpose libraries.
 
 
-Is there a single-loop implementation whose worst case runtime is guaranteed to be $O(N \log N)$?
+Is there a single-loop implementation for quick sort algorithm whose expected runtime is
+guaranteed to be $O(N\log N)$ in all cases?
 Yes.
-The loop thinning technique comes to the rescue.
-Let us next try to use it to simplify the Hoare's partitioning algorithm,
+The loop thinning technique can be used to simplify the Hoare's partitioning algorithm,
 particularly the implementation in ~\autoref{lst:nestedLoopHoareMethod}.
+In what follows, we will demonstrate how to achieve this goal---to convert the nested loops into
+a single-loop with cascade conditionals in the loop body
+(refer to ~\autoref{ch:conditional-cascade}).
 
 
-%TODO
-\lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
+The first difficulty we encounter is the densely packed inner loops, namely,
+\begin{lstlisting}
+    while(s < e && *++s < *pivot);
+    while(pivot < e && *--e > *pivot);
+\end{lstlisting}
+These loops are pecular because the loop-condition themselves are not \code{const} operations
+because of the pre-increment operators: `\code{++}' and `\code{--}'.
+Namely, performing loop tests would cause the pointers, `\code{s}' and `\code{e}',
+to increment/decrement, respectively.
+If converted to conditional statements as is, the awkward conditional construct would leave
+any moment for us to stop and swap out-of-place elements where needed.
+
+
+To find way out, we need to unfold the inner loops into `normal' constructs.
+As we learned in earlier chapter ~\fullref{ch:loops}, these loops may be converted to
+\code{do-while} loops such as
+\lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_do_while.c}
+or even to \code{while}-loops as
+\lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_while.c}
+After these changes, our program becomes
+\lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_expanded_inner_loop.c}
+You may have noticed that we have switched the order between \code{--e;} and the first inner loop
+in passing, as this does not affect the correctness of the result thanks to the shielding
+by the base case in the recursive function \code{qsort}.
+
+
+Now we are going to apply the ``loop rotation'' technique to move the refactor
+roadblocks---state-altering statements, `\code{++s;}' and `\code{--e;}'--- out of the way and the
+resulting code is shown below.
+(``Loop rotation'' is specified in ~\fullref{sec:LoopDesignConsideration}.)
+\lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_rotated_inner_loop.c}
+
+
+Now the loop body is back to normal and it becomes trivial to perform the routine refactoring
+steps of the `loop thinning' process from ~\autoref{sec:loop-thinning-technique}.
+Our final result is posted below
+\lstinputlisting[label={lst:nestedLoopHoarePartSingleLoop},language=C,
 caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_single_loop.c}
+Here we have applied syntactic sugar where applicable, \textit{e.g.}, combining multiple statements
+into \code{swap(s++, e--)}.
 
 
-\section{Case Study: `Maximum Rectangular Area Under Histogram'
-Problem}\label{sec:nested-loop-histogram}
+Code ~\autoref{lst:nestedLoopHoarePartSingleLoop} has the simplicity of the Lomuto's
+partitioning scheme and the optimal runtime of Hoare's.
+Once again, one can't help but thinking ``That's too good to be true!''
 
-Let us first finish up the leftover from last chapter---~\autoref{ch:loops}.
-In the code snippet of ~\autoref{lst:histogram-oneMoreCycle}, we removed duplicate post-loop
-processing code.
-But the solution contains a nested loop.
-Let us see how to coalesce the nesting loops to single layer.
-First, the condition for the \code{while}-loop can be used as is for a conditional block.
-So in the end we simply replace keyword \code{while} with \code{if}.
-Secondly, we append an \code{else}-clause for the newly created conditional statement and place
-the \code{stack.push(i);} in it.
-Thirdly, we relocate the increment statement \code{++i} from the \code{for}-loop afterthought
-header also to the \code{else}-block.
-That is it and the code looks like
-\lstinputlisting[label={lst:histogram-coalesced-loop},
-caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
-{embedded-loops/histogram.java}
-
-In comparison with ~\autoref{lst:histogram-oneMoreCycle}, solution in
-~\autoref{lst:histogram-coalesced-loop} is more straightforward, comfortable to look as it is a
-simple loop with conditional statement within.
-Its runtime is clearly and unambiguously $O(N)$.
-
-Other changes may be applied to make the code look better.
-For example, one may combine the two statement in the \code{else}-block into one:
-\begin{lstlisting}
-    stack.push(i++);
-\end{lstlisting}
-Further, one may use sentinels to do away with the boundary condition checks, \textit{e.g.},
-\code{stack.isEmpty()} and \code{i == heights.length} (See ~\autoref{ch:sentinels}).
-
-But remember that these latter changes are not essential for the `loop thinning' technique and
-shall be considered as optional.
+In retrospection at development, one should guarantee correctness first;
+then strive for simplicity;
+finally after everything else has settled down, consider performance if it becomes an issue.
+This applies to loops as well as in general.
 
 
 %\section{Case Study: Skyline Problem}\label{sec:nested-loop-skyline}
@@ -281,17 +335,16 @@ shall be considered as optional.
 
 \section{Case Study: Substring Matching Problem}\label{sec:nested-loop-pattern-matching}
 
-Let us consider the `Search for a needle in Haystack' problem:
+Let us consider the `Search for needle in Haystack' problem:
 \begin{quote}
-    Given two strings \code{p} and \code{s}, search for the occurrences of \code{p} in \code{s}.
+    ``Given two strings \code{p} and \code{s}, search for the occurrences of \code{p} in \code{s}.''
 \end{quote}
 
-
-For this discussion, we are not going to talk about the fancy implementation of the `KMP
-algorithm'\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
-Instead, we will consider a rudimentary implementation with runtime $O(MN)$ where $M$ and $N$ are
-the lengths of \code{p} and \code{s}.
-
+For illustration purposes, what we are considering here is a rudimentary implementation
+with runtime $O(MN)$ where $M$ and $N$ are the lengths of \code{p} and \code{s}.
+We are going to leave alone fancier algorithms and implementations, such as the `KMP algorithm'
+\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
+%TODO
 
 Uncompact:
 

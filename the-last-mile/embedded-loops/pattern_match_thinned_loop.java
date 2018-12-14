@@ -1,15 +1,12 @@
-for (int i = 0, j = 0; ; ) {
-    //The order of the following two if...return blocks MATTERS!
-    if (j == pattern.length()) {
-        return i;
+int search(String haystack, String needle) {
+    int i = 0, j = 0;
+    while (j < needle.length() && i + needle.length() < haystack.length()) {
+        if (needle.charAt(j) == haystack.charAt(i + j)) {
+            ++j;
+        } else {
+            j = 0;
+            ++i;
+        }
     }
-    if (i + j == text.length()) {
-        return -1;
-    }
-    if (pattern.charAt(j) == text.charAt(i + j)) {
-        ++j;
-    } else {
-        ++i;
-        j = 0;
-    }
+    return j == needle.length() ? i : -1;
 }

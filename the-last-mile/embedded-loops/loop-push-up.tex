@@ -74,6 +74,9 @@ inner loop, convert the inner loop construct to a conditional or piggyback to an
 conditional} (and make cascade conditionals, see ~\autoref{ch:conditional-cascade}),
 \emph{relocate the state-updating statement(s) of the outer loop into a conditional block}
 (possibly an \code{else}-block in the newly formed conditionals).
+A tip for one who's new to this process:
+the \code{while}-loop lends itself better for the process, as one can
+simply replace the keyword \code{while} with \code{if} to start with.
 
 
 Other changes may be performed after these in conformation to conventions and syntactic aesthetics.
@@ -333,38 +336,119 @@ This applies to loops as well as in general.
 %\end{clisting}
 
 
-\section{Case Study: Substring Matching Problem}\label{sec:nested-loop-pattern-matching}
+\section{Case Study: Search for Needle in Haystack Problem}\label{sec:nested-loop-pattern-matching}
 
-Let us consider the `Search for needle in Haystack' problem:
+For this case study, let us consider the string searching, the `needle in haystack' problem:
 \begin{quote}
-    ``Given two strings \code{p} and \code{s}, search for the occurrences of \code{p} in \code{s}.''
+    ``Given two strings \code{needle} and \code{haystack}, search for the first occurrence of
+    \code{needle} in \code{haystack}.''
 \end{quote}
-
-For illustration purposes, what we are considering here is a rudimentary implementation
-with runtime $O(MN)$ where $M$ and $N$ are the lengths of \code{p} and \code{s}.
-We are going to leave alone fancier algorithms and implementations, such as the `KMP algorithm'
-\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
-%TODO
-
-Nested loop solution:
-\begin{clisting}
-    \lstinputlisting[label={lst:nestedLoop},
-    caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_nested_loop.java}
-\end{clisting}
-
-Using the `loop thinning' technique, we can implement the programming with a single loop:
-\begin{clisting}
-    \lstinputlisting[label={lst:thinnedLoop},
-    caption={Code snippet with nested loops.}]{embedded-loops/pattern_match_thinned_loop.java}
-\end{clisting}
-Note that we initialized the loop variables \code{i,j} in the initialization header section of
-the \code{for}-loop so that their scope is contained within the loop.
+There are many string matching algorithms with various run time complexities.
+Some of them have superior runtime complexity but require fairly sophisticated preprocessing, such
+as Boyer–Moore algorithm
+\footnote{\url{https://en.wikipedia.org/wiki/Boyer–Moore_string-search_algorithm}},
+Knuth–Morris–Pratt algorithm
+\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}, \textit{etc.}
 
 
-While it is arguable as to which code is simpler, we are offered different perspectives for coding
-thanks to the `loop thinning' technique.
-Equipped with this technique as a routine process, developers can tunnel through barriers to
-discover more ways of interesting implementations.
+In this section, we are going to leave these fancy algorithms and implementations alone.
+Instead, we will consider the rudimentary, naïve algorithm with a quadratic runtime complexity.
+Why?
+For one, this algorithm is the starting point for the more advanced algorithms.
+For two, it takes considerable coding skills to correctly implement the algorithm.
+Most importantly, it is a great example to illustrate how the many loop coding techniques can
+be used to discover interesting implementations.
+
+
+The naïve algorithm for string searching is outlined as follows.
+\begin{alisting}
+    \caption{\label{alg:string-search-naive-algorithm}
+    A naïve algorithm for string search whose runtime complexity is $O(MN)$ where $M$ and $N$ are
+    the string lengths.}
+    \begin{enumerate}
+        \item For each index \code{i} in $[0, M-1]$, the index for the character array of
+        the `\code{haystack}'
+        \begin{enumerate}
+            \item For each index \code{j} in $[0, N-1]$, the index for the
+            character array of the `\code{needle}'
+            \begin{enumerate}
+                \item If characters at \code{i} and \code{j} do not match, break the inner loop
+            \end{enumerate}
+            \item If substring \code{s[i:i+j]} equals `\code{needle}', return \code{i}
+        \end{enumerate}
+        \item return -1
+    \end{enumerate}
+\end{alisting}
+
+
+Let us start with the most common implementations of the algorithm.
+It is straightforward to think of a nested-loop implementation such as the following
+\lstinputlisting[label={lst:nestedLoop-string-search},caption={Code snippet with nested loops.}]
+{embedded-loops/pattern_match_nested_loop.java}
+Note that the abortion of the inner loop upon the first pair of mismatched characters is
+discovered or running out of character in \code{haystack}.
+
+In retrospection, an insight would help simplify the logic---one does not need to
+search for the \code{needle} toward the suffixes of the \code{haystack} that is shorter than the
+\code{needle}.
+So the outer loop condition could be \code{i + needle.length() <= haystack.length()} instead.
+
+
+Another improvement on the inner loop could be that the scope of the loop variable \code{j}
+awkwardly extends beyond the loop itself because after the inner loop, its value is needed to
+determine if the search is successful.
+
+
+There are several options to resolve this awkwardness.
+One is to use the `one-more-cycle' technique (see ~\fullref{sec:one-more-cycle} for more details).
+Instead of terminating at $j = N$, let us terminate at $j = N+1$, leaving the last iteration to
+return a successful search result.
+This way, the loop condition would not be necessary as the last iteration will catch it anyway.
+With all these changes, the nested loop solution can be realized with fewer lines:
+\lstinputlisting[label={lst:nestedLoop-one-more-cycle},caption={Code snippet with nested loops.}]
+{embedded-loops/pattern_match_nested_loop_one_more_cycle.java}
+
+
+Not bad.
+This is about what we can do with nested loops.
+Let us see if we can make further progress in simplifying the implementation.
+Before starting the `loop thinning' process, let us prepare the code so that it is easily attacked.
+First, convert all \code{for} loops to \code{while}-loops so as to reduce syntactic friction for
+thinning nested loops.
+This implies that the increment statements, \code{++j} and \code{++j} are to be relocated to ends
+of the bodies of the corresponding loops.
+Then we need to pull the initialization \code{int j = 0} out of the outer loop.
+Associated with this, don't forget to reset j to $0$ whenever the inner loop is
+aborted by the \code{break} statement.
+The inner loop now becomes an infinite loop \code{while(true)}.
+If you are still with me, the code now should look like this and still passes the same amount of
+unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does:
+\lstinputlisting[]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
+
+
+Note that once the \code{break} statement is executed, control is passed to the increment
+statement \code{++i} immediately.
+So we can insert the increment statement just before the \code{break} statement without changing
+anything.
+Also, the condition for the \code{break} statement and the other increment statement \code{++j}
+are complementary to each other.
+So we could shield \code{++j} in an \code{else} clause.
+And we are finally free to remove the unconditional, inner loop.
+\lstinputlisting[]{embedded-loops/pattern_match_thinned_loop_intermediate_stage.java}
+
+
+If desired, one can get rid of the intra-loop \code{return} statement by promoting the
+conditional test to the loop test and add post-loop logic to calculate the final search result as
+follows:
+\lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
+{embedded-loops/pattern_match_thinned_loop.java}
+This completes the `loop thinning' process.
+
+
+Thanks to the `loop thinning' technique, developers can tunnel through the coding barriers to
+discover more implementations of interest.
+While it is arguable as to which solution is simpler, alternative implementations offers at least
+different perspectives for inspiring better coding practices.
 
 
 \section{Conclusion}\label{sec:loop-push-up-conclusion}

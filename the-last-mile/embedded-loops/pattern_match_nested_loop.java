@@ -1,11 +1,16 @@
-for (int i = 0; i + pattern.length() <= text.length(); ++i) {
-    for (int j = 0; ; ++j) {
-        if (j == pattern.length()) {
+int search(String haystack, String needle) {
+    for (int i = 0; i <= haystack.length(); ++i) {
+        int j = 0;
+        while (j < needle.length()) {
+            if (i + j == haystack.length() || needle.charAt(j) != haystack.charAt(i + j)) {
+                break;
+            }
+            ++j;
+        }
+        if (j == needle.length()) {
             return i;
         }
-        if (pattern.charAt(j) != text.charAt(i + j)) {
-            break;
-        }
+
     }
+    return -1;
 }
-return -1;

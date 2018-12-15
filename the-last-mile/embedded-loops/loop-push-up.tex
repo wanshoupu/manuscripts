@@ -443,9 +443,15 @@ follows:
 \lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
 {embedded-loops/pattern_match_thinned_loop.java}
 Note that in the final loop condition, I switched the condition
-`\code{i + needle.length() <= haystack.length()}' to
-`\code{i + j < haystack.length()}' since in the context they are equivalent but the latter is a
-more direct way to shield later character comparison logic.
+\begin{quote}
+    \code{i + needle.length() <= haystack.length()}
+\end{quote}
+to
+\begin{quote}
+    \code{i + j < haystack.length()}
+\end{quote}
+since in the context they are equivalent and the latter is a
+more direct way to test if it is safe for character comparison.
 This completes the `loop thinning' process.
 
 

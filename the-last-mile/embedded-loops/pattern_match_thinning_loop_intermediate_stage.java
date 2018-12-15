@@ -6,12 +6,12 @@ int search(String haystack, String needle) {
                 return i;
             }
             if (needle.charAt(j) != haystack.charAt(i + j)) {
-                j = 0;
                 break;
             }
             ++j;
         }
         ++i;
+        j = 0;
     }
     return -1;
 }

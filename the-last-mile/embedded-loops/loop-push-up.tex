@@ -69,21 +69,56 @@ the nested, inner loop
 \end{itemize}
 
 
-The bare bone changes for flattening nested loops is simple---\emph{identify the conditions for the
-inner loop, convert the inner loop construct to a conditional or piggyback to an existing
-conditional} (and make cascade conditionals, see ~\autoref{ch:conditional-cascade}),
-\emph{relocate the state-updating statement(s) of the outer loop into a conditional block}
-(possibly an \code{else}-block in the newly formed conditionals).
-A tip for one who's new to this process:
-the \code{while}-loop lends itself better for the process, as one can
-simply replace the keyword \code{while} with \code{if} to start with.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{embedded-loops/segment-for-loop-thinning.jpg}
+    \caption{\label{fig:segment-for-loop-thinning} Segments of statements in loop body
+    for `loop thinning' process.}
+\end{figure}
+Depending on the relative position with respect to the inner loop, the body of the outer loop is
+divided into three segments---pre-inner-loop statements, inner-loop, and post-inner-loop
+statements---as shown in ~\autoref{fig:segment-for-loop-thinning}.
+The gist for flattening nested loops is as follows---move away pre-loop statements
+relying on `loop rotation' (see ~\fullref{ch:loops});
+shield post-loop statements in a conditional clause, probably in the `\code{else}-block' of the
+to-be-formed conditionals of next step;
+convert the inner loop---if it is an unconditional, infinite loop, just remove it, if with a
+condition, convert it to a conditional or prepend to an existing one
+(and this latter case may result in the formation of cascade conditionals, see
+~\autoref{ch:conditional-cascade}).
+While in the process, pay special attention to execution-path-altering statements such as
+\code{break} and \code{continue} in both loops.
 
 
-Other changes may be performed after these in conformation to conventions and syntactic aesthetics.
+Additionally here are some preparatory tips for those who are new to this.
+Where needed, take apart composite statements before you start, especially those
+that are non-idempotent.
+For example,
+\begin{lstlisting}
+    while (++i < LIMIT)
+\end{lstlisting}
+For another example which is in Golang,
+\begin{lstlisting}
+    if v := a[i]; v < LIMIT
+\end{lstlisting}
+Composite, non-idempotent statements may cause trouble because its
+parts may possibly go to different places when performing loop thinning.
+
+
+For similar reasons, \code{for}-loop with all its header statements, should be taken apart and
+converted to \code{while}-loop.
+\code{while}-loop lends itself readily for the loop thinning process, as one can
+simply replace the keyword \code{while} with \code{if} at due time.
+
+
+After the loop thinning process,
+some aftermath changes may be also performed to clean up, to conform to conventions,
+or for cosmetic reasons.
 Most importantly, following the removal of nested loops, other optimizations may be unlocked to
 further the code quality to another level.
-Like a critical piece is added in a candy crush game which causes chains of avalanches.
-That is the true value of of code optimization.
+Like games `Candy Crush Saga', a critical move may cause chains of moves to be unlocked for the
+player's advantage.
+This `avalanche effect' is the true value of the `loop thinning' technique.
 
 
 Put together, we refer to the coding strategies to coalesce a nested loop into a
@@ -411,38 +446,42 @@ With all these changes, the nested loop solution can be realized with fewer line
 
 Not bad.
 This is about what we can do with nested loops.
-Let us see if we can make further progress in simplifying the implementation.
-Before starting the `loop thinning' process, let us prepare the code so that it is easily attacked.
-First, convert all \code{for} loops to \code{while}-loops so as to reduce syntactic friction for
-thinning nested loops.
+To further simplify the implementation, le us try to do away with the nested loop first.
+As prescribed in ~\autoref{sec:loop-thinning-technique}, let us prepare the code for the `loop
+thinning' process.
+First off, let us convert all \code{for} loops to \code{while}-loops so as to reduce syntactic
+friction.
 This implies that the increment statements, \code{++j} and \code{++j} are to be relocated to ends
-of the bodies of the corresponding loops.
-Then we need to pull the initialization \code{int j = 0} out of the outer loop.
-Associated with this, don't forget to reset j to $0$ whenever the inner loop is
-aborted by the \code{break} statement.
+of the corresponding loop bodies.
+
+Then we start the first step---resort to the `loop rotation' technique
+to move away the initialization statement `\code{int j = 0}' from pre-inner-loop section.
+The `loop rotation' results in the statement being placed at the forefront of the outer loop as
+well after the last statement within the outer loop.
 The inner loop now becomes an infinite loop \code{while(true)}.
-If you are still with me, the code now should look like this and still passes the same amount of
-unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does:
+If you are still with me, the code now should look like this:
 \lstinputlisting[]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
+It is important to note that this code still passes the same amount of
+unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does and this is very important verification
+throughout any refactoring process.
+
+Now comes the second step of `loop thinning'.
+Since the \code{break} statement in the inner loop is the only path that leads to the
+execution of post-inner-loop statements, we can tuck them all under the
+conditional block wherein the \code{break} statement is.
+Also, the condition for the same conditional statement is complementary to that of the
+increment statement `\code{++j}', so we could shield \code{++j} in an \code{else} clause.
 
 
-Note that once the \code{break} statement is executed, control is passed to the increment
-statement \code{++i} immediately.
-So we can insert the increment statement just before the \code{break} statement without changing
-anything.
-Also, the condition for the \code{break} statement and the other increment statement \code{++j}
-are complementary to each other.
-So we could shield \code{++j} in an \code{else} clause.
-And we are finally free to remove the unconditional, inner loop.
+Hooray, we are finally at the last step---remove the unconditional, inner loop---after that the
+code looks like this:
 \lstinputlisting[]{embedded-loops/pattern_match_thinned_loop_intermediate_stage.java}
-
-
-If desired, one can get rid of the intra-loop \code{return} statement by promoting the
-conditional test to the loop test and add post-loop logic to calculate the final search result as
-follows:
+If desired, one can mutate the intra-loop \code{return} statement into
+additional loop test and add post-loop calculation.
+The final code after these cosmetic changes is:
 \lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
 {embedded-loops/pattern_match_thinned_loop.java}
-Note that in the final loop condition, I switched the condition
+Note that in passing, I switched the loop condition from
 \begin{quote}
     \code{i + needle.length() <= haystack.length()}
 \end{quote}
@@ -450,15 +489,9 @@ to
 \begin{quote}
     \code{i + j < haystack.length()}
 \end{quote}
-since in the context they are equivalent and the latter is a
-more direct way to test if it is safe for character comparison.
+They are equivalent in the context but the latter is more direct a test for ensuring the safety of
+the subsequent character comparison.
 This completes the `loop thinning' process.
-
-
-Thanks to the `loop thinning' technique, developers can tunnel through the coding barriers to
-discover more implementations of interest.
-While it is arguable as to which solution is simpler, alternative implementations offers at least
-different perspectives for inspiring better coding practices.
 
 
 \section{Conclusion}\label{sec:loop-push-up-conclusion}
@@ -470,7 +503,13 @@ different perspectives for inspiring better coding practices.
 Nested loops are hard to understand and shall generally be avoided in production code.
 %As can be seen, where nested loops occur are mostly related to dynamics adjustment to a
 %streamlined processing code.
-With the `loop thinning' technique discussed in this chapter, many usages of nested loops can be
+While compelling, many usages of nested loops can be
 equivalently satisfied with single-layer loops and the resultant logic is usually much simplified.
-Even if this is not possible or inconvenient, one can still boost the readability by
-factoring nested loops into more meaningful, reusable functions.
+
+
+The loop thinning technique provides a channel through which developers can tunnel through
+coding barriers to a whole new world, to discover more interest implementations.
+While it may be arguable as to which solution is simpler, alternative implementations
+offers at least different perspectives for inspiring better coding practices.
+%Even if this is not possible or inconvenient, one can still boost the readability by
+%factoring nested loops into more meaningful, reusable functions.

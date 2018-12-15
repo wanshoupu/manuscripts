@@ -59,12 +59,72 @@ This is only a fictitious problem, a programming joke.
 However it vividly illustrates the basic idea behind using sentinels and the important
 aspects of how to use it.
 
+
+\section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
+
+
 I first came to learn about sentinels and their usage in the book ``Numerical Receipt in C''
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
 I was really amazed by how the authors of the book carefully avoided burdening the
 performance-critical, fast spinning inner loop with the array boundary checks by the use of
 sentinels
 when partitioning the array elements by the pivot element.
+
+
+But honestly, only until recently have I had a success in implementing the idea correctly.
+Before that I implemented a quick sort program in C based off the traditional `Hoare's
+partitioning' scheme.
+Here is an outline of the implementation.
+\lstinputlisting[label={lst:QuickSortOutline},language=C,
+caption={An implementation of quick sort algorithm.}]
+{embedded-loops/quicksort_outline.c}
+where function \code{part} is the quick sort partition function.
+With the Hoare's partitioning scheme, the function \code{part} of my first implementation is as
+follows:
+\lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
+caption={Implementation of Hoare's partition scheme for quick sort.}]
+{embedded-loops/quicksort_partition_sym.c}
+
+
+As mentioned in ~\autoref{ch:loop-thinning}, this implementation can get very tricky.
+For one the problem itself is tricky.
+For another, we are consciously attacking the problem with an precautions approach against
+performance degradation so there is a price we have to pay.
+
+But we can reduce the coding complexity and the tricky part with the use of sentinels!
+Even better, performance can also be greatly boosted.
+
+Note the conditions used in the inner loops?
+Let us see how sentinels can simplify them.
+
+%TODO
+\begin{enumerate}
+    \item Factor out the initial swapping into a function \code{init_swap};
+    \item Removed boundary checking from both inner loops.
+\end{enumerate}
+Firstly, let's elect $3$ instead of $1$ elements and use the median of them as the pivot and
+deploy the maximum and the minimum to the two ends of the array, respectively.
+Then, we can safely remove the \code{s < e} and \code{pivot < e} parts of the conditions.
+Below is my code.
+\lstinputlisting[]{sentinels/qsort_part_sentinel.c}
+Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
+So obviously the critical part of this implementation lies within the function \code{init_swap}.
+The original one-liner implementation
+\begin{lstlisting}
+    swap(s, s + rand()
+    % (e - s));
+\end{lstlisting}
+would put both of the inner loops in peril of running out of bound.
+By selecting two additional elements, one larger and one smaller than the pivot element,
+it is guaranteed that the inner loop condition be met before
+it runs out of bound.
+So then boundary checking can be spared:
+\lstinputlisting[]{sentinels/qsort_part_sentinel.c}
+
+
+
+\section{Blah}
+
 Later on in my own software development practice, I made conscious choice when facing similar
 problems.
 But I didn't stop there.

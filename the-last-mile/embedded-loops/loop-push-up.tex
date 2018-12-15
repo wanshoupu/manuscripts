@@ -468,9 +468,9 @@ different perspectives for inspiring better coding practices.
 
 
 Nested loops are hard to understand and shall generally be avoided in production code.
-As can be seen, where nested loops occur are mostly related to dynamics adjustment to a
-streamlined processing code.
-With the `loop thinning' technique discussed in this chapter, many cases of nested loop can be
-compressed into single-layer loops.
-If this is not possible or the resulting code is harder to understand, one may still consider
-refactor inner loops into more meaningful, reusable functions.
+%As can be seen, where nested loops occur are mostly related to dynamics adjustment to a
+%streamlined processing code.
+With the `loop thinning' technique discussed in this chapter, many usages of nested loops can be
+equivalently satisfied with single-layer loops and the resultant logic is usually much simplified.
+Even if this is not possible or inconvenient, one can still boost the readability by
+factoring nested loops into more meaningful, reusable functions.

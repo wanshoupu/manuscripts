@@ -88,11 +88,13 @@ condition, convert it to a conditional or prepend to an existing one
 ~\autoref{ch:conditional-cascade}).
 While in the process, pay special attention to execution-path-altering statements such as
 \code{break} and \code{continue} in both loops.
+Note that the order of the last two steps, creating the conditional and creating the
+\code{else}-clause, may be adjusted depending on the situation---it is essentially a
+`chicken or the egg' problem.
 
 
 Additionally here are some preparatory tips for those who are new to this.
-Where needed, take apart composite statements before you start, especially those
-that are non-idempotent.
+Where needed, take apart compound statements before you start, especially non-idempotent conditions.
 For example,
 \begin{lstlisting}
     while (++i < LIMIT)
@@ -101,8 +103,10 @@ For another example which is in Golang,
 \begin{lstlisting}
     if v := a[i]; v < LIMIT
 \end{lstlisting}
-Composite, non-idempotent statements may cause trouble because its
+Compound statements may cause trouble in pass because their
 parts may possibly go to different places when performing loop thinning.
+Non-idempotent conditions are even more troublesome because their mere evaluations
+ratchet the state of the loop.
 
 
 For similar reasons, \code{for}-loop with all its header statements, should be taken apart and
@@ -138,15 +142,15 @@ Instead, the techniques may be applied on a case by case basis.
 Let us first finish up the leftover from last chapter---~\autoref{ch:loops}.
 In the code snippet of ~\autoref{lst:histogram-oneMoreCycle}, we removed duplicate post-loop
 processing code.
-But the solution contains a nested loop.
-Let us see how to coalesce the nesting loops to single layer.
-First, the condition for the \code{while}-loop can be used as is for a conditional block.
-So in the end we simply replace keyword \code{while} with \code{if}.
-Secondly, we append an \code{else}-clause for the newly created conditional statement and place
-the \code{stack.push(i);} in it.
-Thirdly, we relocate the increment statement \code{++i} from the \code{for}-loop afterthought
-header also to the \code{else}-block.
-That is it and the code looks like
+The solution contains a nested loop and because of that it looks `messy'.
+Let us tro ty follow the `loop-thinning' prescription to coalesce the nesting loops
+into a single loop.
+First, convert the \code{for}-loop into a \code{while}-loop as preparation.
+Secondly, we can simply replace keyword \code{while} with \code{if}, noting
+that the condition for the inner loop can be used as is for a conditional.
+Finally, we append an \code{else}-clause for the newly converted conditional statement and place
+the post-inner-loop statements, both  \code{stack.push(i);} and \code{++i}, in it.
+After all these are completed, the code looks like
 \lstinputlisting[label={lst:histogram-coalesced-loop},
 caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
 {embedded-loops/histogram.java}
@@ -218,7 +222,7 @@ Then the pivot element (at the beginning of the array) is swapped into its final
 pointer to this final position is returned.
 
 
-The algorithm sounds simple but the implementation is actually very tricky so much so that
+The algorithm appears simple but the implementation is actually very tricky so much so that
 it took me a good two days to get rid of bugs that I can uncover.
 Among all the bugs here is a partial list that shocked me with a `Gotcha':
 \begin{enumerate}
@@ -265,14 +269,7 @@ caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_asym.c}
 
 
-This code is inspiring in both its simplicity and elegance while performing the same
-task that a tricky, complicated program does.
-Looking at ~\autoref{lst:nestedLoopHoareMethod} and the arduous debugging process,
-one can't help but thinking ``Three nested loops simplified to a single-loop?
-That's too good to be true!''
-
-
-It is pointed out that the simplicity of this program comes with performance penalty,
+It must be mentioned that the simplicity of this program comes with performance penalty,
 especially for large arrays with many equal-valued elements in which case
 the Lomuto's partitioning scheme would result in a runtime degradation to $O(N^2)$
 \footnote{The reason is as follows.
@@ -283,30 +280,41 @@ Lomuto's partitioning scheme whereas that of the Hoare's ends up at the middle.}
 For this reason, Lomuto's partitioning scheme is not suitable for general-purpose libraries.
 
 
-Is there a single-loop implementation for quick sort algorithm whose expected runtime is
-guaranteed to be $O(N\log N)$ in all cases?
-Yes.
-The loop thinning technique can be used to simplify the Hoare's partitioning algorithm,
-particularly the implementation in ~\autoref{lst:nestedLoopHoareMethod}.
+However, this code is still inspiring in both its simplicity and elegance while performing the same
+task that a tricky, complicated program does.
+Looking at ~\autoref{lst:nestedLoopHoareMethod} and the arduous debugging process,
+one can't help but thinking ``Wow, a single-loop now can do what used to take three nested loops?
+That's too good to be true!''
+
+
+Greedy as all developers are, any great developer would have to ask
+``Is there a single-loop implementation for quick sort algorithm whose expected runtime is
+guaranteed to be $O(N\log N)$ in all cases?''
+Thanks for asking!
+Yes, there is.
+The aforementioned loop thinning technique can be used to further simplify the Hoare's partitioning
+algorithm, particularly the implementation in ~\autoref{lst:nestedLoopHoareMethod}.
 In what follows, we will demonstrate how to achieve this goal---to convert the nested loops into
 a single-loop with cascade conditionals in the loop body
 (refer to ~\autoref{ch:conditional-cascade}).
 
 
-The first difficulty we encounter is the densely packed inner loops, namely,
+The first encountered difficulty is the the awkward conditional construct
+in the densely packed inner loops:
 \begin{lstlisting}
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-These loops are pecular because the loop-condition themselves are not \code{const} operations
-because of the pre-increment operators: `\code{++}' and `\code{--}'.
+These conditions are peculiar because `\code{++s}' and `\code{--e}' will ratchet the loop state
+forward each time the condition is checked upon.
 Namely, performing loop tests would cause the pointers, `\code{s}' and `\code{e}',
 to increment/decrement, respectively.
-If converted to conditional statements as is, the awkward conditional construct would leave
-any moment for us to stop and swap out-of-place elements where needed.
+If converted to conditional statements as is, the program would leave us no chance
+to pause and swap out-of-place elements where needed.
 
 
-To find way out, we need to unfold the inner loops into `normal' constructs.
+So as a preparatory measure, we need to unfold the conditions of inner loops into
+`normal' constructs.
 As we learned in earlier chapter ~\fullref{ch:loops}, these loops may be converted to
 \code{do-while} loops such as
 \lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_do_while.c}
@@ -319,20 +327,22 @@ in passing, as this does not affect the correctness of the result thanks to the 
 by the base case in the recursive function \code{qsort}.
 
 
-Now we are going to apply the ``loop rotation'' technique to move the refactor
-roadblocks---state-altering statements, `\code{++s;}' and `\code{--e;}'--- out of the way and the
-resulting code is shown below.
+Now we are going to apply the ``loop rotation'' process step by step:rotate the outer loop to move
+the pre-inner-loop statements, `\code{++s;}' and `\code{--e;}'--- out of the way and
+the resulting code is shown below.
 (``Loop rotation'' is specified in ~\fullref{sec:LoopDesignConsideration}.)
 \lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_rotated_inner_loop.c}
+We have accelerated the process by directly tuck the surplus statements resulted from the loop
+rotation to the corresponding conditional clause.
 
 
-Now the loop body is back to normal and it becomes trivial to perform the routine refactoring
-steps of the `loop thinning' process from ~\autoref{sec:loop-thinning-technique}.
+Now the loop body is back to normal and it becomes trivial to perform the last
+step of the `loop thinning'.
 Our final result is posted below
 \lstinputlisting[label={lst:nestedLoopHoarePartSingleLoop},language=C,
 caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_single_loop.c}
-Here we have applied syntactic sugar where applicable, \textit{e.g.}, combining multiple statements
+Here we have applied the syntactic sugar---combining multiple statements
 into \code{swap(s++, e--)}.
 
 

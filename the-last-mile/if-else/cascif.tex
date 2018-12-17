@@ -77,10 +77,10 @@ first conditional block is executed and the rest is skipped;
 otherwise, the next conditional expression is evaluated \ldots and so on.
 
 
-As can be seen, the program acquires one assertion through each test in a cascading
-conditional, as if collecting a stamp in the course of a scavenger hunt.
-This is the `cumulative effect' of tests in cascading conditional as
-illustrated in ~\autoref{lst:cumulative-tests-cascade}.
+As can be seen, the program acquires  assertions through tests in cascading
+conditionals, as if collecting scavenger hunt stamps.
+This is the essence of the `cumulative testing effect' in cascading conditionals as
+illustrated in ~\autoref{lst:cascadeCondElif}.
 
 
 \begin{clisting}[tbh]
@@ -97,7 +97,7 @@ One of the key advantage of using cascading conditional is to reduce the number 
 to check.
 This reduction in number of tests would be made clear if one expands the cascading conditional
 into non-cascading conditionals.
-For example, in ~\autoref{lst:cumulative-tests-cascade} the number of tests checked is $3$
+For example, in ~\autoref{lst:cascadeCondElif} the number of tests checked is $3$
 whereas in its expanded non-cascading equivalent in
 ~\autoref{lst:cumulative-tests-expanded-equivalent} it is $9$.
 Cumulative effect saves us from retesting what's already tested and thus is one of the key factors
@@ -112,7 +112,7 @@ It is more challenging to keep one's mind synchronized with one's code
 when programming cascading conditionals.
 From this point of view, working out an expanded non-cascading equivalent such as
 ~\autoref{lst:cumulative-tests-expanded-equivalent} will be a useful exercise
-when debugging cascading conditional in ~\autoref{lst:cumulative-tests-cascade}.
+when debugging cascading conditional in ~\autoref{lst:cascadeCondElif}.
 
 
 \section{How to Arrange Conditionals in Cascading Construct}

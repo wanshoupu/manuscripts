@@ -15,4 +15,3 @@ while True:
     elif state:
         print "Computer wins!"
         break
-board.printBoard()

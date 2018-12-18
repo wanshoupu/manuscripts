@@ -5,47 +5,62 @@
 
 \chapter{Construct Lean Loops} \label{ch:loops}
 
-As one of the most widely used building block, loop is a programing productivity amplifier---with
-a static body and some nominal overheads (\textit{e.g.}, loop variables,
-which are used to register loop state), a loop can be executed as many times as needed.
 Almost all major programming languages feature one or more loop constructs.
+As one of the most widely used programming constructs, loop is a productivity
+amplifier---with
+a static body and nominal overheads (\textit{e.g.},
+state-registering variables, \textit{etc.}), a loop can be executed as many times as desired.
 ``What's the point to talk about loops as a type of control flow outside of
 the language context?'' you may be wondering.
 
 
-A key building block for programming as loop is, it should have taken
-developers' best effort to study the best practices.
-It is unfortunate to see, however, that algorithmic implementations in production contain numerous
-haphazard loops with floppy code before and after.
-Many of them seem to just narrowly pass the `working' threshold
-as if the developers were oblivious with the varieties of loop constructs or bother to
-reduce the swollen initialization for their loop constructs.
+A key building block for programming as loop is, the best practices of it is worth
+developer's best effort.
+Unfortunately, however, production code, especially algorithmic implementation is filled with
+loops that barely meet the minimum quality-control to be counted as `working'.
+It is obvious that developers who produced the haphazardly `working' code were either oblivious
+with the programming guidelines for loop constructs or does not bother to take action to optimize
+their code for that cause.
 %Have you deliberately tried out a few loop constructs and chosen the best fit for a specific
 %application?
 %I wish your answer to these questions are both positive.
-This is so not because these developers have no appetite for better code.
-A majority of them are not even aware that conscious choice of loop types and structures can make a
-marked difference in the quality of code.
+%This is so not because these developers have no appetite for better code.
 
 
-For this reason that I would like to devote this chapter to clear out the clouds over the
-good practices of loops.
-A large part of this chapter is on the topic ``How to tighten up slack loops?''
-Another focus is on the question ``How to reduce nested loops to a single loop?''
-A third one is ``How to avoid inadvertent namespace contamination due to use of loop that have
+For this reason I would like to devote this and next chapter to clarify the use of loops in program.
+A large part of this chapter is on the topic of to avoid duplicate code:
+``How to tighten up slack loops?''
+Another focus is on the limited scope of loop variables:
+``How to avoid inadvertent namespace contamination due to use of loop that have
 been the causes of many treacherous bugs?''
-
-
-For completeness, a summary of
-later discussions of the interactions between conditional statements and loop is built on
-top of reader's mastery of loop programming.
-As in ~\fullref{ch:organizeYourIfElse}, most of the techniques presented in this chapter are
-first-hand, based on the author's own coding experience.
-But most importantly, I intend this chapter can inspire enterprising
-programmers to habitually reflect on their code and discover new ways to improve.
+A third one is on the quest of nested loop avoidance: ``How to reduce nested loops to a single
+loop?''
+Proper application of these programming skills will help solve a lot of
+problems plaguing our codebases.
 
 
 \section{Loop anatomy}\label{sec:loopAnatomy}
+
+%For completeness, a summary of
+%later discussions of the interactions between conditional statements and loop is built on
+%top of reader's mastery of loop programming.
+%As in ~\fullref{ch:organizeYourIfElse}, most of the techniques presented in this chapter are
+%first-hand, based on the author's own coding experience.
+%But most importantly, I intend this chapter can inspire enterprising
+%programmers to habitually reflect on their code and discover new ways to improve.
+
+
+With the mainstream programming languages in mind, let us start our discussion with an overview of
+loop constructs.
+First off, one should ensure that control have a way to escape a loop before entering, otherwise
+inadvertent infinite loop would result.
+So all loop constructs are equipped with a conditional expression, a termination test.
+The location of termination test is a distinguishing feature for a loop.
+Based on its location, loop constructs can be classified as \emph{pre-test}, \emph{post-test},
+and somewhere in between, \emph{mid-test}.
+post-test loops attempt to execute the loop body at least once no matter what.
+Mid-test loops may execute part of the loop body.
+
 
 \begin{table}[htb]
     \begin{center}
@@ -55,15 +70,15 @@ programmers to habitually reflect on their code and discover new ways to improve
             Component & Description \\
             \hline
             \emph{Loop initialization} &
-            This is the preparation section before the execution of a loop.
+            This is the preparatory section before the execution of a loop.
             For \code{while}-loop, this is done outside of the loop.
-            In \code{fore}-loop, this may be done in the \code{<init>} section of the
-            \code{for}-loop construct.\\
-            \emph{Loop test} &
+            In \code{for}-loop, this may be done in the \code{<init>} section of the
+            \code{for}-loop construct or both.\\
+            \emph{Loop test or loop condition} &
             The condition for control to enter (or continue) the loop. \\
             \emph{Loop body} &
             The block of statements to be executed in the loop. \\
-            \emph{Loop state update statements} & Almost all loops come with stateful loop
+            \emph{Loop state updating statements} & Almost all loops come with stateful loop
             variables.
             Updating the loop variables are important job of the loop.\\
             \emph{\code{break} statement} &
@@ -82,17 +97,6 @@ programmers to habitually reflect on their code and discover new ways to improve
         \end{tabular}
     \end{center}
 \end{table}
-
-
-Let us begin with an overview of loop constructs from several mainstream programming languages.
-First off, one should ensure that control have a way to escape before entering a loop, otherwise
-inadvertent infinite loop would result.
-So all loop constructs are equipped with a conditional expression, a termination test.
-The location of termination test is a distinguishing feature for a loop.
-Based on its location, loop constructs can be classified as \emph{pre-test}, \emph{post-test},
-and somewhere in between, \emph{mid-test}.
-post-test loops attempt to execute the loop body at least once no matter what.
-Mid-test loops may execute part of the loop body.
 
 
 Many programming languages conveniently support more than one types of loop constructs.
@@ -239,6 +243,7 @@ misappropriated---a large part of it was usurped for the search of a needle in a
 After refactoring related code the loop into a separate function, we greatly reduced the bulge.
 Most importantly, \code{target} and other intermediate variables, if any, may be eliminated and
 will never pollute the namespace in the remaining part of the function.
+\lstinputlisting[firstline=14]{loop/refactor_conditional_in_loop.java}
 
 
 \section{C-style For-loop}\label{sec:for-loop}
@@ -438,59 +443,60 @@ After $4$ loop rotations, we spool up all the duplicate code:
 Once you grasp the idea and becomes skillful at it, you don't have to strictly go through each and
 every step.
 Instead, you can skip some of the intermediate steps to quicken the process.
-But in case you are lost you can always find your way back if you come closer to the detailed
-steps.
+But in case you are lost you can always find your way back by following more closely.
 
 
-Many times, the culprit code snippet manifest the `soft duplication' symptoms---two
-code blocks may contain hidden, `quavery', and partially duplicate code.
+Many times, the culprit code snippet manifest `soft duplication' symptoms---two
+code blocks contain hidden, quavery, and partially duplicate code.
 In comparison with hard duplication, `soft duplication' is tougher to detect and remove.
-In that case, one should perform due pre-refactors to make the duplicate parts manifest and
-accessible before applying loop rotation.
+When dealing with `soft duplication', one has to perform pre-refactor to
+convert soft duplications to hard ones and then apply the `loop rotation' steps.
 
 
 \section{Loop Initialization}\label{sec:loopInitialization}
 
-Initialization is a preclude, a bridge to the main loop body.
-It is a `primer coating' that makes a substrate for the loop to work on.
+Initialization and the loop body each has its focus.
+Initialization is a preclude, a bridge to the loop body.
+Initialization is a `primer coating' that prepares a substrate for the loop body to
+deposit changes iteratively.
 
-The single most important requirement for loop initialization, apart from `Be correct', is
-`Be small'.
-Let each maintain its focus---a minimal, light-weight initialization focus on the preparatory work
-and the rest of the loop on the weight-lifting work.
 
-Simple?
-Simple.
-This may sounds hard but actually simple.
+The single most important requirement for loop initialization is
+`Be small', apart from `Be correct'.
+%Let each maintain its focus---a minimal, light-weight initialization focus on the preparatory work
+Loop body, on the other hand, does all the heavy lifting---it progressively mutate the loop state
+to the desired final result.
+
+
+That's all the requirement for loop initialization.
+Pretty simple, isn't it?
 But to achieve this goal it is required that one form a habit of striving for the simplest
 initialization when facing similar situations.
 
+
 Let us take a look at the 'spiral termination' problem:
 \begin{quote}
-    Given the dimensions, $m, n$, of a matrix,
-    suppose one is to visit each and every cell of the matrix in
-    a clock-wise spiral fashion starting from $[0,0]$.
-    Determine where the process terminates.
-    For example, when $m=1,n=1$, it terminates at $[0,0]$
+    Given the dimensions of a $2$D matrix, $m$ and $n$,
+    one is to visit each and every cell of the matrix in
+    a clock-wise, spiral fashion from the upper left corner.
+    Determine the final position when the visit finishes.
+    For example, when $m=1,n=1$, it is $[0,0]$.
 \end{quote}
 
+
 There are more than one solutions to this problems---iterative and recursive.
-But apparently we are here to demonstrate an iterative solution with a loop.
-Note that the problem only asks for the terminating position and
+But obviously we are here to demonstrate an iterative solution with a loop.
+Note that the problem only asks for the final position so
 cells passed by along the way are irrelevant.
-Skipping the rationale, I am going to state the algorithm to be implemented:
+Without making a pitch, the algorithm we are to implement is:
 \begin{quote}
-    We are going to `stride' toward the terminating position.
+    `Stride' toward the terminating position.
     In each stride, we leap passing one `layer' of cells.
     A `layer' here consists of all the cells not yet visited but not completely surrounded by
-    unvisited neighbors.
+    unvisited neighbors (see ~\autoref{fig:spiral-term-iter}).
 \end{quote}
-\begin{figure}[tbh]
-    \centering
-    \includegraphics[width=.4\textwidth]{loop/spiral-term.jpg}
-    \caption{\label{fig:spiral-term-iter}
-    Iteration after one `spiral stride' in the `Spiral termination' problem.}
-\end{figure}
+
+
 In a big enough matrix, if we start off at $[i,j]$, then after we finish going
 around and visiting all the cells in one `layer', we would end up at $[i+1,j+1]$
 as shown in ~\autoref{fig:spiral-term-iter}.
@@ -501,83 +507,120 @@ In that case, the terminating cell is at end of the line.
 For now, we are going to handle this extra complication with post-loop processing.
 All put together, our code would look like this
 \lstinputlisting[]{loop/spiral_termination_todo.py}
-Note that the initialization is left as `TODO'.
-Now the question: ``Where to start?''
+Note that all things is hang on the initialization.
+As long as the starting point is determined, the rest of the code will bring us to where it ends.
+But the question is ``What to start with?''
 
-At the first glance, initializing $i=0,j=0$ seems straightforward and reasonable.
-For example, when $m=3,n=3$, after `peeling off' the outer layer, \code{i,j} becomes
+
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=.4\textwidth]{loop/spiral-term.jpg}
+    \caption{\label{fig:spiral-term-iter}
+    Iteration after one `spiral stride' in the `Spiral termination' problem.
+    Purple cells denote a visited `layer'.
+    Cells in red are the final positions after the first and second iterations, respectively.
+    The arrow represents the final displacement from the end of first iteration
+    to the end of the second.}
+\end{figure}
+
+
+At the first glance, initializing $i=j=0$ seems reasonable.
+For example, when $m=n=3$, after `peeling off' the outer layer, \code{i,j} becomes
 $[1,1]$ and indeed the process terminates on $[1,1]$.
-However we will encounter problem for case $m=2,n=2$, for after the outer layer, there is nothing
-left for termination!
-As a result, our program would terminates on $[1,1]$ erroneously.
-(The correct answer is $[1,0]$.)
-This teaches us a lesson---initializing \code{i,j} to the starting cell of a layer
-may have a spooky ending---termination on void!
-In fact, when \code{min(m, n)} is an even number, `landing on void' would be inevitable
-\ldots unless some remedy is made.
-One remedial measure we can take is to abstain from the last iteration which throws us off the
-cliff.
-By doing so, the following condition would hold true after loop termination:
+However we will encounter problem for case $m=n=2$, for after the outer layer, our program would
+end up on a eerily void state---our program erroneously ends with non-existent ghost cell $[1,1]$.
+(The correct answer should be $[1,0]$.)
+
+This teaches us a lesson---we are somehow one-step too forward in each iteration.
+As a result, this will create problems whenever \code{min(m, n)} is an even number.
+To make this work, some fix must be made.
+One remedial measure is to abstain from the last iteration because it is that which throws us off
+the cliff.
+By doing so, this condition would hold true upon loop termination:
 \code{1 <= min(m, n) <= 2}.
-Then we can handle whatever is left in post-loop processing.
-Finally here is the completed code:
+We can then handle whatever is left in post-loop processing.
+With this fix, here is the first working solution:
 \lstinputlisting[]{loop/spiral_termination_final.py}
-The initialization is minimal, natural, and effortless to get.
+In this solution, the initialization is minimal, natural, and effortless to get,
+but the loop condition seems weird and arbitrary---\code{2 < m and 2 < n}.
 
 
-This is far from the only possible solution.
-Possibly nor is it the best.
-Let us step back from initializing \code{i, j = (0, 0)}, the first cell in the next iteration.
-Instead, what if we flip the upside down and initialize \code{i, j} to `the last cell in the
-previous iteration'.
+This is not the only solution.
+Far less so is it the best.
+A second thought to the `one-step-too-forward' issue---``Why not take a step back?''
+%Let us step back from initializing \code{i, j = (0, 0)}.
+Instead of thinking of `the first cell of the next iteration', let us think 'the last cell in
+the previous iteration'.
+With that mindset shift, we can flip everything back to initialize \code{i, j} to
+`the last cell in the previous iteration'.
 For example,  $[1,0]$ is one of `the last cells of iterations' in ~\autoref{fig:spiral-term-iter}.
+
+
 But the new problem is, ``Without an iteration in the first place, how do we get `the last cell of
 previous iteration'?''
 As a matter of fact, for a big enough matrix, [1,0] is always `the last cell of an iteration'.
-If this is not the case, the matrix is not big enough to even need a loop.
-So presumably, the code may look like this:
-\lstinputlisting[]{loop/spiral_term_pseudo_code.py}
-You may notice that the code before and after the loop deals with similar scenarios, shares
-commonality, and thus are inevitably duplicate to some degree.
-How to get rid of the duplicate code before and after the loop?
+But for edge cases where the matrix is not big enough, we could directly calculate and return the
+result without ever hitting the loop.
+So presumably, conditional statement is needed before the loop to distinguish different cases.
+But keep in mind that the same logic will be needed again in post-loop logic.
+Therefore if we initialize \code{i,j = 1,0}, duplicate code would be inevitable, one way or the
+other.
+%You may notice that the code before and after the loop deals with similar scenarios, shares
+%commonality, and thus are inevitably duplicate to some degree.
+%How to get rid of the duplicate code before and after the loop?
+How to proceed from here?
 
 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=.4\textwidth]{loop/spiral-term-init.png}
     \caption{\label{fig:spiral-term-init}
-    Initialization virtual cell for the `Spiral termination' problem.}
+    `Spiral termination' problem: backtracking the initialization to an extrapolated,
+    virtual cell.}
 \end{figure}
 
 
-The key lies in if we can `backtrack' the initialization.
-Let us ask this question: ``What's the return value if a $0\times 0$ matrix is given?''
-This question almost seems too philosophical to be answered.
-But it aligns with our `Be small' requirement for loop initialization.
-The `path' taken by the loop, the stops after each iteration of the loop give us a hint.
-As in ~\autoref{fig:spiral-term-init}, if we extrapolate the path backwards
-(in the opposite direction to the arrows), we serendipitously discover the cell `$[0,-1]$'.
-What is the significance of this cell given that it is not a valid cell for any real matrix?
-But closer examination reveals that it is the virtual cell, a `sentinel', that stands for
-non-existent result for a zero-sized matrix, the same
-way as \code{null} stands for the `lack of an \code{Object}'.
-So `$[0,-1]$' can be deemed as the sentinel value for zero-sized matrix.
+At the same time, another haunting question is ``What should be returned for a $0$-sized
+matrix?''
+The key for both these questions lies in `backtracking' the initialization.
+As shown in ~\autoref{fig:spiral-term-init}, if we extrapolate the path backwards, we would end
+up on a serendipitous, virtual cell that is not part of the matrix.
+Its value is, obviously, `[0,-1]'.
+Should we initialize \code{i, j} to `$[0,-1]$'?
 
 
-More importantly, we have found the key to get rid of the duplicate code before and after the
-loop---initialize \code{i, j} to `$[0,-1]$'.
-Without much ado, here is the new iterative solution:
+Now the situation becomes a little bit too philosophical.
+%This value still aligns well with our `Be small' requirement for loop
+%initialization.
+%The `path' taken by the loop, the stops after each iteration of the loop give us a hint.
+%As in ~\autoref{fig:spiral-term-init}, if we extrapolate the path backwards
+%(in the opposite direction to the arrows), we  discover the cell `$[0,-1]$'.
+On the one hand, it sounds crazy to initialize the loop variables to an invalid cell, that is not
+part of any matrix.
+On the other, a closer examination reveals that the virtual cell not only serves as a perfect
+`sentinel' for the case of $0$-sized matrix,
+in the same way as \code{null}  for the `lack of an \code{Object}',
+but also makes a good initialization value that will lead to correct result and aligns well with
+`Be small' requirement.
+%So `$[0,-1]$' can be deemed as the sentinel value for zero-sized matrix.
+More importantly, it is the key to get rid of the duplicate code.
+
+
+Without much ado, here is the iterative solution with the newly discovered initialization key:
 \lstinputlisting[]{loop/spiral_termination_virtual_init.py}
-This solution has an advantage over the previous one in that it has an extended input range which
-enables it to handle zero-sized matrices.
+This solution has an advantage over the previous one in that
+it has an extended input range which enables it to handle zero-sized matrices.
 This is analogous to concept of `analytic continuation' in complex analysis if
 reader is familiar with the topic.
 
 
+As can be seen, changing the initialization from [0,0] to [0,-1] in between the above two solutions
+is a big deal to the program.
+As a result, the whole programming scenario is changed---the loop condition is changed,
+the post-loop processing logic is changed.
+This in part explains why it is so hard to refactor a loop---the stake of inadvertently changing
+its behavior or correctness is very high.
 
-
-\lstinputlisting[]{loop/word_breaker.py}
-\lstinputlisting[]{loop/word_breaker_other_imp.py}
 
 Through the `spiral termination' problem, we see that initialization plays a key role in loop
 implementation.
@@ -590,7 +633,8 @@ But occasionally, initialization \code{int i = -1} may have an edge over \code{i
 This requires one to push the boundary to achieve a simpler initialization.
 
 
-As another example, usually people think Fibonacci sequence starts at $1$:
+As another brief example, when people think about Fibonacci sequence, they usually think it starts
+with $1$:
 \begin{table}[H]
     \centering
     \begin{tabular}{c|c|c|c|c|c}
@@ -601,7 +645,7 @@ As another example, usually people think Fibonacci sequence starts at $1$:
         \hline
     \end{tabular}
 \end{table}
-But add a zeroth-element to Fibonacci sequence opens new possibilities.
+But add a zeroth-element to Fibonacci sequence sometimes opens new ways of thinking.
 \begin{table}[H]
     \centering
     \begin{tabular}{c|c|c|c|c|c|c}
@@ -612,20 +656,18 @@ But add a zeroth-element to Fibonacci sequence opens new possibilities.
         \hline
     \end{tabular}
 \end{table}
-
-
-Similarly, many people think of the factorial, $0!=1$, as a brain-teaser.
-But it is actually a critical step toward the analytic continuation of factorial
-functions, also known as $\Gamma$-function.
+Similarly, when it comes to factorial, many people starts with $1!=1$, seldom $0!=1$.
+But the latter is a critical step toward the analytic expansion of the domain of factorial
+functions to complex domain, in which it is known as the $\Gamma$-function.
 
 
 You will see more cases later where generalization of the algorithm and/or the mathematical
 concept will make the coding, and particularly initialization, easier.
-As in the `spiral termination' problem, sometimes backing off the most `intuitive'
-initialization to look for more general mathematical forms may get you in a new level of code
-simplicity.
-The simplifying initialization process is especially important for dynamic programming.
+Simplifying initialization process is especially important for dynamic programming.
 Interested readers may skip to ~\autoref{ch:dp} to look for more information.
+As in the `spiral termination' problem, sometimes looking for more general mathematical forms
+means backing off from the most `intuitive' initialization and this mindset may get you in another
+level of code proficiency.
 
 
 In light of the `loop rotation' technique, in some cases one can take advantage of the rotational
@@ -636,50 +678,49 @@ or that the post-processing logic does similar things that the loop does,
 that's a sign that you should `tighten' your loop.
 
 
-Before we conclude this section, I want to let you know that there is a 3-line solution to the
+Before we conclude this section, I want to let you know that there is a 3-liner solution to the
 `spiral termination' problem:
 \lstinputlisting[]{loop/spiral_termination_two_liner.py}
 Or may be even simpler solutions that I don't know.
-By telling you this 3-line solution, the least thing I want is to make you feel
-our work of optimization looks like a total waste.
-On the opposite, even optimization that only have transient value has value before a
-breakthrough was made.
-In this case, optimizations should be taken in relative sense.
-Before one knows the existence of a 3-line solution, try to write an optimized iterative solution
-is worth the effort.
+By telling you this 3-line spoiler, I am not at all telling you that your
+optimization effort so far has been totally wasted.
+Far from it, the information I want to convey is ``Something is built to be thrown away
+at due time.''
+Until that time comes, everything that exists and optimization efforts thereof are
+meaningful and have their intrinsic value.
 
 
 \section{Dedupe Post-loop Processing}\label{sec:one-more-cycle}
 
-Sometimes after loop termination, non-trivial post-processing is needed to transform the output
-to final result.
-If you find that the post-loop code shares similar functionalities, repeat certain steps in part
-or in whole with the loop body,
-consider deduplicate the post-loop code using a technique to be explained below.
+It is normal that after loop terminates, non-trivial post-loop logic is needed to
+transform the output to final form.
+But if one finds that the post-loop code shares similar functionalities,
+repeat certain steps in part or in whole with the loop body, one should sound the alarm.
+A technique to be explained below may help you solve the problem.
 
 
 This technique, named `one-more-cycle', changes the loop-termination condition so that
 the iteration length is extended by one, the loop body is executed \emph{one more time}
-than it is otherwise.
+than otherwise.
 More often than not, extra logic in the loop body is needed to handle the extra iteration
 differently.
 This is especially true if it is only partial duplication.
 
 
-Again, let us illustrate the whole process with a real example.
+Again, let me illustrate the whole process with a real example.
 What we will study here is the `Maximum rectangular area under
 histogram' problem (problem statement is available on several sources, \textit{e.g.},
 GeeksforGeeks\footnote{\url{https://leetcode.com/problems/largest-rectangle-in-histogram}}
 or LeetCode\footnote{\url{https://www.geeksforgeeks.org/largest-rectangle-under-histogram}}).
 
-Out of the various algorithms, the one using an auxiliary \code{Stack<Integer>} is optimal
-Take a heed in the above mentioned sources for a detailed discussion of the algorithm.
+The optimal algorithm for this problem is the one using an auxiliary \code{Stack<Integer>}.
+For a detailed discussion of the algorithm, refer to the above mentioned sources.
 Here is a brief summary of it (suppose input is an array of integers \code{heights}):
 \begin{alisting}[H]
     \caption{\label{enum:stack-limited-mining-algo}Stack-based algorithm for
     the `maximum rectangular area under histogram' problem}
     \begin{enumerate}
-        \item Initialize an empty stack \code{stack}, the whole purpose of
+        \item Initialize an empty \code{stack}, the whole purpose of
         which is to store indexes of an ascending subsequence of heights.
         \item Store a progressive max result initialized as \code{maxRec=0};
         \item For each \code{(index, height)} in the histogram
@@ -698,34 +739,37 @@ Here is a brief summary of it (suppose input is an array of integers \code{heigh
     \end{enumerate}
 \end{alisting}
 
-Based on a random sample of submissions following the ~\autoref{enum:stack-limited-mining-algo}
-on LeetCode, common are implementations similar to the following:
+
+Based on a random sample of submissions on LeetCode, majority of the implementations
+of ~\autoref{enum:stack-limited-mining-algo} are more or less like what follows:
 \lstinputlisting[]{loop/histogram_verbose.java}
-While it is $100\%$ accepted by the LeetCode Online Judge, this solution has various smells.
-The smelliest is the post-process code, the \code{while}-loop---it is almost a repetition of the
-inner loop.
+While it passes $100\%$ the unit tests and was accepted by the Online Judge, this
+solution has various smells.
+The smelliest issue is the oversize post-process code, the entire \code{while}-loop which
+is almost a verbatim repetition of the body of previous loop.
 If we can get rid of this code duplication, the code quality would be greatly boosted.
 
 
-The `one-more-cycle' technique can help!
-First, let us extend the number of iterations in \code{for}-loop by one---instead of loop
-continuation condition `\code{i < heights.length}', we use `\code{i <= heights.length}'.
-Then, we can safely delete the post-process \code{while}-loop.
+The `one-more-cycle' technique is invented just for this.
+Let us explain how it works.
+First, extend the number of iterations in \code{for}-loop by one---instead of the loop
+condition `\code{i < heights.length}', use `\code{i <= heights.length}'.
+The second step is to delete the post-process \code{while}-loop.
 
 
-Of course, the code does not work as is.
+The code as it is now does not work.
 Why?
-Because the last index \code{heights.length} has no corresponding element in array \code{heights}!
-As such, one always gets an `ArrayIndexOutOfBoundsException'.
-Once we know that, the `extra logic' needed is to shield the part of the code `\code{heights[i]}'
-with a check to see if \code{i == heights.length}.
+It throws `\code{ArrayIndexOutOfBoundsException}' for there is no such an element as
+`\code{heights[heights.length]}'.
+Once identified, it's an easy fix---we just need `extra logic' to shield
+the code `\code{heights[i]}'
 
 
 Shown below in ~\autoref{lst:histogram-oneMoreCycle} is
 a refactored and deduped solution for the `Maximum rectangular area under
 histogram' problem using the `one-more-cycle' technique.
-We have accomplished our goal designated for this round of refactoring, namely,
-reducing code duplication between loop and the post-loop processing code.
+We successfully accomplished our goal to
+reduce code duplication between loop and the post-loop processing code.
 \lstinputlisting[label={lst:histogram-oneMoreCycle},caption={A deduped solution for
 `Maximum rectangular area under histogram' problem}]
 {loop/histogram_oneMoreCycle.java}
@@ -733,9 +777,13 @@ reducing code duplication between loop and the post-loop processing code.
 
 \section{Loop Pacing}\label{sec:loop-pacing}
 
-Loop pacing is another dial, a degree of freedom, when it comes to optimize a loop construct.
-It refers to the dynamic aspect of a loop---how should loop state be updated with
-respect to each iteration.
+when it comes to optimize the construct of a loop, loop pacing is another degree of
+freedom to mind and another dial to control.
+Pacing refers to rate of change in loop state;
+it is the dynamic aspect of a loop, representing how often loop state be updated in
+respect to loop iteration.
+For majority of use cases, a linearly paced loop, advancing one element per iteration, is
+sufficient.
 Linear pacing refers to trivial, deterministic loop update at a fixed step size for every
 iteration until the end of the loop.
 A typical example is the C-style \code{for}-loop: \code{for(int i=0; i<list.size(); i++)}.
@@ -744,23 +792,13 @@ A typical example is the C-style \code{for}-loop: \code{for(int i=0; i<list.size
 Dynamically paced loop, on the other hand, refers to loop constructs that iterate
 with a varying pace depending on the elements encountered.
 
+
 In most cases, a linearly paced loop, iterating one element at a time, suffices
 for a majority of daily use cases such as iterating through a collection.
-But in certain situations, the state of loop may not be updated at a steady pace for every
-iteration which finds important applications in non-trivial algorithmic implementation.
-
-From the perspective of choice of loop constructs,
-\code{while}-loop is more accommodating for all kinds of stepping.
-\code{for}-loop, on the other hand, has niches for both initialization and the afterthought
-statement;
-When using a \code{for}-loop, tuning the pace of iteration may be as simple as changing
-the location of the state-updating statements, \textit{e.g.},
-from an afterthought statement to a conditional block in the middle of the loop body.
-There is an unsaid convention regarding C-style \code{for}-loop---when the loop paces linearly
-with a simple loop-state updating statement, it should be placed in the afterthought section of
-the loop header.
-Conversely, when you see the afterthought part missing, it should be a sign for dynamic
-stepping (or conditional stepping).
+But in situations where state updating is not evenly done with every iteration this steadily
+paced loop is insufficient.
+This is frequently the case in non-trivial algorithmic implementations.
+Therefore dynamically paced loops finds important applications here.
 
 
 For simple use cases, the usual choices can be anywhere between deterministic linear stepping
@@ -775,6 +813,12 @@ problem\footnote{\url{https://en.wikipedia.org/wiki/Happy_number}}:
     or it loops endlessly in a cycle that does not include 1.
     Write code to determine if a given number \code{n} is happy.
 \end{quote}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{loop/happy_number.png}
+    \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
+\end{figure}
+
 
 This problem is relatively straightforward to solve.
 In a loop, one keeps all the numbers discovered along the `path' along of the mapping from the
@@ -787,11 +831,6 @@ caption={Dynamic stepping in a loop}]{loop/nonlinear_stepping_example.py}
 The state of the loop is entirely encoded in the variable \code{n}.
 The chart in ~\autoref{fig:happy-number} shows how the loop state changes as the program
 executes for $n=7$.
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=.7\textwidth]{loop/happy_number.png}
-    \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
-\end{figure}
 Through this case, one can get a sense of how `dynamic' the pacing of a loop can be.
 
 
@@ -799,6 +838,23 @@ Trying different ways that a loop paces provides one more opportunity for it to 
 application.
 This can be particularly helpful for `loop rotations' and compacting nested loops.
 We will discuss more on this topic in ~\autoref{ch:loop-thinning}.
+
+
+From the perspective of choice of loop constructs,
+\code{while}-loop is more accommodating for all kinds of stepping.
+for-loop, on the other hand, .
+\code{for}-loop with niches for both initialization and the afterthought
+statement, on the other hand, is built for steady pacing.
+Unless it is for loop-variable isolation purposes, \code{for}-loop is not recommended for
+dynamically paced construct.
+On the other hand, if used \code{for}-loop in programs, tuning the pace of iteration may be as
+simple as relocating the state-updating statements, \textit{e.g.},
+from an afterthought statement to the loop body.
+There is an unsaid convention regarding C-style \code{for}-loop---when the loop paces linearly
+with a simple loop-state updating statement, it should be placed in the afterthought section of
+the loop header.
+Conversely, when you see the afterthought part missing, it should be a sign for dynamic
+pacing.
 
 
 \section{Conclusion}
@@ -817,5 +873,5 @@ that is a close match to your programming requirement
 minimal loop customization, if needed at all.
 The ultimate goal is to minimize or eliminate duplicate code in and around loop.
 
-\lstinputlisting[]{loop/NumberOfPath.java}
-\lstinputlisting[]{loop/WildcardStringMatching.java}
+%\lstinputlisting[]{loop/NumberOfPath.java}
+%\lstinputlisting[]{loop/WildcardStringMatching.java}

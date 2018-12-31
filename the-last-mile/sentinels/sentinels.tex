@@ -4,18 +4,28 @@
 %%
 
 \chapter{Magic of Sentinels} \label{ch:sentinels}
-Strictly speaking, sentinels are not
-Sentinels have been in use long before computer science becomes a science.
-Then it is found important application in computer programming.
-Have you heard of the infamous term---``Elephant in Cairo''?
-It explains the working of a sentinel very well.
-The term comes from a magazine essay titled ``Pachydermic Personnel Prediction''
-~\cite{elephant-in-Cairo:1989}.
-Here is an algorithm that computer scientists came up to answer the question ``How to hunt
-elephants in Africa?'':
-\begin{alisting}
+Sentinels have been in use in military, mathematics, and civil engineering, long before computer
+science became a science.
+But it is computer science that made sentinels a prominent concept---a programming philosophy.
+In this chapter we will consider sentinel values and the concept behind in a more general sense
+than usual.
+We will examine a few cases where uses of it lead to great simplification in coding.
+%Sentinels are not deemed as part of control flow.
+
+\section{Elephant in Cairo}\label{sec:elephant-in-cairo}
+
+Have you heard of the infamous problem ``Elephant in Cairo''?
+Behind the phrase is the fictitious programming question: ``How to hunt elephants in Africa?'',
+first published in a magazine essay titled ``Pachydermic
+Personnel Prediction'' ~\cite{elephant-in-Cairo:1989}
+Even though it is fictitious, this question vividly illustrates the basics
+behind sentinels and the important aspects of its usage.
+%It explains the working of a sentinel very well.
+The following algorithm is based on the original one outlined in the article but modified for
+proper termination:
+\begin{alisting}[H]
     \caption{\label{enum:elephant-hunt-algo-A}
-    Modified algorithm for `Hunting elephant in Africa' for proper termination.}
+    Algorithm for solving the `Elephant in Cairo' question.}
     \begin{enumerate}
         \item Go to Africa.
         \item Start at the Cape of Good Hope.
@@ -28,36 +38,125 @@ elephants in Africa?'':
         \end{enumerate}
     \end{enumerate}
 \end{alisting}
-The above algorithm, however, may not terminate at the north end of Africa in the rare
-cases there there is no elephant in Africa.
-So the hunters may end up drowning in the Mediterranean Sea.
-To avoid that from happening, one may add check after each iteration of the inner loop to make
-sure that the north end of Africa has not been reached as the modified algorithm in
-~\autoref{enum:elephant-hunt-algo-B} does.
-\begin{alisting}
-    \caption{\label{enum:elephant-hunt-algo-B}
-    Modified algorithm for `Hunting elephant in Africa' for proper termination.}
-    \begin{enumerate}
-        \item Go to Africa.
-        \item Start at the Cape of Good Hope.
-        \item Work northward in an orderly manner, traversing the continent alternately east and west.
-        \item During each traverse pass,
-        \begin{enumerate}
-            \item Catch each animal seen.
-            \item Compare each animal caught to a known elephant.
-            \item Stop when a match is detected \emph{or north end of Africa is reached}.
-        \end{enumerate}
-    \end{enumerate}
-\end{alisting}
+The above algorithm, however, may not end happily in the rare and
+unfortunate case when there is no elephant in Africa and the hunters end up drowning in the
+Mediterranean Sea.
+To avoid that from happening, one may add a check before each traversal to ensure
+that the north end of Africa has not been reached.
+
+
 But an experienced computer scientist would place a known elephant
-in Cairo beforehand and use the algorithm `\autoref{enum:elephant-hunt-algo-A}' as is.
-Of course, after the hunt, they would have to inspect the animal they caught and see if it is the
-one they placed.
-If it is, then that signals the failure of the hunting trip.
-Otherwise, they successfully caught an elephant.
-This is only a fictitious problem, a programming joke.
-However it vividly illustrates the basic idea behind using sentinels and the important
-aspects of how to use it.
+in Cairo before proceeding with elephant hunting.
+And when he does, he uses ~\autoref{enum:elephant-hunt-algo-A} as is plus some
+extra logic to do the post-hunting processing---they would have to inspect the animal they caught
+and see if it is the one they placed.
+They declare failure if it is and success if it is not.
+Of course always remember to bring back home the sentinel elephant as a cleanup.
+
+
+\section{Sentinel in General}
+
+In the fictitious example above, the elephant placed beforehand is the `sentinel value'.
+It serves as two roles.
+One it guarantees that ~\autoref{enum:elephant-hunt-algo-A} terminates.
+Second, it guarantees that an animal is at hand when ~\autoref{enum:elephant-hunt-algo-A}
+terminates.
+In doing so it helps save the unnecessarily in-loop checking for a termination condition.
+Of course the onus is on programmer to check the animal to tell if it is the one placed or an
+African elephant.
+But the added benefit pays off this price.
+
+
+This is a good starting point.
+As I proceed deeper with my practices in software development, I realized that the concept
+of sentinel can be generalized and it goes much beyond a mere saving on condition checking for
+termination.
+I summarized my applications of sentinels and listed the reasons I used sentinels as follows:
+\begin{enumerate}
+    \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
+    loops.
+    \item\label{itm:sentinel:loop-and-a-half} Get rid of `Loop-and-a-half' issue
+    as their research in Reference ~\cite{Louden-Lambert-2011}.
+    \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell~\cite{Fowler1999}
+    \item\label{itm:sentinel:ds} Act as a padding boundary for data structures,
+    such as linked list, \textit{etc}., to promote uniform operations.
+    \item Added as a complementary part to fit a mathematical concept
+    or to form a generalized algorithm.
+\end{enumerate}
+
+
+In all these cases, I found that \emph{fundamentally, sentinels are added to make the problem
+more symmetric}.
+Symmetry sometimes can seem mysterious to many and using it to explain this situation may cause
+doubt in many.
+%``What do you mean by `symmetric'?'' you ask dubiously.
+Actually we can interpret `symmetry' as the mathematical language behind aesthetics.
+Yes, symmetric objects are not only pretty but also saves human power to process.
+Symmetric objects are visually pleasing because it has `order', is familiar to us.
+Thus processing objects by our brain or by programs we built demand less energy.
+
+
+On the opposite, asymmetric objects are irregular, anomalous, requires extra effort to process.
+So symmetry represents uniformity, uniformity implies saving in resource.
+From \code{for}-loops to regular expressions (regex), from HTTP response status
+codes to \code{null} pointers, from recursion to dynamic programming, computer science is a
+science that is constantly seeking or creating symmetric information to treat things uniformly,
+to minimize energy footprint, and to do more with less.
+Sentinels is no exception.
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower.jpg}
+        \caption{\label{fig:symmetric-flower}Symmetric sunflower seeds forms beautiful spiral
+        patterns.}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower-asymm.jpg}
+        \caption{\label{fig:asymmetric-flower}The missing seeds in this otherwise symmetric image
+        causes irregularity and anomaly.}
+    \end{subfigure}
+    \caption{\label{fig:line-view}Symmetry in sunflower pedal is at peace.
+    With the missing seeds, the cost to process the sunflower is elevated.}
+\end{figure}
+
+
+When we say ``It's one minute to 7'', we essentially made the representation of time more
+symmetric and thus easier to understand.
+What we meant is the following: first, put in one minute to make it
+7 o'clock for more symmetric representation of time and then take away the minute to mean the
+true time 6:59.
+
+
+In the same way, sentinels does the pluses and minuses.
+In the opening example `Elephant in Cairo', an elephant was added in the beginning and
+deducted at the end.
+In the examples that are to follow, more pluses and minuses will be performed.
+They are all done for added symmetry.
+
+
+Sentinels shift potentially costly operations from performance-critical
+loop to non-critical section, from inconvenient location to convenient
+location, and from many to one.
+We can thus optimize our coding to be more elegant and performant.
+In the following sections, we will have a brief look at a few applications of sentinels to
+illustrate the fast application opportunities.
+
+
+\section{Small examples for sentinel ideas}\label{sec:small-examples-for-sentinel-ideas}
+%TODO
+Many programming languages provide `getOrDefault' methods for their collection classes.
+That's a disguised application of sentinel.
+Proper use of the `getOrDefault' method can save us a line of code.
+For example, accessing \code{HashMap} in the `usual way' would be
+\lstinputlisting{sentinels/cache_access.java}
+But using the `getOrDefault' method, the method becomes one-liner
+\lstinputlisting{sentinels/cache_access_getOrDefault.java}
+
+Sentinels are often used to cure the so-called `loop-and-a-half' problem.
+In the part ~\fullref{prt:caseStudies}, particularly ~\autoref{ch:json-prettifier}, application of
+sentinel is used extensively.
 
 
 \section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
@@ -67,11 +166,10 @@ I first came to learn about sentinels and their usage in the book ``Numerical Re
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
 I was really amazed by how the authors of the book carefully avoided burdening the
 performance-critical, fast spinning inner loop with the array boundary checks by the use of
-sentinels
-when partitioning the array elements by the pivot element.
+sentinels when partitioning the array elements by the pivot element.
 
 
-But honestly, only until recently have I had a success in implementing the idea correctly.
+But honestly, only until recently had I a success in implementing the idea correctly.
 Before that I implemented a quick sort program in C based off the traditional `Hoare's
 partitioning' scheme.
 Here is an outline of the implementation.
@@ -122,81 +220,6 @@ So then boundary checking can be spared:
 \lstinputlisting[]{sentinels/qsort_part_sentinel.c}
 
 
-
-\section{Blah}
-
-Later on in my own software development practice, I made conscious choice when facing similar
-problems.
-But I didn't stop there.
-I went beyond the classical use of sentinels to signal for a graceful termination.
-I summarized my encounter with sentinels in the past and listed the reasons I used sentinels as
-follows
-\begin{enumerate}
-    \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
-    loops.
-    \item\label{itm:sentinel:loop-and-a-half} Get rid of `Loop-and-a-half' issue
-    as their research in Reference ~\cite{Louden-Lambert-2011}.
-    \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell
-    as listed in the `Refactoring' book ~\cite{Fowler1999}
-    \item\label{itm:sentinel:ds} Act as a padding boundary for data structures,
-    such as linked list, \textit{etc}., to promote uniform operations.
-    \item Added as a complementary part to fit a mathematical concept
-    or to form a generalized algorithm.
-\end{enumerate}
-In all these cases, I found that at the root, \emph{sentinels are added to make the problem
-more symmetric}.
-``What do you mean by `symmetric'?'' you ask dubiously.
-Symmetry is the mathematical explanation of aesthetics.
-Symmetric objects are visually pleasing to us because it has `order', is familiar to us, and
-thus demand less energy to perceive.
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/sunflower.jpg}
-        \caption{\label{fig:symmetric-flower}Symmetric sunflower seeds forms beautiful spiral
-        patterns.}
-    \end{subfigure}
-    \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/sunflower-asymm.jpg}
-        \caption{\label{fig:asymmetric-flower}The missing seeds in this otherwise symmetric image
-        causes irregularity and anomaly.}
-    \end{subfigure}
-    \caption{\label{fig:line-view}Symmetry in sunflower pedal is at peace.
-    With the missing seeds, the cost to process the sunflower is elevated.}
-\end{figure}
-On the opposite, asymmetric objects are irregular, anomalous, requires extra effort to process.
-So symmetry represents uniformity, uniformity implies saving in resource.
-From \code{for}-loops to regular expressions (regex), from HTTP response status
-codes to \code{null} pointers, from recursion to dynamic programming, computer science is a
-science that is constantly seeking or creating symmetric information to treat things uniformly,
-to minimize energy footprint, and to do more with less.
-Sentinels is no exception.
-
-When we say ``It's one minute to 7'', we meant the following: first, put in one minute to make it
-7 o'clock for more symmetric representation of time and then take away the minute to mean the
-true time 6:59.
-In the same way, sentinels does the plus and minus operations.
-In the opening example `Elephant in Cairo', an elephant was added in the beginning and
-deducted at the end.
-In doing so we saved in-loop checks for termination as a result of end of Africa being reached.
-Sentinels shifts that logic from performance-critical
-loop to non-critical section, from inconvenient location to convenient location.
-With this option, we can optimize our coding to be more elegant and performant.
-In the following sections, we will have a brief look at a few applications of sentinels to
-illustrate the fast application opportunities.
-
-
-Many programming languages provide `getOrDefault' methods for their collection classes.
-That's a disguised application of sentinel.
-Proper use of the `getOrDefault' method can save us a line of code.
-For example, accessing \code{HashMap} in the `usual way' would be
-\lstinputlisting{sentinels/cache_access.java}
-But using the `getOrDefault' method, the method becomes one-liner
-\lstinputlisting{sentinels/cache_access_getOrDefault.java}
-
-Sentinels are often used to cure the so-called `loop-and-a-half' problem.
-In the part ~\fullref{prt:caseStudies}, particularly ~\autoref{ch:json-prettifier}, application of
-sentinel is used extensively.
 
 \section{String termination sentinels}\label{sec:stringTerminationSentinels}
 

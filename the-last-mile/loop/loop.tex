@@ -1,3 +1,5 @@
+\usepackage{hyperref}
+
 %%
 %% Author: shoupu_wan
 %% 7/14/18
@@ -346,11 +348,16 @@ design and implementation.
 At the language level, a number of loop constructs have been introduced to
 minimize the symptoms of the ``\textit{loop-and-a-half} problem''.
 But that's not enough.
-It remains on developers to choose the most suitable loop constructs.
+The burden remains on developers to choose the most suitable loop constructs.
 Further, code fine-tuning is beyond simple choices of loop constructs
 and must be hand-crafted at implementation time.
 In the section to follow, we will introduce `loop rotation', a technique for loop
 optimization that helps alleviate `loop-and-a-half' symptoms.
+
+
+Unexpectedly, sentinels can also be used to cure `loop-and-a-half' problem.
+We will study a few cases for this in ~\fullref{ch:sentinels} and in
+~\fullref{ch:json-prettifier}.
 
 
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}

@@ -6,23 +6,26 @@
 \chapter{Magic of Sentinels} \label{ch:sentinels}
 Sentinels have been in use in military, mathematics, and civil engineering, long before computer
 science became a science.
-But it is computer science that made sentinels a prominent concept---a programming philosophy.
-In this chapter we will consider sentinel values and the concept behind in a more general sense
-than usual.
+But in computer science sentinels maintains a prominent presence---sentinels plays an important
+roles in computer engineering, architecture design,
+compiler design, and programming languages.
+Particularly, proper use of it in high-level programming brings about unexpected simplicity.
+Sentinel is a programming philosophy.
+In this chapter we will consider sentinel values and the concept behind in a general sense.
 We will examine a few cases where uses of it lead to great simplification in coding.
-%Sentinels are not deemed as part of control flow.
+
 
 \section{Elephant in Cairo}\label{sec:elephant-in-cairo}
 
-Have you heard of the infamous problem ``Elephant in Cairo''?
-Behind the phrase is the fictitious programming question: ``How to hunt elephants in Africa?'',
-first published in a magazine essay titled ``Pachydermic
-Personnel Prediction'' ~\cite{elephant-in-Cairo:1989}
-Even though it is fictitious, this question vividly illustrates the basics
-behind sentinels and the important aspects of its usage.
+Have you heard of ``Elephant in Cairo''?
+It refers to the fictitious programming question ``how to hunt elephants in Africa''.
+First published on ``Pachydermic Personnel Prediction'' ~\cite{elephant-in-Cairo:1989},
+this question and the published solutions vividly illustrate the basics
+behind sentinel values and the important aspects of its usage.
+
+
 %It explains the working of a sentinel very well.
-The following algorithm is based on the original one outlined in the article but modified for
-proper termination:
+Following is the algorithm based on the original, slightly modified for proper termination:
 \begin{alisting}[H]
     \caption{\label{enum:elephant-hunt-algo-A}
     Algorithm for solving the `Elephant in Cairo' question.}
@@ -41,22 +44,24 @@ proper termination:
 The above algorithm, however, may not end happily in the rare and
 unfortunate case when there is no elephant in Africa and the hunters end up drowning in the
 Mediterranean Sea.
-To avoid that from happening, one may add a check before each traversal to ensure
-that the north end of Africa has not been reached.
+To avoid the dreadful situation, one may add a check before each traversal to ensure
+that to ensure that the hunters stop in time just before reaching the north end of Africa.
 
 
-But an experienced computer scientist would place a known elephant
+But an experienced computer scientist would borrow an elephant beforehand and place it
 in Cairo before proceeding with elephant hunting.
-And when he does, he uses ~\autoref{enum:elephant-hunt-algo-A} as is plus some
-extra logic to do the post-hunting processing---they would have to inspect the animal they caught
-and see if it is the one they placed.
-They declare failure if it is and success if it is not.
-Of course always remember to bring back home the sentinel elephant as a cleanup.
+Magically, no modification is needed---~\autoref{enum:elephant-hunt-algo-A} can be used as-is
+except that a little post-hunting processing is needed---hunters have to inspect the animal they
+caught and see if it is the elephant they placed in Cairo.
+If yes, the hunting trip is a failure;
+otherwise a success.
+Of course at the end of the program, one always need to remember a cleanup step---bring
+the placed elephant back home.
 
 
-\section{Sentinel in General}
+\section{The Concept of Sentinel in General}\label{sec:concept-of-sentinel}
 
-In the fictitious example above, the elephant placed beforehand is the `sentinel value'.
+In the above mentioned fictitious question, the elephant placed beforehand is the `sentinel value'.
 It serves as two roles.
 One it guarantees that ~\autoref{enum:elephant-hunt-algo-A} terminates.
 Second, it guarantees that an animal is at hand when ~\autoref{enum:elephant-hunt-algo-A}
@@ -67,25 +72,24 @@ African elephant.
 But the added benefit pays off this price.
 
 
-This is a good starting point.
-As I proceed deeper with my practices in software development, I realized that the concept
-of sentinel can be generalized and it goes much beyond a mere saving on condition checking for
-termination.
-I summarized my applications of sentinels and listed the reasons I used sentinels as follows:
+Starting from here, the more development work I do, the more generalized the
+concept of sentinel becomes to me.
+It goes much beyond merely a way of saving on condition checking for termination.
+I summarized my scenarios and motivations of using sentinels as follows:
 \begin{enumerate}
     \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
     loops.
     \item\label{itm:sentinel:loop-and-a-half} Get rid of `Loop-and-a-half' issue
-    as their research in Reference ~\cite{Louden-Lambert-2011}.
     \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell~\cite{Fowler1999}
-    \item\label{itm:sentinel:ds} Act as a padding boundary for data structures,
-    such as linked list, \textit{etc}., to promote uniform operations.
+    \item\label{itm:sentinel:ds} Act as a boundary-padding in data structures,
+    such as linked list, \textit{etc}.
     \item Added as a complementary part to fit a mathematical concept
     or to form a generalized algorithm.
+    %TODO
 \end{enumerate}
 
 
-In all these cases, I found that \emph{fundamentally, sentinels are added to make the problem
+In all the cases, I found that \emph{fundamentally, sentinels are added to make the problem
 more symmetric}.
 Symmetry sometimes can seem mysterious to many and using it to explain this situation may cause
 doubt in many.
@@ -97,12 +101,13 @@ Thus processing objects by our brain or by programs we built demand less energy.
 
 
 On the opposite, asymmetric objects are irregular, anomalous, requires extra effort to process.
-So symmetry represents uniformity, uniformity implies saving in resource.
+One who works on an assembly line has a deep feeling about this.
+Symmetry represents uniformity and uniformity implies resource saving.
 From \code{for}-loops to regular expressions (regex), from HTTP response status
 codes to \code{null} pointers, from recursion to dynamic programming, computer science is a
 science that is constantly seeking or creating symmetric information to treat things uniformly,
 to minimize energy footprint, and to do more with less.
-Sentinels is no exception.
+Sentinel embodies the idea of symmetry perfectly.
 
 
 \begin{figure}[H]
@@ -122,26 +127,49 @@ Sentinels is no exception.
 \end{figure}
 
 
-When we say ``It's one minute to 7'', we essentially made the representation of time more
-symmetric and thus easier to understand.
-What we meant is the following: first, put in one minute to make it
-7 o'clock for more symmetric representation of time and then take away the minute to mean the
-true time 6:59.
+It is common to represent $6:59$ as ``one minute to 7'' because
+this is essentially a more symmetric representation.
+What we meant is: first, put one minute in to make it
+\emph{7 o'clock};
+then take away the minute to derive the true time.
 
 
 In the same way, sentinels does the pluses and minuses.
 In the opening example `Elephant in Cairo', an elephant was added in the beginning and
 deducted at the end.
-In the examples that are to follow, more pluses and minuses will be performed.
-They are all done for added symmetry.
+Apart from being added at the beginning and taken away at the end, sentinel values remain intact.
+This somehow reminds me of catalysts.
+During chemical reactions, the catalyst first binds with the reactants and then is released from
+the final product, intact.
+The net effect is to provide an alternative reaction path with \emph{lower energy barrier}.
+Therefore catalysts accelerate reaction but they themselves are not consumed during the chemical
+reaction.
+In the same way works sentinel.
+A sentinel value is added at the beginning and removed at the end, nothing else is affected except
+program runs faster and / or programming is made easier.
+It is not exaggerating to call sentinels `the catalysts of programming'.
 
 
-Sentinels shift potentially costly operations from performance-critical
+%Some digressions on sentinels.
+The mechanism of sentinels also has physical analogies.
+You may have noticed that dews are often found on the surface of something---
+water bottle, stone, leaves, \textit{etc.}
+This is because it is much effective and faster for water vapor to condense on
+the surface of a solid or liquid core.
+Spontaneous condensation in gaseous phase is possible but it is so energetically costly that it
+takes hours in the so-called supersaturated state for that to take place.
+Water vapor in the cloud condenses more readily on some non-gaseous cores called `cloud
+condensation nuclei' or CCN for short ~\cite{condensation:2005}.
+The non-gaseous cores are essentially borrowed sentinels.
+You see, even rain need sentinel ushers!
+
+
+Sentinels help shift potentially costly operations from performance-critical
 loop to non-critical section, from inconvenient location to convenient
 location, and from many to one.
-We can thus optimize our coding to be more elegant and performant.
-In the following sections, we will have a brief look at a few applications of sentinels to
-illustrate the fast application opportunities.
+Thanks to sentinels, one can thus optimize code to be more elegant and performant.
+In the following sections, we will take a couple of case studies to illustrate opportunities
+of applying sentinels.
 
 
 \section{Small examples for sentinel ideas}\label{sec:small-examples-for-sentinel-ideas}
@@ -445,23 +473,6 @@ For other, it simplifies our coding task---our code doesn't need to deal with th
 \code{newHead == None} any more.
 This is reflected in the simpler code in ~\autoref{lst:ValidWordAbbrev.sentinel}.
 
-Some elaboration on sentinels.
-The working of sentinels has physical analogy in nature.
-The mechanism by which sentinel works is reminiscent to that of water vapor condensation, for
-instance.
-Water vapor condensation often takes place on the surface of something---
-water bottle, stone, leaves, \textit{etc.}
-Water vapor in the cloud also condenses on some non-gaseous core called `cloud condensation nuclei'
-or CCN for short ~\cite{condensation:2005}.
-Spontaneous condensation is possible but that has to overcome a huge energy barrier and
-only takes place after spending hours in the so-called supersaturated state.
-You see, even rainy day does not come easy without sentinels.
-The vapor molecules need sentinels to usher them to where they should condense.
-Also, catalysts, enzymes in biological organisms in particularly, work in a similar mechanism.
-In light of quantum physics, catalysts and enzymes provide a bypass to an energy barrier,
-a detour to the otherwise upheaval path for chemical reactions to take place while
-their identities remain intact.
-In this sense, it is not exaggerating to call sentinels the `catalysts for programming'.
 
 \section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
 

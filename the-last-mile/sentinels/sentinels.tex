@@ -168,85 +168,96 @@ Sentinels help shift potentially costly operations from performance-critical
 loop to non-critical section, from inconvenient location to convenient
 location, and from many to one.
 Thanks to sentinels, one can thus optimize code to be more elegant and performant.
-In the following sections, we will take a couple of case studies to illustrate opportunities
-of applying sentinels.
+In the following sections, we will identify opportunities to apply the concept of sentinel through
+a couple of cases of study.
 
-
-\section{Small examples for sentinel ideas}\label{sec:small-examples-for-sentinel-ideas}
-%TODO
-Many programming languages provide `getOrDefault' methods for their collection classes.
-That's a disguised application of sentinel.
-Proper use of the `getOrDefault' method can save us a line of code.
-For example, accessing \code{HashMap} in the `usual way' would be
-\lstinputlisting{sentinels/cache_access.java}
-But using the `getOrDefault' method, the method becomes one-liner
-\lstinputlisting{sentinels/cache_access_getOrDefault.java}
-
-Sentinels are often used to cure the so-called `loop-and-a-half' problem.
-In the part ~\fullref{prt:caseStudies}, particularly ~\autoref{ch:json-prettifier}, application of
-sentinel is used extensively.
 
 
 \section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
 
 
-I first came to learn about sentinels and their usage in the book ``Numerical Receipt in C''
+I came to learn about sentinels from the book ``Numerical Receipt in C''
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
-I was really amazed by how the authors of the book carefully avoided burdening the
-performance-critical, fast spinning inner loop with the array boundary checks by the use of
-sentinels when partitioning the array elements by the pivot element.
+I was amazed by how the authors carefully avoided the array boundary checks in
+performance-critical, fast spinning inner loop with the use of sentinels.
+Honestly, although I psychologically accepted the pitch on the effectiveness of sentinel
+in the book, not until recently had I a success in implementing it.
 
 
-But honestly, only until recently had I a success in implementing the idea correctly.
-Before that I implemented a quick sort program in C based off the traditional `Hoare's
-partitioning' scheme.
-Here is an outline of the implementation.
-\lstinputlisting[label={lst:QuickSortOutline},language=C,
-caption={An implementation of quick sort algorithm.}]
-{embedded-loops/quicksort_outline.c}
-where function \code{part} is the quick sort partition function.
-With the Hoare's partitioning scheme, the function \code{part} of my first implementation is as
-follows:
-\lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
-caption={Implementation of Hoare's partition scheme for quick sort.}]
-{embedded-loops/quicksort_partition_sym.c}
+I am going to pick up the implementation of the traditional `Hoare's
+partitioning' scheme from ~\fullref{ch:loop-thinning}.
+%Before that I implemented a quick sort program in C based off the traditional `Hoare's
+%partitioning' scheme.
+The outline of the implementation as in ~\fullref{lst:QuickSortOutline} is unchanged.
+The only thing that we will touch is the partitioning function ~\fullref{lst:nestedLoopHoareMethod}.
 
 
-As mentioned in ~\autoref{ch:loop-thinning}, this implementation can get very tricky.
-For one the problem itself is tricky.
-For another, we are consciously attacking the problem with an precautions approach against
-performance degradation so there is a price we have to pay.
+As mentioned in ~\autoref{ch:loop-thinning}, the implementation of `Hoare's quick sort algorithm'
+can get very tricky---the problem itself is tricky and restrictions we apply to avoid inadvertent
+skewness further complicate the situation.
+None of these can be changed.
+But what we can change to do ourselves a favor is to get rid of the boundary checks in the
+inner loops.
+These boundary checks are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
+off the ends of the array.
+In large arrays, these boundary check operations may get in the way of performance of the algorithm.
+But the top reason to get rid of them is to remove the coding clutter.
+%For another, we are consciously attacking the problem with an precautions approach against
+%performance degradation so there is a price we have to pay.
 
-But we can reduce the coding complexity and the tricky part with the use of sentinels!
-Even better, performance can also be greatly boosted.
 
-Note the conditions used in the inner loops?
-Let us see how sentinels can simplify them.
+If we can ensure that the pointers `\code{s}' and `\code{e}' will never slip off the ends of the
+array by the remaining condition of tests, then the boundary checks would be redundant and can be
+removed.
+This is exactly what sentinel is good at!
+By guarding that the end of arrays with the sought-after values for
+`\code{s}' and `\code{p}', respectively, we can guarantee that the inner loop will terminate just
+before them slipping off the array.
+%Even better, performance can also be greatly boosted.
 
-%TODO
-\begin{enumerate}
-    \item Factor out the initial swapping into a function \code{init_swap};
-    \item Removed boundary checking from both inner loops.
-\end{enumerate}
-Firstly, let's elect $3$ instead of $1$ elements and use the median of them as the pivot and
-deploy the maximum and the minimum to the two ends of the array, respectively.
-Then, we can safely remove the \code{s < e} and \code{pivot < e} parts of the conditions.
-Below is my code.
+%Note the conditions used in the inner loops?
+%Let us see how sentinels can simplify them.
+
+What values are sought after by `\code{s}' and `\code{e}'?
+Both of them are looking for out-of-place values---\code{s} is looking for
+`\code{greater-than-or-equal-to}' values, \code{e} is looking for
+`\code{less-than-or-equal-to}' values.
+Well, let us solicit and deploy these sentinel values satisfying these conditions accordingly
+before entering the loop.
+Since we have already had logic to look for pivot value, we can group and factor out these tasks
+together into a function called `\code{init_swap}'.
+
+
+In my implementation of it, the function `\code{init_swap}' randomly
+elects $3$ elements, use the median of them as the pivot as usual,
+the maximum to the right sentinel, and the minimum to the left sentinel,
+respectively.
+The factored out function is as follows:
+\lstinputlisting[]{sentinels/qsort_init_swap.c}
+
+
+Now back the function `\code{part}'.
+With the function `\code{init_swap}',
+the conditional expressions `\code{s < e}' and `\code{pivot < e}' become semantically
+redundant and can be safely removed from their corresponding loop conditions.
+Below is the function `\code{part}' after all the refactoring is done.
 \lstinputlisting[]{sentinels/qsort_part_sentinel.c}
 Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
-So obviously the critical part of this implementation lies within the function \code{init_swap}.
-The original one-liner implementation
-\begin{lstlisting}
-    swap(s, s + rand()
-    % (e - s));
-\end{lstlisting}
-would put both of the inner loops in peril of running out of bound.
-By selecting two additional elements, one larger and one smaller than the pivot element,
-it is guaranteed that the inner loop condition be met before
-it runs out of bound.
-So then boundary checking can be spared:
-\lstinputlisting[]{sentinels/qsort_part_sentinel.c}
+cleans out the clutters in the loop conditions in the inner loops.
+Instead, the logic is shifted to a non-critical place---the initialization part before the loop.
+Not only that the code is made simpler in the main function, but also the number of such checks
+is reduced from $O(N)$ to $O(1)$.
 
+
+The above implementation was done on top of the traditional Hoare's partitioning scheme.
+So the effect of sentinels can stand out more cleanly.
+As presented in ~\fullref{ch:loop-thinning}, we have developed a simplified version of the Hoare's
+partitioning scheme for quicksort with a single loop.
+Is the above sentinel idea applicable in this new scenario?
+Yes, it equally is.
+Below is the implementation of the function `\code{part}' with a single loop and simplified
+condition with sentinel values.
+\lstinputlisting[]{sentinels/quicksort_partition_single_loop_sentinel.c}
 
 
 \section{String termination sentinels}\label{sec:stringTerminationSentinels}
@@ -353,6 +364,13 @@ caption={Code for validating abbreviation of a word with use of sentinel.}]
 Nevertheless, the simplicity of the implementation ~\autoref{lst:ValidWordAbbrev.sentinel} still
 stands as an exemplary model for the demonstration of the power of sentinels.
 
+
+This idea can be applied in similar situations of string processing.
+In the part ~\fullref{prt:caseStudies}, particularly ~\autoref{ch:json-prettifier}, application of
+sentinel is used extensively.
+Sentinels are often used to cure the so-called `loop-and-a-half' problem.
+
+
 \section{Sentinels in Data Structures}\label{sec:sentinelsInDS}
 
 Sentinel nodes have their niched uses in linked data structures such as linked list and tree.
@@ -364,6 +382,24 @@ algorithms for operations on these data structures are antagonistic to symmetry-
 nodes.
 Sentinel nodes are nodes that are spared for the purpose of freeing algorithms from having to
 deal with boundary conditions.
+
+\subsection{Small examples for sentinel ideas}\label{subsec:small-examples-for-sentinel-ideas}
+%TODO
+
+Mapping data structures in some programming languages provide the `getOrDefault' method or the
+like.
+That is an application of sentinel in disguise.
+Instead of returning a witless \code{NULL} value or throwing an exception,
+the `getOrDefault' method gives user a chance to provide a `default' value
+in the case of a missing key.
+The `default' value provided at the invocation of the `getOrDefault' method
+is essentially a sentinel value.
+
+Proper use of the `getOrDefault' method can save us a line of code.
+For example, accessing \code{HashMap} in the `usual way' would be
+\lstinputlisting{sentinels/cache_access.java}
+But using the `getOrDefault' method, the method becomes one-liner
+\lstinputlisting{sentinels/cache_access_getOrDefault.java}
 
 
 \subsection{Anchoring Sentinel Node}\label{subsec:anchoringSentinels}

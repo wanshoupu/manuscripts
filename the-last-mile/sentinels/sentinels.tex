@@ -66,16 +66,17 @@ It serves as two roles.
 One it guarantees that ~\autoref{enum:elephant-hunt-algo-A} terminates.
 Second, it guarantees that an animal is at hand when ~\autoref{enum:elephant-hunt-algo-A}
 terminates.
-In doing so it helps save the unnecessarily in-loop checking for a termination condition.
-Of course the onus is on programmer to check the animal to tell if it is the one placed or an
-African elephant.
-But the added benefit pays off this price.
+In doing so it helps save the repeated, unnecessary termination check.
+Of course at the end of the program, extra effort is needed to check
+if the catch is the placed elephant.
+That is the price to be paid.
+But the benefit can pay off this price.
 
 
 Starting from here, the more development work I do, the more generalized the
 concept of sentinel becomes to me.
-It goes much beyond merely a way of saving on condition checking for termination.
-I summarized my scenarios and motivations of using sentinels as follows:
+It goes much beyond mere savings on condition checking for termination.
+Benefits of using sentinels are summarized as follows:
 \begin{enumerate}
     \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
     loops.
@@ -85,7 +86,6 @@ I summarized my scenarios and motivations of using sentinels as follows:
     such as linked list, \textit{etc}.
     \item Added as a complementary part to fit a mathematical concept
     or to form a generalized algorithm.
-    %TODO
 \end{enumerate}
 
 
@@ -263,7 +263,7 @@ condition with sentinel values.
 \section{String termination sentinels}\label{sec:stringTerminationSentinels}
 
 Despite of controversial opinions\cite{Ritchie:1993,expensive-one-byte:2011}, the
-null-terminated strings in C is another excellent example of sentinel use.
+null-terminated strings in C is another brilliant use of sentinel.
 Even though saving memory is a major concern when it was originally designed, the
 null-terminated string has many programming advantages.
 One example is the expression \code{*p == '\0'} which test if the pointer \code{p} points to end
@@ -272,39 +272,43 @@ Without using null character as a sentinel, it would not be so convenient to per
 Null-terminated strings in other languages has been deprecated largely due to development
 of containers and collections.
 But the idea of it is still inspiring to us.
-The following example will help illustrate this.
+A coding problem `Word abbreviation problem' will help illustrate this.
 The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.com}}:
 \begin{quote}
-    Given a non-empty string s consisting of English letters and an abbreviation abbr,
+    Given a non-empty string \code{s} of English word and an abbreviation \code{abbr},
     return whether the string matches with the given abbreviation.
-    Abbreviation of word is given as replacing certain substring in the word with its length
-    printed in decimal integer.
+    You may assume the string \code{s} consists only the 26 English alphabet with cases.
+    Abbreviation of word is made if zero, one or more non-overlapping substrings
+    are replaced by the length of the substring in decimal format.
     \emph{Example 1:}
-    Given s = "internationalization", abbr = "i12iz4n":
+    Given \code{s = "internationalization"}, \code{abbr = "i12iz4n"}:
     Return true.
     \emph{Example 2:}
-    Given s = "apple", abbr = "a2e":
+    Given \code{s = "apple"}, \code{abbr = "a2e"}:
     Return false.
 \end{quote}
 \begin{figure}
     \centering
     \includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
-    \caption{\label{fig:letter-number-section} An example of abbreviation for
-    word ``pseudoanthropological''.}
+    \caption{\label{fig:letter-number-section} The word `pseudoanthropological'
+    as an example for string abbreviation.}
 \end{figure}
-So in other words, the tasks required for the problem is
+In the most obvious way, the following tasks are needed to solve the problem:
 \begin{enumerate}
-    \item\label{itm:breakup.letter.number} to break up the string into alternating
-    letter sections $L_{i}$ and number sections $N_{i}$, for $i = 1,2,\dots$
-    \item\label{itm:parse.numbers} parse the number sections as integers
-    as the number of letters to omit
-    \item\label{itm:check.letters} Check if the letter sections, after skipping
-    the corresponding number of letters, match corresponding sections in the word.
+    \item\label{itm:breakup.letter.number} Break up the string \code{abbr} into alternating
+    alphabetic groups and numeric groups;
+    \item\label{itm:parse.numbers} Validate and parse the numeric groups as integers;
+    \item\label{itm:skip-char} Inflating each numeric group with the corresponding number of
+    wildcard characters;
+    \item\label{itm:check.letters} Check if the string \code{s} and the inflated \code{abbr} match.
 \end{enumerate}
 
-One thing that is subtle and may slip your mind is that the letter sections and number
-sections, while alternating, may have several cases to be considered (see
-~\autoref{tab:letter-number-combination} for more information).
+
+Numeric group validation is where `gotchas' hide.
+Since the length of non-empty substrings is positive integer,
+numeric group only consists of digits $0$ - $9$.
+Additionally, leading `$0$' will also render the numeric group invalid.
+
 \begin{table}[h]
     \begin{center}
         \caption{Possible combinations
@@ -313,18 +317,33 @@ sections, while alternating, may have several cases to be considered (see
             \hline
             starting group & ending group & example \\
             \hline
-            letter & letter & `int8al' \\
-            number & number & `5nation2' \\
-            letter & number & `inter8' \\
-            number & letter & `5national' \\
+            \multicolumn{2}{|c|}{one group of alphabet} & `apple' \\
+            \multicolumn{2}{|c|}{one group of numeral} & `13' \\
+            alphabet & alphabet & `int8al' \\
+            numeral & numeral & `5nation2' \\
+            alphabet & numeral & `inter8' \\
+            numeral & alphabet & `5national' \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
+Apart from that, other nuisances are awaiting.
+Even though the ordering of alphabetic groups and numeric groups are fixed,
+the starting and ending groups can be of either type.
+Additionally there are edge cases when the starting and ending groups are one and the same.
+It would be onerous to deal with each and every one of the cases separately.
+~\autoref{tab:letter-number-combination} lists the distinct cases.
 
-Given so many degrees of freedom, it must be that we have to deal with each case separately?
-Actually not.
-In the implementation of ~\autoref{lst:ValidWordAbbrev}, we perform all three tasks,
+
+It turns out that the beginning group is actually not so troublesome as it appears.
+We can always assume the beginning group is alphabetic because
+in the case when the beginning group is numeric, we can assume an empty alphabetic group before it.
+This insight reduces the number of cases to $2$---either a numeric group or an
+alphabetic group concludes the abbreviation.
+%This does not render in special treatment in code at all.
+%TODO
+%But as to the ending group, we are not so lucky.
+In the implementation of ~\autoref{lst:ValidWordAbbrev}, we perform all the tasks,
 ~\autoref{itm:breakup.letter.number}, ~\autoref{itm:parse.numbers},
 and ~\autoref{itm:check.letters} in one loop.
 It turns out that coded in such a way, the particular beginning group does not require any special
@@ -384,7 +403,6 @@ Sentinel nodes are nodes that are spared for the purpose of freeing algorithms f
 deal with boundary conditions.
 
 \subsection{Small examples for sentinel ideas}\label{subsec:small-examples-for-sentinel-ideas}
-%TODO
 
 Mapping data structures in some programming languages provide the `getOrDefault' method or the
 like.

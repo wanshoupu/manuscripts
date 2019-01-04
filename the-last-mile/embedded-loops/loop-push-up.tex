@@ -565,7 +565,7 @@ We are ready to remove the unconditional, inner loop---just strip it.
 After this step, the code looks like this:
 \lstinputlisting[]{embedded-loops/pattern_match_thinned_loop_intermediate_stage.java}
 As a cleanup step if desired, the condition for the conditional statement with the
-`\return' statement may be merged into the loop condition.
+`\code{return}' statement may be merged into the loop condition.
 The final version after this change is:
 \lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
 {embedded-loops/pattern_match_thinned_loop.java}

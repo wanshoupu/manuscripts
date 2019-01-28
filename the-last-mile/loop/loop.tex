@@ -46,7 +46,7 @@ So when we program loops, we need to pay attention to running away loop variable
 A related topic is on the use of nested loops.
 Nested loops are often a sign of suboptimal code in many circumstances.
 Therefore `how not to use nested loops' is critical to reduce clutters out of one's code.
-We dedicate ~\fulref{ch:embedded-loops} solely to this topic and presents techniques to help
+We dedicate ~\fullref{ch:embedded-loops} solely to this topic and presents techniques to help
 reduce nested loops to single loop.
 
 
@@ -383,7 +383,15 @@ We will study a few cases for this in ~\fullref{ch:sentinels} and in
 \end{figure}
 
 
-When implementing loops in programs, an important goal is to reduce duplicate code in and around
+Why programming loops is so hard?
+For one, there are a lot of moving parts in a loop construct and need to be constructed
+piece-by-piece.
+For two, loop must get along with the peripheral code as well.
+As you can see, a large part of the hard work for programming a loop lies outside of the loop.
+All the pieces are tightly coupled together---changes in one necessitate changes in several others.
+
+
+In fact, an important goal when implementing loops is to reduce duplicate code in and around
 loop---be it pre-loop initialization or post-loop processing.
 And one of the important techniques for it is `loop rotation'.
 
@@ -402,17 +410,17 @@ initialization, state update statements and other statements in the loop body.
     \centering
     \begin{subfigure}{.45\textwidth}
         \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
-        \caption{\label{fig:loose-spool} Sloppy, duplicate code is analogous to loose, unorganized
-        thread near a spool.}
+        \caption{\label{fig:loose-spool}}
     \end{subfigure}
     \begin{subfigure}{.45\textwidth}
         \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
-        \caption{\label{fig:tight-spool} Coding technique, \textit{e.g.}, `loop rotation', can help
-        reduce duplicate code and is pictorially depicted as winding up threads neatly onto a
-        spool.}
+        \caption{\label{fig:tight-spool}}
     \end{subfigure}
-    \caption{\label{fig:spool-loop}Craftsmanship in loop programming is analogous to organizing
-    threads using a spool.}
+    \caption{\label{fig:spool-loop} If we use spool as a metaphor for loop in program, then
+    `loop rotation' can be pictorially depicted as winding up loose yarns onto a spool.
+    \protect\subref{fig:loose-spool}: Duplicate, sloppy code is analogous to loose, unorganized
+    yarn around a spool.
+    \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
 \end{figure}
 
 
@@ -425,84 +433,150 @@ tuning---by `rotating' the loop to match up and coalesce duplicate code in the a
 We will refer to this process as `loop rotation'.
 
 
-As another helpful analogy, loops to a program are like spools to yarn.
-Spools are used to organize yarns whereas loops are used as a program construct.
-%TODO
-Another helpful picture is to think of loops as spools and programs as threads with loops
-introduced to help organize threads.
-Redundant code outside of the loop may coalesce into the loop body during a `loop rotation'
-like winding up loose thread onto a spool (~\autoref{fig:spool-loop}).
+As another helpful analogy, loops are to program as spools are to yarn.
+In the same way as a spool is used to organize yarn, a loop is a construct to organize program.
+From this perspective, the `loop rotation' process to coalesce duplicate code is analogous to
+wind up loose, messy yarn into a tidy spool (~\autoref{fig:spool-loop}).
 
 
-In practice, one may first implement a non-discriminating loop,
-such as \code{while (true)} or \code{for (; ;)}, for prototyping purposes.
+In practice, one may first implement a prototype with unconditional \code{while (true)} or
+\code{for (; ;)} loop.
 This will push all the statements into the loop body for ease of `loop rotation'.
-One can focus on coding up a working solution first.
-Once a working solution has been found, one often has gotten a good grasp of the ins and outs of the
-implementation.
+In this way, one first focuses on coming up with a working solution.
+Once a working solution has been found, one can start the `loop rotation' process.
+%one often has gotten a good grasp of the ins and outs of the implementation.
 %to to try to spool up slack threads as much as possible by `rotating the loop' to match and
 %eliminate duplicate code.
-Then one can start `rotating the loop'---rotating the statements in the loop body, align and
-eliminate `unwound', duplicate code before or after the loop.
-In the end, one can try different loop constructs, move and fit state-updating statements,
+Finally, one can try different loop constructs, move and fit state-updating statements,
 combine or annihilate \code{continue} and \code{break} statements, \textit{etc.}
 If needed, repeat the above steps until the code is acceptable both functionally and
 aesthetically.
 
 
-As you can see, a large part of the hard work for programming a loop lies outside of the loop.
+Let us take a look at a toy example at which the `loop rotation' process can be easily applied.
+It is the driving function: it creates the players, the board, the pieces, then it passes
+control to the main loop, at end of the game, it presents the final result.
+So here we go, the code to be improved is listed below.
+\begin{clisting}[H]
+    \lstinputlisting[]{loop/board_game_dupcode.py}
+\end{clisting}
+Looking at , as we rotate the loop, they can be aligned and coalesced line by line.
+As can been seen, the last statement in the loop and the immediate statement before the loop
+(lines $2$-$5$ and lines $18$-$21$ as highlighted)
+are verbatim duplicate and thus may be aligned and coalesced.
+So we can `roll up' the immediate statements before the loop and coalesce them with their
+counterparts in the loop body.
+But first of all, we need to untie the loop by `internalizing' the loop condition
+so that it becomes an unconditional `\code{while(True)}' loop:
+\begin{clisting}[H]
+    \lstinputlisting[]{loop/board_game_dupcode-0.py}
+\end{clisting}
+Now watch closely---let us roll up one line:
+\begin{clisting}[H]
+    \lstinputlisting[]{loop/board_game_dupcode-1.py}
+\end{clisting}
+As you noticed, we have aligned and coalesced one line of the duplicate code.
+Repeating this process $4$ more times, we would wipe out all duplicate code.
+The final program looks like the following:
+\begin{clisting}[H]
+    \lstinputlisting[]{loop/board_game_rotated.py}
+\end{clisting}
+In practice you don't have to strictly go through each and every step described here.
+Once you grasp the idea and become skillful, you can skip some of the intermediate steps
+to quicken the process.
+And you can always find your way back if you are lost.
 
-\lstinputlisting[]{loop/board_game_dupcode.py}
-First, let's smooth up the loop to prepare for rotations by `internalize' the loop condition and
-make it a \code{while(True)} loop:
-\lstinputlisting[]{loop/board_game_dupcode-0.py}
-Now watch closely---the last statement in the loop and the immediate statement before the loop are
-identical so we can `roll up' the immediate statement before the loop and produce an equivalent
-code:
-\lstinputlisting[]{loop/board_game_dupcode-1.py}
-We have coalesced one line of duplicate code and again, the last statement in the loop and the
-immediate statement before the loop are identical\ldots
-After $4$ loop rotations, we spool up all the duplicate code:
-\lstinputlisting[]{loop/board_game_rotated.py}
-Once you grasp the idea and becomes skillful at it, you don't have to strictly go through each and
-every step.
-Instead, you can skip some of the intermediate steps to quicken the process.
-But in case you are lost you can always find your way back by following more closely.
 
-
-Many times, the culprit code snippet manifest `soft duplication' symptoms---two
-code blocks contain hidden, quavery, and partially duplicate code.
-In comparison with hard duplication, `soft duplication' is tougher to detect and remove.
-When dealing with `soft duplication', one has to perform pre-refactor to
-convert soft duplications to hard ones and then apply the `loop rotation' steps.
+Many times, code duplication are `soft'---two or more blocks of code are not exactly
+identical but contains identical snippets or share common pattern.
+We will refer to this type of hidden, quavery, and partially duplicate code as
+`soft duplication'.
+In contrast, we may refer to copy-n-paste code as `hard duplication'.
+Comparing with hard duplication, soft duplication is tougher to detect and remove.
+When dealing with soft duplication, one may perform pre-refactor to
+consolidate soft duplications into hard ones and then deal with hard duplication in the normal way.
 
 
 \section{Loop Initialization}\label{sec:loopInitialization}
 
-Initialization and the loop body each has its focus.
-Initialization is a preclude, a bridge to the loop body.
-Initialization is a `primer coating' that prepares a substrate for the loop body to
-deposit changes iteratively.
+Initialization is the preparatory code for a loop.
+%Initialization and the loop body each has its focus.
+It is a preclude, a bridge to the loop body.
+Initialization can also be deemed as a `primer coating' that prepares a substrate for the loop
+body to deposit changes iteratively.
 
 
-The single most important requirement for loop initialization is
-`Be small', apart from `Be correct'.
+A proper initialization lays the foundation of success of the loop implementation.
+A simple initialization helps reduce explicit and hidden code duplication.
+More often than not, loop initialization takes simple, effortless,
+intuitive values---integer $0$, empty list, zero-length string, array of simple values,
+\textit{etc}.
+But occasionally, initialization \code{int i = -1} may have an edge over \code{int i = 0}.
+This requires one to push the boundary to achieve a simpler initialization.
+
+
+As another brief example, when people think about Fibonacci sequence, they usually think it starts
+with $1$:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c}
+        \hline
+        $i$ & 1 & 2 & 3 & 4 & \ldots \\
+        \hline
+        $f(i)$ & 1 & 1 & 2 & 3 & \ldots \\
+        \hline
+    \end{tabular}
+\end{table}
+But add a zeroth-element to Fibonacci sequence sometimes opens new ways of thinking.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c|c}
+        \hline
+        $i$ & 0 & 1 & 2 & 3 & 4 & \ldots \\
+        \hline
+        $f(i)$ & 0 & 1 & 1 & 2 & 3 & \ldots \\
+        \hline
+    \end{tabular}
+\end{table}
+Similarly, when it comes to factorial, many people starts with $1!=1$, seldom $0!=1$.
+But the latter is a critical step toward the analytic expansion of the domain of factorial
+functions to complex domain, in which it is known as the $\Gamma$-function.
+
+
+You will see more cases later where generalization of the algorithm and/or the mathematical
+concept will make the coding, and particularly initialization, easier.
+Simplifying initialization process is especially important for dynamic programming.
+Interested readers may skip to ~\autoref{ch:dp} to look for more information.
+As in the `spiral termination' problem, sometimes looking for more general mathematical forms
+means backing off from the most `intuitive' initialization and this mindset may get you in another
+level of code proficiency.
+
+
+In light of the `loop rotation' technique, in some cases one can take advantage of the rotational
+degree of freedom of a loop to coalesce duplicate initialization
+or post-loop processing code into the loop.
+If you find that your initialization code actually repeats the loop body in whole or in part,
+or that the post-processing logic does similar things as the loop does,
+that's a sign that you should `tighten' your loop.
+
+
+Loop initialization should be trivial and light-weight.
+Apart from being correct, initialization should also be small.
 %Let each maintain its focus---a minimal, light-weight initialization focus on the preparatory work
-Loop body, on the other hand, does all the heavy lifting---it progressively mutate the loop state
-to the desired final result.
+On the other hand by design, loop body does the heavy lifting---it is responsible to progressively
+mutate the initialized state to the desired final state.
 
 
-What is the correct and minimal initialization?
-For example, should we initialize \code{int i = -1} or \code{int i = 0}?
-
-
-That's all the requirement for loop initialization.
 Pretty simple, isn't it?
-But to achieve this goal it is required that one form a habit of striving for the simplest
-initialization when facing similar situations.
+It depends.
+For one who has formed a habit of striving for the simplest,
+this requirement for initialization seems intuitive and natural.
+But for one who is new to this, it may be a struggle
+to figure out what is the correct and minimal initialization.
+For example, should the initialization be \code{int i = -1} or \code{int i = 0}?
 
 
-Let us take a look at the 'spiral termination' problem:
+Let us take a look at the 'spiral termination problem':
 \begin{quote}
     Given the dimensions of a $2$D matrix, $m$ and $n$,
     one is to visit each and every cell of the matrix in
@@ -512,32 +586,32 @@ Let us take a look at the 'spiral termination' problem:
 \end{quote}
 
 
-There are more than one solutions to this problems---iterative and recursive.
-But obviously we are here to demonstrate an iterative solution with a loop.
-Note that the problem only asks for the final position so
+There are more than one solutions to this problem---both iterative and recursive.
+We are here to demonstrate an iterative solution with a loop.
+Note that since the problem only asks for the final position,
 cells passed by along the way are irrelevant.
-Without making a pitch, the algorithm we are to implement is:
+As such, we can `hop' over cells.
+Without making too much a pitch, here is an outline of the algorithm we are to implement:
 \begin{quote}
-    `Stride' toward the terminating position.
-    In each stride, we leap passing one `layer' of cells.
-    A `layer' here consists of all the cells not yet visited but not completely surrounded by
-    unvisited neighbors (see ~\autoref{fig:spiral-term-iter}).
+    Approach the termination position in `strides'.
+    In each stride, we hop over a perimetric layer of cells.
+    A `perimetric layer' here consists of all the cells not yet visited but not completely
+    surrounded by unvisited neighbors (see ~\autoref{fig:spiral-term-iter}).
 \end{quote}
 
 
-In a big enough matrix, if we start off at $[i,j]$, then after we finish going
-around and visiting all the cells in one `layer', we would end up at $[i+1,j+1]$
-as shown in ~\autoref{fig:spiral-term-iter}.
-Please note that there is a special case---when the matrix is an array
-(either columnar or row) or, after being peeled off, becomes one,
-what remains are cells forming a straight line.
+In general, if we start off at $[i,j]$ and after we finish visiting a perimetric layer,
+we will finish at $[i+1,j+1]$ as shown in ~\autoref{fig:spiral-term-iter}.
+\ldots Albeit for special cases when the matrix is an array (columnar or row alike).
 In that case, the terminating cell is at end of the line.
 For now, we are going to handle this extra complication with post-loop processing.
-All put together, our code would look like this
+Altogether, apart from the to-be-determined initialization and post-loop calculation, the main loop
+looks like
 \lstinputlisting[]{loop/spiral_termination_todo.py}
-Note that all things is hang on the initialization.
-As long as the starting point is determined, the rest of the code will bring us to where it ends.
-But the question is ``What to start with?''
+Now all stake is laid on the initialization.
+As long as that can be determined, the rest of the
+code will bring it where need be.
+``But what is the starting point?''
 
 
 \begin{figure}[tbh]
@@ -556,31 +630,34 @@ At the first glance, initializing $i=j=0$ seems reasonable.
 For example, when $m=n=3$, after `peeling off' the outer layer, \code{i,j} becomes
 $[1,1]$ and indeed the process terminates on $[1,1]$.
 However we will encounter problem for case $m=n=2$, for after the outer layer, our program would
-end up on a eerily void state---our program erroneously ends with non-existent ghost cell $[1,1]$.
+end up on a eerie, non-existent cell $[1,1]$.
 (The correct answer should be $[1,0]$.)
 
-This teaches us a lesson---we are somehow one-step too forward in each iteration.
-As a result, this will create problems whenever \code{min(m, n)} is an even number.
-To make this work, some fix must be made.
-One remedial measure is to abstain from the last iteration because it is that which throws us off
-the cliff.
-By doing so, this condition would hold true upon loop termination:
-\code{1 <= min(m, n) <= 2}.
-We can then handle whatever is left in post-loop processing.
-With this fix, here is the first working solution:
+In retrospect, we are somehow one-step too further in each iteration.
+This will be a problem whenever \code{min(m, n)} is an even number.
+To make this work, one remedial measure is to abstain from the last iteration---it is the very
+iteration that throws us off the cliff.
+This is essentially applying the reverse process of `one-more iteration'
+We can thus refer to this process as `one-less-iteration'.
+Convince yourself that by doing so, this condition `\code{1 <= min(m, n) <= 2}' will hold true
+upon loop termination and the leftover is handled in post-loop processing.
+With this fix, here comes the first complete solution that works:
 \lstinputlisting[]{loop/spiral_termination_final.py}
-In this solution, the initialization is minimal, natural, and effortless to get,
-but the loop condition seems weird and arbitrary---\code{2 < m and 2 < n}.
+In this solution, the initialization is natural and trivial.
+But still the loop condition `\code{2 < m and 2 < n}' seems little unintuitive and arbitrary.
+After all, why `$2$'?
 
 
-This is not the only solution.
+Keep in mind that this is not the only solution.
 Far less so is it the best.
-A second thought to the `one-step-too-forward' issue---``Why not take a step back?''
+An straightforward thought to the `one-step-too-further' issue is ``Why not take a step back?''
+Let us take a step back, literally.
 %Let us step back from initializing \code{i, j = (0, 0)}.
-Instead of thinking of `the first cell of the next iteration', let us think 'the last cell in
-the previous iteration'.
-With that mindset shift, we can flip everything back to initialize \code{i, j} to
+Instead of thinking in terms of `the first cell of the next iteration', let us think in terms of
 `the last cell in the previous iteration'.
+With that mindset shift, we can flip our perspective from initializing the `starting point'
+to the `finishing point'.
+In other words, let \code{i, j} represents the finishing point.
 For example,  $[1,0]$ is one of `the last cells of iterations' in ~\autoref{fig:spiral-term-iter}.
 
 
@@ -636,8 +713,9 @@ More importantly, it is the key to get rid of the duplicate code.
 
 Without much ado, here is the iterative solution with the newly discovered initialization key:
 \lstinputlisting[]{loop/spiral_termination_virtual_init.py}
-This solution has an advantage over the previous one in that
-it has an extended input range which enables it to handle zero-sized matrices.
+This solution has an advantage over the previous in that
+its input domain is larger than other---it can handle zero-sized matrices while its predecessor
+cannot.
 This is analogous to concept of `analytic continuation' in complex analysis if
 reader is familiar with the topic.
 
@@ -646,64 +724,12 @@ As can be seen, changing the initialization from [0,0] to [0,-1] in between the 
 is a big deal to the program.
 As a result, the whole programming scenario is changed---the loop condition is changed,
 the post-loop processing logic is changed.
-This in part explains why it is so hard to refactor a loop---the stake of inadvertently changing
+This again explains why it is so hard to refactor a loop---the stake of inadvertently changing
 its behavior or correctness is very high.
 
 
 Through the `spiral termination' problem, we see that initialization plays a key role in loop
 implementation.
-Achieving light-weight initialization accounts for a big portion of the work in programming a loop.
-A simple initialization helps reduce explicit and hidden code duplication.
-More often than not, loop initialization takes simple, effortless,
-intuitive values---integer $0$, empty list, zero-length string, array of simple values,
-\textit{etc}.
-But occasionally, initialization \code{int i = -1} may have an edge over \code{int i = 0}.
-This requires one to push the boundary to achieve a simpler initialization.
-
-
-As another brief example, when people think about Fibonacci sequence, they usually think it starts
-with $1$:
-\begin{table}[H]
-    \centering
-    \begin{tabular}{c|c|c|c|c|c}
-        \hline
-        $i$ & 1 & 2 & 3 & 4 & \ldots \\
-        \hline
-        $f(i)$ & 1 & 1 & 2 & 3 & \ldots \\
-        \hline
-    \end{tabular}
-\end{table}
-But add a zeroth-element to Fibonacci sequence sometimes opens new ways of thinking.
-\begin{table}[H]
-    \centering
-    \begin{tabular}{c|c|c|c|c|c|c}
-        \hline
-        $i$ & 0 & 1 & 2 & 3 & 4 & \ldots \\
-        \hline
-        $f(i)$ & 0 & 1 & 1 & 2 & 3 & \ldots \\
-        \hline
-    \end{tabular}
-\end{table}
-Similarly, when it comes to factorial, many people starts with $1!=1$, seldom $0!=1$.
-But the latter is a critical step toward the analytic expansion of the domain of factorial
-functions to complex domain, in which it is known as the $\Gamma$-function.
-
-
-You will see more cases later where generalization of the algorithm and/or the mathematical
-concept will make the coding, and particularly initialization, easier.
-Simplifying initialization process is especially important for dynamic programming.
-Interested readers may skip to ~\autoref{ch:dp} to look for more information.
-As in the `spiral termination' problem, sometimes looking for more general mathematical forms
-means backing off from the most `intuitive' initialization and this mindset may get you in another
-level of code proficiency.
-
-
-In light of the `loop rotation' technique, in some cases one can take advantage of the rotational
-degree of freedom of a loop to coalesce duplicate initialization
-or post-loop processing code into the loop.
-If you find that your initialization code actually repeats the loop body in whole or in part,
-or that the post-processing logic does similar things that the loop does,
-that's a sign that you should `tighten' your loop.
 
 
 Before we conclude this section, I want to let you know that there is a 3-liner solution to the
@@ -720,19 +746,21 @@ meaningful and have their intrinsic value.
 
 \section{Dedupe Post-loop Processing}\label{sec:one-more-cycle}
 
-It is normal that after loop terminates, non-trivial post-loop logic is needed to
+It is normal that after loop termination, non-trivial post-loop logic is needed to
 transform the output to final form.
+But if one finds that the post-loop code repeats certain statements in the loop body,
+that is an alarm calling for code deduplication.
 But if one finds that the post-loop code shares similar functionalities,
 repeat certain steps in part or in whole with the loop body, one should sound the alarm.
-A technique to be explained below may help you solve the problem.
+A technique to be explained below may help you.
 
 
 This technique, named `one-more-cycle', changes the loop-termination condition so that
-the iteration length is extended by one, the loop body is executed \emph{one more time}
+the number of iterations in the loop is extended by one, the loop body is executed \emph{one more time}
 than otherwise.
 More often than not, extra logic in the loop body is needed to handle the extra iteration
-differently.
-This is especially true if it is only partial duplication.
+slightly differently.
+This is especially true if it is only soft duplication.
 
 
 Again, let me illustrate the whole process with a real example.

@@ -1,9 +1,9 @@
 board = BoardGame(board_size=8)
-board.printLegend()
-board.printBoard()
-move = board.getMove()
-print "Your move: {}".format(move)
-board.applyMove(move)
+(*@\hl{board.printLegend()}@*)
+(*@\hl{board.printBoard()}@*)
+(*@\hl{move = board.userInput()}@*)
+(*@\hl{print "Your move: {}".format(move)}@*)
+(*@\hl{board.applyMove(move)}@*)
 while not board.gameOver():
     state = board.computerMove()
     if state is None:
@@ -12,9 +12,9 @@ while not board.gameOver():
     elif state:
         print "Computer wins!"
         exit()
-    board.printLegend()
-    board.printBoard()
-    move = board.userInput()
-    print "Your move: {}".format(move)
-    board.applyMove(move)
+    (*@\hl{board.printLegend()}@*)
+    (*@\hl{board.printBoard()}@*)
+    (*@\hl{move = board.userInput()}@*)
+    (*@\hl{print "Your move: {}".format(move)}@*)
+    (*@\hl{board.applyMove(move)}@*)
 print "Human win!"

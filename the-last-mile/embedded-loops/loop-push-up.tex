@@ -6,9 +6,8 @@
 \chapter{Avoid Nested Loops} \label{ch:loop-thinning}
 
 We have laid the foundation about loop programming in ~\autoref{ch:loops}.
-In this chapter, we are going to address another common misbelief about nested loops.
-It is one of the common mistakes that an inexperienced developer tends to make is using
-nested loop where a seasoned developer would have avoided.
+In this chapter, we are going to address another common misbelief about nested loops---using
+nested loop where it should have been avoided.
 Although permitted by most programming languages, nested loops almost always bring about
 hindrance to code readability.
 %More often than not, they are mere nuisances when one tries to understand the semantics
@@ -25,19 +24,20 @@ More often than not, nested loops are not necessary and can be compressed into s
 dynamically paced loops with the help of auxiliary data structures, cascade conditionals, and so on.
 
 
-The only scenario where nested loops find sound usage for is iterating through $2$D or
-higher
-dimensional data structures like list of lists, matrices, \textit{etc.}
-With a tuple of indexes, \textit{e.g.} \code{i, j}, nested loops seem like a must.
-Even in such cases, the readability of the code is still a problem and confusion often raises
-about which index is for which dimension.
-Therefore opportunities still exist for one to refactor nested loops.
-For example, more meaningful
-functions with meaningful names for better code readability and reusability,
-each containing a single loop.
+The only scenario where one may find sound usage for nested loops is iterating through $2$D or
+higher dimensional data structures like list of lists, matrices, \textit{etc.}
+With an pair of indexes \code{int i=0, j=0}, a nested loop
+has become the commonplace for iterating through a matrix.
+Whether or not nested loop is the best practice is still arguable that even in such cases.
+I found this is confusing as to which index is for which dimension.
+It is at least an alternative to refactor the inner loop into a separate, dedicated
+function with a self-explaining function name, better code encapsulation and cohesion.
+%with meaningful names for better code readability and reusability, each containing a single loop.
 Some may argue that function invocation overhead may hurt performance especially inside a loop.
-My answer to that is that if you really care about performance you would have vectorized
-your code to use built-in matrix operations instead of nested loops.
+My response to that is that performance is not the main concern here, \emph{yet}.
+Holding up multiple goals at once will likely get us closer to none.
+When performance becomes the pursuit, there are often solutions, such as vectorization for
+matrix operations.
 %But whichever way you go, it involves function calls.
 
 
@@ -48,7 +48,7 @@ your code to use built-in matrix operations instead of nested loops.
 %Let us ask this question: ``Under what circumstances can nested loops be replaced by thinner
 %loops?''
 Many situations that nested loops appear so compelling or even inevitable are not so
-in retrospection.
+in retrospect.
 We are going to present techniques that help guide one to coalesce nested loops
 into a single loop in certain scenarios, which we
 generally refer as `loop thinning' technique.
@@ -61,13 +61,13 @@ from a `sliced view' on the same data structure.
 %information in addition to the main data structure.
 
 
-As result of the `loop thinning' process, one or more of the following may
-be true:
+As result of the `loop thinning' process, one or more of the following measures may
+be helpful:
 \begin{itemize}
-    \item Use of extra conditional construct or test;
-    \item Pacing of outer loop becomes more dynamic;
-    \item Extra boundary condition handling logic;
-    \item Use of additional auxiliary data structures for the outer loop, such as a queue or stack.
+    \item Use extra conditional construct or test;
+    \item Make the pacing of outer loop becomes more dynamic;
+    \item Use extra boundary condition handling logic;
+    \item Use additional auxiliary data structures for the outer loop, such as a queue or stack.
 \end{itemize}
 
 
@@ -85,22 +85,22 @@ pre-inner-loop section, inner-loop section, and post-inner-loop section
 
 
 The gist for flattening nested loops is as follows.
-First, use `loop rotation' technique (see ~\fullref{ch:loops})
-to move pre-loop statements out of the way;
+First, we need to move pre-loop statements out of the way.
+To that end, use `loop rotation' technique (see ~\fullref{ch:loops}) backward
+to unwind the pre-loop statements.
 %Then internalizing the condition of inner loop so that it becomes an unconditional loop, if not
 %already---for example,
 %by converting the loop condition as a conditional \code{break} statement inside the loop body;
 The second step depends on the inner loop construct.
-If the inner loop has a non-trivial loop condition, then the inner loop can
-be converted to a conditional construct as-is by keyword swapping---\code{while} $\rightarrow$
+If the inner loop has a \emph{non-trivial loop condition}, then the inner loop can
+be converted to a conditional construct as-is by keyword swapping: \code{while} $\rightarrow$
 \code{if}.
-At the same time, the post-inner-loop statements shall be wrapped away in an \code{else}-clause
-piggybacking the newly formed conditional.
-On the other hand, if it is an unconditional loop, chances are that a conditional \code{break}
-statement is somewhere in the loop body.
+At the same time, the post-inner-loop statements shall be wrapped away in a piggybacking
+\code{else}-clause.
+On the contrary, if the inner loop is \emph{unconditional}, chances are that
+there is a conditional \code{break} statement somewhere in the loop body.
 Then one can tuck the post-inner-loop statements under the conditional of the
-\code{break} statement.
-Then the inner loop can be stripped away along with the deletion of the \code{break} statement.
+\code{break} statement replacing the latter, and the inner loop can be stripped away.
 
 
 %shield post-loop statements in a conditional clause, probably in the `\code{else}-block' of the
@@ -108,24 +108,25 @@ Then the inner loop can be stripped away along with the deletion of the \code{br
 %shield the post-loop statements in an additional conditional block.
 %convert the inner loop---if it is an unconditional, infinite loop, just remove it, if with a
 %condition, convert it to a conditional or prepend to an existing one
-Finally, with the newly formed conditional statements,
-one may refer to the best practices presented in ~\autoref{ch:conditional-cascade}
-to optimize the loop body into cascade conditionals.
 Throughout the process, please pay special attention to bypassing statements, such as
 \code{break} and \code{continue}.
+Regardless which venue ws taken, new conditional statements are inevitably formed.
+one may refer to ~\fullref{ch:cascif} for best practices on how to organize effective
+cascading conditionals.
 %Note that the order of the last two steps, creating the conditional and creating the
 %\code{else}-clause, may be adjusted depending on the situation---it is essentially a
 %`chicken or the egg' problem.
 
 
-Additionally here are some preparatory tips for those who are new to this.
-Where needed before one starts, one shall take apart compound statements, especially the
-non-idempotent conditions.
+Apart from the prescribed steps, some preparatory measures may be taken beforehand
+to reduce the friction during the refactor process.
+Where needed, compound statements may be taken apart before one wades deep.
 Compound statements may get in your way of refactoring for multiple reasons.
-The most prominent one is that the components of a compound statement
-may be broken down and put at different places for `loop thinning' refactoring.
-Non-idempotent expressions in the condition of conditional statements are even more troublesome
-because their the mere test of the condition may irreversibly alter the state of the loop.
+The most obvious reason is that, well, parts of a compound statement
+may end up at different places after refactoring.
+Non-idempotent conditional expressions, such as \code{if (--i < 0)}, are even more lethal
+because each execution of the condition ratchets the state of the loop, leaving no time for
+taking a breath.
 For example,
 \begin{lstlisting}
     while (++i < LIMIT);
@@ -343,7 +344,7 @@ in the densely packed inner loops:
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-The loop conditions are peculiar because both `\code{++s}' and `\code{--e}' rigorously ratchet the
+The loop conditions are peculiar because both `\code{++s}' and `\code{--e}' ruthlessly ratchet the
 loop state whenever the condition is tested.
 Namely, each evaluation of the loop condition causes the pointers `\code{s}'
 and `\code{e}' to advance.

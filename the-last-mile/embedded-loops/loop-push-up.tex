@@ -168,21 +168,27 @@ In what follows, we are going to demonstrate application of `loop thinning' tech
 a few examples adapted from real-world programming projects.
 
 
-\section{Case Study: `Maximum Rectangular Area Under Histogram'Problem}
+\section{Case Study: `Maximum Rectangular Area in Histogram'}
 \label{sec:nested-loop-histogram}
 
-The first case of study is a leftover from last chapter, ~\fullref{ch:loops}.
-In the code snippet of ~\autoref{lst:histogram-oneMoreCycle}, we removed duplicate post-loop
-processing code.
-Because of the nested loop, the solution looks complicated and messy
-Let us try to follow the `loop thinning' steps to coalesce the nesting loops
-into a single loop.
-First, convert the \code{for}-loop into a \code{while}-loop as preparation.
-Noting that there is no pre-inner-loop section, we can directly proceed with the next
-step---simply replace keyword\code{while} with \code{if} to convert the inner loop to a
-conditional construct with the loop condition used as is.
-Finally, we append an \code{else}-clause for the newly converted conditional statement and place
-the post-inner-loop statements, both \code{stack.push(i)} and \code{++i}, in it.
+As the first case study, let us finish a leftover project from ~\fullref{ch:loops}.
+In producing the implementation as shown in snippet ~\autoref{lst:histogram-oneMoreCycle},
+we removed duplicate post-loop processing code.
+But the solution still looks overly complicated and messy.
+What's wrong with it?
+Nested loops!
+Because of the nested loops, the code looks more crowded and sumptuous than it need be.
+In this example, we are going to take the `loop thinning' technique for a road test.
+We are going to follow closely the steps prescribed in `loop thinning' to coalesce the
+nesting loops into a single loop.
+The first preparatory step, converting the \code{for}-loop into a \code{while}-loop, is
+straightforward and eventless.
+Secondly, since there is no pre-inner-loop section, we can proceed directly with the next
+step---eliminating inner loop.
+To that end, we can simply replace keyword ~`\code{while}' with ~`\code{if}', using the loop
+condition as is for the conditional construct.
+Finally, an \code{else}-clause may be appended to the newly formed conditional statement to
+house the \emph{post-inner-loop} statements, both \code{stack.push(i)} and \code{++i}, in it.
 After all these are completed, the code looks like
 \lstinputlisting[label={lst:histogram-coalesced-loop},
 caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
@@ -190,122 +196,180 @@ caption={Code for solving the `Maximum rectangular area under histogram' using a
 
 
 In comparison with ~\autoref{lst:histogram-oneMoreCycle}, solution in
-~\autoref{lst:histogram-coalesced-loop} is much more straightforward.
-Its runtime is unambiguously $O(N)$ because there is only one loop, each element is pushed and
-popped only once, and in each iteration either an item is pushed or popped.
+~\autoref{lst:histogram-coalesced-loop} is much simpler and more transparent.
+At a glance, one can unambiguously see its $O(N)$ runtime---for there is only one loop,
+in each iteration an item is either pushed in or popped out,
+and each item is subject to such operation no more than once.
 
 
-Other changes may be applied to make the code look better.
-For example, one may combine the two statement in the \code{else}-block into
+Some nonessential changes may be made to make the code more compact.
+For example, one may combine the two statements in the \code{else}-block into
 `\code{stack.push(i++)}'.
-Further, one may avoid excessive boundary condition checks such as
+Further, there is another category of changes that deal with excessive boundary checking,
+such as
 `\code{stack.isEmpty()}' and `\code{i == heights.length}'.
 We will leave this to ~\fullref{ch:sentinels}.
 But remember that these latter changes are optional
 as they are nonessential for the `loop thinning' technique.
 
 
-\section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
+\section{Case Study: quicksort}\label{sec:nested-loop-quick-sort}
 
-This is a classical example that was detailed by classical books such as `Programming
+We will now consider another case study.
+This is a classical example that was detailed by books such as `Programming
 Pearls' and `Numerical Recipes'\cite{Bentley:1986:PP, NumericalRecipes:1992}.
-It completely redefined what is simple code for me.
+My encounter with the code in these books completely redefined the word `simplicity'
+in my dictionary.
 
 
-My first implementation of the quick sort algorithm was in C based off
-the traditional `Hoare's partitioning' scheme, as presented
-in `Numerical Recipes' (minus the sentinel part which is to be explained in
-~\autoref{ch:sentinels}).
+My first implementation of the quicksort algorithm was in C based off
+the traditional ``Hoare's partitioning'' scheme, as presented
+in `Numerical Recipes' (minus the sentinel part).
+But in what follows, I am going to present the idea in \python.
 
 
-The entry point to the quick sort function is as follows.
+The outline of the quicksort function is as follows.
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
-caption={An implementation of quick sort algorithm.}]
+caption={An implementation of quicksort algorithm.}]
 {embedded-loops/quicksort_outline.c}
-where the starting and ending pointers to the array are parameters to the partition function
-`\code{part}'.
-It is a recursive function whose base case is the no-op case---arrays with fewer
-than two elements.
-An array would undergo a series of partitioning operations until each partition is reduced to
-base case at which point a final swap may be performed and the entire array is sorted.
+where arguments \code{s} and \code{e} are the starting (inclusive) and ending (exclusive) pointers
+to the array.
+`\code{part}' is a recursive function whose base case is no-op, namely,
+arrays with fewer than two elements.
+With a pivot element randomly chosen out of the array,
+a large array is partitioned into three consecutive parts: the pivot element in the middle, a
+subarray on the left, and a subarray on the right.
+Then the pivot element is swapped into its final position.
+After this, each of the two subarrays is subject to the same function.
+So on and so forth until each subarray is reduced to the base case.
+At the return of the first call of the function, the entire array is left in sorted state.
 
 
-It is critical to note that the partitioning function divide an array into three
-parts---the left partition lesser or equal to the pivot element, the pivot element,
-and the right partition greater or equal to the pivot element, in that order.
-It may be the case that one or the other, but not both, of the left and right partitions is empty.
-Finally a pointer pointing to the pivot element is returned.
+As you may have noted, we emphasise that the partitioning function divides an array into three, not
+two, parts---the pivot element $p$, the partition $\leq p$, and the partition $\leq p$.
+This is crucial to the convergence / termination of the function.
+It may be the case that one or the other of the two partitions is empty.
+But even so, please remember the partitioning scheme employed in quicksort is \emph{three-way}.
 
 
-With the Hoare's partitioning scheme, the function \code{part} in my implementation is as
+With the Hoare's partitioning scheme, a tentative implementation for the function \code{part} is as
 follows.
 \lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
-caption={Implementation of Hoare's partition scheme for quick sort.}]
+caption={Implementation of Hoare's partition scheme for quicksort.}]
 {embedded-loops/quicksort_partition_sym.c}
 First, we randomly select a pivot element and swap it to the beginning of the array
 (ask yourself: ``why beginning of array?
 Why not end?'').
-Then two pointers, \code{s} and \code{e}, start from the opposite ends of the array
-and wade through the array to meet each other.
-They stop at out-of-place elements.
-When both stop, they swap out-of-place elements and back on the journey toward each other.
+Then two pointers, \code{s} and \code{e}, starting off the opposite ends of the array,
+wade toward each other.
+Each of them makes stop at `out-of-place' element.
+When both stop, that is when a pair of `out-of-place' elements have been discovered,
+a swap is performed to bring both elements to the respective partitions they belong to.
+Then the pointers are back on their way toward each other once again.
 So on and so forth until they meet or cross.
-At that point, the pivot element (at the beginning of the array) is swapped into its final position
-and a pointer to this final position is returned.
+At that point, the pivot element (at the beginning of the array) is swapped into its final position.
+Finally, a pointer pointing to this position is returned.
 
 
-The algorithm is straightforward to visualize but is actually tricky to implement.
-So much so that once in a while it may take me a good two days to implement
-a solution that passes a handful of basic test cases.
-Among the frequently-made bugs in passing, a partial `gotcha' list is as follows:
+The above visual description of Hoare's partitioning scheme disguises the true complexity of
+implementing it.
+%unexpectedly tricky to implement.
+so much so that once in a while when my memory of any previous implementations becomes blurry or
+totally fades away, it may take me quite a few days to implement a solution that can pass a
+handful of unwitty test cases.
+Thus repeated several times, I decided to summary the frequently-made bugs and produced a list of
+`gotcha' as follows:
 \begin{enumerate}
-    \item Pointers come to a stall
-    %    \item Bug in pivot election (failed to swap)
-    \item Bug in left pointer increment (each execution of the inner \code{while}-loop should
-    cause at least one increment (decrement) operation unless boundary is met.)
-    \item\label{itm:quicksort-boundary-condition} Incorrect boundary condition for pointer \code{e}
-    (incorrectly set to \code{s < e}).
-    \item Outer loop termination logic.
+    %    \item Pointers come to a stall before meet or cross
+    \item In pivot election, fail swapping pivot element to the beginning of array
+    \item For the pointers \code{s} and \code{e}, there are two hesitating options:
+    `check-then-increment' or `increment-then-check'.
+    The first option leads to infinite loop for certain cases.
+    \item Also a choice between `\code{<= pivot}' and `\code{< pivot}' for \code{s},
+    `\code{>= pivot}' and `\code{> pivot}' for \code{e}.
+    Incorrect choice may inadvertently cause pointer incrementation to be skipped under
+    obscure circumstances which will, in turn, cause infinite loop
+    (Remember that under no circumstances, should either pointer stops approaching each other in
+    any outer loop iteration before they meet or cross.)
+    \item\label{itm:quicksort-boundary-condition} In the second inner loop for pointer \code{e},
+    failing to check boundary condition causes `out-of-boundary' exception.
+    Incorrect boundary condition, such as \code{s < e}, again cause pointer \code{e} to stall
+    in the middle of the right partition.
+    This will cause the pivot is placed at the wrong place at the return of function.
+    \item Outer loop termination logic also needs deliberation.
+    The key decision to make is `where to break or return' rather than `when to break or return'.
+    For ~\autoref{lst:nestedLoopHoareMethod}, the choice of location of return
+    at the end of the loop body was made after quick a few failed attempts.
     \item Fail to swap the pivot element to its final position.
+    This step often poses a stumbling block for beginners as well as other unsuspecting
+    developers.
 \end{enumerate}
 In fact just to debug ~\autoref{itm:quicksort-boundary-condition} and
-figure out the correct condition \code{pivot < e}, instead of \code{s < e}, took me $2$ hours.
-Also, in the function \code{qsort}, the arguments to the recursive calls took a long time of
-deliberation before I finally got them right.
+figure out the correct condition \code{pivot < e}, instead of \code{s < e}, took me $2$ good hours.
+Also, deciding out the semantics of the function arguments in `\code{qsort}' took me
+quite some deliberation before I finally got them right.
 
 
-To make the situation more complicated, different parts of the code are tightly
-coupled---changing one would demand changes in other places.
-For example, the returned pointer was switched among \code{s}, \code{s+1}, \code{e}, and
-\code{e-1} multiple times.
-Accompanying these changes, adjustments for the recursive calls are made from \code{qsort(s, p),
-qsort(p, e)} to \code{qsort(s , p - 1), qsort(p, e)}, to \code{qsort(s, p + 1), qsort(p + 2, e)},
-so on and on.
-The number of combinations explodes.
+A large part of the complication of the problem comes from the fact that this implementation
+consists of many parts that are highly entangled---changing one would necessitate simultaneously
+changing others.
+For example,
+%the return value of the partition function is picked among .
+suppose we are going to change the semantics of \code{e} from exclusive to inclusive, what
+would the pointer to be returned change to?
+\code{s}? \code{s+1}? \code{e}? Or \code{e-1}?
+Accompanying these changes, the recursive calls
+\begin{lstlisting}
+    qSort(s, p);
+    qSort(p + 1, e);
+\end{lstlisting}
+also need changes.
+With the choice of return value, should the recursive calls be changed to
+\begin{lstlisting}
+    qsort(s, p - 1)
+    qsort(p + 1, e)
+\end{lstlisting}
+or
+\begin{lstlisting}
+    qsort(s, p + 1);
+    qsort(p + 2, e);
+\end{lstlisting}
+or some other form?
+The number of combinations for such changes grows exponentially as the degree of coupling increases.
 
 
-This explains why it is so hard to implement this seemingly simple partitioning function correctly.
+This partially explains why it is so hard to correctly implement this seemingly simple partitioning
+function.
 On the one hand, the problem itself is complicated---the number of loose parts exceeds what our
 brain can comfortably handle at once.
-On the other, however, the way we approach the problem exacerbates the
-severity---we attempted to fight too many wars all at once.
+On the other, however, the way we approach the problem makes it harder---it is all because
+we attempted to fight too many wars all at once.
+The complicxity of the problem is doubled, tripled the moment we decide to send one pointer for each
+end of the array to meet in the middle.
 
 
-Is there a more straightforward way to implement the quick sort algorithm?
+Is there a more straightforward way to implement the quicksort algorithm?
 Yes!
-By dispatching two pointers both from the left end of the array,
-one forerunner and one lagger, advancing at their own paces,
-the Lomuto's partitioning scheme essentially simplifies the
-partitioning scheme by fighting one war with one frontier.
-The forefront pointer discovers and swaps out-of-place elements and the hind pointer guards
-the boundary of partitions.
-Notably, implementing this partitioning scheme only needs one loop as given below.
+There is a simpler and more compact partition scheme credited to Nico Lomuto\cite{Bentley:1986:PP}.
+By sending two pointers off the same end of the array, the Lomuto's partitioning scheme
+successfully avoids fighting two frontiers at the same time and thus greatly simplifies the
+partitioning process.
+
+
+The two pointers each has a distinct task, each on its own pace.
+The one running in front, so-named `frontier', is responsible to discover out-of-place elements.
+The one running behind, aka, `guardian', guards the partition boundary.
+When the frontier discovers an out-of-place element, the guardian pointer is incremented to make
+room for it and a swap places it there.
+Finally, the pivot element is swapped at the boundary place.
+Notably, implementing this partitioning scheme only needs one loop
+(see blow ~\autoref{lst:nestedLoopOnePointer}).
 \lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
-caption={Implementation of partition function for Quicksort using one pointer.}]
+caption={Implementation of Lomuto's partition scheme for quicksort.}]
 {embedded-loops/quicksort_partition_asym.c}
 
 
-It must be mentioned that the simplicity of this program comes with performance penalty
+As expected, the simplicity of this program comes with performance penalty
 for certain cases,
 One such case is a large array with many equal-valued elements where
 the Lomuto's partitioning scheme would degrade to $O(N^2)$ runtime complexity (Can you figure out
@@ -327,7 +391,7 @@ What a simplification!''
 
 
 Greedy developers cannot help but ask
-``Can one implement quick sort with the simplicity but not the
+``Can one implement quicksort with the simplicity but not the
 performance degradation of Lomuto's?''
 Now that we have the `loop thinning' technique in hand, we can give it try.
 %The aforementioned loop thinning technique can be used to further simplify the Hoare's partitioning
@@ -395,7 +459,7 @@ we implemented the Hoare's algorithm with a single loop plus
 cascading conditionals as ~\autoref{lst:nestedLoopHoarePartSingleLoop}.
 In the process, we used the `loop rotation' techniques, the `loop thinning' techniques,
 and skills concerning the construction of cascading conditionals from earlier chapters.
-The new quick sort implementation retains the optimal runtime as Hoare's algorithm but has
+The new quicksort implementation retains the optimal runtime as Hoare's algorithm but has
 comparable simplicity as that of Lomuto's.
 That's almost too good to be true!
 %If this does not impress you, then you have no feeling.

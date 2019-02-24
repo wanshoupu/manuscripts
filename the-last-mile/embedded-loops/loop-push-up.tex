@@ -344,8 +344,8 @@ On the one hand, the problem itself is complicated---the number of loose parts e
 brain can comfortably handle at once.
 On the other, however, the way we approach the problem makes it harder---it is all because
 we attempted to fight too many wars all at once.
-The complicxity of the problem is doubled, tripled the moment we decide to send one pointer for each
-end of the array to meet in the middle.
+The complexity of the problem is doubled, or tripled, the moment we decide to send one pointer
+from each end of the array to meet somewhere in the middle.
 
 
 Is there a more straightforward way to implement the quicksort algorithm?
@@ -363,95 +363,113 @@ When the frontier discovers an out-of-place element, the guardian pointer is inc
 room for it and a swap places it there.
 Finally, the pivot element is swapped at the boundary place.
 Notably, implementing this partitioning scheme only needs one loop
-(see blow ~\autoref{lst:nestedLoopOnePointer}).
-\lstinputlisting[label={lst:nestedLoopOnePointer},language=C,
+(see blow ~\autoref{lst:singleLoopLomuto}).
+\lstinputlisting[label={lst:singleLoopLomuto},language=C,
 caption={Implementation of Lomuto's partition scheme for quicksort.}]
 {embedded-loops/quicksort_partition_asym.c}
 
 
-As expected, the simplicity of this program comes with performance penalty
-for certain cases,
-One such case is a large array with many equal-valued elements where
-the Lomuto's partitioning scheme would degrade to $O(N^2)$ runtime complexity (Can you figure out
-why it is so?).
+Comparing ~\autoref{lst:nestedLoopHoareMethod} with ~\autoref{lst:nestedLoopHoareMethod},
+one can't help but be surprised ``Seriously?
+A single loop can replace three?''
+
+
+Unlike the arduous implementation and debugging process of Hoarse's,
+that of the Lumoto's partitioning scheme has fewer moving parts, contains fewer surprises, and is
+easier to follow.
+However there is no free lunch.
+The simplicity of Lumoto's quicksort comes with performance penalty
+for certain cases, with one such case being large arrays with a significant amount of elements
+of the same value.
+In such cases,
+the Lomuto's quicksort scheme tends to degrade to quadratic runtime complexity.
+(Can you figure out why?)
+In comparison, the Hoarse partitioning scheme is stable and
+robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
 %\footnote{The reason is as follows.
 %When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
-%and ~\autoref{lst:nestedLoopOnePointer} still do pair-wise swap among two equal elements.
+%and ~\autoref{lst:singleLoopLomuto} still do pair-wise swap among two equal elements.
 %But the ending position for the pivot element is seriously off to the right end of the array for
 %Lomuto's partitioning scheme whereas that of the Hoare's ends up at the middle.}.
 For this reason, Lomuto's partitioning scheme is not suitable for general-purpose libraries.
 
 
-However, this code is still inspiring in both its simplicity and elegance while performing the same
-task that a tricky, complicated program does.
-Looking at ~\autoref{lst:nestedLoopHoareMethod} and the arduous debugging process to bring it about,
-one can't help but thinking ``Wow!
-A single loop takes the place of three nested loops.
-What a simplification!''
-
-
-Greedy developers cannot help but ask
-``Can one implement quicksort with the simplicity but not the
-performance degradation of Lomuto's?''
-Now that we have the `loop thinning' technique in hand, we can give it try.
+However, Lomuto's quicksort algorithm is still inspiring for its simplicity and elegance.
+It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
+\emph{and} the performance of Hoarse's?''
+I don't know for sure.
+But with our `loop thinning' technique and other tools we developed in the last chapter and this, we
+can explore a little bit to see if we can approach the above goal any closer than the existing
+two schemes.
+%Now that we have the `loop thinning' technique in hand, we can take on this challenge for a good
+%cause.
 %The aforementioned loop thinning technique can be used to further simplify the Hoare's partitioning
 %algorithm.
-Starting with the implementation of Hoare's partitioning as ~\autoref{lst:nestedLoopHoareMethod},
-let us see if there is a way to simplify the nested loops.
+Our starting point is the Hoare's quicksort implementation of ~\autoref{lst:nestedLoopHoareMethod}.
+As mentioned earlier, the trickiest part of that program is the nested loops which also consists
+of the major complication.
+Let us forcus on getting rid of that.
 %a single-loop with cascade conditionals in the loop body
 %(refer to ~\autoref{ch:conditional-cascade}).
 
 
-The first encountered difficulty is the awkward conditional construct
-in the densely packed inner loops:
+The immediate difficulty is how to take apart the densely packed conditional construct:
 \begin{lstlisting}
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-The loop conditions are peculiar because both `\code{++s}' and `\code{--e}' ruthlessly ratchet the
-loop state whenever the condition is tested.
-Namely, each evaluation of the loop condition causes the pointers `\code{s}'
-and `\code{e}' to advance.
-If converted to conditional statements as is, it would not work as after certain conditions are
-met, we need to hold the state and swap out-of-place elements.
-But the program leaves us no chance to hold state.
+The loop conditions here are unusual and awkward to handle
+because both `\code{++s}' and `\code{--e}' ruthlessly ratchet the loop state forward
+whenever control is passed to this line.
+Namely, each evaluation of the loop condition, even if the condition evaluates to false, the
+pointers `\code{s}' and `\code{e}' are still incremented.
+If we use these conditions as is in the to-be conditional constructs, we would end up in a
+dilemma---when we discover out-of-place elements, we would pass them without swap in the next
+iteration because the program does not leave us any chance for that.
 
 
-So as a preparatory measure, we need to unfold the conditions of inner loops into
-`normal' constructs before proceeding with other steps.
-As we learned in ~\fullref{ch:loops}, these loops may be converted to
-\code{do-while} loops such as
+With the existing programming languages' syntaxes, we have no choice but to break
+up the pre-incremental statements.
+So something must be done to unfold the extraordinary loop conditions to
+ordinary ones before we proceed with the rest of the `loop thinning' procedure.
+As we learned in ~\fullref{ch:loops}, these loops may be converted first to
+`\code{do-while} loops' such as
 \lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_do_while.c}
-and then to \code{while}-loop:
+and the latter are, in turn, converted to `\code{while} loops':
 \lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_while.c}
-After these changes, our the partition function becomes
+After these changes are applied, our the partition function becomes
 \lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_expanded_inner_loop.c}
 You may have noticed that we have floated ~\code{--e} up in front of the first inner loop,
 and this does not affect the correctness as can be verified.
+The solution now seems equally messy, if not more so, as we started.
+However, as you will see, this form will prove useful for the subsequent refactor step---`loop
+rotation'.
 
 
-Now we can proceed with the second step
-of loop thinning---move the pre-inner-loop statements out of the way with
-`loop rotation' technique.
+Now we can proceed with the next step
+of loop thinning---move the \emph{pre-inner-loop statements} out of the way.
 (``Loop rotation'' is specified in ~\fullref{sec:LoopDesignConsideration}.)
 After this step, the code becomes:
 \lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_rotated_inner_loop.c}
-We have accelerated the process by tucking the post-inner-loop statements resulted from the loop
-rotation to a conditional block.
+We have accelerated the process by tucking the \emph{post-inner-loop statements}
+resulted from the loop rotation to a conditional block.
 
 
 Now we are ready with the third and most exciting step---converting inner loops to conditionals.
-There is a minor complication we have not encountered so far:
-we need to covert the second loop to an
-`\code{else if}' clause of the first because the second inner loop is done after the first.
-Our final result is posted below after the conversion:
-\lstinputlisting[label={lst:nestedLoopHoarePartSingleLoop},language=C,
+Now we encounter a complication that is new to us: we need to covert the second loop to an
+`\code{else if}' clause of the first because the second inner loop is executed only after the first
+exits.
+Our final result is posted below after the conversion to conditional construct:
+\lstinputlisting[label={lst:nestedLoopHoarePartSingleLoop},language=C,escapechar=$,
 caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_single_loop.c}
 Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
-By now we conclude our ``loop thinning' refactor process.
+%By now we conclude our ``loop thinning' refactor process.
 
 
+By now,
+we achieved our goal of a quicksort partitioning implementation that has the simplicity of
+Lomuto's and the robust performance of Hoarse's.
 In retrospection, we set off to test the hypothetical quest for a simple but performant
 partitioning scheme that comprises the advantages of Lomuto's and Hoare's partitioning scheme.
 Comparing with where we started off ~\autoref{lst:nestedLoopHoareMethod},
@@ -463,14 +481,21 @@ The new quicksort implementation retains the optimal runtime as Hoare's algorith
 comparable simplicity as that of Lomuto's.
 That's almost too good to be true!
 %If this does not impress you, then you have no feeling.
+While we can make the solution simpler with the use of sentinel, we will leave that discussion to
+next chapter.
+However there is one change that can provide a little more saving.
+If we change the semantic of ending pointer \code{e} from exclusive to inclusive, the
+pre-increment before the loop (line~\ref{quicksort:pre-increment} of
+~\autoref{lst:nestedLoopHoarePartSingleLoop}) would not be necessary.
 
 
-Another reason for the case studies of this chapter is that by the detailed refactor
-processes, I want the reader to have a feeling about software development model.
+As a byproduct of going through the detailed refactor
+processes for the cases of this chapter, I want the reader to have a feeling about software
+development model.
 As we can see the most fruitful software development model, undoubtedly, is to come up with a
 working solution first.
-However shabby, messy, unrefined a solution it may be, just have it passes a handful of unit
-tests.
+However shabby, messy, primitive a solution it may be, as long as it can pass a handful of unit
+tests, it will be a great starting point.
 
 
 Then through meticulous optimization process, for which many of the techniques we have talked
@@ -508,92 +533,96 @@ This will help one pick the most effective solution to the original problem.
 %\end{clisting}
 
 
-\section{Case Study: Search for Needle in Haystack Problem}\label{sec:nested-loop-pattern-matching}
+\section{Case Study: ``Needle in Haystack'' Problem}\label{sec:nested-loop-pattern-matching}
 
-For this case study, let us consider the `Search for a needle in a haystack' problem:
+In this case study, let us consider the `needle in a haystack' problem:
 \begin{quote}
-    ``Given two strings \code{needle} and \code{haystack}, search for the first occurrence of
-    \code{needle} in the \code{haystack}.''
+``Given two strings \code{needle} and \code{haystack}, search for the first occurrence of
+\code{needle} in the \code{haystack}.''
 \end{quote}
-There are many string matching algorithms with various run time complexities.
-Some of them are simple to implement with quadratic runtime complexity.
-Some else have superior runtime but require fairly sophisticated preprocessing,
-such as Boyer–Moore algorithm
-\footnote{\url{https://en.wikipedia.org/wiki/Boyer–Moore_string-search_algorithm}} and
-Knuth–Morris–Pratt algorithm
-\footnote{\url{https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm}}.
+String matching algorithms come with various run time complexities.
+There are simple string matching algorithms with quadratic runtime complexity.
+There are also fairly sophisticated algorithms that enjoy `$O(M + N)$' linear runtime,
+such as Boyer-Moore algorithm
+\footnote{\url{https://en.wikipedia.org/wiki/Boyer-Moore_string-search_algorithm}} and
+Knuth-Morris-Pratt algorithm
+\footnote{\url{https://en.wikipedia.org/wiki/Knuth-Morris-Pratt_algorithm}}.
 
 
-In this section, we are going to leave these fancy algorithms and implementations but focus on
-a rudimentary, naïve algorithm with a $O(MN)$ runtime.
-The reasons are two-fold.
+In this section, we are going to focus on
+a rudimentary, naïve algorithm with a $O(MN)$ runtime with the following considerations.
+%The reasons are two-fold.
 For one, this algorithm is the foundation of the more advanced algorithms.
-For two, even this rudimentary algorithm takes considerable coding skills
-out of a developer to correctly implement, and thus it makes a great example to illustrate
+For two, this algorithm also takes considerable coding skill to be implemented correctly.
+Thus it makes a great example to illustrate
 the various coding techniques we have presented so far.
 
 
 The naïve algorithm is outlined as follows.
 \begin{alisting}
-    \caption{\label{alg:string-search-naive-algorithm}
-    A naïve algorithm for string search whose runtime complexity is $O(MN)$ where $M$ and $N$ are
-    the string lengths.}
-    \begin{enumerate}
-        \item For each index \code{i} in $[0, M-1]$, the index for the character array of
-        the `\code{haystack}'
-        \begin{enumerate}
-            \item For each index \code{j} in $[0, N-1]$, the index for the
-            character array of the `\code{needle}'
-            \begin{enumerate}
-                \item If characters at \code{i} and \code{j} do not match, break the inner loop
-            \end{enumerate}
-            \item If substring \code{s[i:i+j]} equals `\code{needle}', return \code{i}
-        \end{enumerate}
-        \item return -1
-    \end{enumerate}
+\caption{\label{alg:string-search-naive-algorithm}
+A naïve algorithm for string search whose runtime complexity is $O(MN)$ where $M$ and $N$ are
+the string lengths.}
+\begin{enumerate}
+\item For each index \code{i} in $[0, M-1]$, the index for the character array of
+the `\code{haystack}'
+\begin{enumerate}
+\item For each index \code{j} in $[0, N-1]$, the index for the
+character array of the `\code{needle}'
+\begin{enumerate}
+\item If characters at \code{i} and \code{j} do not match, break the inner loop
+\end{enumerate}
+\item If substring \code{s[i:i+j]} equals `\code{needle}', return \code{i}
+\end{enumerate}
+\item return -1
+\end{enumerate}
 \end{alisting}
 
 
-Let us start with a \java ~implementation with nested loops:
+Let us begin with a nested loop solution implemented in \java as follows:
+\begin{clisting}
 \lstinputlisting[label={lst:nestedLoop-string-search},caption={Code snippet with nested loops.}]
 {embedded-loops/pattern_match_nested_loop.java}
-We make this our starting point because it is the most commonly found
-implementation of the algorithm.
-If you have graded homework of college students or coding challenges from new graduates, chances
-are that you will see something like this a lot in the submissions.
+\end{clisting}
+We make this our starting point because it is the most easily thought of solution.
+If this problem appears in the final exam or a coding challenge for a software engineer hiring,
+chances are that you will see this a lot in the submitted works.
 
 
 %Note that the abortion of the inner loop upon the first pair of mismatched
 %characters is
 %discovered or running out of character in \code{haystack}.
-Before we apply the heavy-duty code simplification techniques, an insight for low-cost improvement
-is that one can end the search of the `\code{needle}' when
-the remaining part of the `\code{haystack}' is shorter than the `\code{needle}' to be searched.
-With this change, the outer loop condition will become
+Before we apply the heavy-duty code simplification techniques,
+it is a low-hanging fruit resulting in immediate improvement---one can safely end the search of the
+`\code{needle}' when the remaining part of the `\code{haystack}' is shorter than the `\code{needle}'.
+With this change, the condition for the outer loop becomes
 \begin{lstlisting}
-    i + needle.length() <= haystack.length()
+i + needle.length() <= haystack.length()
 \end{lstlisting}
 
 
 
-An improvement on the inner loop can also be done---that is the awkward scope of the loop variable
+An improvement on the inner loop may be to resolve the awkward scope of the loop variable
 \code{j}.
-Currently its scope extends beyond the inner loop because its value is needed after the loop.
+Currently the scope of \code{j} has to extend beyond the inner loop because
+its value is needed after the loop.
 There are several options to resolve this awkwardness.
 One is to use the `one-more-cycle' technique (see ~\pageref{sec:one-more-cycle} for more details).
-Instead of terminating at $j = N$, let it terminate at $j = N+1$ so that a
-iteration is dedicated to return successful search result.
-Note that if done this way, the loop condition will be unnecessary as the loop is
+Instead of terminating at $j = N$, let it terminate at $j = N+1$ so that the last
+iteration may be dedicated to return successful search result.
+If done this way, the loop condition will be unnecessary as the loop is
 either aborted in an earlier iteration or terminated on the $N+1$th iteration.
 With these changes, the nested loop solution is shortened:
 \lstinputlisting[label={lst:nestedLoop-one-more-cycle},caption={Code snippet with nested loops.}]
 {embedded-loops/pattern_match_nested_loop_one_more_cycle.java}
 
 
+With the handful of code tuning, we have made the code simpler and shorter.
+But that's not all
 We have so far gotten rid of the most commonly made implementation kinks.
 %That is about what we can do with nested loops.
 Even though we achieved simplification of a few lines, that is not all.
-We can further simplify the implementation by doing away with the nested loop.
+We can simplify the implementation even further by doing away with the nested loop.
 
 
 To that end, we will follow the prescriptions of `loop thinning' in
@@ -605,13 +634,16 @@ This implies that the increment statements, \code{++j} and \code{++j} are to be 
 of the corresponding loop bodies.
 
 
-Then as usual, we eliminate the pre-inner-loop statements by `loop rotation'.
+Then as usual, we eliminate the \emph{pre-inner-loop statements} by `loop rotation' in the
+reverse sense, namely, we rotate the loop to `loosen' the program.
+This will result in the statement `int j = 0' being used twice---once before the outer loop as
+initialization and once at the end of the loop body to reset \code{j} to 0.
 As a result, the initialization statement `\code{int j = 0}' is duplicated with one copy
 at the forefront of the outer loop with the other after the last statement within the outer loop.
-Also the inner loop now becomes an infinite loop \code{while(true)}.
+Also the inner loop now becomes an unconditional loop \code{while(true)}.
 If you are still with me, the code now looks like this:
-\lstinputlisting[]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
-It is important to note that this code still passes the same amount of
+\lstinputlisting[escapechar=$]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
+It is important to check and verify that this code still passes the same amount of
 unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does.
 This is the invariant that should be maintained at each important milestone
 through a refactoring process.
@@ -626,22 +658,22 @@ increment statement `\code{++j}', so we could shield \code{++j} in an \code{else
 
 
 Hooray!
-We are ready to remove the unconditional, inner loop---just strip it.
+We are ready to remove the unconditional inner loop---and it is as simple as ``just strip it away''.
 After this step, the code looks like this:
 \lstinputlisting[]{embedded-loops/pattern_match_thinned_loop_intermediate_stage.java}
-As a cleanup step if desired, the condition for the conditional statement with the
-`\code{return}' statement may be merged into the loop condition.
-The final version after this change is:
-\lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
-{embedded-loops/pattern_match_thinned_loop.java}
-Note that I have also switched the loop condition from
+Finally as a cleanup step, the condition on line~\ref{line:haystack-needle} of the previous listing
+may be absorbed into the loop condition.
+Also the loop condition may be switched from
 \begin{quote}
-    \code{i + needle.length() <= haystack.length()}
+\code{i + needle.length() <= haystack.length()}
 \end{quote}
 to
 \begin{quote}
-    \code{i + j < haystack.length()}
+\code{i + j < haystack.length()}
 \end{quote}
+The final version after this change is:
+\lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
+{embedded-loops/pattern_match_thinned_loop.java}
 without affecting correctness but made it more direct to ensure the safety of subsequent index
 operation in the expression `\code{haystack.charAt(i + j)}'.
 
@@ -661,12 +693,12 @@ Nested loops are hard to understand and often pose obstacle to code refactor and
 %streamlined processing code.
 While compelling, many usages of nested loops can be
 substituted with one simple loop and the resultant code is usually much simplified.
-My advice is nested loops shall be avoided in production code.
+I strongly advise the avoidance of nested loops in production code whenever possible.
 
 
-The `loop thinning' technique makes a tunnel through which developers can overcome
-refactor barriers to discover more interest implementations.
-Even though the resulting solutions may not always be simpler, they often
+The `loop thinning' technique is a tunneling mechanism by which developers can overcome
+refactor barriers to discover new and exciting implementations from known ones.
+Even if the resulting solutions is not guaranteed simpler, the new solutions thus discovered often
 offer valuable perspectives for inspiring better coding practices.
 %Even if this is not possible or inconvenient, one can still boost the readability by
 %factoring nested loops into more meaningful, reusable functions.

@@ -384,7 +384,7 @@ of the same value.
 In such cases,
 the Lomuto's quicksort scheme tends to degrade to quadratic runtime complexity.
 (Can you figure out why?)
-In comparison, the Hoare partitioning scheme is stable and
+In comparison, the Hoare's partitioning scheme is stable and
 robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
 %\footnote{The reason is as follows.
 %When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
@@ -486,7 +486,7 @@ next chapter.
 However there is one change that can provide a little more saving.
 If we change the semantic of ending pointer \code{e} from exclusive to inclusive, the
 pre-increment before the loop (line~\ref{quicksort:pre-increment} of
-~\autoref{lst:singleLoopHoarePart}) would not be necessary.
+~\autoref{lst:singleLoopHoarePart}) would be unnecessary.
 
 
 As a byproduct of going through the detailed refactor

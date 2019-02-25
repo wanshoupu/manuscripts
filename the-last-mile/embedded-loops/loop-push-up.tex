@@ -374,7 +374,7 @@ one can't help but be surprised ``Seriously?
 A single loop can replace three?''
 
 
-Unlike the arduous implementation and debugging process of Hoarse's,
+Unlike the arduous implementation and debugging process of Hoare's,
 that of the Lumoto's partitioning scheme has fewer moving parts, contains fewer surprises, and is
 easier to follow.
 However there is no free lunch.
@@ -384,7 +384,7 @@ of the same value.
 In such cases,
 the Lomuto's quicksort scheme tends to degrade to quadratic runtime complexity.
 (Can you figure out why?)
-In comparison, the Hoarse partitioning scheme is stable and
+In comparison, the Hoare partitioning scheme is stable and
 robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
 %\footnote{The reason is as follows.
 %When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
@@ -396,7 +396,7 @@ For this reason, Lomuto's partitioning scheme is not suitable for general-purpos
 
 However, Lomuto's quicksort algorithm is still inspiring for its simplicity and elegance.
 It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
-\emph{and} the performance of Hoarse's?''
+\emph{and} the performance of Hoare's?''
 I don't know for sure.
 But with our `loop thinning' technique and other tools we developed in the last chapter and this, we
 can explore a little bit to see if we can approach the above goal any closer than the existing
@@ -460,7 +460,7 @@ Now we encounter a complication that is new to us: we need to covert the second 
 `\code{else if}' clause of the first because the second inner loop is executed only after the first
 exits.
 Our final result is posted below after the conversion to conditional construct:
-\lstinputlisting[label={lst:nestedLoopHoarePartSingleLoop},language=C,escapechar=$,
+\lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=$,
 caption={Implementation of partition function for Quicksort using one pointer.}]
 {embedded-loops/quicksort_partition_single_loop.c}
 Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
@@ -469,12 +469,12 @@ Note that we have combined multiple statements into a compound one `~\code{swap(
 
 By now,
 we achieved our goal of a quicksort partitioning implementation that has the simplicity of
-Lomuto's and the robust performance of Hoarse's.
+Lomuto's and the robust performance of Hoare's.
 In retrospection, we set off to test the hypothetical quest for a simple but performant
 partitioning scheme that comprises the advantages of Lomuto's and Hoare's partitioning scheme.
 Comparing with where we started off ~\autoref{lst:nestedLoopHoareMethod},
 we implemented the Hoare's algorithm with a single loop plus
-cascading conditionals as ~\autoref{lst:nestedLoopHoarePartSingleLoop}.
+cascading conditionals as ~\autoref{lst:singleLoopHoarePart}.
 In the process, we used the `loop rotation' techniques, the `loop thinning' techniques,
 and skills concerning the construction of cascading conditionals from earlier chapters.
 The new quicksort implementation retains the optimal runtime as Hoare's algorithm but has
@@ -486,7 +486,7 @@ next chapter.
 However there is one change that can provide a little more saving.
 If we change the semantic of ending pointer \code{e} from exclusive to inclusive, the
 pre-increment before the loop (line~\ref{quicksort:pre-increment} of
-~\autoref{lst:nestedLoopHoarePartSingleLoop}) would not be necessary.
+~\autoref{lst:singleLoopHoarePart}) would not be necessary.
 
 
 As a byproduct of going through the detailed refactor

@@ -2,7 +2,6 @@
 
 
 \usepackage{arxiv}
-
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -46,7 +45,8 @@ Shoupu Wan \\
 
 
     % keywords can be removed
-    \keywords{Quicksort \and Loop rotation \and Cascading conditional \and Sentinel}
+    \keywords{Quicksort \and Loop rotation \and Nested loop compression \and Cascading conditional
+    \and Sentinel}
 
 
     \section{Introduction}\label{sec:introduction}
@@ -451,10 +451,10 @@ Shoupu Wan \\
 
 
     For stark effect of the sentinels, we will first fix the traditional implementation of `Hoare's
-    partitioning' scheme from ~\autoref{ch:loop-thinning}:
+    partitioning' scheme:
     ~\autoref{lst:QuickSortOutline} gives the outline of the program and
     ~\autoref{lst:nestedLoopHoareMethod} gives a fully implemented partitioning function.
-    As mentioned in ~\autoref{ch:loop-thinning}, one can get involved in the thick of implementing
+    As mentioned earlier, one can get involved in the thick of implementing
     `Hoare's quicksort algorithm'.
     Not only the problem itself is tricky but also the way we implement it.
     By picking Hoare's quicksort scheme over its alternative (such as Lomuto's),
@@ -525,9 +525,5 @@ Shoupu Wan \\
     This brings implementations of Hoare's quicksort to the next level of simplicity.
 
     \bibliographystyle{unsrt}
-    \bibliography{references}
-    %%% Remove comment to use the external .bib file (using bibtex).
-    %%% and comment out the ``thebibliography'' section.
-
-
+    \bibliography{article}
 \end{document}

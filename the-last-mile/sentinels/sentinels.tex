@@ -4,24 +4,28 @@
 %%
 
 \chapter{Magic of Sentinels} \label{ch:sentinels}
-Sentinels have been in use in military, mathematics, and civil engineering, long before computer
-science became a science.
-But in computer science sentinels maintains a prominent presence---sentinels plays an important
-roles in computer engineering, architecture design,
+Sentinels have been put to good use in military, mathematics, and civil engineering, long before
+computer science became a science.
+Particularly, sentinels hold a more prominent position in computer science,
+it has become a programming philosophy.
+Sentinels find widespread applications in computer engineering, architecture design,
 compiler design, and programming languages.
-Particularly, proper use of it in high-level programming brings about unexpected simplicity.
-Sentinel is a programming philosophy.
-In this chapter we will consider sentinel values and the concept behind in a general sense.
-We will examine a few cases where uses of it lead to great simplification in coding.
+Even in high-level programming languages, proper use of sentinels brings about
+simplicity.
+In this chapter we will give the reader a full exposure to sentinels through a few selected cases
+of study.
+We will demonstrate how the use of sentinels lead to great code simplification.
+By doing so, we want to put sentinel in the toolset of the to-be software engineers and encourage
+conscious and deliberate use of it.
 
 
-\section{Elephant in Cairo}\label{sec:elephant-in-cairo}
+\section{``Elephant in Cairo''}\label{sec:elephant-in-cairo}
 
-Have you heard of ``Elephant in Cairo''?
+You may have heard of ``Elephant in Cairo''.
 It refers to the fictitious programming question ``how to hunt elephants in Africa''.
 First published on ``Pachydermic Personnel Prediction'' ~\cite{elephant-in-Cairo:1989},
 this question and the published solutions vividly illustrate the basics
-behind sentinel values and the important aspects of its usage.
+behind sentinel values and we will repeat some of the discussions there.
 
 
 %It explains the working of a sentinel very well.
@@ -80,7 +84,7 @@ Benefits of using sentinels are summarized as follows:
 \begin{enumerate}
     \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
     loops.
-    \item\label{itm:sentinel:loop-and-a-half} Get rid of `Loop-and-a-half' issue
+    \item\label{itm:sentinel:loop-and-a-half} Help get rid of `Loop-and-a-half' issue
     \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell~\cite{Fowler1999}
     \item\label{itm:sentinel:ds} Act as a boundary-padding in data structures,
     such as linked list, \textit{etc}.
@@ -89,25 +93,40 @@ Benefits of using sentinels are summarized as follows:
 \end{enumerate}
 
 
-In all the cases, I found that \emph{fundamentally, sentinels are added to make the problem
-more symmetric}.
-Symmetry sometimes can seem mysterious to many and using it to explain this situation may cause
-doubt in many.
+To me, the benefits of sentinels are many, varied, and hard to grasp.
+This remains until a day with an enlightenment, I came to realize: ``Isn't it the old ragged
+symmetry that is behind all these?''
+Indeed, in each and every of the aforementioned scenarios,
+sentinel unanimously makes the problem at hand more symmetric.
+
+
+It is easy to explain sentinel with symmetry.
+But what is symmetry in non-technical terms?
+Without explaining symmetry, it would be like explaining a mystery with another mystery.
 %``What do you mean by `symmetric'?'' you ask dubiously.
-Actually we can interpret `symmetry' as the mathematical language behind aesthetics.
-Yes, symmetric objects are not only pretty but also saves human power to process.
-Symmetric objects are visually pleasing because it has `order', is familiar to us.
-Thus processing objects by our brain or by programs we built demand less energy.
+Symmetry is the language behind beauty.
+Why does symmetry embody beauty?
+Because human brain is symmetry sucker---it constantly searches for patterns out of chaos.
+Why are our brains suckers of symmetry?
+Because `pattern` means order and order means fewer interruptions, irregularities, anomalies, or
+surprises.
+(One who works on an assembly line has a deep feeling about this.)
+In the end, all of these means lower information entropy.
+So by leveraging symmetry, our brains seek the most economic way to handle information and thus
+conserve energy.
+In summary, outwardly, symmetry is pleasing to the eye;
+inwardly, it helps save energy.
 
 
-On the opposite, asymmetric objects are irregular, anomalous, requires extra effort to process.
-One who works on an assembly line has a deep feeling about this.
-Symmetry represents uniformity and uniformity implies resource saving.
-From \code{for}-loops to regular expressions (regex), from HTTP response status
-codes to \code{null} pointers, from recursion to dynamic programming, computer science is a
-science that is constantly seeking or creating symmetric information to treat things uniformly,
-to minimize energy footprint, and to do more with less.
-Sentinel embodies the idea of symmetry perfectly.
+Now back to the use of sentinels in programs.
+It is so for human brain, so also for computer `brain'.
+From \code{for}-loops to regular expressions (regex), from standardized exit codes
+to \code{null} pointers, from recursion to sentinels, computer science tirelessly
+pursue and take advantage of symmetry to treat things uniformly, whenever and wherever possible.
+In doing so, it reduces memory footprint, saves CPU cycles, minimize energy consumption.
+In doing so, it does more with less.
+%Symmetry represents uniformity and uniformity implies resource saving.
+%Sentinel embodies the idea of symmetry perfectly.
 
 
 \begin{figure}[H]
@@ -127,27 +146,29 @@ Sentinel embodies the idea of symmetry perfectly.
 \end{figure}
 
 
-It is common to represent $6:59$ as ``one minute to 7'' because
-this is essentially a more symmetric representation.
-What we meant is: first, put one minute in to make it
-\emph{7 o'clock};
-then take away the minute to derive the true time.
+The representation of `$23:59$' as `one minute to midnight' embodies the idea behind sentinels.
+Here is what it means by `one minute to midnight':
+first, put in one minute to make it evenly \emph{12 o'clock am};
+then when you need the time, remember to take away the minute.
+The `pluses and minuses' are implied.
+To many, this representation `looks cleaner' and is preferred.
 
 
-In the same way, sentinels does the pluses and minuses.
-In the opening example `Elephant in Cairo', an elephant was added in the beginning and
+This is also how sentinels work.
+In the opening example, `Elephant in Cairo', an elephant was added in the beginning and
 deducted at the end.
 Apart from being added at the beginning and taken away at the end, sentinel values remain intact.
-This somehow reminds me of catalysts.
-During chemical reactions, the catalyst first binds with the reactants and then is released from
-the final product, intact.
-The net effect is to provide an alternative reaction path with \emph{lower energy barrier}.
-Therefore catalysts accelerate reaction but they themselves are not consumed during the chemical
-reaction.
-In the same way works sentinel.
-A sentinel value is added at the beginning and removed at the end, nothing else is affected except
-program runs faster and / or programming is made easier.
-It is not exaggerating to call sentinels `the catalysts of programming'.
+This is reminiscent to catalysts in chemical reactions.
+%In the early stages, the catalyst binds with the reactants to form intermediate products and in
+%the late stages, the intermediate products disintegrate to form
+%the final product and catalysts are released.
+Catalysts are added to accelerate reaction but they themselves are not consumed by the reaction.
+%catalysts remain intact but an alternative, easier (lower in energy) reaction path is realized.
+%In the same way works sentinel.
+%A sentinel value is added at the beginning and removed at the end, nothing else is affected except
+%program runs faster and / or programming is made easier.
+For this reason, we may refer to sentinels as `the catalysts of programming'.
+%It is not exaggerating to call sentinels `the catalysts of programming'.
 
 
 %Some digressions on sentinels.
@@ -164,103 +185,104 @@ The non-gaseous cores are essentially borrowed sentinels.
 You see, even rain need sentinel ushers!
 
 
-Sentinels help shift potentially costly operations from performance-critical
-loop to non-critical section, from inconvenient location to convenient
-location, and from many to one.
+In practice, sentinels help shift certain operations from performance-critical
+section to non-critical section, from inconvenient location to convenient
+location and reduce the number of such operations from many to one.
 Thanks to sentinels, one can thus optimize code to be more elegant and performant.
 In the following sections, we will identify opportunities to apply the concept of sentinel through
 a couple of cases of study.
 
 
 
-\section{Case Study: Quick Sort}\label{sec:nested-loop-quick-sort}
+\section{Case Study: quicksort}\label{sec:nested-loop-quick-sort}
 
 
 I came to learn about sentinels from the book ``Numerical Receipt in C''
 ~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
-I was amazed by how the authors carefully avoided the array boundary checks in
-performance-critical, fast spinning inner loop with the use of sentinels.
-Honestly, although I psychologically accepted the pitch on the effectiveness of sentinel
-in the book, not until recently had I a success in implementing it.
+It was eye-opening to see how the authors gracefully avoided the array boundary checks
+with the use of sentinels.
+I psychologically accepted the pitch made for sentinels while I was with the book.
+Closing the book, however, I am still dubious about its plausibility until I myself have a
+success implementing it.
+In this section, I pick this work to make a pitch to the reader about sentinels.
 
 
-I am going to pick up the implementation of the traditional `Hoare's
-partitioning' scheme from ~\fullref{ch:loop-thinning}.
-%Before that I implemented a quick sort program in C based off the traditional `Hoare's
-%partitioning' scheme.
-The outline of the implementation as in ~\fullref{lst:QuickSortOutline} is unchanged.
-The only thing that we will touch is the partitioning function ~\fullref{lst:nestedLoopHoareMethod}.
+For stark effect of the sentinels, we will first fix the traditional implementation of `Hoare's
+partitioning' scheme from ~\fullref{ch:loop-thinning}:
+~\fullref{lst:QuickSortOutline} gives the outline of the program and
+~\fullref{lst:nestedLoopHoareMethod} gives a fully implemented partitioning function.
+As mentioned in ~\autoref{ch:loop-thinning}, one can get involved in the thick of implementing
+`Hoare's quicksort algorithm'.
+Not only the problem itself is tricky but also the way we implement it.
+By picking Hoare's quicksort scheme over its alternative (such as Lomuto's),
+we insist on the stable $O(N log N)$ expected runtime.
 
 
-As mentioned in ~\autoref{ch:loop-thinning}, the implementation of `Hoare's quick sort algorithm'
-can get very tricky---the problem itself is tricky and restrictions we apply to avoid inadvertent
-skewness further complicate the situation.
-None of these can be changed.
-But what we can change to do ourselves a favor is to get rid of the boundary checks in the
-inner loops.
-These boundary checks are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
+We attempt to get rid of the boundary checking using sentinels.
+These boundary checking are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
 off the ends of the array.
 In large arrays, these boundary check operations may get in the way of performance of the algorithm.
-But the top reason to get rid of them is to remove the coding clutter.
+But the main reason of doing so is to remove clutter in the code.
 %For another, we are consciously attacking the problem with an precautions approach against
 %performance degradation so there is a price we have to pay.
 
 
-If we can ensure that the pointers `\code{s}' and `\code{e}' will never slip off the ends of the
-array by the remaining condition of tests, then the boundary checks would be redundant and can be
-removed.
+The main idea is to make boundary checking redundant by effecting some artifacts that catch the
+pointers before the `out of boundary' error happens.
 This is exactly what sentinel is good at!
-By guarding that the end of arrays with the sought-after values for
-`\code{s}' and `\code{p}', respectively, we can guarantee that the inner loop will terminate just
-before them slipping off the array.
-%Even better, performance can also be greatly boosted.
-
-%Note the conditions used in the inner loops?
-%Let us see how sentinels can simplify them.
-
-What values are sought after by `\code{s}' and `\code{e}'?
-Both of them are looking for out-of-place values---\code{s} is looking for
-`\code{greater-than-or-equal-to}' values, \code{e} is looking for
-`\code{less-than-or-equal-to}' values.
-Well, let us solicit and deploy these sentinel values satisfying these conditions accordingly
-before entering the loop.
-Since we have already had logic to look for pivot value, we can group and factor out these tasks
-together into a function called `\code{init_swap}'.
+By deploying sought-after values, the `sentinels', at the ends of the array before the control
+hits the loop, the following will happen:
+\begin{enumerate}
+    \item the pointers, `\code{s}' and `\code{p}', would have to stop when they hit the ends of
+    array;
+    \item the subsequent logic will guarantee the termination of the outer loop and
+    thus guarantee the inner loop would not be executed again.
+\end{enumerate}
 
 
-In my implementation of it, the function `\code{init_swap}' randomly
-elects $3$ elements, use the median of them as the pivot as usual,
-the maximum to the right sentinel, and the minimum to the left sentinel,
-respectively.
-The factored out function is as follows:
+What are the sought-after values by `\code{s}' and `\code{e}'?
+The out-of-place values!
+Particularly, \code{s} is looking for values that are `$\geq$ the pivot';
+\code{e} is looking for values `$\leq$ the pivot'.
+So then instead of randomly picking one value for pivot, we now randomly pick $3$ values, the median
+of which be elected as the pivot as usual, the minimum be deployed to the left end, and the maximum
+to the right end.
+We group these operations into a function called `\code{init_swap}':
 \lstinputlisting[]{sentinels/qsort_init_swap.c}
 
 
 Now back the function `\code{part}'.
-With the function `\code{init_swap}',
-the conditional expressions `\code{s < e}' and `\code{pivot < e}' become semantically
-redundant and can be safely removed from their corresponding loop conditions.
+As we mentioned before, the deployment of sentinels in function `\code{init_swap}' makes
+the conditional expressions `\code{s < e}' and `\code{pivot < e}' semantically redundant.
+They can now be safely removed.
 Below is the function `\code{part}' after all the refactoring is done.
 \lstinputlisting[]{sentinels/qsort_part_sentinel.c}
 Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
-cleans out the clutters in the loop conditions in the inner loops.
-Instead, the logic is shifted to a non-critical place---the initialization part before the loop.
-Not only that the code is made simpler in the main function, but also the number of such checks
+cleans out clutter in the loop conditions in the inner loops.
+We `float' the control all the way through the termination of the program on a `touchless' rail made
+by sentinels, without ever needing to check boundary condition.
+Of course, the onus is shifted to the initialization before the loop.
+Comparing with the inner loops, that section is non-critical.
+Not only that the code is made less cluttered, but also the number of such checks
 is reduced from $O(N)$ to $O(1)$.
+More importantly, by not checking boundary conditions at the most critical section,
+we avoid bugs that would otherwise cost us many hours of debugging time.
 
 
-The above implementation was done on top of the traditional Hoare's partitioning scheme.
-So the effect of sentinels can stand out more cleanly.
-As presented in ~\fullref{ch:loop-thinning}, we have developed a simplified version of the Hoare's
-partitioning scheme for quicksort with a single loop.
-Is the above sentinel idea applicable in this new scenario?
-Yes, it equally is.
+So by use of sentinels on the traditional Hoare's quicksort algorithm,
+we shifted the complexity among the nested loops to a non-critical part of the program,
+effectively reduced its coding complexity.
+Remember that we came up with a new, single-loop implementation for the Hoare's quicksort algorithm
+in ~\fullref{ch:loop-thinning}, as presented in ~\autoref{lst:singleLoopHoarePart}.
+Can we apply the idea of sentinel to make it even better?
+Yes, it may be applied equally well.
 Below is the implementation of the function `\code{part}' with a single loop and simplified
-condition with sentinel values.
+boundary condition with sentinel values.
 \lstinputlisting[]{sentinels/quicksort_partition_single_loop_sentinel.c}
+This brings implementations of Hoare's quicksort to the next level of simplicity.
 
 
-\section{String termination sentinels}\label{sec:stringTerminationSentinels}
+\section{String terminating sentinels}\label{sec:stringTerminationSentinels}
 
 Despite of controversial opinions\cite{Ritchie:1993,expensive-one-byte:2011}, the
 null-terminated strings in C is another brilliant use of sentinel.

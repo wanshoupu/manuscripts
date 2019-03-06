@@ -16,7 +16,7 @@
 
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 
-\title{A Single-loop Implementation for Hoare's Quicksort Algorithm}
+\title{How to Improve the Implementations of Quicksort Algorithm?}
 
 
 \author{
@@ -29,18 +29,17 @@ Shoupu Wan \\
 
     \begin{abstract}
         Quicksort is one of the pivotal sorting algorithm widely used by modern software.
-        Among the implementations of quicksort, there are two main approaches---schemes designed
+        Among the quicksort algorithms, there are two main variants---that designed
         by Tony Hoare and by Nico Lomuto, respectively.
-        Hoare's quicksort scheme has robust performance, with optimal expected running time.
-        However its implementation has been quite involved to the extent that
-        inadvertent treatment of many entangled details may easily lead to lengthy debugging
-        process.
-        Lomuto's scheme simplifies the quicksort algorithm greatly, resulting in less tricky,
-        easier-to-follow implementation.
-        However its performance suffers for certain edge cases.
-        In this article, we present a new implementation of the quicksort algorithm that
-        has the robust performance of traditional Hoare's scheme while share a similar
-        succinctness of Lomuto's implementation.
+        Hoare's quicksort scheme generally has robust and optimal performance but its
+        implementation has been quite involved.
+        Lomuto's scheme is easier to follow and implementation is less tricky.
+        However for certain edge cases its performance suffers a lot.
+        In this article, we present useful techniques for programming loops.
+        We will show that these techniques can be used to improve the implementation of quicksort
+        algorithm such that it
+        has both the robust performance of Hoare's scheme while and the
+        succinctness implementation of Lomuto's.
     \end{abstract}
 
 
@@ -50,8 +49,14 @@ Shoupu Wan \\
 
 
     \section{Introduction}\label{sec:introduction}
+    Invented in 1960, quicksort has been the go-to sorting algorithm in practice\cite{Hoare1961,
+    Hoare1962}.
+    Quicksort is named one of the top $10$ algorithms of $20$th century\cite{top10algorithm:2000}.
+
     In what follows, I am going to present the idea in Python 2.7.
-    \cite{Hoare1961,Hoare1962}
+
+
+
 
     \section{Loop Rotation}\label{sec:LoopDesignConsideration}
     \begin{figure}[htb]
@@ -124,9 +129,6 @@ Shoupu Wan \\
     This will push all the statements into the loop body for ease of `loop rotation'.
     In this way, one first focuses on coming up with a working solution.
     Once a working solution has been found, one can start the `loop rotation' process.
-    %one often has gotten a good grasp of the ins and outs of the implementation.
-    %to to try to spool up slack threads as much as possible by `rotating the loop' to match and
-    %eliminate duplicate code.
     Finally, one can try different loop constructs, move and fit state-updating statements,
     combine or annihilate \code{continue} and \code{break} statements, \textit{etc.}
     If needed, repeat the above steps until the code is acceptable both functionally and
@@ -141,6 +143,116 @@ Shoupu Wan \\
     Comparing with hard duplication, soft duplication is tougher to detect and remove.
     When dealing with soft duplication, one may perform pre-refactor to
     consolidate soft duplications into hard ones and then deal with hard duplication in the normal way.
+
+
+    \section{Nested Loop thinning Technique}\label{sec:loop-thinning-technique}
+
+
+    Many situations that nested loops appear so compelling or even inevitable are not so
+    in retrospect.
+    We are going to present techniques that help guide one to coalesce nested loops
+    into a single loop in certain scenarios, which we
+    generally refer as `loop thinning' technique.
+    One particular case that almost comes with guaranteed success is nested loop where
+    the outer loop represents an evenly-paced, end-to-end iteration whereas on the inner loop is
+    performed a partial lookup either on an auxiliary data structure or
+    from a `sliced view' on the same data structure.
+
+
+    As result of the `loop thinning' process, one or more of the following measures may
+    be helpful:
+    \begin{itemize}
+        \item Use extra conditional construct or test;
+        \item Make the pacing of outer loop becomes more dynamic;
+        \item Use extra boundary condition handling logic;
+        \item Use additional auxiliary data structures for the outer loop, such as a queue or stack.
+    \end{itemize}
+
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{segment-for-loop-thinning.jpg}
+        \caption{\label{fig:segment-for-loop-thinning} Sectioning of loop body statements
+        for `loop thinning' process.
+        Each section receives different treatment during the `loop thinning' process.}
+    \end{figure}
+    Depending on the relative position with respect to the inner loop, the body of the outer loop is
+    divided into three sections---for sake of argument, we will call them
+    pre-inner-loop section, inner-loop section, and post-inner-loop section
+    (shown in ~\autoref{fig:segment-for-loop-thinning}).
+
+
+    The gist for flattening nested loops is as follows.
+    First, we need to move pre-loop statements out of the way.
+    To that end, use `loop rotation' technique (see ~\autoref{ch:loops}) backward
+    to unwind the pre-loop statements.
+    The second step depends on the inner loop construct.
+    If the inner loop has a \emph{non-trivial loop condition}, then the inner loop can
+    be converted to a conditional construct as-is by keyword swapping: \code{while} $\rightarrow$
+    \code{if}.
+    At the same time, the post-inner-loop statements shall be wrapped away in a piggybacking
+    \code{else}-clause.
+    On the contrary, if the inner loop is \emph{unconditional}, chances are that
+    there is a conditional \code{break} statement somewhere in the loop body.
+    Then one can tuck the post-inner-loop statements under the conditional of the
+    \code{break} statement replacing the latter, and the inner loop can be stripped away.
+
+
+    Throughout the process, please pay special attention to bypassing statements, such as
+    \code{break} and \code{continue}.
+    Regardless which venue ws taken, new conditional statements are inevitably formed.
+    one may refer to ~\autoref{ch:cascif} for best practices on how to organize effective
+    cascading conditionals.
+
+
+    Apart from the prescribed steps, some preparatory measures may be taken beforehand
+    to reduce the friction during the refactor process.
+    Where needed, compound statements may be taken apart before one wades deep.
+    Compound statements may get in your way of refactoring for multiple reasons.
+    The most obvious reason is that, well, parts of a compound statement
+    may end up at different places after refactoring.
+    Non-idempotent conditional expressions, such as \code{if (--i < 0)}, are even more lethal
+    because each execution of the condition ratchets the state of the loop, leaving no time for
+    taking a breath.
+    For example,
+    \begin{lstlisting}
+        while (++i < LIMIT);
+    \end{lstlisting}
+    shall be expanded to
+    \lstinputlisting[]{expanded-do-while.java}
+    before the start of loop thinning refactor.
+    The following Golang statement should also be unfolded beforehand:
+    \begin{lstlisting}
+        if v := a[i]; v < LIMIT
+    \end{lstlisting}
+
+
+    For similar reasons, \code{for}-loop with all its header statements, should be taken apart and
+    converted to \code{while}-loop.
+    \code{while}-loop readily lends itself for `loop thinning' process, as one can
+    simply replace the keyword \code{while} with \code{if} at the proper time.
+
+
+    After `loop thinning',
+    aftermath changes may be performed for cleanup, convention conformation, or cosmetics.
+    Most importantly, following the removal of nested loops, other optimizations may become
+    accessible to further optimizations.
+    Like `Candy Crush Saga' game at a critical point, a single move may unlock a
+    gainful chain of reactivce moves.
+    This `avalanche effect' is the true value of the `loop thinning' technique.
+
+
+    Also note the application restrictions of the `loop thinning' process---inner loop must be directly
+    embedded in
+    outer loop with no intermediate layers;
+    also no bypassing statements, such as \code{break}, shall be in the pre-inner-loop section.
+
+
+    Most of the methods we present in this chapter are empirical, I cannot claim
+    universal applicability for many of them.
+    Instead, the techniques shall be considered on a case by case basis.
+    In what follows, we are going to demonstrate application of `loop thinning' technique through
+    a few examples adapted from real-world programming projects.
 
 
     \section{Case Study: quicksort}\label{sec:nested-loop-quick-sort}
@@ -210,8 +322,7 @@ Shoupu Wan \\
     Thus repeated several times, I decided to summary the frequently-made bugs and produced a list of
     `gotcha' as follows:
     \begin{enumerate}
-        %    \item Pointers come to a stall before meet or cross
-        \item In pivot election, fail swapping pivot element to the beginning of array
+        \item In pivot election, failure to swap pivot element to the beginning of array
         \item For the pointers \code{s} and \code{e}, there are two hesitating options:
         `check-then-increment' or `increment-then-check'.
         The first option leads to infinite loop for certain cases.

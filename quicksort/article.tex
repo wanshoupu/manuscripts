@@ -52,10 +52,8 @@ Shoupu Wan \\
     Invented in 1960, quicksort has been the go-to sorting algorithm in practice\cite{Hoare1961,
     Hoare1962}.
     Quicksort is named one of the top $10$ algorithms of $20$th century\cite{top10algorithm:2000}.
-
     In what follows, I am going to present the idea in Python 2.7.
-
-
+    `Loop rotation' and `Nested loop thinning' are the two pillars for loop programming.
 
 
     \section{Loop Rotation}\label{sec:LoopDesignConsideration}
@@ -68,27 +66,26 @@ Shoupu Wan \\
     \end{figure}
 
 
-    Why programming loops is so hard?
-    For one, there are a lot of moving parts in a loop construct and need to be constructed
-    piece-by-piece.
-    For two, loop must get along with the peripheral code as well.
-    As you can see, a large part of the hard work for programming a loop lies outside of the loop.
-    All the pieces are tightly coupled together---changes in one necessitate changes in several others.
+    The key to program loops is to observe two characteristics of them.
+    First, a loop construct contains many moving parts and they are tightly
+    coupled---changes in one necessitate changes in several others.
+    Secondly, a loop does not live in vacuum---it must get along with other code in the vicinity.
+    As a result, a large part of the work is spent on fitting loop in the program.
 
 
-    In fact, an important goal when implementing loops is to reduce duplicate code in and around
-    loop---be it pre-loop initialization or post-loop processing.
-    And one of the important techniques for it is `loop rotation'.
+    The biggest problem with loop programming is duplicate code in and around the loop.
+    The foremost goal when implementing loop is to reduce duplicate code and
+    an important technique for this is `loop rotation'.
 
 
     It is beneficial to visualize a loop construct as a Ferris wheel, a carousel, or a spool.
-    Mathematically speaking, a property is shared by all four---they all represent circular sequences, that is,
-    a sequence with rotational symmetry with respect to circular shifts.
+    A property is shared by them all---they can be mathematically represented by circular sequences,
+    that is, a sequence with rotational symmetry with respect to circular shifts.
 
 
-    If pictured as a Ferris wheel, distributed around the wheel are the conditional test,
-    initialization, state update statements and other statements in the loop body.
-    (see ~\autoref{fig:loop-rotation}).
+    For sake of argument, we pictured a loop as a Ferris wheel in ~\autoref{fig:loop-rotation}.
+    Distributed around the wheel are the conditional test,
+    the initialization, state updating statements and other statements in the loop body.
 
 
     \begin{figure}[htb]
@@ -108,9 +105,9 @@ Shoupu Wan \\
         \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
     \end{figure}
 
-
-    Circular sequence may be cut open and mapped to a linear sequence, \textit{e.g.}, starting with
-    the lowest node going counterclockwise.
+%TODO
+    Circular sequence may be cut open and flattened to a linear sequence \textit{e.g.}, starting
+    with the lowest node going counterclockwise.
     As if a ring may be cut open, the nodes in a circular sequence may be ordered as a linear sequence
     if counting counterclockwise starting with the lowest node.
     One thus may take advantage of this rotational degrees of freedom as a measure of loop fine

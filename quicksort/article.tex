@@ -83,9 +83,9 @@ Shoupu Wan \\
     that is, a sequence with rotational symmetry with respect to circular shifts.
 
 
-    For sake of argument, we pictured a loop as a Ferris wheel in ~\autoref{fig:loop-rotation}.
-    Distributed around the wheel are the conditional test,
-    the initialization, state updating statements and other statements in the loop body.
+    For sake of argument, in ~\autoref{fig:loop-rotation} we pictured a loop as a Ferris wheel.
+    Distributed around the wheel are the loop statements---initialization,
+    loop test, state-updating statements \textit{etc.}
 
 
     \begin{figure}[htb]
@@ -105,15 +105,6 @@ Shoupu Wan \\
         \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
     \end{figure}
 
-%TODO
-    Circular sequence may be cut open and flattened to a linear sequence \textit{e.g.}, starting
-    with the lowest node going counterclockwise.
-    As if a ring may be cut open, the nodes in a circular sequence may be ordered as a linear sequence
-    if counting counterclockwise starting with the lowest node.
-    One thus may take advantage of this rotational degrees of freedom as a measure of loop fine
-    tuning---by `rotating' the loop to match up and coalesce duplicate code in the affinity of the loop.
-    We will refer to this process as `loop rotation'.
-
 
     As another helpful analogy, loops are to program as spools are to yarn.
     In the same way as a spool is used to organize yarn, a loop is a construct to organize program.
@@ -121,62 +112,75 @@ Shoupu Wan \\
     wind up loose, messy yarn into a tidy spool (~\autoref{fig:spool-loop}).
 
 
+    Even though a loop is a circular sequence, there is always an entrance and an exit.
+    One can thus take this rotational degrees of freedom to one's advantage as to determine where
+    to enter and where to exit the loop.
+    For example, if the code in the loop and in the affinity of the loop are duplicate, one may
+    `rotate' the loop to match up and coalesce the duplicate code.
+    On the contrary, if one wants to move a portion of code at the beginning of the loop out of
+    the way, one may `rotate' the loop in the reversely.
+    Doing so may result in duplicate code, but this may enable a subsequent refactor whose
+    positive effect will eventually pay off this adverse effect.
+    In general, we will refer to this loop fine-tuning programming technique as `loop rotation'.
+
+
     In practice, one may first implement a prototype with unconditional \code{while (true)} or
     \code{for (; ;)} loop.
     This will push all the statements into the loop body for ease of `loop rotation'.
-    In this way, one first focuses on coming up with a working solution.
-    Once a working solution has been found, one can start the `loop rotation' process.
-    Finally, one can try different loop constructs, move and fit state-updating statements,
-    combine or annihilate \code{continue} and \code{break} statements, \textit{etc.}
-    If needed, repeat the above steps until the code is acceptable both functionally and
-    aesthetically.
+    This will help one focus on coming up with \emph{a} `working' code first.
+    Once a `working' code has been found, one can use the `loop rotation' technique to fine-tune
+    the program.
 
 
-    Many times, code duplication are `soft'---two or more blocks of code are not exactly
-    identical but contains identical snippets or share common pattern.
-    We will refer to this type of hidden, quavery, and partially duplicate code as
-    `soft duplication'.
-    In contrast, we may refer to copy-n-paste code as `hard duplication'.
-    Comparing with hard duplication, soft duplication is tougher to detect and remove.
-    When dealing with soft duplication, one may perform pre-refactor to
-    consolidate soft duplications into hard ones and then deal with hard duplication in the normal way.
+    For `soft' code duplication---two blocks of code that are not
+    identical but share certain pattern, one may perform pre-refactor to
+    consolidate the `shared duplication' into copy-n-paste duplication and then treat the
+    duplication in the normal way.
 
 
     \section{Nested Loop thinning Technique}\label{sec:loop-thinning-technique}
 
+    Every developer writes nested loops now and then.
+    Many times, nested loops appear compelling and inevitable.
+    While they may solve our problem, nested loops inflate a program with
+    unnecessary complexity.
+    Nested loops, with the extra layers of loop gadgets, also obstruct code readability.
+    The presence of nested loops usually conceal numerous optimization opportunities.
 
-    Many situations that nested loops appear so compelling or even inevitable are not so
-    in retrospect.
-    We are going to present techniques that help guide one to coalesce nested loops
-    into a single loop in certain scenarios, which we
-    generally refer as `loop thinning' technique.
-    One particular case that almost comes with guaranteed success is nested loop where
-    the outer loop represents an evenly-paced, end-to-end iteration whereas on the inner loop is
-    performed a partial lookup either on an auxiliary data structure or
-    from a `sliced view' on the same data structure.
+    Great developers will try best to reduce the layer of loops, even avoid using loops
+    altogether with certain programming language or software framework especially for scientific
+    computation and data engineering\cite{data-engineering-avoid-loop}.
+    The removal of nested loops often results more optimizations obvious and
+    accessible.
+    Like `Candy Crush Saga' game arriving at a critical point, a single move may unlock an
+    avalanche of moves, to the player's advantage.
 
 
-    As result of the `loop thinning' process, one or more of the following measures may
-    be helpful:
+    Here we are to present a process that coalesce nested loops into a single loop,
+    known as `nested loop thinning' technique.
+    Cramming all the functionalities of nested loops into one loop is hard by definition.
+    As a price to be paid, `nested loop thinning' process almost always
+    results in one or more of these changes to the final loop:
     \begin{itemize}
-        \item Use extra conditional construct or test;
-        \item Make the pacing of outer loop becomes more dynamic;
-        \item Use extra boundary condition handling logic;
-        \item Use additional auxiliary data structures for the outer loop, such as a queue or stack.
+        \item extra conditional constructs are added
+        \item extra tests are added to existing conditional constructs
+        \item the pacing of the resulting loop is made more dynamic
+        \item more boundary condition handling logic is added
+        \item auxiliary data structure, such as queue or stack, is added.
     \end{itemize}
 
 
     \begin{figure}
         \centering
         \includegraphics[width=0.6\textwidth]{segment-for-loop-thinning.jpg}
-        \caption{\label{fig:segment-for-loop-thinning} Sectioning of loop body statements
-        for `loop thinning' process.
-        Each section receives different treatment during the `loop thinning' process.}
+        \caption{\label{fig:segment-for-loop-thinning}
+        Sectioning of loop body statements for `nested loop thinning' process.
+        Each section receives different treatment during the `nested loop thinning' process.}
     \end{figure}
-    Depending on the relative position with respect to the inner loop, the body of the outer loop is
-    divided into three sections---for sake of argument, we will call them
-    pre-inner-loop section, inner-loop section, and post-inner-loop section
-    (shown in ~\autoref{fig:segment-for-loop-thinning}).
+    For sake of argument, the body of the outer loop is
+    divided into three sections---\emph{pre-inner-loop} section, \emph{inner-loop} section, and
+    \emph{post-inner-loop} section---depending on their relative position
+    in respect to the inner loop (shown in ~\autoref{fig:segment-for-loop-thinning}).
 
 
     The gist for flattening nested loops is as follows.
@@ -195,15 +199,16 @@ Shoupu Wan \\
     \code{break} statement replacing the latter, and the inner loop can be stripped away.
 
 
-    Throughout the process, please pay special attention to bypassing statements, such as
-    \code{break} and \code{continue}.
-    Regardless which venue ws taken, new conditional statements are inevitably formed.
-    one may refer to ~\autoref{ch:cascif} for best practices on how to organize effective
+    Throughout the process, one shall pay special attention to execution-path altering statements,
+    such as \code{break} and \code{continue}.
+    Regardless the venue taken, new conditional statements are inevitably formed and cascading
+    conditional constructs are the best way to organize them.
+    one may refer to Reference ~\cite{Wan:book} for best practices on how to organize effective
     cascading conditionals.
 
 
     Apart from the prescribed steps, some preparatory measures may be taken beforehand
-    to reduce the friction during the refactor process.
+    to reduce the friction during the `nested loop thinning' refactor process.
     Where needed, compound statements may be taken apart before one wades deep.
     Compound statements may get in your way of refactoring for multiple reasons.
     The most obvious reason is that, well, parts of a compound statement
@@ -224,32 +229,36 @@ Shoupu Wan \\
     \end{lstlisting}
 
 
-    For similar reasons, \code{for}-loop with all its header statements, should be taken apart and
-    converted to \code{while}-loop.
-    \code{while}-loop readily lends itself for `loop thinning' process, as one can
-    simply replace the keyword \code{while} with \code{if} at the proper time.
+    In the `nested loop thinning' process, as one can
+    simply replace the keyword \code{while} with \code{if} when due.
+    Therefore, \code{while}-loop readily lends itself to this refactor process.
+    For this reasons, \code{for}-loop with all its header statements, should be taken apart and
+    converted to \code{while}-loop during the preparation stage.
 
 
-    After `loop thinning',
-    aftermath changes may be performed for cleanup, convention conformation, or cosmetics.
-    Most importantly, following the removal of nested loops, other optimizations may become
-    accessible to further optimizations.
-    Like `Candy Crush Saga' game at a critical point, a single move may unlock a
-    gainful chain of reactivce moves.
-    This `avalanche effect' is the true value of the `loop thinning' technique.
+    After `nested loop thinning',
+    cleanup changes may be performed to comply with convention, code style, or purely for
+    cosmetic reasons.
 
 
-    Also note the application restrictions of the `loop thinning' process---inner loop must be directly
-    embedded in
-    outer loop with no intermediate layers;
-    also no bypassing statements, such as \code{break}, shall be in the pre-inner-loop section.
+    There are application restrictions of the `nested loop thinning' process.
+    Firstly, inner loop must be directly embedded in outer loop with no intermediate layers.
+    Also execution-path-altering statements, such as \code{break}, shall be absent in the
+    pre-inner-loop section.
 
 
-    Most of the methods we present in this chapter are empirical, I cannot claim
+    Most of the methods we present in this article are empirical, the author does not claim
     universal applicability for many of them.
     Instead, the techniques shall be considered on a case by case basis.
-    In what follows, we are going to demonstrate application of `loop thinning' technique through
-    a few examples adapted from real-world programming projects.
+
+    One particular case whose success is almost guaranteed is a type of nested loops where
+    the outer loop represents an evenly-paced, end-to-end iteration over a data structure whereas
+    on the inner loop is performed a lookup on an auxiliary data structure or
+    a `sliced view' of the same data structure.
+
+    In what follows, we are going to demonstrate application of `nested loop thinning' technique
+    on the quicksort algorithms.
+    Through the application of this refactor process, %TODO
 
 
     \section{Case Study: quicksort}\label{sec:nested-loop-quick-sort}
@@ -436,10 +445,11 @@ Shoupu Wan \\
     It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
     \emph{and} the performance of Hoare's?''
     I don't know for sure.
-    But with our `loop thinning' technique and other tools we developed in the last chapter and this, we
+    But with our `nested loop thinning' technique and other tools we developed in the last section
+    and this, we
     can explore a little bit to see if we can approach the above goal any closer than the existing
     two schemes.
-    %Now that we have the `loop thinning' technique in hand, we can take on this challenge for a good
+    %Now that we have the `nested loop thinning' technique in hand, we can take on this challenge for a good
     %cause.
     %The aforementioned loop thinning technique can be used to further simplify the Hoare's partitioning
     %algorithm.
@@ -469,7 +479,7 @@ Shoupu Wan \\
     With the existing programming languages' syntaxes, we have no choice but to break
     up the pre-incremental statements.
     So something must be done to unfold the extraordinary loop conditions to
-    ordinary ones before we proceed with the rest of the `loop thinning' procedure.
+    ordinary ones before we proceed with the rest of the `nested loop thinning' procedure.
     As we learned in ~\autoref{ch:loops}, these loops may be converted first to
     `\code{do-while} loops' such as
     \lstinputlisting[language=C]{quicksort_inner_loop_do_while.c}
@@ -502,7 +512,7 @@ Shoupu Wan \\
     caption={Implementation of partition function for Quicksort using one pointer.}]
     {quicksort_partition_single_loop.c}
     Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
-    %By now we conclude our ``loop thinning' refactor process.
+    %By now we conclude our ``nested loop thinning' refactor process.
 
     By now,
     we achieved our goal of a quicksort partitioning implementation that has the simplicity of
@@ -512,14 +522,14 @@ Shoupu Wan \\
     Comparing with where we started off ~\autoref{lst:nestedLoopHoareMethod},
     we implemented the Hoare's algorithm with a single loop plus
     cascading conditionals as ~\autoref{lst:singleLoopHoarePart}.
-    In the process, we used the `loop rotation' techniques, the `loop thinning' techniques,
-    and skills concerning the construction of cascading conditionals from earlier chapters.
+    In the process, we used the `loop rotation' techniques, the `nested loop thinning' techniques,
+    and skills concerning the construction of cascading conditionals from earlier sections.
     The new quicksort implementation retains the optimal runtime as Hoare's algorithm but has
     comparable simplicity as that of Lomuto's.
     That's almost too good to be true!
     %If this does not impress you, then you have no feeling.
     While we can make the solution simpler with the use of sentinel, we will leave that discussion to
-    next chapter.
+    next section.
     However there is one change that can provide a little more saving.
     If we change the semantic of ending pointer \code{e} from exclusive to inclusive, the
     pre-increment before the loop (line~\ref{quicksort:pre-increment} of
@@ -527,7 +537,7 @@ Shoupu Wan \\
 
 
     As a byproduct of going through the detailed refactor
-    processes for the cases of this chapter, I want the reader to have a feeling about software
+    processes for the cases of this section, I want the reader to have a feeling about software
     development model.
     As we can see the most fruitful software development model, undoubtedly, is to come up with a
     working solution first.

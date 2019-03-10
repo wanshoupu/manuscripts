@@ -52,23 +52,26 @@ in retrospect.
 We are going to present techniques that help guide one to coalesce nested loops
 into a single loop in certain scenarios, which we
 generally refer as `loop thinning' technique.
-One particular case that almost comes with guaranteed success is nested loop where
-the outer loop represents an evenly-paced, end-to-end iteration whereas on the inner loop is
-performed a partial lookup either on an auxiliary data structure or
-from a `sliced view' on the same data structure.
+One particular case whose success is almost guaranteed is a type of nested loops where
+the outer loop represents an evenly-paced, end-to-end iteration over a data structure whereas
+on the inner loop is performed a lookup on an auxiliary data structure or
+a `sliced view' of the same data structure.
 %(for example, an array slice from the starting point to the current index).
 %When an auxiliary data structure is used, it is used to provide cumulative, partial
 %information in addition to the main data structure.
 
 
-As result of the `loop thinning' process, one or more of the following measures may
-be helpful:
+Cramming all the functionalities of nested loops into one loop is hard by definition.
+As a price, `nested loop thinning' process almost always
+results in one or more of these changes to the body of the final loop:
 \begin{itemize}
-    \item Use extra conditional construct or test;
-    \item Make the pacing of outer loop becomes more dynamic;
-    \item Use extra boundary condition handling logic;
-    \item Use additional auxiliary data structures for the outer loop, such as a queue or stack.
+    \item extra conditional constructs are added
+    \item extra tests are added to existing conditional constructs
+    \item the pacing of the resulting loop is made more dynamic
+    \item more boundary condition handling logic is added
+    \item auxiliary data structure, such as queue or stack, is added.
 \end{itemize}
+
 
 
 \begin{figure}
@@ -78,10 +81,10 @@ be helpful:
     for `loop thinning' process.
     Each section receives different treatment during the `loop thinning' process.}
 \end{figure}
-Depending on the relative position with respect to the inner loop, the body of the outer loop is
-divided into three sections---for sake of argument, we will call them
-pre-inner-loop section, inner-loop section, and post-inner-loop section
-(shown in ~\autoref{fig:segment-for-loop-thinning}).
+For the sake of argument, the body of the outer loop is
+divided into three sections---\emph{pre-inner-loop} section, \emph{inner-loop} section, and
+\emph{post-inner-loop} section---depending on their relative position
+in respect to the inner loop (shown in ~\autoref{fig:segment-for-loop-thinning}).
 
 
 The gist for flattening nested loops is as follows.
@@ -110,7 +113,7 @@ Then one can tuck the post-inner-loop statements under the conditional of the
 %condition, convert it to a conditional or prepend to an existing one
 Throughout the process, please pay special attention to bypassing statements, such as
 \code{break} and \code{continue}.
-Regardless which venue ws taken, new conditional statements are inevitably formed.
+Regardless the venue taken, new conditional statements are inevitably formed.
 one may refer to ~\fullref{ch:cascif} for best practices on how to organize effective
 cascading conditionals.
 %Note that the order of the last two steps, creating the conditional and creating the

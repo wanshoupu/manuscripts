@@ -13,14 +13,34 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{color}
+\usepackage[svgnames]{xcolor}
 
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
+\lstset{frame=tb,
+escapeinside={(*@}{@*)},
+language=Java,
+alsolanguage=Python,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=left,
+numberstyle=\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{green},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}
 
-\title{How to Improve the Implementations of Quicksort Algorithm?}
+\title{Loop Programming techniques and How it can improve Quicksort Algorithm}
 
 
-\author{
-Shoupu Wan \\
+\author{Shoupu Wan \\
 \texttt{wanshoupu@gmail.com} \\
 }
 
@@ -49,11 +69,81 @@ Shoupu Wan \\
 
 
     \section{Introduction}\label{sec:introduction}
-    Invented in 1960, quicksort has been the go-to sorting algorithm in practice\cite{Hoare1961,
-    Hoare1962}.
-    Quicksort is named one of the top $10$ algorithms of $20$th century\cite{top10algorithm:2000}.
+    As one of the most widely used programming constructs, loop is productivity
+    amplifier and is featured in almost all programming languages.
+    With a static body and nominal overheads (\textit{e.g.},
+    state-registering variables, \textit{etc.}), a loop can be executed as many times as desired.
+
+
+    A key building block as loop is, it is worth every developer's effort to master the best
+    practices of it.
+    On the opposite, it is not uncommon to spot in production code, especially algorithm-intensive
+    code haphazardly constructed loops, often with duplicate code dangling around.
+    Obviously developers who authored the haphazardly `working' code were either oblivious
+    with good programming practices or does not bother to spend the time on better loop constructs.
+
+    Common problems programmers tend to make while programming with loops are
+    \begin{enumerate}
+        \item Duplicate code between initialization and loop body
+        or between loop body and post-loop processing logic
+        \item Nested loops
+        \item Leaky loop variables
+        \item Heavy-duty initialization
+    \end{enumerate}
+
+    Duplicate code is the foremost problem in loop programming
+    and is among the top root causes for bugs.
+    Duplicate code anywhere is bad.
+    But duplicate code in and around loops is hard to realize and even harder to get rid of.
+
+
+    The next commonly held misunderstanding about loop is the tendency to use nested loops.
+    Many are ready to jump to the argument about this: ``What's wrong with nested loop?''
+    The use of nested loops in many occasions seems to be necessary, reasonable,
+    and at least harmless at first sight.
+    But this belief stands only at the first sight.
+    For almost all cases, nested loops bring complexity rather than convenience, obstruct
+    readability rather than facilitating it, deepen the coupling rather than reducing it,
+    and discourage code reusability rather than encouraging it.
+
+
+    The third controversial usage of loops is exposing loop variables to subsequent programming
+    units.
+    This is essentially passing information from loop to subsequent programming units via the
+    exposed variable(s) in an implicit way.
+    The problem of this practice is that this expose the implementation details to subsequent
+    program and it violates the encapsulation principle.
+
+
+    Finally the fourth problem with loop programming has to do with disproportionally heavy-duty
+    initialization.
+    Many programmers prepare for the ensuing loop with a multi-line `min-program'.
+    Some are so aware of this problem that they factor out this portion of code into a
+    separate function.
+    But more often than not, the initialization can be done with a one-liner in a much simpler
+    form.
+
+
+    In this paper we are not going to address all these problems.
+    Instead, we will focus on two of them---duplicate code and nested loops.
+    Accordingly, we will introduce two techniques---`loop rotation' and `Nested loop thinning'.
+    These are the two pillars for loop programming.
+    Proper use of them help developers avoid commonly made mistakes.
+
+
+    As an illustration and proof of the effectiveness of these techniques, we will conduct
+    a case study about the well-known quicksort algorithm.
+    First invented in 1960, quicksort has been studied and analyzed well over the
+    years\cite{Hoare1961,Hoare1962,Sedgewick1978,Bentley:1986:PP}.
+    As a `divide-n-conquer` algorithm, quicksort has a profound influence over programming.
+    So much so that quicksort is named one of the top $10$ algorithms of $20$th
+    century\cite{top10algorithm:2000}.
+    For its expected high performance, quicksort becomes the \textit{de facto} sorting algorithm in
+    practice.
+    By applying these programming techniques, we will present a new and simpler way to implement
+    Hoare's quicksort algorithm.
+
     In what follows, I am going to present the idea in Python 2.7.
-    `Loop rotation' and `Nested loop thinning' are the two pillars for loop programming.
 
 
     \section{Loop Rotation}\label{sec:LoopDesignConsideration}
@@ -98,8 +188,9 @@ Shoupu Wan \\
             \includegraphics[width=\textwidth]{tight-spool.jpg}
             \caption{\label{fig:tight-spool}}
         \end{subfigure}
-        \caption{\label{fig:spool-loop} If we use spool as a metaphor for loop in program, then
-        `loop rotation' can be pictorially depicted as winding up loose yarns onto a spool.
+        \caption{\label{fig:spool-loop} Using spool as a metaphor for loop in program,
+        duplicate code around a loop would be like tightening messy yarns into neat spool.
+        `Loop rotation' can be pictorially depicted as winding up loose yarns onto a spool.
         \protect\subref{fig:loose-spool}: Duplicate, sloppy code is analogous to loose, unorganized
         yarn around a spool.
         \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
@@ -642,8 +733,21 @@ Shoupu Wan \\
     \lstinputlisting[]{quicksort_partition_single_loop_sentinel.c}
     This brings implementations of Hoare's quicksort to the next level of simplicity.
 
+    \section{Experiment}\label{sec:experiment}
+    \include{quicksort_perf_cmp}
+    ~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
+    The simplified implementation indeed comes with an overhead and is thus slower than
+    its traditional counterpart of the Hoare's quicksort program.
+    For sorted data sets (either ascending or descending), there is a $17\%$ slowdown.
+    But for randomly ordered data sets, the slow down is consistantly around $7\%$.
+    The experiment data seems to indicate that the simplified
+    implementation of Hoare's quicksort algorithm shares same runtime complexity as its
+    traditional counterpart.
+    Their performance may differ by a multiplier.
+
+
     \section{Conclusion}\label{sec:conclusion}
-    The solutions we provided are given in high-level programming language, particuarly, Python 2.x.
+    The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.
     \bibliographystyle{unsrt}

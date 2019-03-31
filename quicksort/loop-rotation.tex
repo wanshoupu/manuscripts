@@ -1,0 +1,67 @@
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{ferris-wheel.jpg}
+    \caption{\label{fig:loop-rotation}Loop as a circular sequence.
+    The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
+    the loop.}
+\end{figure}
+Observing two of the characteristics of loop is the key of loop programming.
+First, there are many moving parts in a loop construct and they are tightly
+coupled---changes in one necessitate changes in several others.
+Secondly, a loop is usually not alone---it does not live in vacuum
+but interacts with other part of a program.
+So it must get along with other code in its vicinity.
+As a result, a large part of the programming task is to fit loop in the program.
+As we discussed in ~\autoref{sec:introduction}, the biggest problem with loop programming is
+duplicate code in and around the loop.
+The foremost goal when implementing loop is to reduce duplicate code.
+`Loop rotation' is an important technique for that purpose.
+
+
+It is beneficial to visualize a loop construct as a Ferris wheel, a carousel, or a spool.
+A property is shared by them all---they can be mathematically represented by circular sequences,
+that is, a sequence with rotational symmetry with respect to circular shifts.
+For sake of argument, in ~\autoref{fig:loop-rotation} we pictured a loop as a Ferris wheel.
+Distributed around the wheel are the loop statements---initialization,
+loop test, state-updating statements \textit{etc.}
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{loose-spool.jpg}
+        \caption{\label{fig:loose-spool}}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{tight-spool.jpg}
+        \caption{\label{fig:tight-spool}}
+    \end{subfigure}
+    \caption{\label{fig:spool-loop} Using spool as a metaphor for loop in program,
+    duplicate code around a loop would be like tightening messy yarns into neat spool.
+    `Loop rotation' can be pictorially depicted as winding up loose yarns onto a spool.
+    \protect\subref{fig:loose-spool}: Duplicate, sloppy code is analogous to loose, unorganized
+    yarn around a spool.
+    \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
+\end{figure}
+As another helpful analogy, loops are to program as spools are to yarn.
+In the same way as a spool is used to organize yarn, a loop is a construct to organize program.
+From this perspective, the `loop rotation' process to coalesce duplicate code is analogous to
+wind up loose, messy yarn into a tidy spool (~\autoref{fig:spool-loop}).
+Even though a loop is a circular sequence, there is always an entrance and an exit.
+One can thus take this rotational degrees of freedom to one's advantage as to determine where
+to enter and where to exit the loop.
+For example, if the code in the loop and in the affinity of the loop are duplicate, one may
+`rotate' the loop to match up and coalesce the duplicate code.
+On the contrary, if one wants to move a portion of code at the beginning of the loop out of
+the way, one may `rotate' the loop in the reversely.
+Doing so may result in duplicate code, but this may enable a subsequent refactor whose
+positive effect will eventually pay off this adverse effect.
+In general, we will refer to this loop fine-tuning programming technique as `loop rotation'.
+In practice, one may first implement a prototype with unconditional \code{while (true)} or
+\code{for (; ;)} loop.
+This will push all the statements into the loop body for ease of `loop rotation'.
+This will help one focus on coming up with \emph{a} `working' code first.
+Once a `working' code has been found, one can use the `loop rotation' technique to fine-tune
+the program.
+For `soft' code duplication---two blocks of code that are not
+identical but share certain pattern, one may perform pre-refactor to
+consolidate the `shared duplication' into copy-n-paste duplication and then treat the
+duplication in the normal way.

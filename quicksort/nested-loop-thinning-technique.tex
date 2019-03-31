@@ -1,0 +1,97 @@
+Every developer writes nested loops now and then.
+Many times, nested loops appear compelling and inevitable.
+While they may solve our problem, nested loops inflate a program with
+unnecessary complexity.
+Nested loops, with the extra layers of loop gadgets, also obstruct code readability.
+The presence of nested loops usually conceal numerous optimization opportunities.
+Great developers will try best to reduce the layer of loops, even avoid using loops
+altogether with certain programming language or software framework especially for scientific
+computation and data engineering\cite{data-engineering-avoid-loop}.
+The removal of nested loops often results more optimizations obvious and
+accessible.
+Like `Candy Crush Saga' game arriving at a critical point, a single move may unlock an
+avalanche of moves, to the player's advantage.
+Here we are to present a process that coalesce nested loops into a single loop,
+known as `nested loop thinning' technique.
+Cramming all the functionalities of nested loops into one loop is hard by definition.
+As a price to be paid, `nested loop thinning' process almost always
+results in one or more of these changes to the final loop:
+\begin{itemize}
+    \item extra conditional constructs are added
+    \item extra tests are added to existing conditional constructs
+    \item the pacing of the resulting loop is made more dynamic
+    \item more boundary condition handling logic is added
+    \item auxiliary data structure, such as queue or stack, is added.
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{segment-for-loop-thinning.jpg}
+    \caption{\label{fig:segment-for-loop-thinning}
+    Sectioning of loop body statements for `nested loop thinning' process.
+    Each section receives different treatment during the `nested loop thinning' process.}
+\end{figure}
+For sake of argument, the body of the outer loop is
+divided into three sections---\emph{pre-inner-loop} section, \emph{inner-loop} section, and
+\emph{post-inner-loop} section---depending on their relative position
+in respect to the inner loop (shown in ~\autoref{fig:segment-for-loop-thinning}).
+The gist for flattening nested loops is as follows.
+First, we need to move pre-loop statements out of the way.
+To that end, use `loop rotation' technique (see ~\autoref{ch:loops}) backward
+to unwind the pre-loop statements.
+The second step depends on the inner loop construct.
+If the inner loop has a \emph{non-trivial loop condition}, then the inner loop can
+be converted to a conditional construct as-is by keyword swapping: \code{while} $\rightarrow$
+\code{if}.
+At the same time, the post-inner-loop statements shall be wrapped away in a piggybacking
+\code{else}-clause.
+On the contrary, if the inner loop is \emph{unconditional}, chances are that
+there is a conditional \code{break} statement somewhere in the loop body.
+Then one can tuck the post-inner-loop statements under the conditional of the
+\code{break} statement replacing the latter, and the inner loop can be stripped away.
+Throughout the process, one shall pay special attention to execution-path altering statements,
+such as \code{break} and \code{continue}.
+Regardless the venue taken, new conditional statements are inevitably formed and cascading
+conditional constructs are the best way to organize them.
+one may refer to Reference ~\cite{Wan:book} for best practices on how to organize effective
+cascading conditionals.
+Apart from the prescribed steps, some preparatory measures may be taken beforehand
+to reduce the friction during the `nested loop thinning' refactor process.
+Where needed, compound statements may be taken apart before one wades deep.
+Compound statements may get in your way of refactoring for multiple reasons.
+The most obvious reason is that, well, parts of a compound statement
+may end up at different places after refactoring.
+Non-idempotent conditional expressions, such as \code{if (--i < 0)}, are even more lethal
+because each execution of the condition ratchets the state of the loop, leaving no time for
+taking a breath.
+For example,
+\begin{lstlisting}
+    while (++i < LIMIT);
+\end{lstlisting}
+shall be expanded to
+\lstinputlisting[]{expanded-do-while.java}
+before the start of loop thinning refactor.
+The following Golang statement should also be unfolded beforehand:
+\begin{lstlisting}
+    if v := a[i]; v < LIMIT
+\end{lstlisting}
+In the `nested loop thinning' process, as one can
+simply replace the keyword \code{while} with \code{if} when due.
+Therefore, \code{while}-loop readily lends itself to this refactor process.
+For this reasons, \code{for}-loop with all its header statements, should be taken apart and
+converted to \code{while}-loop during the preparation stage.
+After `nested loop thinning',
+cleanup changes may be performed to comply with convention, code style, or purely for
+cosmetic reasons.
+There are application restrictions of the `nested loop thinning' process.
+Firstly, inner loop must be directly embedded in outer loop with no intermediate layers.
+Also execution-path-altering statements, such as \code{break}, shall be absent in the
+pre-inner-loop section.
+Most of the methods we present in this article are empirical, the author does not claim
+universal applicability for many of them.
+Instead, the techniques shall be considered on a case by case basis.
+One particular case whose success is almost guaranteed is a type of nested loops where
+the outer loop represents an evenly-paced, end-to-end iteration over a data structure whereas
+on the inner loop is performed a lookup on an auxiliary data structure or
+a `sliced view' of the same data structure.
+In what follows, we are going to demonstrate application of `nested loop thinning' technique
+on the quicksort algorithms.

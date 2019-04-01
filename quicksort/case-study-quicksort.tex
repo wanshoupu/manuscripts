@@ -1,19 +1,36 @@
-We will now consider another case study.
-This is a classical example that was detailed by books such as `Programming
-Pearls' and `Numerical Recipes'\cite{Bentley:1986:PP, NumericalRecipes:1992}.
-My encounter with the code in these books completely redefined the word `simplicity'
-in my dictionary.
-My first implementation of the quicksort algorithm was in C based off
-the traditional ``Hoare's partitioning'' scheme, as presented
-in `Numerical Recipes' (minus the sentinel part).
-But in what follows, I am going to present the idea in Python 2.7.
-The outline of the quicksort function is as follows.
+Quicksort is one of the pivotal sorting algorithms widely used by modern software.
+Among the quicksort algorithms, there are two main variants---those
+by Tony Hoare and by Nico Lomuto, respectively.
+Hoare's quicksort scheme generally has robust and optimal performance but its
+implementation has been quite involved.
+Lomuto's scheme, on the other hand, is straightforward to implement and easier to follow.
+However for certain edge cases its performance suffers major regression (back to $O(N^2)$).
+One cannot help but wonder if there is an implementation
+that keeps the robust and optimal performance of Hoare's quicksort algorithm
+while achieves a level of succinctness of that of Lomuto's.
+That is going to be the focus of rest of this article.
+
+
+%This is a classical example that was detailed by books such as `Programming
+%Pearls' and `Numerical Recipes'\cite{Bentley:1986:PP, NumericalRecipes:1992}.
+%My encounter with the code in these books completely redefined the word `simplicity'
+%in my dictionary.
+%My first implementation of the quicksort algorithm was in C based off
+%the traditional ``Hoare's partitioning'' scheme, as presented
+%in `Numerical Recipes' (minus the sentinel part).
+%But in what follows, I am going to present the idea in Python 2.7.
+Here is an outline of the quicksort sorting interface
+that one can start to explore on a sunny weekend afternoon.
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
 caption={An implementation of quicksort algorithm.}]
 {quicksort_outline.c}
 where arguments \code{s} and \code{e} are the starting (inclusive) and ending (exclusive) pointers
 to the array.
-`\code{part}' is a recursive function whose base case is no-op, namely,
+`\code{part}' is a method stub for partitioning function.
+
+
+%TODO
+a recursive function whose base case is no-op, namely,
 arrays with fewer than two elements.
 With a pivot element randomly chosen out of the array,
 a large array is partitioned into three consecutive parts: the pivot element in the middle, a

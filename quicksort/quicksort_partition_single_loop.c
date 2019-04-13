@@ -1,5 +1,4 @@
 int* part(int* s, int*e) {
-    swap(s, s + rand() % (e - s));
     int* const pivot = s++;
     --e;$\label{quicksort:pre-increment}$
     while(true) {

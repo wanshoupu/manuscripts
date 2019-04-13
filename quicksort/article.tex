@@ -156,6 +156,10 @@ upquote=true
     \input{case-study-quicksort}
 
     \section{Experiment}\label{sec:experiment}
+    To eliminate possible performance degradation due to pivot skewness, we introduce the
+    ``median-of-three'' pivot selection technique before each call of function
+    \code{part}\cite{sedgewick1977,sedgewick1978}.
+    Correspondingly, we ensure that the array length is at least $3$ to call function \code{part}.
     \include{quicksort_perf_cmp}
     ~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
     The simplified implementation indeed comes with an overhead and is thus slower than

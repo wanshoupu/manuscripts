@@ -19,23 +19,62 @@ That is going to be the focus of rest of this article.
 %the traditional ``Hoare's partitioning'' scheme, as presented
 %in `Numerical Recipes' (minus the sentinel part).
 %But in what follows, I am going to present the idea in Python 2.7.
-Here is an outline of the quicksort sorting interface
-that one can start to explore on a sunny weekend afternoon.
+At the high level, a recursive quicksort implementation may be as follows
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
 caption={An implementation of quicksort algorithm.}]
 {quicksort_outline.c}
-where arguments \code{s} and \code{e} are the starting (inclusive) and ending (exclusive) pointers
-to the array.
-`\code{part}' is a method stub for partitioning function.
+where arguments \code{s} and \code{e} are the starting and ending pointers to the input array.
+This function invokes `\code{int* part(int* s, int* e)}' which is a function stub for array
+partition which will be discussed in detail below.
+For single-element arrays, quicksort function is no-op which is a base case.
+For na\"{i}ve implementations, this the only base case and it is sufficient.
+But for more sophisticated implementations or to reduce partitioning overhead, more base
+cases are used to address under-sized arrays (\textit{e.g.}, arrays with fewer than $3$ elements).
 
 
-%TODO
-a recursive function whose base case is no-op, namely,
-arrays with fewer than two elements.
-With a pivot element randomly chosen out of the array,
-a large array is partitioned into three consecutive parts: the pivot element in the middle, a
-subarray on the left, and a subarray on the right.
-Then the pivot element is swapped into its final position.
+The implementation of the partition function is key to the success of quicksort algorithm.
+The partition function does three things:
+\begin{enumerate}
+    \item pick a pivot element among the array $P$;
+    \item partition the array (minus the pivot) into two subarrays $S$ and $G$ with
+    $S \leq P$, $G \geq P$;
+    \item arrange the subarrays and the pivot element such that $[S, P, G]$.
+\end{enumerate}
+Pivot selection has prominent impact on the performance of quicksort algorithm.
+Performance degradation can occur if the picked pivot suffer significant skewness.
+A simple but effective technique to prevent pivot skewness is to randomly select the pivot element
+from among the array and place it to the beginning of the array.
+But random selection is pseudo-random and may itself may be time-consuming.
+A more robust an fast way is to choose ``median-of-three'': from among $3$ sample elements
+(\textit{e. g.}, the first, the middle, and the last elements), pick the median as the pivot.
+``Median-of-three'' technique has been proven effective to prevent
+runtime degradation\cite{sedgewick1977,sedgewick1978}.
+Correspondingly, one must ensure that the array contains at least $3$ elements to apply
+``median-of-three'' technique.
+
+
+Among the partitioning schemes for quicksort purposes, two well-known are
+Hoare's scheme and Lomuto's scheme\cite{Hoare1961,Bentley:1986:PP}.
+The main difference between them lies in the direction the array is traversed.
+In Hoare's scheme, two pointers from both ends of the array press toward each other whereas in
+Lomuto's, two pointers start off from one end and scan down one direction at differing pace.
+
+
+In C-like language when it comes to intervals bound by pointers,
+there are two semantically distinct conventions.
+One is inclusive beginning and exclusive end, the 'close-end' convention.
+The other is inclusive for both boundaries, the 'close-close' convention.
+Correspondingly, quicksort implementations fall in two categories, one for each convention.
+There are renowned computer scientists who advocate one over the other\cite{dijkstra-ewd831}.
+But for quicksort, it turns out that both conventions can work with no excessive inconvenience.
+
+
+In ~\autoref{apx:impl-varieties} we listed a variety of implementations that all work with
+the same driving function \code{qsort}.
+These listings are to be understood with appropriate pivot-selection measures to prevent severe
+pivot skewness which in the worst cases will cause performance degradation to $O(N^2)$.
+
+
 After this, each of the two subarrays is subject to the same function.
 So on and so forth until each subarray is reduced to the base case.
 At the return of the first call of the function, the entire array is left in sorted state.

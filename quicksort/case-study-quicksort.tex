@@ -32,32 +32,59 @@ But for more sophisticated implementations or to reduce partitioning overhead, m
 cases are used to address under-sized arrays (\textit{e.g.}, arrays with fewer than $3$ elements).
 
 
-The implementation of the partition function is key to the success of quicksort algorithm.
+In plain english, this is how quicksort works in ballpark:
+\begin{quote}
+    If the array contains fewer than $2$ elements, return as is.
+    Otherwise, invoke partitioning function to partition the array into two subarrays.
+    Each subarray is subject to the quicksort function again so on and so forth
+    until they are all reduced to the base case.
+    At the return of the function, the entire array is sorted.
+\end{quote}
+The implementation of the partition function is key to the quicksort algorithm.
 The partition function does three things:
 \begin{enumerate}
-    \item pick a pivot element among the array $P$;
-    \item partition the array (minus the pivot) into two subarrays $S$ and $G$ with
-    $S \leq P$, $G \geq P$;
-    \item arrange the subarrays and the pivot element such that $[S, P, G]$.
+    \item Pick a pivot element among the array and set it aside;
+    \item Use pivot as a benchmark, partition the rest of the array into two subarrays
+    with smaller (or equal) ones on the left and greater (or equal) ones on the right;
+    \item Put the pivot element back in between the subarrays.
 \end{enumerate}
+
+
 Pivot selection has prominent impact on the performance of quicksort algorithm.
 Performance degradation can occur if the picked pivot suffer significant skewness.
-A simple but effective technique to prevent pivot skewness is to randomly select the pivot element
-from among the array and place it to the beginning of the array.
-But random selection is pseudo-random and may itself may be time-consuming.
-A more robust an fast way is to choose ``median-of-three'': from among $3$ sample elements
+The most na\"{i}ve way is to pick element at a fixed location.
+For sneakily crafted input array, this pivot selection algorithm may cause severe skewness.
+A simple but effective technique defying pivot skewness is randomly selection.
+But random selection is usually pseudo-random and may sabotaged by malicious data.
+Also random number generation may be time-consuming.
+A more robust an fast way is to choose pivot element is using ``median-of-three'' technique:
+from among $3$ sample elements
 (\textit{e. g.}, the first, the middle, and the last elements), pick the median as the pivot.
 ``Median-of-three'' technique has been proven effective to prevent
 runtime degradation\cite{sedgewick1977,sedgewick1978}.
-Correspondingly, one must ensure that the array contains at least $3$ elements to apply
+As a caveat, one must ensure that the array contains at least $3$ elements to apply
 ``median-of-three'' technique.
+But this is usually done regardless in conjunction with other performance tuning technique
+so that it brings dual benefit.
 
 
-Among the partitioning schemes for quicksort purposes, two well-known are
+\subsection{Implementation of Quicksort Partitioning Function}\label{subsec:impl-of-qsort-part-fun}
+
+With this said, we are ready to discuss implementation of quicksort and its partitioning function.
+Admittedly, implementing quicksort is quite tricky.
+Hoare's scheme was invented along with the quicksort algorithm\cite{Hoare1961,Hoare1962,
+Sedgewick1978}.
+Among the quicksort partitioning schemes, best known are
 Hoare's scheme and Lomuto's scheme\cite{Hoare1961,Bentley:1986:PP}.
-The main difference between them lies in the direction the array is traversed.
-In Hoare's scheme, two pointers from both ends of the array press toward each other whereas in
-Lomuto's, two pointers start off from one end and scan down one direction at differing pace.
+The main difference between them lies in how the array is traversed.
+In Hoare's scheme, two pointers from both ends of the array step toward each other;
+whereas in Lomuto's, two pointers start off the same position
+and step in the same direction on their own paces.
+
+%TODO
+
+As a spoiler, take a look at ~\autoref{apx:impl-varieties} where we listed a number of
+implementations variations for the partitioning function.
 
 
 In C-like language when it comes to intervals bound by pointers,
@@ -69,26 +96,16 @@ There are renowned computer scientists who advocate one over the other\cite{dijk
 But for quicksort, it turns out that both conventions can work with no excessive inconvenience.
 
 
-In ~\autoref{apx:impl-varieties} we listed a variety of implementations that all work with
-the same driving function \code{qsort}.
-These listings are to be understood with appropriate pivot-selection measures to prevent severe
-pivot skewness which in the worst cases will cause performance degradation to $O(N^2)$.
-
-
-After this, each of the two subarrays is subject to the same function.
-So on and so forth until each subarray is reduced to the base case.
-At the return of the first call of the function, the entire array is left in sorted state.
-As you may have noted, we emphasise that the partitioning function divides an array into three, not
-two, parts---the pivot element $p$, the partition $\leq p$, and the partition $\leq p$.
-This is crucial to the convergence / termination of the function.
-It may be the case that one or the other of the two partitions is empty.
-But even so, please remember the partitioning scheme employed in quicksort is \emph{three-way}.
 With the Hoare's partitioning scheme, a tentative implementation for the function \code{part} is as
 follows.
 \lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
 caption={Implementation of Hoare's partition scheme for quicksort.}]
 {quicksort_partition_sym.c}
-First, we randomly select a pivot element and swap it to the beginning of the array
+Earlier we mentioned `pick a pivot element and set it aside'.
+Now at implementation, we must decide ``How to pick an element'' and ``Where to set it aside''.
+
+we randomly select a pivot element and swap it to the beginning of
+the array
 (ask yourself: ``why beginning of array?
 Why not end?'').
 Then two pointers, \code{s} and \code{e}, starting off the opposite ends of the array,

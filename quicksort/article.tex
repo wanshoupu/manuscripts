@@ -3,7 +3,7 @@
 
 \usepackage{arxiv}
 \usepackage[utf8]{inputenc} % allow utf-8 input
-\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts % for underscore char
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
@@ -37,7 +37,7 @@ tabsize=3,
 upquote=true
 }
 
-\title{Loop Programming Techniques that Can Improve the Implementations of Quicksort Algorithm}
+\title{Techniques for Loop Programming that Can Improve Quicksort Implementations}
 
 
 \author{Shoupu Wan \\
@@ -176,6 +176,7 @@ upquote=true
     The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.
+    \include{partition-functions}
     \bibliographystyle{unsrt}
     \bibliography{article}
 \end{document}

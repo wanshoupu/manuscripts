@@ -1,0 +1,43 @@
+%%
+%% Author: shoupu_wan
+%% 2019-04-13
+%%
+\appendix{Hoare's Partitioning Functions}\label{apx:impl-varieties}
+
+\lstinputlisting[label={lst:part_nested_loop_var1},language=C,
+caption={Partition scheme for quicksort variation 1.
+For elements equal to the pivot, we don't stop '<=' or '<' is not critical.
+But '<=' brings more saving on unnecessary swaps.}]
+{part_nested_loop_var1.c}
+
+\lstinputlisting[label={lst:part_nested_loop_var2},language=C,
+caption={Partition scheme for quicksort variation 2.
+Found another variation of partition scheme based on part-nested-loop
+Diff wise, it lies between part-nested-loop and part-nested-loop-var
+- the order of the two while loops is identical to part-nested-loop
+- the boundary checking is identical to part-nested-loop-var
+- the return value is shifted toward the left by one unit
+}]
+{part_nested_loop_var2.c}
+
+\lstinputlisting[label={lst:part_nested_loop_var3},language=C,
+caption={Partition scheme for quicksort variation 3.
+Variation of partition scheme.
+The two differs in three ways
+- order of the two while loops
+- increment condition for equal element pointer
+- return pointer choice between s and e
+}]
+{part_nested_loop_var3.c}
+
+\lstinputlisting[label={lst:part_nested_loop_var4},language=C,
+caption={Partition scheme for quicksort variation 4.
+Find yet another variation of implementation where the second nested while-loop
+is made post-incremental.
+This will remove the difficulty encountered in loop-thinning.}]
+{part_nested_loop_var4.c}
+
+All these listings are to be understood with some pivot-selection mechanism to avoid pivot
+skewness.
+
+\appendix{Quicksort Partitioning function in Go}\label{apx:partition-go}

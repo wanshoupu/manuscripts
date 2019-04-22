@@ -92,7 +92,7 @@ In Lomuto's partition scheme, the two pointers have distinct tasks.
 The one running in front, variable \code{i}, is responsible to discover out-of-place elements.
 The one behind, \code{p}, guards the partition boundary.
 When \code{i} discovers an out-of-place element, \code{p} makes
-room for it and places it there by a swap and the partition process continues.
+room and places it by a swap and the partition process continues.
 The code is shown in ~\autoref{lst:singleLoopLomuto}.
 
 
@@ -108,12 +108,15 @@ For this reason, Lomuto's quicksort algorithm is not suitable for general-purpos
 
 \subsection{Implementation of Hoare's Partition Scheme}\label{subsec:impl-of-qsort-part-fun}
 
-As mentioned above, asymmetric traversal in quicksort partition causes performance degradation.
+As mentioned above, asymmetric traversal in quicksort partition is the root cause of Lomuto's
+performance degradation.
+To overcome the drawback, we need symmetric traversal with two pointers meeting each other.
+
+
 Originally invented along with the quicksort algorithm, Hoare's partition scheme is symmetric
 with respect to the two subarrays\cite{Hoare1961,Hoare1962,Sedgewick1978}.
 
-However the added complexity the implementation of this partition function is very involved.
-Also there is apparently
+However one should never underestimate the added complexity due to the minor change.
 So much so that for a long time few understand why this partition scheme works at
 all\cite{Bentley-Beautiful-code}!
 

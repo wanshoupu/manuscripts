@@ -1,15 +1,5 @@
 Quicksort is one of the pivotal sorting algorithms widely used by modern software.
-Among the quicksort algorithms, there are two main variants---those
-by Tony Hoare and by Nico Lomuto, respectively.
-Hoare's quicksort scheme has robust and optimal performance but its
-implementation has been quite involved.
-Lomuto's scheme, on the other hand, is straightforward to implement and easier to follow.
-However its performance may degrade catastrophically for certain edge cases.
-Comparing the two,
-one cannot help but wonder if there is an implementation
-that is as robust and performant as the traditional implementation of Hoare's quicksort algorithm
-and at the same time as succinct as that of Lomuto's.
-That is going to be the focus of rest of this article.
+First a little background on quicksort.
 
 
 \subsection{Recursive implementation of quicksort}\label{subsec:recursive-impl-quicksort}
@@ -31,12 +21,12 @@ partition which will be discussed in detail below.
 For single-element arrays, quicksort function is no-op which is a base case.
 For na\"{i}ve implementations, this the only base case and it is sufficient.
 But for more sophisticated implementations or to reduce partition overhead, more base
-cases are used to address under-sized arrays (\textit{e.g.}, arrays with fewer than $3$ elements).
+cases are used to address under-sized arrays (\textit{e.g.}, arrays of size $\leq 5$ but $\geq 1$).
 
 
 In plain english, this is how quicksort works:
 \begin{quote}
-    If the array contains fewer than $2$ elements, return as is.
+    If the array contains fewer than $2$ elements (the base case), return as is.
     Otherwise, invoke partition function to partition the array into two subarrays and an
     element (the \emph{pivot}).
     Each subarray is subject to the quicksort function again so on and so forth
@@ -52,24 +42,13 @@ The partition function does three things:
     \item Put the pivot element back in between the subarrays.
 \end{enumerate}
 
-
-In all implementations of the partition function,
-pivot selection has prominent impact on the performance of the quicksort algorithm
-as pivot skewness is the main cause for performance degradation.
-The most na\"{i}ve way is to pick element at a fixed location (\texttt{e.g.}, the first element).
-This pivot selection algorithm may cause severe skewness if input array is already sorted.
-Random selection is a simple but effective technique that can defeat pivot skewness.
-But random selection is usually based on pseudo-random sequence and random number generation itself
-may be time-consuming.
-Worst than all, the random sequence is subject to malicious attack\cite{Kelsey-Schneier-Wagner-Hall}.
-A more robust, economic, and proven way to prevent runtime degradation is to use ``median-of-three''
+The subarrays resulted from partition may not be equal sized which is called partition skewness.
+Partition skewness has an adverse impact on the performance of quicksort algorithm.
+In all practical implementations of the partition function for quicksort, some type of pivot
+selection strategy is needed to prevent partition skewness.
+Common and proven practices are random selection or ``median-of-three''
 technique\cite{sedgewick1977,sedgewick1978}.
-Based on a few sample elements (\textit{e.g.}, the first, the middle, and the last elements),
-pick the median as the pivot.
-Of course one must ensure that the array to be sorted must contain a minimum number of elements
-to apply the ``median-of-three'' technique.
-Regardless, this is usually done in conjunction with other performance tuning technique
-so that it brings dual benefit.
+Of course, to apply the ``median-of-three'' technique, the array must exceed a minimum size.
 
 
 With this said, we are ready to discuss implementation of quicksort and its partition function.
@@ -80,6 +59,19 @@ The main difference between them lies in how the array is traversed.
 In Hoare's scheme, two pointers, one from each end of the array, step toward each other;
 whereas in Lomuto's, two pointers, each on its own pace, start off the left end of the array
 and step rightward.
+
+
+Among the quicksort algorithms, there are two main variants---those
+by Tony Hoare and by Nico Lomuto, respectively.
+Hoare's quicksort scheme has robust and optimal performance but its
+implementation has been quite involved.
+Lomuto's scheme, on the other hand, is straightforward to implement and easier to follow.
+However its performance may degrade catastrophically for certain edge cases.
+Comparing the two,
+one cannot help but wonder if there is an implementation
+that is as robust and performant as the traditional implementation of Hoare's quicksort algorithm
+and at the same time as succinct as that of Lomuto's.
+That is going to be the focus of rest of this article.
 
 
 \subsection{Implementation of Lomuto's Partition Scheme}\label{subsec:impl-of-Lomuto-part-fun}
@@ -94,44 +86,51 @@ The one behind, \code{p}, guards the partition boundary.
 When \code{i} discovers an out-of-place element, \code{p} makes
 room and places it by a swap and the partition process continues.
 The code is shown in ~\autoref{lst:singleLoopLomuto}.
+Once one understands the code, implementation becomes highly consistent and intuitive.
+One seldom fails implementing even for a customized applications.
 
 
 Notably, implementing this partition scheme only needs one loop.
-However there is no free lunch.
-The simplicity comes at the price of severe performance penalty
-for some edge cases, \texttt{e.g.}, arrays with a large number of identical elements,
-in which the Lomuto's quicksort algorithm degrades to quadratic runtime.
+However the simplicity is no free lunch.
+In fact, for certain edge cases, Lomuto's partition scheme suffers severe performance penalty,
+\texttt{e.g.}, arrays with a large number of identical elements,
+in which the Lomuto's quicksort algorithm degrades close to quadratic runtime.
 The root cause leading to this degradation lies in the asymmetric traversal of the array which
 inevitably leads to partition skewness.
-For this reason, Lomuto's quicksort algorithm is not suitable for general-purpose libraries.
+With the Lomuto's quicksort partition function, let's come back and study the more sophisticated
+implementation---the symmetric Hoare's partition scheme.
 
 
 \subsection{Implementation of Hoare's Partition Scheme}\label{subsec:impl-of-qsort-part-fun}
 
-As mentioned above, asymmetric traversal in quicksort partition is the root cause of Lomuto's
-performance degradation.
-To overcome the drawback, we need symmetric traversal with two pointers meeting each other.
+Originally invented along with the quicksort algorithm, Hoare's partition scheme avoids the
+drawback of Lomuto's with symmetric traversal: one pointer
+from each end traversing toward each other\cite{Hoare1961,Hoare1962,Sedgewick1978}.
 
+While a seemingly minor change in array traversal, the implementation complexity it brings
+is immense.
+So much so that for a long time Hoare's partition scheme is enigmatic\cite{Bentley-Beautiful-code}.
+It is hard for one to design a test case to hit specific edge case.
+Also each attempt of implementation one is stuck at different places, came to a differing
+solution every once a while.
 
-Originally invented along with the quicksort algorithm, Hoare's partition scheme is symmetric
-with respect to the two subarrays\cite{Hoare1961,Hoare1962,Sedgewick1978}.
-
-However one should never underestimate the added complexity due to the minor change.
-So much so that for a long time few understand why this partition scheme works at
-all\cite{Bentley-Beautiful-code}!
+But one thing in common: most of the solutions contain three loops: one outer loop with two
+inner loops should-by-shoulder.
+That has been so commonplace that many think it is the stereotype of quicksort---it is inevitable.
+Or is it?
 
 
 ~\autoref{apx:impl-varieties} where we listed a number of implementations variations
 for the partition function.
 
 
-In C-like language when it comes to intervals bound by pointers,
-there are two semantically distinct conventions.
-One is inclusive beginning and exclusive end, the 'close-end' convention.
-The other is inclusive for both boundaries, the 'close-close' convention.
-Correspondingly, quicksort implementations fall in two categories, one for each convention.
-There are renowned computer scientists who advocate one over the other\cite{dijkstra-ewd831}.
-But for quicksort, it turns out that both conventions can work with no excessive inconvenience.
+%In C-like language when it comes to intervals bound by pointers,
+%there are two semantically distinct conventions.
+%One is inclusive beginning and exclusive end, the 'close-end' convention.
+%The other is inclusive for both boundaries, the 'close-close' convention.
+%Correspondingly, quicksort implementations fall in two categories, one for each convention.
+%There are renowned computer scientists who advocate one over the other\cite{dijkstra-ewd831}.
+%But for quicksort, .
 
 
 With the Hoare's partition scheme, a tentative implementation for the function \code{part} is as
@@ -176,6 +175,7 @@ Thus repeated several times, I decided to summary the frequently-made bugs and p
     any outer loop iteration before they meet or cross.)
     \item\label{itm:quicksort-boundary-condition} In the second inner loop for pointer \code{e},
     failing to check boundary condition causes `out-of-boundary' exception.
+    For certain solutions, the correct condition is \code{pivot < e}.
     Incorrect boundary condition, such as \code{s < e}, again cause pointer \code{e} to stall
     in the middle of the right partition.
     This will cause the pivot is placed at the wrong place at the return of function.
@@ -186,9 +186,13 @@ Thus repeated several times, I decided to summary the frequently-made bugs and p
     \item Fail to swap the pivot element to its final position.
     This step often poses a stumbling block for beginners as well as other unsuspecting
     developers.
+    \item Pointer inclusiveness and/or exclusiveness when passing the array with two pointers,
+    the \code{start} and the \code{end}.
+    It turns out that both conventions can work with no excessive inconvenience.
 \end{enumerate}
-In fact just to debug ~\autoref{itm:quicksort-boundary-condition} and
-figure out the correct condition \code{pivot < e}, instead of \code{s < e}, took me $2$ good hours.
+Any of the items in this list can easily take a good chunk of implementation and/or debugging time.
+Just to debug ~\autoref{itm:quicksort-boundary-condition} for this article, for example, it took a
+good $2$ hours out of me.
 Also, deciding out the semantics of the function arguments in `\code{qsort}' took me
 quite some deliberation before I finally got them right.
 A large part of the complication of the problem comes from the fact that this implementation
@@ -197,68 +201,73 @@ changing others.
 For example,
 %the return value of the partition function is picked among .
 suppose we are going to change the semantics of \code{e} from exclusive to inclusive, what
-would the pointer to be returned change to?
-\code{s}? \code{s+1}? \code{e}? Or \code{e-1}?
-Accompanying these changes, the recursive calls
-\begin{lstlisting}
-    qSort(s, p);
-    qSort(p + 1, e);
-\end{lstlisting}
+would the returned pointer change to?
+\code{s}, \code{s+1}, \code{e}, or \code{e-1}?
+Accompanying these changes, the recursive calls in ~\autoref{lst:nestedLoopHoareMethod} line $4$-$5$
 also need changes.
-With the choice of return value, should the recursive calls be changed to
-\begin{lstlisting}
-    qsort(s, p - 1)
-    qsort(p + 1, e)
-\end{lstlisting}
-or
-\begin{lstlisting}
-    qsort(s, p + 1);
-    qsort(p + 2, e);
-\end{lstlisting}
+Should these lines be changed to
+~\autoref{lst:return-val-left} or ~\autoref{lst:return-val-right}?
+\begin{minipage}[t]{.4\textwidth}
+    \begin{lstlisting}[caption={A},label={lst:return-val-left},language=C]
+        qsort(s, p - 1)
+        qsort(p + 1, e)
+    \end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \begin{lstlisting}[caption={B},label={lst:return-val-right},language=C]
+        qsort(s, p + 1);
+        qsort(p + 2, e);
+    \end{lstlisting}
+\end{minipage}
 or some other form?
-The number of combinations for such changes grows exponentially as the degree of coupling increases.
-This partially explains why it is so hard to correctly implement this seemingly simple partition
-function.
-On the one hand, the problem itself is complicated---the number of loose parts exceeds what our
-brain can comfortably handle at once.
-On the other, however, the way we approach the problem makes it harder---it is all because
-we attempted to fight too many wars all at once.
-The complexity of the problem is doubled, or tripled, the moment we decide to send one pointer
-from each end of the array to meet somewhere in the middle.
-Is there a more straightforward way to implement the quicksort algorithm?
-Yes!
 
-Comparing ~\autoref{lst:nestedLoopHoareMethod} with ~\autoref{lst:nestedLoopHoareMethod},
-one can't help but be surprised ``Seriously?
-A single loop can replace three?''
-Unlike the arduous implementation and debugging process of Hoare's,
-that of the Lumoto's partition scheme has fewer moving parts, contains fewer surprises, and is
-easier to follow.
+These considerations illustrate how the choices are highly dependent on one another.
+Apart from these complexity, the traditionally, the implementations inevitably involves three
+nested loops as shown in ~\autoref{lst:nestedLoopHoareMethod}.
 
-(Can you figure out why?)
-In comparison, the Hoare's partition scheme is stable and
-robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
-%\footnote{The reason is as follows.
-%When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
-%and ~\autoref{lst:singleLoopLomuto} still do pair-wise swap among two equal elements.
-%But the ending position for the pivot element is seriously off to the right end of the array for
-%Lomuto's partition scheme whereas that of the Hoare's ends up at the middle.}.
-However, Lomuto's quicksort algorithm is still inspiring for its simplicity and elegance.
-It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
-\emph{and} the performance of Hoare's?''
-I don't know for sure.
-But with our `nested loop thinning' technique and other tools we developed in the last section
-and this, we
-can explore a little bit to see if we can approach the above goal any closer than the existing
-two schemes.
-%Now that we have the `nested loop thinning' technique in hand, we can take on this challenge for a good
-%cause.
-%The aforementioned loop thinning technique can be used to further simplify the Hoare's partition
-%algorithm.
-Our starting point is the Hoare's quicksort implementation of ~\autoref{lst:nestedLoopHoareMethod}.
-As mentioned earlier, the trickiest part of that program is the nested loops which also consists
-of the major complication.
-Let us forcus on getting rid of that.
+%The number of combinations for such changes grows exponentially as the degree of coupling increases.
+%This partially explains why it is so hard to correctly implement this seemingly simple partition
+%function.
+%On the one hand, the problem itself is complicated---the number of loose parts exceeds what our
+%brain can comfortably handle at once.
+%On the other, however, the way we approach the problem makes it harder---it is all because
+%we attempted to fight too many wars all at once.
+%The complexity of the problem is doubled, or tripled, the moment we decide to send one pointer
+%from each end of the array to meet somewhere in the middle.
+%Is there a more straightforward way to implement the quicksort algorithm?
+%Yes!
+%
+%Comparing ~\autoref{lst:nestedLoopHoareMethod} with ~\autoref{lst:nestedLoopHoareMethod},
+%one can't help but be surprised ``Seriously?
+%A single loop can replace three?''
+%Unlike the arduous implementation and debugging process of Hoare's,
+%that of the Lumoto's partition scheme has fewer moving parts, contains fewer surprises, and is
+%easier to follow.
+%
+%(Can you figure out why?)
+%In comparison, the Hoare's partition scheme is stable and
+%robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
+%%\footnote{The reason is as follows.
+%%When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
+%%and ~\autoref{lst:singleLoopLomuto} still do pair-wise swap among two equal elements.
+%%But the ending position for the pivot element is seriously off to the right end of the array for
+%%Lomuto's partition scheme whereas that of the Hoare's ends up at the middle.}.
+%However, Lomuto's quicksort algorithm is still inspiring for its simplicity and elegance.
+%It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
+%\emph{and} the performance of Hoare's?''
+%I don't know for sure.
+%But with our `nested loop thinning' technique and other tools we developed in the last section
+%and this, we
+%can explore a little bit to see if we can approach the above goal any closer than the existing
+%two schemes.
+%%Now that we have the `nested loop thinning' technique in hand, we can take on this challenge for a good
+%%cause.
+%%The aforementioned loop thinning technique can be used to further simplify the Hoare's partition
+%%algorithm.
+%Our starting point is the Hoare's quicksort implementation of ~\autoref{lst:nestedLoopHoareMethod}.
+%As mentioned earlier, the trickiest part of that program is the nested loops which also consists
+%of the major complication.
+%Let us forcus on getting rid of that.
 %a single-loop with cascade conditionals in the loop body
 %(refer to ~\autoref{ch:conditional-cascade}).
 The immediate difficulty is how to take apart the densely packed conditional construct:
@@ -344,7 +353,7 @@ This will help one pick the most effective solution to the original problem.
 %This is as a general programming guideline as well as specific  ally applicable to loops.
 
 \section{Sentinels in quicksort}\label{sec:quick-sort-sentinel}
-%TODO find a test case where sentinel is necessary (OOB exception will be hit without sentinel)
+%TODO Simplify the presentation of sentinels to one to two sentences
 
 
 I came to learn about sentinels from the book ``Numerical Receipt in C''

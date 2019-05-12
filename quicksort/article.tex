@@ -37,7 +37,7 @@ tabsize=3,
 upquote=true
 }
 
-\title{Techniques for Loop Programming that Can Improve Quicksort Implementations}
+\title{Techniques for Loop Programming that Improve Quicksort Implementations}
 
 
 \author{Shoupu Wan \\
@@ -48,18 +48,15 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Quicksort is one of the pivotal sorting algorithm widely used by modern software.
-        Among the quicksort algorithms, there are two main variants---that designed
-        by Tony Hoare and by Nico Lomuto, respectively.
-        Hoare's quicksort scheme generally has robust and optimal performance but its
-        implementation has been quite involved.
-        Lomuto's scheme is easier to follow and implementation is less tricky.
-        However for certain edge cases its performance suffers a lot.
-        In this article, we present useful techniques for programming loops.
-        We will show that these techniques can be used to improve the implementation of quicksort
-        algorithm such that it
-        has both the robust performance of Hoare's scheme while and the
-        succinctness implementation of Lomuto's.
+        Traditionally, quicksort algorithm, known as Hoare's quicksort algorithm,
+        has been presented with three nested loops whose implementation is non-trivial.
+        A variant from that, the Lomuto's quicksort algorithm, is much simpler and can be
+        implemented with a single loop.
+        However for certain edge cases its performance suffers.
+        In this article, we present a single-loop implementation for Hoare's quicksort algorithm
+        along with the techniques and processes that discovered it.
+        We believe that the techniques are beneficial for general programming and may be used for
+        the simplification of more algorithms.
     \end{abstract}
 
 
@@ -173,6 +170,7 @@ upquote=true
 
 
     \section{Conclusion}\label{sec:conclusion}
+    The Hoare's quicksort algorithm is simplified using a process and a few simple techniques.
     The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.

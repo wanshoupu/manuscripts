@@ -2,16 +2,17 @@
     \centering
     \includegraphics[width=.7\textwidth]{ferris-wheel.jpg}
     \caption{\label{fig:loop-rotation}Loop as a circular sequence.
-    The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
+    The nodes \code{i++} and \code{print} are candidates that can be matched and coalesced into
     the loop.}
 \end{figure}
-Observing two of the characteristics of loop is the key of loop programming.
-First, there are many moving parts in a loop construct and they are tightly
-coupled---changes in one necessitate changes in several others.
-Secondly, a loop is usually not alone---it does not live in vacuum
-but interacts with other part of a program.
-So it must get along with other code in its vicinity.
-As a result, a large part of the programming task is to fit loop in the program.
+Loop programming is complicated by definition.
+There are two key observations about the characteristics of loops.
+First, a loop seldom lives in vacuum.
+Loops are an embedded subunits of a program just like an organelle in a living cell.
+So it has to get along with other code in its vicinity.
+As a result, a large part of loop programming is to fit loop in the program.
+Secondly, there are many moving parts in a loop construct and they are tightly coupled, changes in
+one necessarily affect others.
 As we discussed in ~\autoref{sec:introduction}, the biggest problem with loop programming is
 duplicate code in and around the loop.
 The foremost goal when implementing loop is to reduce duplicate code.

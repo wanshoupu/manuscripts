@@ -48,15 +48,15 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Traditionally, quicksort algorithm, known as Hoare's quicksort algorithm,
-        has been presented with three nested loops whose implementation is non-trivial.
-        A variant from that, the Lomuto's quicksort algorithm, is much simpler and can be
-        implemented with a single loop.
-        However for certain edge cases its performance suffers.
-        In this article, we present a single-loop implementation for Hoare's quicksort algorithm
-        along with the techniques and processes that discovered it.
+        Quicksort algorithm with Hoare's partition scheme is traditionally implemented with three
+        nested loops.
+        With Lomuto's partitioning scheme, the implementation is much simplified with one loop.
+        However for certain edge cases, Lomuto's quicksort algorithm does not perform well.
+        In this article, we present loop programming techniques and nested loop simplification
+        processes that lead to simplified implementation for Hoare's quicksort algorithm which
+        consists of a single loop.
         We believe that the techniques are beneficial for general programming and may be used for
-        the simplification of more algorithms.
+        the discovery of more novel algorithms.
     \end{abstract}
 
 
@@ -131,7 +131,7 @@ upquote=true
     As an illustration and proof of the effectiveness of these techniques, we will conduct
     a case study about the well-known quicksort algorithm.
     First invented in 1960, quicksort has been studied and analyzed well over the
-    years\cite{Hoare1961,Hoare1962,Sedgewick1978,Bentley:1986:PP}.
+    years\cite{Hoare1961,Hoare1962,sedgewick:1978,Bentley:1986:PP}.
     As a `divide-n-conquer` algorithm, quicksort has a profound influence over programming.
     So much so that quicksort is named one of the top $10$ algorithms of $20$th
     century\cite{top10algorithm:2000}.
@@ -155,7 +155,7 @@ upquote=true
     \section{Experiment}\label{sec:experiment}
     To eliminate possible performance degradation due to pivot skewness, we introduce the
     ``median-of-three'' pivot selection technique before each call of function
-    \code{part}\cite{sedgewick1977,sedgewick1978}.
+    \code{part}\cite{sedgewick1977,sedgewick:1978}.
     Correspondingly, we ensure that the array length is at least $3$ to call function \code{part}.
     \include{quicksort_perf_cmp}
     ~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.

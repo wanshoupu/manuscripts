@@ -3,10 +3,10 @@ Many times, nested loops appear compelling and inevitable.
 While they may solve our problem, nested loops inflate a program with
 unnecessary complexity.
 Nested loops, with the extra layers of loop gadgets, also obstruct code readability.
-The presence of nested loops usually conceal numerous optimization opportunities.
-Great developers will try best to reduce the layer of loops, even avoid using loops
-altogether with certain programming language or software framework especially for scientific
-computation and data engineering\cite{data-engineering-avoid-loop}.
+The presence of nested loops usually defeats numerous optimization opportunities in the compiler
+level.
+Great developers try best to reduce usage of loops, sometimes avoiding using them
+altogether in favor of vectorized matrix operations\cite{data-engineering-avoid-loop}.
 The removal of nested loops often results more optimizations obvious and
 accessible.
 Like `Candy Crush Saga' game arriving at a critical point, a single move may unlock an

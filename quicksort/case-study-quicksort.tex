@@ -47,7 +47,7 @@ Partition skewness has an adverse impact on the performance of quicksort algorit
 In all practical implementations of the partition function for quicksort, some type of pivot
 selection strategy is needed to prevent partition skewness.
 Common and proven practices are random selection or ``median-of-three''
-technique\cite{sedgewick1977,sedgewick1978}.
+technique\cite{sedgewick:1978,sedgewick1977}.
 Of course, to apply the ``median-of-three'' technique, the array must exceed a minimum size.
 
 
@@ -105,7 +105,7 @@ implementation---the symmetric Hoare's partition scheme.
 
 Originally invented along with the quicksort algorithm, Hoare's partition scheme avoids the
 drawback of Lomuto's with symmetric traversal: one pointer
-from each end traversing toward each other\cite{Hoare1961,Hoare1962,Sedgewick1978}.
+from each end traversing toward each other\cite{Hoare1961,Hoare1962,sedgewick:1978}.
 
 While a seemingly minor change in array traversal, the implementation complexity it brings
 is immense.

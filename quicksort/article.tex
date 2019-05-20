@@ -66,81 +66,83 @@ upquote=true
 
 
     \section{Introduction}\label{sec:introduction}
-    As one of the most widely used programming constructs, loop is productivity
-    amplifier and is featured in almost all programming languages.
-    With a static body and nominal overheads (\textit{e.g.},
-    state-registering variables, \textit{etc.}), a loop can be executed as many times as desired.
+    Loops are one of the most widely used programming constructs featured
+    in almost all programming languages.
+    A loop is an amplifier, a powerhouse for productivity.
+    With nominal overheads (\textit{e.g.}, state-registering variables, \textit{etc.}),
+    the static body of a loop can be executed as many times as needed.
 
 
-    A key building block as loop is, it is worth every developer's effort to master the best
+    A key building block as loop is, it should be worth every developer's effort to master the best
     practices of it.
-    On the opposite, it is not uncommon to spot in production code, especially algorithm-intensive
-    code haphazardly constructed loops, often with duplicate code dangling around.
+    However, the best practices for loop are so largely ignored that it is not uncommon to spot
+    haphazardly constructed loops with duplicate code dangling around even in production code.
     Obviously developers who authored the haphazardly `working' code were either oblivious
     with good programming practices or does not bother to spend the time on better loop constructs.
 
     Common problems programmers tend to make while programming with loops are
     \begin{enumerate}
-        \item Duplicate code between initialization and loop body
-        or between loop body and post-loop processing logic
+        \item Duplicate code
         \item Nested loops
         \item Leaky loop variables
         \item Heavy-duty initialization
     \end{enumerate}
 
-    Duplicate code is the foremost problem in loop programming
-    and is among the top root causes for bugs.
+    Duplicate code between initialization and loop body or loop body and post-loop code
+    is the biggest problem in loop programming and is the most common root causes for bugs.
     Duplicate code anywhere is bad.
-    But duplicate code in and around loops is hard to realize and even harder to get rid of.
+    But duplicate code in and/or around loops is hard to realize and even harder to get rid of.
 
 
     The next commonly held misunderstanding about loop is the tendency to use nested loops.
-    Many are ready to jump to the argument about this: ``What's wrong with nested loop?''
-    The use of nested loops in many occasions seems to be necessary, reasonable,
+    Many readers are ready to argue about this: ``What's wrong with nested loop?''
+    The use of nested loops in many occasions seems to be reasonable, necessary,
     and at least harmless at first sight.
-    But this belief stands only at the first sight.
-    For almost all cases, nested loops bring complexity rather than convenience, obstruct
-    readability rather than facilitating it, deepen the coupling rather than reducing it,
-    and discourage code reusability rather than encouraging it.
+    But unfortunately this point of view does not stand for long.
+    For almost all cases, nested loops bring complexity rather than convenience,
+    obstruct readability rather than facilitating it.
+    It turns what could have been coded as different components into monolithic mess and
+    discourages code reusing.
+    deepen the coupling rather than reducing it and discourage code reusability rather than encouraging it.
 
 
-    The third controversial usage of loops is exposing loop variables to subsequent programming
-    units.
-    This is essentially passing information from loop to subsequent programming units via the
-    exposed variable(s) in an implicit way.
-    The problem of this practice is that this expose the implementation details to subsequent
-    program and it violates the encapsulation principle.
+    Exposed loop variables are the third most common design problem in loop construction.
+    This is essentially passing information from loop construct to subsequent programming units via
+    the exposed variable(s) implicitly.
+    It exposes implementation details of the loop and brings about entanglements among remotely
+    related code, which is against the encapsulation principle.
 
 
-    Finally the fourth problem with loop programming has to do with disproportionally heavy-duty
-    initialization.
-    Many programmers prepare for the ensuing loop with a multi-line `min-program'.
-    Some are so aware of this problem that they factor out this portion of code into a
-    separate function.
-    But more often than not, the initialization can be done with a one-liner in a much simpler
-    form.
+    Oversize initialization is the fourth commonly found problem in loop programming.
+    Since a loop may be considered as mini-programs and its state requires initialization.
+    More often than not, with due skills and perseverance, the initialization may be achieved
+    with a one-liner.
+    However unskillful programmers may code disproportionally heavy initializations
+    rather than light-weight, succinct ones.
 
 
-    In this paper we are not going to address all these problems.
-    Instead, we will focus on two of them---duplicate code and nested loops.
-    Accordingly, we will introduce two techniques---`loop rotation' and `Nested loop thinning'.
+    Addressing all these commonly programming problems is beyond what this article can do.
+    So instead we will focus on duplicate code and nested loops.
+    We will present two pillar loop programming techniques---`loop rotation' and `Nested loop
+    thinning' which I found are effective in fighting against above programming foes.
     These are the two pillars for loop programming.
     Proper use of them help developers avoid commonly made mistakes.
 
 
-    As an illustration and proof of the effectiveness of these techniques, we will conduct
-    a case study about the well-known quicksort algorithm.
+    We have tried these techniques on case study, we will apply these programming techniques to
+    simplify traditional quicksort algorithm to prove the effectiveness of these
+    techniques---the implementation of quicksort algorithms.
     First invented in 1960, quicksort has been studied and analyzed well over the
     years\cite{Hoare1961,Hoare1962,sedgewick:1978,Bentley:1986:PP}.
-    As a `divide-n-conquer` algorithm, quicksort has a profound influence over programming.
-    So much so that quicksort is named one of the top $10$ algorithms of $20$th
-    century\cite{top10algorithm:2000}.
-    For its expected high performance, quicksort becomes the \textit{de facto} sorting algorithm in
-    practice.
-    By applying these programming techniques, we will present a new and simpler way to implement
-    Hoare's quicksort algorithm.
+    As one of the earliest `divide-n-conquer` algorithms, quicksort has become the \textit{de
+    facto} sorting algorithm in practice for its excellent expected performance.
+    Recently named one of the top $10$ algorithms of $20$th century, quicksort has a
+    profound influence on the history of programming\cite{top10algorithm:2000}.
 
-    In what follows, I am going to present the idea in Python 2.7.
+
+    We will walk you through the multi-stage refactor process that leads to the discovery of a
+    brand-new implementation of Hoare's quicksort algorithm.
+    We use Python as the working language in this article.
 
 
     \section{Loop Rotation}\label{sec:LoopDesignConsideration}
@@ -170,10 +172,13 @@ upquote=true
 
 
     \section{Conclusion}\label{sec:conclusion}
+    As shown in ~\autoref{sec:impl-varieties}, there are a cluster of closely related
+    implementations.
     The Hoare's quicksort algorithm is simplified using a process and a few simple techniques.
     The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.
+    \appendix
     \include{partition-functions}
     \bibliographystyle{unsrt}
     \bibliography{article}

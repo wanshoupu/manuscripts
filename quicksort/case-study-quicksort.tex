@@ -24,7 +24,7 @@ But for more sophisticated implementations or to reduce partition overhead, more
 cases are used to address under-sized arrays (\textit{e.g.}, arrays of size $\leq 5$ but $\geq 1$).
 
 
-In plain english, this is how quicksort works:
+In plain english, this is how quicksort algorithm works:
 \begin{quote}
     If the array contains fewer than $2$ elements (the base case), return as is.
     Otherwise, invoke partition function to partition the array into two subarrays and an
@@ -103,25 +103,38 @@ implementation---the symmetric Hoare's partition scheme.
 
 \subsection{Implementation of Hoare's Partition Scheme}\label{subsec:impl-of-qsort-part-fun}
 
-Originally invented along with the quicksort algorithm, Hoare's partition scheme avoids the
-drawback of Lomuto's with symmetric traversal: one pointer
-from each end traversing toward each other\cite{Hoare1961,Hoare1962,sedgewick:1978}.
-
-While a seemingly minor change in array traversal, the implementation complexity it brings
-is immense.
-So much so that for a long time Hoare's partition scheme is enigmatic\cite{Bentley-Beautiful-code}.
-It is hard for one to design a test case to hit specific edge case.
-Also each attempt of implementation one is stuck at different places, came to a differing
-solution every once a while.
-
-But one thing in common: most of the solutions contain three loops: one outer loop with two
-inner loops should-by-shoulder.
-That has been so commonplace that many think it is the stereotype of quicksort---it is inevitable.
-Or is it?
+Invented along with the quicksort algorithm, the Hoare's partition scheme predates Lomuto's
+historically\cite{Hoare1961,Hoare1962,sedgewick:1978}.
+Because of its symmetric traversal, Hoare's partition scheme successfully avoids the drawback of
+Lomuto's.
 
 
-~\autoref{apx:impl-varieties} where we listed a number of implementations variations
-for the partition function.
+Visually speaking, Hoare's partition scheme employs two pointers, \code{s} and \code{e}, starting
+off the opposite ends of the array, push through the array toward each other,
+given that a pivot element has been placed at the beginning of the array.
+As in Lomuto's partition function, these pointers also stop at `out-of-place' elements.
+When both stop, the `out-of-place' elements are swapped to where they belong.
+Then the pointers are on their way again so on and so forth until they meet or cross.
+At last the pivot element is swapped into its final position and a pointer to this final position
+is returned.
+
+
+While it appears a minor change from Lomuto's scheme, the Hoare's partition comes with immense
+implementation complexity.
+%The above description of Hoare's partition scheme disguises the true complexity of
+%implementing it.
+So much so that for a long time how Hoare's partition scheme work
+remained an enigma\cite{Bentley-Beautiful-code}.
+There are so many changing variables and so much coupling among them that once in a
+while, each attempt of implementing it may end up with a different solution.
+Even worse than that, when something goes wrong, one is often clueless as to what is wrong.
+Also, it is extremely hard, if not impossible, to devise a test case to hit an elusive bug.
+
+
+But in stark contrast to the numerous slightly differing implementations, all known implementations
+have so far unanimously used $3$ nested loops: one outer loop and two sequential inner loops.
+This feature is so commonplace that it has become the sterotype of quicksort.
+
 
 
 %In C-like language when it comes to intervals bound by pointers,
@@ -133,143 +146,20 @@ for the partition function.
 %But for quicksort, .
 
 
-With the Hoare's partition scheme, a tentative implementation for the function \code{part} is as
+With the Hoare's partition scheme, a commonly found implementation for the partition function is as
 follows.
 \lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
 caption={Implementation of Hoare's partition scheme for quicksort.}]
 {quicksort_partition_sym.c}
-Earlier we mentioned `pick a pivot element and set it aside'.
-Now at implementation, we must decide ``How to pick an element'' and ``Where to set it aside''.
+While we have given an outline of the working of Hoare's partition, many choices remain to be
+made in regard of ``how, when, where, and what''.
+As such, myriad traps lay in wait throughout the implementation process.
+We will leave the discussions of frequently-made bugs encountered during this implementation in
+~\autoref{sec:impl-varieties}.
 
-we randomly select a pivot element and swap it to the beginning of
-the array
-(ask yourself: ``why beginning of array?
-Why not end?'').
-Then two pointers, \code{s} and \code{e}, starting off the opposite ends of the array,
-wade toward each other.
-Each of them makes stop at `out-of-place' element.
-When both stop, that is when a pair of `out-of-place' elements have been discovered,
-a swap is performed to bring both elements to the respective partitions they belong to.
-Then the pointers are back on their way toward each other once again.
-So on and so forth until they meet or cross.
-At that point, the pivot element (at the beginning of the array) is swapped into its final position.
-Finally, a pointer pointing to this position is returned.
-The above visual description of Hoare's partition scheme disguises the true complexity of
-implementing it.
-%unexpectedly tricky to implement.
-so much so that once in a while when my memory of any previous implementations becomes blurry or
-totally fades away, it may take me quite a few days to implement a solution that can pass a
-handful of unwitty test cases.
-Thus repeated several times, I decided to summary the frequently-made bugs and produced a list of
-`gotcha' as follows:
-\begin{enumerate}
-    \item In pivot election, failure to swap pivot element to the beginning of array
-    \item For the pointers \code{s} and \code{e}, there are two hesitating options:
-    `check-then-increment' or `increment-then-check'.
-    The first option leads to infinite loop for certain cases.
-    \item Also a choice between `\code{<= pivot}' and `\code{< pivot}' for \code{s},
-    `\code{>= pivot}' and `\code{> pivot}' for \code{e}.
-    Incorrect choice may inadvertently cause pointer incrementation to be skipped under
-    obscure circumstances which will, in turn, cause infinite loop
-    (Remember that under no circumstances, should either pointer stops approaching each other in
-    any outer loop iteration before they meet or cross.)
-    \item\label{itm:quicksort-boundary-condition} In the second inner loop for pointer \code{e},
-    failing to check boundary condition causes `out-of-boundary' exception.
-    For certain solutions, the correct condition is \code{pivot < e}.
-    Incorrect boundary condition, such as \code{s < e}, again cause pointer \code{e} to stall
-    in the middle of the right partition.
-    This will cause the pivot is placed at the wrong place at the return of function.
-    \item Outer loop termination logic also needs deliberation.
-    The key decision to make is `where to break or return' rather than `when to break or return'.
-    For ~\autoref{lst:nestedLoopHoareMethod}, the choice of location of return
-    at the end of the loop body was made after quick a few failed attempts.
-    \item Fail to swap the pivot element to its final position.
-    This step often poses a stumbling block for beginners as well as other unsuspecting
-    developers.
-    \item Pointer inclusiveness and/or exclusiveness when passing the array with two pointers,
-    the \code{start} and the \code{end}.
-    It turns out that both conventions can work with no excessive inconvenience.
-\end{enumerate}
-Any of the items in this list can easily take a good chunk of implementation and/or debugging time.
-Just to debug ~\autoref{itm:quicksort-boundary-condition} for this article, for example, it took a
-good $2$ hours out of me.
-Also, deciding out the semantics of the function arguments in `\code{qsort}' took me
-quite some deliberation before I finally got them right.
-A large part of the complication of the problem comes from the fact that this implementation
-consists of many parts that are highly entangled---changing one would necessitate simultaneously
-changing others.
-For example,
-%the return value of the partition function is picked among .
-suppose we are going to change the semantics of \code{e} from exclusive to inclusive, what
-would the returned pointer change to?
-\code{s}, \code{s+1}, \code{e}, or \code{e-1}?
-Accompanying these changes, the recursive calls in ~\autoref{lst:nestedLoopHoareMethod} line $4$-$5$
-also need changes.
-Should these lines be changed to
-~\autoref{lst:return-val-left} or ~\autoref{lst:return-val-right}?
-\begin{minipage}[t]{.4\textwidth}
-    \begin{lstlisting}[caption={A},label={lst:return-val-left},language=C]
-        qsort(s, p - 1)
-        qsort(p + 1, e)
-    \end{lstlisting}
-\end{minipage}\hfill
-\begin{minipage}[t]{.4\textwidth}
-    \begin{lstlisting}[caption={B},label={lst:return-val-right},language=C]
-        qsort(s, p + 1);
-        qsort(p + 2, e);
-    \end{lstlisting}
-\end{minipage}
-or some other form?
 
-These considerations illustrate how the choices are highly dependent on one another.
-Apart from these complexity, the traditionally, the implementations inevitably involves three
-nested loops as shown in ~\autoref{lst:nestedLoopHoareMethod}.
+To the author, the utmost thing is to get rid of the nested loops.
 
-%The number of combinations for such changes grows exponentially as the degree of coupling increases.
-%This partially explains why it is so hard to correctly implement this seemingly simple partition
-%function.
-%On the one hand, the problem itself is complicated---the number of loose parts exceeds what our
-%brain can comfortably handle at once.
-%On the other, however, the way we approach the problem makes it harder---it is all because
-%we attempted to fight too many wars all at once.
-%The complexity of the problem is doubled, or tripled, the moment we decide to send one pointer
-%from each end of the array to meet somewhere in the middle.
-%Is there a more straightforward way to implement the quicksort algorithm?
-%Yes!
-%
-%Comparing ~\autoref{lst:nestedLoopHoareMethod} with ~\autoref{lst:nestedLoopHoareMethod},
-%one can't help but be surprised ``Seriously?
-%A single loop can replace three?''
-%Unlike the arduous implementation and debugging process of Hoare's,
-%that of the Lumoto's partition scheme has fewer moving parts, contains fewer surprises, and is
-%easier to follow.
-%
-%(Can you figure out why?)
-%In comparison, the Hoare's partition scheme is stable and
-%robust with respect to such cases, always performs at a steady O( N log N) expected runtime.
-%%\footnote{The reason is as follows.
-%%When faced with equal-valued elements, both ~\autoref{lst:nestedLoopHoareMethod}
-%%and ~\autoref{lst:singleLoopLomuto} still do pair-wise swap among two equal elements.
-%%But the ending position for the pivot element is seriously off to the right end of the array for
-%%Lomuto's partition scheme whereas that of the Hoare's ends up at the middle.}.
-%However, Lomuto's quicksort algorithm is still inspiring for its simplicity and elegance.
-%It is tempting to ask: ``Is there a quicksort implementation that has the simplicity of Lomuto's
-%\emph{and} the performance of Hoare's?''
-%I don't know for sure.
-%But with our `nested loop thinning' technique and other tools we developed in the last section
-%and this, we
-%can explore a little bit to see if we can approach the above goal any closer than the existing
-%two schemes.
-%%Now that we have the `nested loop thinning' technique in hand, we can take on this challenge for a good
-%%cause.
-%%The aforementioned loop thinning technique can be used to further simplify the Hoare's partition
-%%algorithm.
-%Our starting point is the Hoare's quicksort implementation of ~\autoref{lst:nestedLoopHoareMethod}.
-%As mentioned earlier, the trickiest part of that program is the nested loops which also consists
-%of the major complication.
-%Let us forcus on getting rid of that.
-%a single-loop with cascade conditionals in the loop body
-%(refer to ~\autoref{ch:conditional-cascade}).
 The immediate difficulty is how to take apart the densely packed conditional construct:
 \begin{lstlisting}
     while(s < e && *++s < *pivot);
@@ -312,7 +202,7 @@ Now we encounter a complication that is new to us: we need to covert the second 
 exits.
 Our final result is posted below after the conversion to conditional construct:
 \lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
-caption={Implementation of partition function for Quicksort using one pointer.}]
+caption={Implementation of partition function for Quicksort using one loop.}]
 {quicksort_partition_single_loop.c}
 Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
 %By now we conclude our ``nested loop thinning' refactor process.
@@ -355,15 +245,17 @@ This will help one pick the most effective solution to the original problem.
 \section{Sentinels in quicksort}\label{sec:quick-sort-sentinel}
 %TODO Simplify the presentation of sentinels to one to two sentences
 
+The cascading conditional in the loop body of ~\autoref{lst:singleLoopHoarePart}
+is still far from straightforward.
+A further simplification on that may achievable through the use of
+sentinels~\cite{NumericalRecipes:1992}.
 
-I came to learn about sentinels from the book ``Numerical Receipt in C''
-~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
-It was eye-opening to see how the authors gracefully avoided the array boundary checks
-with the use of sentinels.
-I psychologically accepted the pitch made for sentinels while I was with the book.
-Closing the book, however, I am still dubious about its plausibility until I myself have a
-success implementing it.
-In this section, I pick this work to make a pitch to the reader about sentinels.
+%It was eye-opening to see how the authors gracefully avoided the array boundary checks
+%with the use of sentinels.
+%I psychologically accepted the pitch made for sentinels while I was with the book.
+%Closing the book, however, I am still dubious about its plausibility until I myself have a
+%success implementing it.
+%In this section, I pick this work to make a pitch to the reader about sentinels.
 
 
 For stark effect of the sentinels, we will first fix the traditional implementation of `Hoare's

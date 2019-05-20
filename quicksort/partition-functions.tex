@@ -2,7 +2,82 @@
 %% Author: shoupu_wan
 %% 2019-04-13
 %%
-\appendix{Hoare's Partitioning Functions}\label{apx:impl-varieties}
+\section{Hoare's Partitioning Functions}\label{sec:impl-varieties}
+
+Below I compiled a partial list of frequently-made bugs.
+
+\begin{enumerate}
+    \item In pivot election, failure to swap pivot element to the beginning of array
+    \item For the pointers \code{s} and \code{e}, there are two hesitating options:
+    `check-then-increment' or `increment-then-check'.
+    For the implementation shown in ~\autoref{lst:nestedLoopHoareMethod},
+    first option leads to infinite loop for certain cases.
+    \item Also a choice between `\code{<= pivot}' and `\code{< pivot}' for \code{s},
+    `\code{>= pivot}' and `\code{> pivot}' for \code{e}.
+    Incorrect choice may inadvertently cause pointer incrementation to be skipped under
+    obscure circumstances which will, in turn, cause infinite loop
+    (Remember that under no circumstances, should either pointer stops approaching each other in
+    any outer loop iteration before they meet or cross.)
+    \item\label{itm:quicksort-boundary-condition} In the second inner loop for pointer \code{e},
+    failing to check boundary condition causes `out-of-boundary' exception.
+    For certain solutions, the correct condition is \code{pivot < e}.
+    Incorrect boundary condition, such as \code{s < e}, again cause pointer \code{e} to stall
+    in the middle of the right partition.
+    This will cause the pivot is placed at the wrong place at the return of function.
+    \item Outer loop termination logic also needs deliberation.
+    The key decision to make is `where to break or return' rather than `when to break or return'.
+    For ~\autoref{lst:nestedLoopHoareMethod}, the choice of location of return
+    at the end of the loop body was made after quick a few failed attempts.
+    \item Fail to swap the pivot element to its final position.
+    This step often poses a stumbling block for beginners as well as other unsuspecting
+    developers.
+    \item Choice of subarray semantics with respect to inclusiveness/exclusiveness of end pointers
+    when using start and end pointers to denote a subarray.
+\end{enumerate}
+Any of the items in this list can easily take a good chunk of debugging time.
+
+A large part of the complication of the problem comes from the fact that this implementation
+consists of many moving parts and the design decisions for them are intimately
+coupled---changing one would necessitate corresponding changes in others.
+For example, suppose we are going to change the subarray semantics of \code{e} from exclusive to
+inclusive, we know that the return pointer will have to be different.
+But what would it be changed to?
+\code{s}, \code{s+1}, \code{e}, or \code{e-1}?
+Also, with these changes, the recursive calls in ~\autoref{lst:nestedLoopHoareMethod} line
+$4$-$5$ need corresponding changes.
+What would that be?
+Would it be the LHS or RHS below?
+
+\begin{minipage}[t]{.4\textwidth}
+    \begin{lstlisting}[language=C]
+        qsort(s, p - 1)
+        qsort(p + 1, e)
+    \end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \begin{lstlisting}[language=C]
+        qsort(s, p + 1);
+        qsort(p + 2, e);
+    \end{lstlisting}
+\end{minipage}
+
+
+Also one may have observed, most of these frequently-made bugs comes with a multiple choice
+question.
+The collection of them form a tree structure.
+Each of the leaf node of the tree structure represents either garbage code or a legitimate
+solution.
+From an existing solution, one may variational tunnel to nearby solutions.
+For more information on how more related implementations may be discovered, please refer to
+~\autoref{sec:impl-varieties}.
+
+~\autoref{sec:impl-varieties} where we listed a number of implementations variations
+for the partition function.
+While not all of them can be simplified into single-loop implementation, we have had success with
+a few.
+Exactly which one can and which one cannot or why are not completely clear and yet to be
+investigated with.
+
 
 \lstinputlisting[label={lst:part_nested_loop_var1},language=C,
 caption={Partition scheme for quicksort variation 1.

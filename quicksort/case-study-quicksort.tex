@@ -152,13 +152,17 @@ follows.
 caption={Implementation of Hoare's partition scheme for quicksort.}]
 {quicksort_partition_sym.c}
 While we have given an outline of the working of Hoare's partition, many choices remain to be
-made in regard of ``how, when, where, and what''.
-As such, myriad traps lay in wait throughout the implementation process.
-We will leave the discussions of frequently-made bugs encountered during this implementation in
-~\autoref{sec:impl-varieties}.
+made in regard of ``how, when, and what''.
+As such, pitfalls lay in wait every now and then throughout the implementation process.
+We will leave the discussions of the implementation process of ~\autoref{lst:nestedLoopHoareMethod}
+encountered during this implementation in ~\autoref{sec:impl-varieties}.
 
 
-To the author, the utmost thing is to get rid of the nested loops.
+\subsection{Removal of the Nested Loops}\label{subsec:unwind-hoare-part}
+
+Now we are going to use the techniques presented earlier to transform the traditional
+implementation of Hoare's partition scheme and get rid of the nested loops.
+
 
 The immediate difficulty is how to take apart the densely packed conditional construct:
 \begin{lstlisting}

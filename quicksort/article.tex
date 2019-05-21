@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper,titlepage]{article}
 
 
 \usepackage{arxiv}
@@ -15,6 +15,7 @@
 \usepackage{subcaption}
 \usepackage{color}
 \usepackage[svgnames]{xcolor}
+\usepackage[title]{appendix}
 
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \lstset{frame=tb,
@@ -178,8 +179,10 @@ upquote=true
     The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.
-    \appendix
-    \include{partition-functions}
+    \begin{appendices}
+        \appendix
+        \include{partition-functions}
+    \end{appendices}
     \bibliographystyle{unsrt}
     \bibliography{article}
 \end{document}

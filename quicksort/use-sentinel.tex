@@ -1,0 +1,93 @@
+%%
+%% Author: shoupu_wan
+%% 2019-05-22
+%%
+
+\section{Sentinels in quicksort}\label{sec:quick-sort-sentinel}
+%TODO Simplify the presentation of sentinels to one to two sentences
+
+The cascading conditional in the loop body of ~\autoref{lst:singleLoopHoarePart}
+is still far from straightforward.
+A further simplification on that may achievable through the use of
+sentinels~\cite{NumericalRecipes:1992}.
+
+%It was eye-opening to see how the authors gracefully avoided the array boundary checks
+%with the use of sentinels.
+%I psychologically accepted the pitch made for sentinels while I was with the book.
+%Closing the book, however, I am still dubious about its plausibility until I myself have a
+%success implementing it.
+%In this section, I pick this work to make a pitch to the reader about sentinels.
+
+
+For stark effect of the sentinels, we will first fix the traditional implementation of `Hoare's
+partition scheme':
+~\autoref{lst:QuickSortOutline} gives the outline of the program and
+~\autoref{lst:nestedLoopHoareMethod} gives a fully implemented partition function.
+As mentioned earlier, one can get involved in the thick of implementing
+`Hoare's quicksort algorithm'.
+Not only the problem itself is tricky but also the way we implement it.
+By picking Hoare's quicksort scheme over its alternative (such as Lomuto's),
+we insist on the robust $O(N log N)$ expected runtime.
+
+
+We attempt to get rid of the boundary checking using sentinels.
+These boundary checking are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
+off the ends of the array.
+In large arrays, these boundary check operations may get in the way of performance of the algorithm.
+But the main reason of doing so is to remove clutter in the code.
+%For another, we are consciously attacking the problem with an precautions approach against
+%performance degradation so there is a price we have to pay.
+
+The main idea is to make boundary checking redundant by effecting some artifacts that catch the
+pointers before the `out of boundary' error happens.
+This is exactly what sentinel is good at!
+By deploying sought-after values, the `sentinels', at the ends of the array before the control
+hits the loop, the following will happen:
+\begin{enumerate}
+    \item the pointers, `\code{s}' and `\code{p}', would have to stop when they hit the ends of
+    array;
+    \item the subsequent logic will guarantee the termination of the outer loop and
+    thus guarantee the inner loop would not be executed again.
+\end{enumerate}
+
+
+What are the sought-after values by `\code{s}' and `\code{e}'?
+The out-of-place values!
+Particularly, \code{s} is looking for values that are `$\geq$ the pivot';
+\code{e} is looking for values `$\leq$ the pivot'.
+So then instead of randomly picking one value for pivot, we now randomly pick $3$ values, the median
+of which be elected as the pivot as usual, the minimum be deployed to the left end, and the maximum
+to the right end.
+We group these operations into a function called `\code{init_swap}':
+\lstinputlisting[]{qsort_init_swap.c}
+
+
+Now back the function `\code{part}'.
+As we mentioned before, the deployment of sentinels in function `\code{init_swap}' makes
+the conditional expressions `\code{s < e}' and `\code{pivot < e}' semantically redundant.
+They can now be safely removed.
+Below is the function `\code{part}' after all the refactoring is done.
+\lstinputlisting[]{qsort_part_sentinel.c}
+Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
+cleans out clutter in the loop conditions in the inner loops.
+We `float' the control all the way through the termination of the program on a `touchless' rail made
+by sentinels, without ever needing to check boundary condition.
+Of course, the onus is shifted to the initialization before the loop.
+Comparing with the inner loops, that section is non-critical.
+Not only that the code is made less cluttered, but also the number of such checks
+is reduced from $O(N)$ to $O(1)$.
+More importantly, by not checking boundary conditions at the most critical section,
+we avoid bugs that would otherwise cost us many hours of debugging time.
+
+
+So by use of sentinels on the traditional Hoare's quicksort algorithm,
+we shifted the complexity among the nested loops to a non-critical part of the program,
+effectively reduced its coding complexity.
+Remember that we came up with a new, single-loop implementation for the Hoare's quicksort algorithm
+in ~\autoref{ch:loop-thinning}, as presented in ~\autoref{lst:singleLoopHoarePart}.
+Can we apply the idea of sentinel to make it even better?
+Yes, it may be applied equally well.
+Below is the implementation of the function `\code{part}' with a single loop and simplified
+boundary condition with sentinel values.
+\lstinputlisting[]{quicksort_partition_single_loop_sentinel.c}
+This brings implementations of Hoare's quicksort to the next level of simplicity.

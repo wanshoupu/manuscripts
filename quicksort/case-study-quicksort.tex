@@ -169,41 +169,45 @@ The immediate difficulty is how to take apart the densely packed conditional con
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-The loop conditions here are unusual and awkward to handle
-because both `\code{++s}' and `\code{--e}' ruthlessly ratchet the loop state forward
-whenever control is passed to this line.
-Namely, each evaluation of the loop condition, even if the condition evaluates to false, the
-pointers `\code{s}' and `\code{e}' are still incremented.
-If we use these conditions as is in the to-be conditional constructs, we would end up in a
-dilemma---when we discover out-of-place elements, we would pass them without swap in the next
-iteration because the program does not leave us any chance for that.
-With the existing programming languages' syntaxes, we have no choice but to break
-up the pre-incremental statements.
-So something must be done to unfold the extraordinary loop conditions to
-ordinary ones before we proceed with the rest of the `nested loop thinning' procedure.
-As we learned in ~\autoref{ch:loops}, these loops may be converted first to
-`\code{do-while} loops' such as
-\lstinputlisting[language=C]{quicksort_inner_loop_do_while.c}
-and the latter are, in turn, converted to `\code{while} loops':
-\lstinputlisting[language=C]{quicksort_inner_loop_while.c}
-After these changes are applied, our the partition function becomes
+The loop conditions here are awkwardly complicated and pose tremendous difficulty for us to follow
+the `nested loop thinning` refactoring procedure outlined in ~\autoref{sec:loop-thinning-technique}.
+On the one hand, the pre-incremental statements and ruthlessly ratchet
+the value `\code{++s}' (`\code{--e}') up(down) regardless to what the loop condition evaluates to;
+On the other, when condition suits, we want to hold the loop state and take another execution
+path of the cascading conditionals.
+So we face a dilemma---when we are ready to branch away, it has been too late as the
+loop has been ratcheted passing the state.
+
+
+With the existing programming languages' syntaxes, we are compelled to break
+the pre-incremental statements up before we can proceed with the `nested loop thinning' steps.
+Note that these loops may be converted first to `\code{do-while} loops'
+which, in turn, may be converted to `\code{while} loops' as shown below.
+
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=C]{quicksort_inner_loop_do_while.c}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=C]{quicksort_inner_loop_while.c}
+\end{minipage}
+
+
+After these changes, our the partition function becomes
 \lstinputlisting[language=C]{quicksort_partition_sym_expanded_inner_loop.c}
-You may have noticed that we have floated ~\code{--e} up in front of the first inner loop,
-and this does not affect the correctness as can be verified.
-The solution now seems equally messy, if not more so, as we started.
-However, as you will see, this form will prove useful for the subsequent refactor step---`loop
-rotation'.
-Now we can proceed with the next step
-of loop thinning---move the \emph{pre-inner-loop statements} out of the way.
-(``Loop rotation'' is specified in ~\autoref{sec:LoopDesignConsideration}.)
+We swapped ~\code{--e} up in front of the first inner loop
+as verifiably the correctness is not affected.
+The solution may be more messy than before.
+But it is necessary and beneficial for the `loop rotation' procedure next
+(refer to ~\autoref{sec:LoopDesignConsideration}) which, in turn, moves the \emph{pre-inner-loop
+statements} out of the way for a smooth loop rotation.
 After this step, the code becomes:
 \lstinputlisting[language=C]{quicksort_partition_sym_rotated_inner_loop.c}
-We have accelerated the process by tucking the \emph{post-inner-loop statements}
-resulted from the loop rotation to a conditional block.
+Again, we did extra things by tucking the \emph{post-inner-loop statements} to a conditional block.
 Now we are ready with the third and most exciting step---converting inner loops to conditionals.
-Now we encounter a complication that is new to us: we need to covert the second loop to an
-`\code{else if}' clause of the first because the second inner loop is executed only after the first
-exits.
+Note that we need to covert the second loop to an `\code{else if}' because the first inner loop is
+converted to an `\code{if}' clause and the second is executed only the first is exhausted.
+
+
 Our final result is posted below after the conversion to conditional construct:
 \lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
 caption={Implementation of partition function for Quicksort using one loop.}]

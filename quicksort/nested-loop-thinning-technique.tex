@@ -50,8 +50,8 @@ Then one can tuck the post-inner-loop statements under the conditional of the
 \code{break} statement replacing the latter, and the inner loop can be stripped away.
 Throughout the process, one shall pay special attention to execution-path altering statements,
 such as \code{break} and \code{continue}.
-Regardless the venue taken, new conditional statements are inevitably formed and cascading
-conditional constructs are the best way to organize them.
+Regardless the venue taken, new conditional statements are inevitably formed and `cascading
+conditional constructs' are the best way to organize them.
 one may refer to Reference ~\cite{Wan:book} for best practices on how to organize effective
 cascading conditionals.
 Apart from the prescribed steps, some preparatory measures may be taken beforehand
@@ -95,3 +95,10 @@ on the inner loop is performed a lookup on an auxiliary data structure or
 a `sliced view' of the same data structure.
 In what follows, we are going to demonstrate application of `nested loop thinning' technique
 on the quicksort algorithms.
+
+One will see this pattern again and again for nested loop thinning in practice:
+\begin{enumerate}
+    \item Prepare
+    \item Loop rotation
+    \item Nested loop thinning
+\end{enumerate}

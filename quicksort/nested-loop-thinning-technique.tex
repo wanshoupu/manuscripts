@@ -25,7 +25,7 @@ results in one or more of these changes to the final loop:
 \end{itemize}
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{segment-for-loop-thinning.jpg}
+    \includegraphics[width=0.4\textwidth]{segment-for-loop-thinning.jpg}
     \caption{\label{fig:segment-for-loop-thinning}
     Sectioning of loop body statements for `nested loop thinning' process.
     Each section receives different treatment during the `nested loop thinning' process.}
@@ -36,7 +36,7 @@ divided into three sections---\emph{pre-inner-loop} section, \emph{inner-loop} s
 in respect to the inner loop (shown in ~\autoref{fig:segment-for-loop-thinning}).
 The gist for flattening nested loops is as follows.
 First, we need to move pre-loop statements out of the way.
-To that end, use `loop rotation' technique (see ~\autoref{ch:loops}) backward
+To that end, use `loop rotation' technique (see ~\autoref{sec:loop-rotation}) backward
 to unwind the pre-loop statements.
 The second step depends on the inner loop construct.
 If the inner loop has a \emph{non-trivial loop condition}, then the inner loop can

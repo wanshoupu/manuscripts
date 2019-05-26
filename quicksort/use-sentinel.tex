@@ -34,7 +34,7 @@ We attempt to get rid of the boundary checking using sentinels.
 These boundary checking are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
 off the ends of the array.
 In large arrays, these boundary check operations may get in the way of performance of the algorithm.
-But the main reason of doing so is to remove clutter in the code.
+But a large part of the reason is to remove clutter from the code.
 %For another, we are consciously attacking the problem with an precautions approach against
 %performance degradation so there is a price we have to pay.
 
@@ -84,7 +84,7 @@ So by use of sentinels on the traditional Hoare's quicksort algorithm,
 we shifted the complexity among the nested loops to a non-critical part of the program,
 effectively reduced its coding complexity.
 Remember that we came up with a new, single-loop implementation for the Hoare's quicksort algorithm
-in ~\autoref{ch:loop-thinning}, as presented in ~\autoref{lst:singleLoopHoarePart}.
+in ~\autoref{sec:loop-thinning-technique}, as presented in ~\autoref{lst:singleLoopHoarePart}.
 Can we apply the idea of sentinel to make it even better?
 Yes, it may be applied equally well.
 Below is the implementation of the function `\code{part}' with a single loop and simplified

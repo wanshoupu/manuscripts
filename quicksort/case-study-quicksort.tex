@@ -158,7 +158,7 @@ We will leave the discussions of the implementation process of ~\autoref{lst:nes
 encountered during this implementation in ~\autoref{sec:impl-varieties}.
 
 
-\subsection{Removal of the Nested Loops}\label{subsec:unwind-hoare-part}
+\subsection{Thinning of Nested Loops}\label{subsec:unwind-hoare-part}
 
 Now we are going to use the techniques presented earlier to transform the traditional
 implementation of Hoare's partition scheme and get rid of the nested loops.
@@ -169,10 +169,11 @@ The immediate difficulty is how to take apart the densely packed conditional con
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-The loop conditions here are awkwardly complicated and pose tremendous difficulty for us to follow
+The loop conditions here are awkwardly complicated and make the 'nested loop thinning' refactor
+procedure nontrivial to follow
 the `nested loop thinning` refactoring procedure outlined in ~\autoref{sec:loop-thinning-technique}.
-On the one hand, the pre-incremental statements and ruthlessly ratchet
-the value `\code{++s}' (`\code{--e}') up(down) regardless to what the loop condition evaluates to;
+On the one hand, the pre-incremental statements ruthlessly ratchet
+the state `(\code{s}, \code{e})' regardless to what the loop condition evaluates to;
 On the other, when condition suits, we want to hold the loop state and take another execution
 path of the cascading conditionals.
 So we face a dilemma---when we are ready to branch away, it has been too late as the
@@ -185,37 +186,46 @@ Note that these loops may be converted first to `\code{do-while} loops'
 which, in turn, may be converted to `\code{while} loops' as shown below.
 
 \begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[language=C]{quicksort_inner_loop_do_while.c}
+    \lstinputlisting[caption={Unfold to \code{do-while} loop},
+    language=C]{quicksort_inner_loop_do_while.c}
 \end{minipage}\hfill
 \begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[language=C]{quicksort_inner_loop_while.c}
+    \lstinputlisting[caption={Rotate to \code{while} loop},
+    language=C]{quicksort_inner_loop_while.c}
 \end{minipage}
 
 
-After these changes, our the partition function becomes
+After these changes, our code becomes
 \lstinputlisting[language=C]{quicksort_partition_sym_expanded_inner_loop.c}
-We swapped ~\code{--e} up in front of the first inner loop
-as verifiably the correctness is not affected.
-The solution may be more messy than before.
-But it is necessary and beneficial for the `loop rotation' procedure next
-(refer to ~\autoref{sec:LoopDesignConsideration}) which, in turn, moves the \emph{pre-inner-loop
-statements} out of the way for a smooth loop rotation.
-After this step, the code becomes:
-\lstinputlisting[language=C]{quicksort_partition_sym_rotated_inner_loop.c}
-Again, we did extra things by tucking the \emph{post-inner-loop statements} to a conditional block.
-Now we are ready with the third and most exciting step---converting inner loops to conditionals.
-Note that we need to covert the second loop to an `\code{else if}' because the first inner loop is
-converted to an `\code{if}' clause and the second is executed only the first is exhausted.
+We have made slight adjustment so that the ++s and --e statements are gathered together into the
+pre-inner-loop section.
+So far what we did is to loosen up some of the code in preparing for the `loop rotation' procedure.
+With reference to ~\autoref{sec:loop-rotation}, we are ready to follow the prescribed
+refactor procedures of loop rotation.
+Namely, relocate the \emph{pre-innner-loop} statements, convert inner
+loops into cascading conditionals\footnote{Note that here we need to covert the second inner
+loop to an `\code{else if}' because the first inner loop is
+converted to an `\code{if}' clause},
+wrap up the \emph{post-inner-loop} statements into an else
+clause, and other cosmetic changes.
 
 
-Our final result is posted below after the conversion to conditional construct:
-\lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
-caption={Implementation of partition function for Quicksort using one loop.}]
-{quicksort_partition_single_loop.c}
-Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=C,caption={Code after moving away \emph{pre-innner-loop} statements.}]
+    {quicksort_partition_sym_rotated_inner_loop.c}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
+    caption={Code after completing the `loop thinning' procedures.}]
+    {quicksort_partition_single_loop.c}
+\end{minipage}
+
+
+After completing all the steps of the `loop thinning' procedure, our code is shown in
+~\autoref{lst:singleLoopHoarePart}.
+%Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
 %By now we conclude our ``nested loop thinning' refactor process.
-By now,
-we achieved our goal of a partition implementation that has the simplicity of
+By now, we achieved our goal of a partition implementation that has the simplicity of
 Lomuto's and the robust performance of Hoare's.
 In retrospection, we set off to test the hypothetical quest for a simple but performant
 partition scheme that comprises the advantages of Lomuto's and Hoare's partition scheme.

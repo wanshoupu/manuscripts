@@ -1,4 +1,9 @@
-\begin{table}[h]
+In all the quicksort implementations in this article, we use the
+``median-of-three'' pivot selection technique to prevent pivot skewness
+\code{part}\cite{sedgewick1977,sedgewick:1978}.
+Correspondingly, we ensure that the array length is at least $3$ to call function \code{part}.
+
+\begin{table}[b]
     \centering
     \caption{\label{tab:quicksort-experiment}
     Runtime measurement of Hoare's quicksort algorithms,
@@ -45,3 +50,13 @@
         \hline
     \end{tabular}
 \end{table}
+
+~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
+The simplified implementation indeed comes with an overhead and is thus slower than
+its traditional counterpart of the Hoare's quicksort program.
+For sorted data sets (either ascending or descending), there is a $17\%$ slowdown.
+But for randomly ordered data sets, the slow down is consistantly around $7\%$.
+The experiment data seems to indicate that the simplified
+implementation of Hoare's quicksort algorithm shares same runtime complexity as its
+traditional counterpart.
+Their performance may differ by a multiplier.

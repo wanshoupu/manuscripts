@@ -133,7 +133,7 @@ Also, it is extremely hard, if not impossible, to devise a test case to hit an e
 
 But in stark contrast to the numerous slightly differing implementations, all known implementations
 have so far unanimously used $3$ nested loops: one outer loop and two sequential inner loops.
-This feature is so commonplace that it has become the sterotype of quicksort.
+This feature is so commonplace that it has become the stereotype of quicksort.
 
 
 
@@ -169,28 +169,25 @@ The immediate difficulty is how to take apart the densely packed conditional con
     while(s < e && *++s < *pivot);
     while(pivot < e && *--e > *pivot);
 \end{lstlisting}
-The loop conditions here are awkwardly complicated and make the 'nested loop thinning' refactor
-procedure nontrivial to follow
-the `nested loop thinning` refactoring procedure outlined in ~\autoref{sec:loop-thinning-technique}.
-On the one hand, the pre-incremental statements ruthlessly ratchet
-the state `(\code{s}, \code{e})' regardless to what the loop condition evaluates to;
-On the other, when condition suits, we want to hold the loop state and take another execution
-path of the cascading conditionals.
-So we face a dilemma---when we are ready to branch away, it has been too late as the
-loop has been ratcheted passing the state.
+The loop conditions here are awkwardly complicated and make the 'nested loop thinning'
+(outlined in ~\autoref{sec:loop-thinning-technique}) nontrivial.
+The main difficulty lies in the dilemma---when condition suits, we need to switch to
+alternative execute path;
+but when we do, the pre-incremental statements would have ratcheted
+the state variables `(\code{s}, \code{e})' one step too far.
 
 
-With the existing programming languages' syntaxes, we are compelled to break
-the pre-incremental statements up before we can proceed with the `nested loop thinning' steps.
-Note that these loops may be converted first to `\code{do-while} loops'
-which, in turn, may be converted to `\code{while} loops' as shown below.
+Measure must be taken to break up the pre-incremental statements before we can proceed any further.
+We follow a two-step conversion procedure: first unfold to `\code{do-while}' and then,
+in turn, rotate to `\code{while}' as shown in ~\autoref{quicksort_inner_loop_do_while} and
+~\autoref{quicksort_inner_loop_while}.
 
 \begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[caption={Unfold to \code{do-while} loop},
+    \lstinputlisting[caption={Unfold to \code{do-while} loop},label={quicksort_inner_loop_do_while},
     language=C]{quicksort_inner_loop_do_while.c}
 \end{minipage}\hfill
 \begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[caption={Rotate to \code{while} loop},
+    \lstinputlisting[caption={Rotate to \code{while} loop},label={quicksort_inner_loop_while},
     language=C]{quicksort_inner_loop_while.c}
 \end{minipage}
 
@@ -199,19 +196,18 @@ After these changes, our code becomes
 \lstinputlisting[language=C]{quicksort_partition_sym_expanded_inner_loop.c}
 We have made slight adjustment so that the ++s and --e statements are gathered together into the
 pre-inner-loop section.
-So far what we did is to loosen up some of the code in preparing for the `loop rotation' procedure.
-With reference to ~\autoref{sec:loop-rotation}, we are ready to follow the prescribed
-refactor procedures of loop rotation.
-Namely, relocate the \emph{pre-innner-loop} statements, convert inner
-loops into cascading conditionals\footnote{Note that here we need to covert the second inner
-loop to an `\code{else if}' because the first inner loop is
-converted to an `\code{if}' clause},
-wrap up the \emph{post-inner-loop} statements into an else
-clause, and other cosmetic changes.
+After these preparation steps, we are ready to follow the prescribed `loop rotation' procedure.
+Namely, relocate the \emph{pre-inner-loop} statements (~\autoref{lst:relocate-pre-inner-loop}),
+convert inner loops into cascading conditionals, wrap up the \emph{post-inner-loop} statements
+into an \code{else} clause, and other cosmetic changes (refer to
+~\fullref{sec:loop-thinning-technique}\footnote{Note that here
+we need to covert the second inner loop to an `\code{else if}' because the first inner loop is
+converted to an `\code{if}' clause}).
 
 
 \begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[language=C,caption={Code after moving away \emph{pre-innner-loop} statements.}]
+    \lstinputlisting[label={lst:relocate-pre-inner-loop},language=C,caption={Code after moving away
+    \emph{pre-innner-loop} statements.}]
     {quicksort_partition_sym_rotated_inner_loop.c}
 \end{minipage}\hfill
 \begin{minipage}[t]{.4\textwidth}
@@ -221,42 +217,46 @@ clause, and other cosmetic changes.
 \end{minipage}
 
 
-After completing all the steps of the `loop thinning' procedure, our code is shown in
-~\autoref{lst:singleLoopHoarePart}.
-%Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
-%By now we conclude our ``nested loop thinning' refactor process.
-By now, we achieved our goal of a partition implementation that has the simplicity of
-Lomuto's and the robust performance of Hoare's.
-In retrospection, we set off to test the hypothetical quest for a simple but performant
-partition scheme that comprises the advantages of Lomuto's and Hoare's partition scheme.
+Shown in ~\autoref{lst:singleLoopHoarePart} is the Hoarse's partition function
+after completing the `loop thinning' procedure.
+During the refactor process, we relied heavily on the `loop rotation' technique and
+the `nested loop thinning' techniques.
+We also consciously employed skills for the construction of cascading conditionals.
 Comparing with where we started off ~\autoref{lst:nestedLoopHoareMethod},
-we implemented the Hoare's algorithm with a single loop plus
-cascading conditionals as ~\autoref{lst:singleLoopHoarePart}.
-In the process, we used the `loop rotation' techniques, the `nested loop thinning' techniques,
-and skills concerning the construction of cascading conditionals from earlier sections.
-The new quicksort implementation retains the optimal runtime as Hoare's algorithm but has
-comparable simplicity as that of Lomuto's.
-That's almost too good to be true!
+the new quicksort implementation ~\autoref{lst:singleLoopHoarePart}
+retains the optimal and robust runtime as Hoare's algorithm but consists of just one loop as the
+Lomuto's partition function does.
+That's almost too good to believe.
+Our quest for a simple and performant partition scheme finally pays off.
+
+
 %If this does not impress you, then you have no feeling.
-While we can make the solution simpler with the use of sentinel, we will leave that discussion to
-next section.
-However there is one change that can provide a little more saving.
-If we change the semantic of ending pointer \code{e} from exclusive to inclusive, the
-pre-increment before the loop (line~\ref{quicksort:pre-increment} of
-~\autoref{lst:singleLoopHoarePart}) would be unnecessary.
-As a byproduct of going through the detailed refactor
-processes for the cases of this section, I want the reader to have a feeling about software
-development model.
-As we can see the most fruitful software development model, undoubtedly, is to come up with a
-working solution first.
-However shabby, messy, primitive a solution it may be, as long as it can pass a handful of unit
-tests, it will be a great starting point.
-Then through meticulous optimization process, for which many of the techniques we have talked
-about and will be talking may be an aid, strive for straightforwardness, simplicity, and elegance.
-In the course, one may discover new issues, adding new unit tests accordingly, and obtain new
-solutions.
-With the variety of solutions passing the same unit tests, one can often form a better
-perspective regarding the solution space.
-This will help one pick the most effective solution to the original problem.
+The cascading conditional in the loop body of ~\autoref{lst:singleLoopHoarePart}
+is still not straightforward and obstructs readability.
+With the use of sentinels, we can get rid of that clutter.
+But the end result is shown in the below listing.
+\lstinputlisting[label={lst:hoare-partition-sole-loop-sentinel},
+caption={Hoare's partition function with use of sentinel}]
+{quicksort_partition_single_loop_sentinel.c}
+This partition function would not work with ~\autoref{lst:QuickSortOutline} as is.
+The modification necessary is to add another base case when there are fewer than $3$ elements in
+the array to be sorted.
+The more detailed discussion can be found in ~\autoref{sec:quick-sort-sentinel}.
+
+
+%As a byproduct of going through the detailed refactor
+%processes for the cases of this section, I want the reader to have a feeling about software
+%development model.
+%As we can see the most fruitful software development model, undoubtedly, is to come up with a
+%working solution first.
+%However shabby, messy, primitive a solution it may be, as long as it can pass a handful of unit
+%tests, it will be a great starting point.
+%Then through meticulous optimization process, for which many of the techniques we have talked
+%about and will be talking may be an aid, strive for straightforwardness, simplicity, and elegance.
+%In the course, one may discover new issues, adding new unit tests accordingly, and obtain new
+%solutions.
+%With the variety of solutions passing the same unit tests, one can often form a better
+%perspective regarding the solution space.
+%This will help one pick the most effective solution to the original problem.
 %This is as a general programming guideline as well as specific  ally applicable to loops.
 

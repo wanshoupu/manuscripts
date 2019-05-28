@@ -17,6 +17,7 @@
 \usepackage[svgnames]{xcolor}
 \usepackage[title]{appendix}
 
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\mbox{\autoref*{#1}~}``\nameref*{#1}''}}
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \lstset{frame=tb,
 escapeinside={(*@}{@*)},
@@ -156,27 +157,13 @@ upquote=true
     \input{case-study-quicksort}
 
     \section{Experiment}\label{sec:experiment}
-    In all the quicksort implementations in this article, we use the
-    ``median-of-three'' pivot selection technique to prevent pivot skewness
-    \code{part}\cite{sedgewick1977,sedgewick:1978}.
-    Correspondingly, we ensure that the array length is at least $3$ to call function \code{part}.
     \include{quicksort_perf_cmp}
-    ~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
-    The simplified implementation indeed comes with an overhead and is thus slower than
-    its traditional counterpart of the Hoare's quicksort program.
-    For sorted data sets (either ascending or descending), there is a $17\%$ slowdown.
-    But for randomly ordered data sets, the slow down is consistantly around $7\%$.
-    The experiment data seems to indicate that the simplified
-    implementation of Hoare's quicksort algorithm shares same runtime complexity as its
-    traditional counterpart.
-    Their performance may differ by a multiplier.
-
 
     \section{Conclusion}\label{sec:conclusion}
     As shown in ~\autoref{sec:impl-varieties}, there are a cluster of closely related
     implementations.
     The Hoare's quicksort algorithm is simplified using a process and a few simple techniques.
-    The solutions we provided are given in high-level programming language, particularly, Python $2.x$.
+    The solutions are provided in C++.
     But the idea is applicable to all programming languages that supports loop and conditional
     constructs.
     \begin{appendices}

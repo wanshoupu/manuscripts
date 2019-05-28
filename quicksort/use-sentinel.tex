@@ -80,14 +80,9 @@ More importantly, by not checking boundary conditions at the most critical secti
 we avoid bugs that would otherwise cost us many hours of debugging time.
 
 
-So by use of sentinels on the traditional Hoare's quicksort algorithm,
+So by use of sentinels on the Hoare's quicksort algorithm, traditional nested loop implementation
+or the single-loop implementation ~\autoref{lst:singleLoopHoarePart} alike,
 we shifted the complexity among the nested loops to a non-critical part of the program,
 effectively reduced its coding complexity.
-Remember that we came up with a new, single-loop implementation for the Hoare's quicksort algorithm
-in ~\autoref{sec:loop-thinning-technique}, as presented in ~\autoref{lst:singleLoopHoarePart}.
-Can we apply the idea of sentinel to make it even better?
-Yes, it may be applied equally well.
-Below is the implementation of the function `\code{part}' with a single loop and simplified
-boundary condition with sentinel values.
-\lstinputlisting[]{quicksort_partition_single_loop_sentinel.c}
-This brings implementations of Hoare's quicksort to the next level of simplicity.
+Applied to the latter, we arrive at a new level of simplicity for the
+implementations of Hoare's quicksort (as shown in ~\autoref{lst:hoare-partition-sole-loop-sentinel}).

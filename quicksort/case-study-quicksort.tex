@@ -192,12 +192,22 @@ in turn, rotate to `\code{while}' as shown in ~\autoref{quicksort_inner_loop_do_
 \end{minipage}
 
 
-After these changes, our code becomes
-\lstinputlisting[language=C]{quicksort_partition_sym_expanded_inner_loop.c}
+After these changes, our code becomes the listing on the left-hand side below.
 We have made slight adjustment so that the ++s and --e statements are gathered together into the
 pre-inner-loop section.
+
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=C,caption={After prep steps}]
+    {quicksort_partition_sym_expanded_inner_loop.c}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=C,caption={After \emph{pre-inner-loop} relocation}]
+    {quicksort_partition_sym_rotated_inner_loop.c}
+\end{minipage}
+
 After these preparation steps, we are ready to follow the prescribed `loop rotation' procedure.
-Namely, relocate the \emph{pre-inner-loop} statements (~\autoref{lst:relocate-pre-inner-loop}),
+Namely, relocate the \emph{pre-inner-loop} statements (shown as listing on the right-hand side
+above),
 convert inner loops into cascading conditionals, wrap up the \emph{post-inner-loop} statements
 into an \code{else} clause, and other cosmetic changes (refer to
 ~\fullref{sec:loop-thinning-technique}\footnote{Note that here
@@ -205,17 +215,9 @@ we need to covert the second inner loop to an `\code{else if}' because the first
 converted to an `\code{if}' clause}).
 
 
-\begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[label={lst:relocate-pre-inner-loop},language=C,caption={Code after moving away
-    \emph{pre-innner-loop} statements.}]
-    {quicksort_partition_sym_rotated_inner_loop.c}
-\end{minipage}\hfill
-\begin{minipage}[t]{.4\textwidth}
-    \lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
-    caption={Code after completing the `loop thinning' procedures.}]
-    {quicksort_partition_single_loop.c}
-\end{minipage}
-
+\lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
+caption={Code after completing the `loop thinning' procedures.}]
+{quicksort_partition_single_loop.c}
 
 Shown in ~\autoref{lst:singleLoopHoarePart} is the Hoarse's partition function
 after completing the `loop thinning' procedure.

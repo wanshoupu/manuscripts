@@ -50,7 +50,7 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Quicksort algorithm with Hoare's partition scheme is traditionally implemented with three
+        Quicksort algorithm with Hoare's partition scheme is traditionally implemented with
         nested loops.
         With Lomuto's partitioning scheme, the implementation is much simplified with one loop.
         However for certain edge cases, Lomuto's quicksort algorithm does not perform well.
@@ -70,25 +70,25 @@ upquote=true
     \section{Introduction}\label{sec:introduction}
     Loops are one of the most widely used programming constructs featured
     in almost all programming languages.
-    A loop is an amplifier, a powerhouse for productivity.
+    A loop is an productivity amplifier.
     With nominal overheads (\textit{e.g.}, state-registering variables, \textit{etc.}),
-    the static body of a loop can be executed as many times as needed.
+    the static body of a loop can be reused for unlimited number of times.
 
 
-    A key building block as loop is, it should be worth every developer's effort to master the best
-    practices of it.
-    However, the best practices for loop are so largely ignored that it is not uncommon to spot
+    A key building block as loop, one would suppose its best practices should have been widely
+    known.
+    On the opposite, however, the best practices for loop are so largely ignored that it is not uncommon to spot
     haphazardly constructed loops with duplicate code dangling around even in production code.
     Obviously developers who authored the haphazardly `working' code were either oblivious
     with good programming practices or does not bother to spend the time on better loop constructs.
 
     Common problems programmers tend to make while programming with loops are
-    \begin{enumerate}
+    \begin{itemize}
         \item Duplicate code
         \item Nested loops
         \item Leaky loop variables
         \item Heavy-duty initialization
-    \end{enumerate}
+    \end{itemize}
 
     Duplicate code between initialization and loop body or loop body and post-loop code
     is the biggest problem in loop programming and is the most common root causes for bugs.
@@ -160,12 +160,18 @@ upquote=true
     \include{quicksort_perf_cmp}
 
     \section{Conclusion}\label{sec:conclusion}
-    As shown in ~\autoref{sec:impl-varieties}, there are a cluster of closely related
-    implementations.
-    The Hoare's quicksort algorithm is simplified using a process and a few simple techniques.
-    The solutions are provided in C++.
-    But the idea is applicable to all programming languages that supports loop and conditional
-    constructs.
+    In this article, we presented a couple of techniques for optimizing loop constructs.
+    Taking advantage of the circular symmetry of loop constructs, loop rotation is applied to a
+    loop to either reduce code duplication (forward rotation) or to prepare for mutation to another
+    form (often reverse rotation).
+    Another technique is loop thinning for simplifying nested loop complications.
+    These are two of the empirical techniques that helps programmers achieve software development
+    best practices.
+    As an example, we applied these techniques in simplifying a traditional implementation of
+    Hoare's quicksort algorithm.
+    We provided the simplified implementation in C++.
+    More generally, the programming techniques we developed in this article are applicable to all
+    programming languages that supports loop and conditional constructs.
     \begin{appendices}
         \appendix
         \include{partition-functions}

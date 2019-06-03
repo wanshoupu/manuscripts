@@ -1,7 +1,9 @@
-In all the quicksort implementations in this article, we use the
-``median-of-three'' pivot selection technique to prevent pivot skewness
-\code{part}\cite{sedgewick1977,sedgewick:1978}.
-Correspondingly, we ensure that the array length is at least $3$ to call function \code{part}.
+The above implementation for quicksort is only a simplification.
+Our implementation have the same runtime complexity as the traditional ones.
+As such, we have designed experiments to test this hypothesis.
+Implicitly, we use the ``median-of-three'' pivot selection technique to prevent pivot skewness
+in all the quicksort implementations in this article\cite{sedgewick1977,sedgewick:1978}.
+Correspondingly, we ensure that the array length is at least $3$ to call \code{part} function.
 
 \begin{table}[b]
     \centering

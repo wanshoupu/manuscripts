@@ -24,7 +24,7 @@ But for more sophisticated implementations or to reduce partition overhead, more
 cases are used to address under-sized arrays (\textit{e.g.}, arrays of size $\leq 5$ but $\geq 1$).
 
 
-In plain english, this is how quicksort algorithm works:
+In plain English, this is how quicksort algorithm works:
 \begin{quote}
     If the array contains fewer than $2$ elements (the base case), return as is.
     Otherwise, invoke partition function to partition the array into two subarrays and an
@@ -241,8 +241,7 @@ But the end result is shown in the below listing.
 caption={Hoare's partition function with use of sentinel}]
 {quicksort_partition_single_loop_sentinel.c}
 This partition function would not work with ~\autoref{lst:QuickSortOutline} as is.
-The modification necessary is to add another base case when there are fewer than $3$ elements in
-the array to be sorted.
+The only necessary modification is adding another base case for arrays with $2$ elements.
 The more detailed discussion can be found in ~\autoref{sec:quick-sort-sentinel}.
 
 

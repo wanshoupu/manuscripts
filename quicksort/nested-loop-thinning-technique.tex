@@ -1,27 +1,34 @@
 Every developer writes nested loops now and then.
 Many times, nested loops appear compelling and inevitable.
-While they may solve our problem, nested loops inflict a program with
-unnecessary complexity, obstruct code readability, bring in `soft duplication'.
-The presence of nested loops usually defeats numerous optimization opportunities in the compiler
-level.
-Great developers try best to reduce usage of loops, sometimes avoiding using them
-altogether in favor of vectorized matrix operations\cite{data-engineering-avoid-loop}.
-The removal of nested loops often results more optimizations obvious and
-accessible.
-Like `Candy Crush Saga' game arriving at a critical point, a single move may unlock an
-avalanche of moves, to the player's advantage.
-Here we are to present a process that coalesce nested loops into a single loop,
-known as `nested loop thinning' technique.
-Cramming all the functionalities of nested loops into one loop is hard by definition.
-As a price to be paid, `nested loop thinning' process almost always
-results in one or more of these changes to the final loop:
+While they may solve our problem, nested loops inflict on a program
+unnecessary complexity, obstruct code readability, and bring in `soft duplication'.
+The presence of nested loops also thwart optimization at the compiler level.
+For these reasons, explicit use of loops at high level programming should be avoided
+altogether\cite{data-engineering-avoid-loop}.
+Moreover, getting rid of nested loops itself may not seem significant improvement.
+The optimizations that are made accessible after getting rid of nested loops dwarfs the improvement
+brought about by getting rid of nested loops itself.
+Like `Candy Crush Saga' game at certain critical point, a single move may unlock an
+avalanche of advantageous moves.
+
+
+In this section, we are to present a process that coalesces nested loops into single-layered loops,
+which we will name as `Nested loop thinning technique'.
+For sake of argument, the body of the outer loop is divided into three
+sections---\emph{pre-inner-loop} section, \emph{inner-loop} section, and
+\emph{post-inner-loop} section---depending on their relative position
+in respect to the inner loop (as shown in ~\autoref{fig:segment-for-loop-thinning}).
+Cramming the functionalities of nested loops into a single loop is no easy task.
+As a price, the process almost always results in one or more of the following:
 \begin{itemize}
-    \item extra conditional constructs are added
-    \item extra tests are added to existing conditional constructs
-    \item the pacing of the resulting loop is made more dynamic
-    \item more boundary condition handling logic is added
-    \item auxiliary data structure, such as queue or stack, is added.
+    \item extra conditional constructs
+    \item extra tests added to existing conditional constructs
+    \item more dynamic loop pacing
+    \item more boundary-condition-handling logic
+    \item auxiliary data structure, such as queue or stack
 \end{itemize}
+
+
 \begin{figure}
     \centering
     \includegraphics[width=0.4\textwidth]{segment-for-loop-thinning.jpg}
@@ -31,10 +38,8 @@ results in one or more of these changes to the final loop:
     statements.
     Each section receives different treatment during the `nested loop thinning' process.}
 \end{figure}
-For sake of argument, the body of the outer loop is
-divided into three sections---\emph{pre-inner-loop} section, \emph{inner-loop} section, and
-\emph{post-inner-loop} section---depending on their relative position
-in respect to the inner loop (shown in ~\autoref{fig:segment-for-loop-thinning}).
+
+
 The gist for flattening nested loops is as follows.
 First, we need to move pre-loop statements out of the way.
 To that end, use `loop rotation' technique (see ~\autoref{sec:loop-rotation}) backward

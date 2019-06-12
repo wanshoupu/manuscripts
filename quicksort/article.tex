@@ -52,11 +52,9 @@ upquote=true
     \begin{abstract}
         Quicksort algorithm with Hoare's partition scheme is traditionally implemented with
         nested loops.
-        With Lomuto's partitioning scheme, the implementation is much simplified with one loop.
-        However for certain edge cases, Lomuto's quicksort algorithm does not perform well.
-        In this article, we present loop programming techniques and nested loop simplification
-        processes that lead to simplified implementation for Hoare's quicksort algorithm which
-        consists of a single loop.
+        In this article, we present loop programming and refactoring techniques
+        that lead to simplified implementation for Hoare's quicksort algorithm consisting of a
+        single loop.
         We believe that the techniques are beneficial for general programming and may be used for
         the discovery of more novel algorithms.
     \end{abstract}
@@ -77,30 +75,26 @@ upquote=true
 
     A key building block as loop, one would suppose its best practices should have been widely
     known.
-    On the opposite, however, the best practices for loop are so largely ignored that it is not uncommon to spot
-    haphazardly constructed loops with duplicate code dangling around even in production code.
-    Obviously developers who authored the haphazardly `working' code were either oblivious
-    with good programming practices or does not bother to spend the time on better loop constructs.
+    On the opposite, however, the best practices for loop has been so largely ignored that
+    haphazardly constructed loops with duplication issues is not uncommon even in production code.
+    Common problems in loop programming include, but are not limited to, duplicate code, nested
+    loops, leaky loop variables, and oversized initialization.
+    I will explain each of them next.
 
-    Common problems programmers tend to make while programming with loops are
-    \begin{itemize}
-        \item Duplicate code
-        \item Nested loops
-        \item Leaky loop variables
-        \item Heavy-duty initialization
-    \end{itemize}
 
-    Duplicate code between initialization and loop body or loop body and post-loop code
-    is the biggest problem in loop programming and is the most common root causes for bugs.
+    Duplicate code here refers to duplication between code in the loop body and code before (after)
+    the loop.
+    It is the biggest problem in loop programming and is the most common root causes for bugs.
     Duplicate code anywhere is bad.
-    But duplicate code in and/or around loops is hard to realize and even harder to get rid of.
+    But duplicate code of this type is harder to realize or get rid of.
 
 
-    The next commonly held misunderstanding about loop is the tendency to use nested loops.
-    Many readers are ready to argue about this: ``What's wrong with nested loop?''
-    The use of nested loops in many occasions seems to be reasonable, necessary,
-    and at least harmless at first sight.
-    But unfortunately this point of view does not stand for long.
+    Uses of nested loops are sometimes controversial.
+    Many readers are ready to argue about this.
+    Anyhow, what is wrong with nested loop?
+    %    The use of nested loops in many occasions seems to be reasonable, necessary,
+    %    and at least harmless at first sight.
+    %    But unfortunately this point of view does not stand for long.
     For almost all cases, nested loops bring complexity rather than convenience,
     obstruct readability rather than facilitating it.
     It turns what could have been coded as different components into monolithic mess and
@@ -108,36 +102,36 @@ upquote=true
     deepen the coupling rather than reducing it and discourage code reusability rather than encouraging it.
 
 
-    Exposed loop variables are the third most common design problem in loop construction.
-    This is essentially passing information from loop construct to subsequent programming units via
-    the exposed variable(s) implicitly.
-    It exposes implementation details of the loop and brings about entanglements among remotely
-    related code, which is against the encapsulation principle.
+    Loop variables refers to variables used to register loop state.
+    Many developers rely on exposed variable(s) to implicitly pass information from loop to
+    subsequent program.
+    However, uncontrolled exposure of loop variable to subsequent code is a violation of the
+    encapsulation principle.
+    While sometimes convenient, it usually does more harm than good.
 
 
-    Oversize initialization is the fourth commonly found problem in loop programming.
-    Since a loop may be considered as mini-programs and its state requires initialization.
-    More often than not, with due skills and perseverance, the initialization may be achieved
-    with a one-liner.
-    However unskillful programmers may code disproportionally heavy initializations
+    Loop initialization is the prelude code needed for instantiating initial loop state.
+    It should be small and light-weight.
     rather than light-weight, succinct ones.
+    However unseasoned programmers may code disproportionally heavy initializations.
+    With due skills and perseverance, loop initializations can be made succinct one-liner.
 
 
-    Addressing all these commonly programming problems is beyond what this article can do.
-    So instead we will focus on duplicate code and nested loops.
+    It is beyond the scope of this article to address all the topics.
+    Instead we will focus on duplicate code and nested loops.
     We will present two pillar loop programming techniques---`loop rotation' and `Nested loop
     thinning' which I found are effective in fighting against above programming foes.
     These are the two pillars for loop programming.
     Proper use of them help developers avoid commonly made mistakes.
 
 
-    We have tried these techniques on case study, we will apply these programming techniques to
-    simplify traditional quicksort algorithm to prove the effectiveness of these
-    techniques---the implementation of quicksort algorithms.
+    We have tried these techniques on several case studies.
+    Particularly, we will apply them to simplify traditional quicksort algorithm to prove the
+    effectiveness of these techniques---the implementation of quicksort algorithms.
     First invented in 1960, quicksort has been studied and analyzed well over the
     years\cite{Hoare1961,Hoare1962,sedgewick:1978,Bentley:1986:PP}.
-    As one of the earliest `divide-n-conquer` algorithms, quicksort has become the \textit{de
-    facto} sorting algorithm in practice for its excellent expected performance.
+    As one of the earliest `divide-n-conquer` algorithms, quicksort has become the
+    \textit{de facto} sorting algorithm in practice for its excellent expected performance.
     Recently named one of the top $10$ algorithms of $20$th century, quicksort has a
     profound influence on the history of programming\cite{top10algorithm:2000}.
 
@@ -160,10 +154,11 @@ upquote=true
     \include{quicksort_perf_cmp}
 
     \section{Conclusion}\label{sec:conclusion}
-    In this article, we presented a couple of techniques for optimizing loop constructs.
-    Taking advantage of the circular symmetry of loop constructs, loop rotation is applied to a
-    loop to either reduce code duplication (forward rotation) or to prepare for mutation to another
-    form (often reverse rotation).
+    In this article, we presented a couple of techniques for optimizing loop constructs in
+    high-level programming languages.
+    Taking advantage of the circular symmetry of loop constructs, loop rotation may be applied to a
+    loop to either reduce code duplication (forward rotation) or to shift certain part of the
+    code within the loop body (reverse rotation).
     Another technique is loop thinning for simplifying nested loop complications.
     These are two of the empirical techniques that helps programmers achieve software development
     best practices.

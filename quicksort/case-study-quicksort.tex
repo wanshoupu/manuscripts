@@ -1,5 +1,14 @@
 Quicksort is one of the pivotal sorting algorithms widely used by modern software.
-First a little background on quicksort.
+The Hoare's scheme was the first partition scheme that came
+with the original invention of this algorithm\cite{Hoare1961,Hoare1962,sedgewick:1978}.
+Traditionally, Hoare's partition scheme has been implemented with nested loops.
+Later one, Lomuto's partitioning scheme was invented whose implementation is much simpler with only
+one loop\cite{Bentley:1986:PP}.
+However for certain edge cases, Lomuto's quicksort algorithm does not perform well.
+It is natural to ask if one can implement the Hoare's partition scheme with the simplicity of or
+close to the Lomuto's.
+Armed with the loop programming techniques presented in this article, let us give it a try.
+First let us lay the foundation of the implementations of the quicksort algorithm.
 
 
 \subsection{Recursive implementation of quicksort}\label{subsec:recursive-impl-quicksort}
@@ -215,10 +224,6 @@ we need to covert the second inner loop to an `\code{else if}' because the first
 converted to an `\code{if}' clause}).
 
 
-\lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
-caption={Code after completing the `loop thinning' procedures.}]
-{quicksort_partition_single_loop.c}
-
 Shown in ~\autoref{lst:singleLoopHoarePart} is the Hoarse's partition function
 after completing the `loop thinning' procedure.
 During the refactor process, we relied heavily on the `loop rotation' technique and
@@ -232,32 +237,19 @@ That's almost too good to believe.
 Our quest for a simple and performant partition scheme finally pays off.
 
 
+\newpage
+\lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=\$,
+caption={Code after completing the `loop thinning' procedures.}]
+{quicksort_partition_single_loop.c}
+
+
 %If this does not impress you, then you have no feeling.
-The cascading conditional in the loop body of ~\autoref{lst:singleLoopHoarePart}
-is still not straightforward and obstructs readability.
-With the use of sentinels, we can get rid of that clutter.
-But the end result is shown in the below listing.
+Additionally, one may use
+sentinels to simplify the cluttered conditions in the cascading conditional constructs of
+~\autoref{lst:singleLoopHoarePart}.
+
+The end result is listed below.
 \lstinputlisting[label={lst:hoare-partition-sole-loop-sentinel},
-caption={Hoare's partition function with use of sentinel}]
-{quicksort_partition_single_loop_sentinel.c}
-This partition function would not work with ~\autoref{lst:QuickSortOutline} as is.
-The only necessary modification is adding another base case for arrays with $2$ elements.
-The more detailed discussion can be found in ~\autoref{sec:quick-sort-sentinel}.
-
-
-%As a byproduct of going through the detailed refactor
-%processes for the cases of this section, I want the reader to have a feeling about software
-%development model.
-%As we can see the most fruitful software development model, undoubtedly, is to come up with a
-%working solution first.
-%However shabby, messy, primitive a solution it may be, as long as it can pass a handful of unit
-%tests, it will be a great starting point.
-%Then through meticulous optimization process, for which many of the techniques we have talked
-%about and will be talking may be an aid, strive for straightforwardness, simplicity, and elegance.
-%In the course, one may discover new issues, adding new unit tests accordingly, and obtain new
-%solutions.
-%With the variety of solutions passing the same unit tests, one can often form a better
-%perspective regarding the solution space.
-%This will help one pick the most effective solution to the original problem.
-%This is as a general programming guideline as well as specific  ally applicable to loops.
-
+caption={Hoare's partition function with use of sentinel}]{quicksort_partition_single_loop_sentinel.c}
+Note that this partition function requires at least $3$ elements in the array to work properly.
+Interested reader may refer to a more detailed discussion in ~\autoref{sec:quick-sort-sentinel}.

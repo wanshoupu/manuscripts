@@ -1,17 +1,31 @@
-The above implementation for quicksort is only a simplification.
-Our implementation have the same runtime complexity as the traditional ones.
+Note that implementations ~\autoref{lst:singleLoopHoarePart} or
+~\autoref{lst:hoare-partition-sole-loop-sentinel} for quicksort is just another way to implement
+the quicksort algorithm with Hoare's partitioning scheme.
+Their runtime complexity is expected to be the same as that of the traditional ones.
 As such, we have designed experiments to test this hypothesis.
-Implicitly, we use the ``median-of-three'' pivot selection technique to prevent pivot skewness
-in all the quicksort implementations in this article\cite{sedgewick1977,sedgewick:1978}.
-Correspondingly, we ensure that the array length is at least $3$ to call \code{part} function.
+To prevent pivot skewness, we use the ``median-of-three'' technique
+in all the quicksort implementations use for this experiment\cite{sedgewick1977,sedgewick:1978}.
+%Correspondingly, we ensure that the array length is at least $3$ to call \code{part} function.
 
-\begin{table}[b]
+
+~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
+The simplified implementation indeed comes with an overhead and is thus slower than
+its traditional counterpart of the Hoare's quicksort program.
+For sorted data sets (either ascending or descending), there is a $17\%$ slowdown.
+But for randomly shuffled data sets, the slow down is consistently around $7\%$.
+The experiment data seems to indicate that the simplified
+implementation of Hoare's quicksort algorithm shares same runtime complexity as its
+traditional counterpart.
+Their performance may differ by a multiplier.
+
+
+\begin{table}[h]
     \centering
     \caption{\label{tab:quicksort-experiment}
     Runtime measurement of Hoare's quicksort algorithms,
     comparing the traditional implementation and the single-loop implementation.
     Experiments are run against three data sets---the first is sorted ascending,
-    the second descending, and the third is randomly ordered.
+    the second descending, and the third is randomly shuffled.
     Courtesy: The experiment is conducted based on project ``Benchmarking Sorting
     Algorithms''\cite{benchmarking-sorting-algo} with some modification.}
     \vskip 10pt
@@ -39,7 +53,7 @@ Correspondingly, we ensure that the array length is at least $3$ to call \code{p
         $100,000$ & $9,378$ & $11,132$ & $19\%$\\
         $1,000,000$ & $118,696$ & $138,311$ & $17\%$\\
         \hline
-        \multicolumn{4}{l} {\mbox{Integer arrays randomly ordered}}\\
+        \multicolumn{4}{l} {\mbox{Integer arrays randomly shuffled}}\\
         array size & Traditional & Simplified & Percent difference\\
         \hline
         $10$ & $6$ & $6$ & $0\%$\\
@@ -52,13 +66,3 @@ Correspondingly, we ensure that the array length is at least $3$ to call \code{p
         \hline
     \end{tabular}
 \end{table}
-
-~\autoref{tab:quicksort-experiment} shows the runtime analysis and comparisons.
-The simplified implementation indeed comes with an overhead and is thus slower than
-its traditional counterpart of the Hoare's quicksort program.
-For sorted data sets (either ascending or descending), there is a $17\%$ slowdown.
-But for randomly ordered data sets, the slow down is consistantly around $7\%$.
-The experiment data seems to indicate that the simplified
-implementation of Hoare's quicksort algorithm shares same runtime complexity as its
-traditional counterpart.
-Their performance may differ by a multiplier.

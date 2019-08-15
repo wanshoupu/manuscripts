@@ -33,6 +33,19 @@ If the symmetry is broken, then it need to broken in a consistent way.
 If you leave equal elements on the left partition, then you should compensate for this by
 shortening the partition to the left, and vice versa.
 
+Problems with binary search
+\begin{enumerate}
+    \item Binary search may be equally implemented recursively or iteratively.
+    \item refrain from extra 'shortcut' statements other than base case(s).
+    For example,
+    if m >= e:
+       return -1
+    \item Pay attention to the flooring/ceiling when obtaining index for the ``middle'' element.
+    \item About the exclusiveness/inclusiveness of boundaries: when the search involves searching
+     empty ranges or \emph{a} result is not guaranteed, use exclusive boundary `$\left[..\right)$';
+    otherwise, use inclusive boundary  `$\left[..\right]$'.
+\end{enumerate}
+
 \begin{verbatim}
 int* part(int* s, int*e) {
     int* const pivot = s;

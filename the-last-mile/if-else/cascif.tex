@@ -267,6 +267,30 @@ thereafter \emph{within} the cascading conditionals for example:
 \lstinputlisting[basicstyle=\footnotesize]{if-else/intermediate_var.go}
 }.
 
+\begin{verbatim}
+    \caption{This example shows how to organize the cascade if statement in natural, logical way.}
+    Original
+        stack = [(root, self._extract_children(root)), ...]
+        while stack:
+            node, children = stack[-1]
+            if node.left is None and node.right is None:
+                ...
+            elif children:
+                ...
+            else:
+                ...
+
+    After optimize
+        stack = [(root, self._extract_children(root)), ...]
+        while stack:
+            node, children = stack[-1]
+            if children:
+                ...
+            elif node.left is None and node.right is None:
+                ...
+            else:
+                ...
+\end{verbatim}
 
 Well, a refactor will same one from this dilemma and there are at least two ways.
 First one can refactor the entire cascade into a separate function where the

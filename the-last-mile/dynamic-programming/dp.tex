@@ -36,9 +36,21 @@ think of what's the suboptimal solution for the same problem with certain
 constraints and then seek to remove the constraints to obtain the optimal solution.
 The first approach is 'problem-oriented' and the second is 'solution-oriented'.
 
-Often, one can get clues by trying one of several ways. One way is to seek restricted subproblems.
-These subproblems would otherwise be just the original one. But they are bounded by a single
-restriction.
+Often, one can get clues by trying one of several ways.
+One way is to seek restricted subproblems.
+These subproblems would otherwise be just the original one.
+But they are bounded by a single restriction.
+
+Another way is to seek a partial solution to the original problem and then gradually build up the
+solution to be a full one.
+
+In both of these two types of reasoning, one may assume that all the smaller subproblems
+have already had solutions (or subsolutions have been built) and one is free to use any subset of
+them as aid to build the next subsolution.
+
+Finally, when one runs out of wit in the thought process, one needs a way to `jump out of the
+box' by adding extra dimensions.
+For example, turning the solution into a composite construct, such as an array, a set or a map.
 
 There are a row of houses, each house can be painted with three colors red, blue and green
 \label{Evernote:Paint House (I and II)}

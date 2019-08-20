@@ -48,9 +48,97 @@ In both of these two types of reasoning, one may assume that all the smaller sub
 have already had solutions (or subsolutions have been built) and one is free to use any subset of
 them as aid to build the next subsolution.
 
-Finally, when one runs out of wit in the thought process, one needs a way to `jump out of the
-box' by adding extra dimensions.
-For example, turning the solution into a composite construct, such as an array, a set or a map.
+\section{Dimensionality Boosting}\label{sec:dimensionality-boosting}
+
+Dimensionality boosting is the opposite as dimensionality reduction.
+In doing so, we increase the complexity of solution space with the hope to find an enclosing
+solution space for the original problem.
+
+When one runs out of wit in the thought process, one needs a way to `jump out of the
+box' by adding dimensions.
+It's like with a flat earth one can not go very far in explaining the astronomical phenomena
+around.
+But when one accepts that the earth is not flat, everything starts to make sense.
+Then it is required for one to think in higher dimensional space, because the function
+representing the recursive relationship becomes multivariate.
+Sometimes even the function codomain turns into an array, a matrix, or a tensor.
+Accordingly, the solution has to be stored in a collection, such as an array, a set or a map.
+
+For example, in the problem ``Find the number of paths to escape $2$D grid'', because there is no
+restriction as to the direction of move, a previously trailed path can be repeated.
+This calls for the addition of the number of steps as an extra dimension when considering the
+subproblem.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:path_to_out_of_bound},
+    caption={Dimensionality boosting to search for a solution space to contain the problem and
+    its solution.}]
+    {dynamic-programming/path_to_out_of_bound.py}
+\end{clisting}
+
+
+\section{Implementation}\label{sec:dp-implementation}
+
+As to implementation, there are also two categories.
+Category one is recursion with memoir.
+Memoir can be anything an associative map, an array, etc.
+Another is iterative (usually with the help of an array or matrix or higher dimensional
+contiguous data structure).
+Recursion with memoir is easier as long as one has a recursive relationship in mind.
+Translating recursive relationship to iterative solution is a major hurdle to pass for dynamic
+programming.
+It requires abstract dimensional thinking, linear algebra, group theory and symmetry, topology,
+set theory, graph theory, function and mapping.
+Techniques that may be involved are index shifting.
+The process of translating recursive relationship to iterative solution itself is iterative---it
+is an iterative refining process.
+
+In ~\autoref{ch:loop-thinning}, we persuade users away from using nested loops.
+But for scientific computation, we mentioned that that direction can be relaxed depending on the
+situation.
+We hold similar stance here for dynamic programming as in dynamic programming we usually work
+with high dimensional data structures and performance requirement is high.
+It should be considered as highly specialized programming.
+Nested loops are a good choice with careful consideration of alternatives.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:new_21_game},
+    caption={Translation from recursive relation to iterative dynamic programming code}]
+    {dynamic-programming/new_21_game.py}
+\end{clisting}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:path_to_out_of_bound},
+    caption={Choice of data structure in dynamic programming}]
+    {dynamic-programming/path_to_out_of_bound.py}
+\end{clisting}
+
+\section{Recursive relation}\label{sec:recursive-relation}
+
+Given a programming problem, how to define the subproblems and figure out the recursive relation?
+The following problem helps illustrate this.
+
+Greedy algorithm would certainly be suboptimal as given in this example.
+\begin{enumerate}
+    \item $[1, 1]$
+    \item $[3, 3]$
+    \item $[3, 3]$
+\end{enumerate}
+
+At first glance, the subproblems and their relations are unclear.
+When I first attempted this problem, I was puzzled by how to `undo' the previous optimal solution
+by regroup the books into rows as it seems necessary that an optimally packed subsolution does
+not necessarily extend into the next subsolution by adding a book to it.
+
+But as soon as I realized that I have all the subsolutions \emph{before} the current subproblem
+available to build the next subsolution.
+After one figure out a structure among the subproblems, it's like one come out of a darkness
+into sunlight after a long tunnel.
+\begin{clisting}
+    \lstinputlisting[label={lst:fill_bookshelf},
+    caption={Choice of data structure in dynamic programming}]
+    {dynamic-programming/fill_bookshelf.py}
+\end{clisting}
 
 There are a row of houses, each house can be painted with three colors red, blue and green
 \label{Evernote:Paint House (I and II)}

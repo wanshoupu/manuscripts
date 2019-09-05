@@ -261,6 +261,25 @@ As shown in ~\autoref{tbl:breakdown-of-conditions},
 it is clear that the key to simplify the logic lies in the conditions for the
 execution of \code{statement2}.
 
+\begin{verbatim}
+In the following \code{if-elif} block, the first condition is cumbersome and the second condition
+has some redundancy of the first.
+
+if sc in s2t and s2t[sc] != tc:
+    return False
+elif sc not in s2t:
+    s2t[sc] = tc
+
+This may be simplified as:
+
+if sc not in s2t:
+    s2t[sc] = tc
+elif s2t[sc] != tc:
+    return False
+
+There is no redundancy in condition checking also both condition expressions are simple and
+single-purposed.
+\end{verbatim}
 
 Now it is time to do some Boolean algebra.
 Let $c$ be the condition for \code{statement2} to be executed and

@@ -11,6 +11,33 @@ have enough hands to handle all that at once.
 DP needs a split of me doing one part of the thing and a split of me doing tightly coupled another
 while the two splits coordinate closely.
 
+\section{What types of problem may be solved by dynamic programming?}
+\label{sec:types-of-problem-solved-by-dp}
+For a problem to be solvable by dynamic programming, one must define
+subproblems with the original problem as one of the subproblems (usually the largest, most
+significant subproblem of all).
+Also, the subproblems must be such that a directed acyclic graph (DAG) may be constructed among
+them with dependencies among them.
+Since the whole collection of subproblems is a DAG, it's necessary that some subproblems do not
+depend on others and their solution is known right away, which we call the base subproblems.
+Since a DAG establishes a partial ordering among its vertices, by traversing the graph starting
+from the base subproblems following this partial ordering, we can solve all the subproblems  all
+the way through to the largest subproblem, which is our original problem.
+This is because all their dependencies has been resolved when we encounter them along the way.
+
+There are several style of traversing---recursive or iterative.
+In terms of the  auxiliary data structures to record the intermediate results, we may use
+associative maps or hash sets.
+We may use pre-allocated arrays and matrices which are generally faster to access.
+
+So the complete thought path from recursion to dynamic programming is
+\begin{itemize}
+    \item Implement recursive solution
+    \item Add memoir or cache
+    \item Turn everything upside down and ``Start with the end'': build solutions bottom-up
+    \item Vectorized your solution using arrays and matrix.
+\end{itemize}
+
 \section{Algorithm Refactor}\label{sec:algorithmRefactor}
 
 \begin{defn}

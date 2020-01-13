@@ -45,15 +45,15 @@ Let's take on a challenge---
 Please pause here for few minutes to think about what the code might look like before turning the
 page.
 \clearpage
-Now let's check each others' answers.
-The first solution is almost a literal translation of the rules:
+Now let's check answers.
+There are usually a variety of solutions: from commonly seen solution
 \lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
-The second solution is based on the first but has turned it into a one-liner.
+to a one-liner.
 \lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
 %But those who are not satisfied with the above solution and further simplified the blob
 %into a one-liner, \textit{e.g.}, have bonus.
 Hopefully the difference is obvious to you.
-In my opinion, it is a difference between `good' and `great'.
+This shows the huge difference between `good' and `great' solutions.
 If you haven't made it a habit to strive for the `great' code, do not panic.
 I did not come up with the second solution from vacuum.
 Instead, I came up with the first one and by following a procedure, I `turned' it into the second
@@ -262,23 +262,23 @@ it is clear that the key to simplify the logic lies in the conditions for the
 execution of \code{statement2}.
 
 \begin{verbatim}
-In the following \code{if-elif} block, the first condition is cumbersome and the second condition
-has some redundancy of the first.
+    In the following \code{if-elif} block, the first condition is cumbersome and the second condition
+    has some redundancy of the first.
 
-if sc in s2t and s2t[sc] != tc:
+    if sc in s2t and s2t[sc] != tc:
     return False
-elif sc not in s2t:
+    elif sc not in s2t:
     s2t[sc] = tc
 
-This may be simplified as:
+    This may be simplified as:
 
-if sc not in s2t:
+    if sc not in s2t:
     s2t[sc] = tc
-elif s2t[sc] != tc:
+    elif s2t[sc] != tc:
     return False
 
-There is no redundancy in condition checking also both condition expressions are simple and
-single-purposed.
+    There is no redundancy in condition checking also both condition expressions are simple and
+    single-purposed.
 \end{verbatim}
 
 Now it is time to do some Boolean algebra.
@@ -371,6 +371,36 @@ that in ~\autoref{lst:exercise-simplified-conditional-statement}.
     \end{minipage}
 \end{clisting}
 
+\subsection{Case study: Binary search with slope}\label{subsec:case-study:binary-search-direction}
+
+Let's now consider the a real problem that we will visit and revisit in this chapter.
+\begin{quote}
+    Given an array of length $>= 3$, $A$, consisting of two concatenated monotonically increasing
+    and decreasing portions such that \code{A[0] < A[1] < ... < A[i] > A[i+1] > A[i+2] > ... >
+    A[n-1]}, write an efficient program to check if a \code{target} value exists in the array.
+\end{quote}
+
+This array is like a hill with a single ridge: in the first half, it monotonically increases until
+it reaches the ridge index, \code{i}, then it monotonically decreases until the end.
+It's straightforward come up with a strategy as
+\begin{enumerate}
+    \item finds the `ridge` index of the array
+    \item Attempt to find target value in the first half before the ridge index (binary search)
+    \item Attempt to find target value in the second half on or after the ridge index similarly
+\end{enumerate}
+
+\begin{clisting}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:binary-search-direction-nested},
+        caption={Nested implementation of binary searching direction logic}]
+        {if-else/binary_search_direction_nested.py}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:binary-search-direction-nested},
+        caption={Simplified implementation of binary searching direction logic}]
+        {if-else/binary_search_direction_simplified.py}
+    \end{minipage}
+\end{clisting}
 
 \section{Short-circuit evaluation}\label{sec:short-circuit-eval}
 

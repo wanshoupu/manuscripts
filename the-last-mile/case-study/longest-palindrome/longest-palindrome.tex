@@ -210,43 +210,45 @@ A \python version by Fred Akalin\footnote{\url{https://www.akalin
 An explanation of the algorithm and a Haskell
 implementation in Johan Jeuring's blog\footnote{
 \url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}},
-and others.
+along with others.
 
 \subsection{Augmented string}\label{subsec:palindrom.augmentedString}
 
-The most common implementation is literal translation of Manacher's algorithm, namely,
-the original string was augmented with alternating special characters as dummy palindromic center
-and palindromic search is constrained to odd-length palindromes.
-One thing to observe is that the choice of special characters must not be present in the original
-string.
+The most straightforward implementation of Manacher's algorithm is to literally
+augment the original string by inserting dummy \code{char}'s as palindromic center
+and restrict searches to odd-length palindromic substrings.
 One such implementation has been presented in ~\autoref{lst:LongestPalindromeAugment.java}.
+There are several drawbacks to this approach.
+First, one need to construct new strings doubling the length of the original which takes extra
+memory.
+Secondly, the choice of dummy characters must not appear in the original string or else it may
+introduce spurious result.
 
 \subsection{Virtual mapping for augmented string}\label{subsec:virtualMapping}
 
-Interestingly, one can virtualize the augmentation process by creating an arithmetic
-mapping between the characters in the original and the augmented string.
-In doing so, lengths of substrings are also altered.
-With the `index mapping' maneuver of this kind, one can simulate a `virtual augmentation' of the
-original string without actually doing it.
-This will get rid of augmentation code and greatly reduces memory footprint, with slight overhead of
-extra arithmetic operation for the
-index mapping between the original string and the `virtually augmented' string.
-~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrom.java} are
+In this section, we seek to find a better way to implement Manacher's algorithm using
+index arithmetic to map characters between the original and augmented string.
+That is, one can simulate a `virtualized augmentation' of the original string
+without actually doing it.
+It helps reduce memory footprint and also free us from the burden of choosing a character
+that avoids clashes with any of the characters in the original string.
+
+~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrome.java} are
 implementations in \python and \java respectively based on `virtual augmentation'.
 
 \begin{clisting}
     \lstinputlisting[label={lst:longest_palindromic_substring.py},
-    caption={A \python implementation of ongest palindromic substring.}]
+    caption={A \python implementation of longest palindromic substring.}]
     {case-study/longest-palindrome/longest_palindromic_substring.py}
 \end{clisting}
 
-~\autoref{lst:LongestPalindrom.java} is a \java version.
+~\autoref{lst:LongestPalindrome.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
 But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
 this information later.
 We think this way the code is easier to read and refactor.
 \begin{clisting}
-    \lstinputlisting[label={lst:LongestPalindrom.java},
+    \lstinputlisting[label={lst:LongestPalindrome.java},
     caption={A \java implementation of LPS Manacher's aglorithm.}]
     {case-study/longest-palindrome/LongestPalindrome.java}
 \end{clisting}
@@ -258,16 +260,16 @@ This is one of the most performing implementations known so far.
 The virtual mapping in place of physically augmenting the input string is compact, neat solution
 with optimal runtime complexity and memory footprint.
 But it is full of arithmetic for symmetry transformations, key look ups, etc.
-All of these degrade its readability in a big way.
+These arithmetic mappings degrade its readability quite a bit.
 
 Suppose we want to create a more readable, modular code,
 how should we go about do it?
 
-Let us use the version ~\autoref{lst:LongestPalindrom.java} as a demonstration
+Let us use the version ~\autoref{lst:LongestPalindrome.java} as a demonstration
 on how to apply the techniques that are discussed in this book.
 
 \newpage
-\lstinputlisting[label={lst:LongestPalindrom.java},
+\lstinputlisting[label={lst:LongestPalindrome.java},
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeSolver.java}

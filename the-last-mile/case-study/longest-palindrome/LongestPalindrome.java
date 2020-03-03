@@ -21,7 +21,6 @@ public class LongestPalindrome {
                     maxi = i;
                 }
             }
-
         }
 
         for (int i = 0, maxi = 0; ; ++i) {

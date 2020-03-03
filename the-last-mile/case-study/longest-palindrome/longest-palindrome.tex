@@ -98,7 +98,8 @@ the above periodic argument still applies within the overlapping regions.
 Now let us go back to the palindromic substring and view it in the perspective of discrete $1$D
 space.
 Note that the center of symmetry of a palindrome lies on either a \code{char} or
-between two \code{char}s in the original string.
+between two \code{char}s in the original string in which case we refer the two \code{char}s as
+the left/right centers, respectively.
 To facilitate coding and discussion, there are few special cases.
 Firstly we treat the left and right end of the string as centers of zero length palindrome.
 For empty string, the left and right ends collapse into one and that is the one and only
@@ -171,7 +172,7 @@ denotes length of it.
 \begin{alisting}
     \caption{Algorithm for calculating the length of LPS based on Manacher's algorithm}
     \begin{enumerate}
-        \item Initialize an array \code{lengths} of size $2 * n + 1$ that stores $LPL(i)$,
+        \item Initialize an array \code{lps} of size $2 * n + 1$ that stores $LPL(i)$,
         with \code{i} being one of the indexes of the array;
         \item Initialize \code{maxCenter = 0}, which stores the palindrome center whose right wing
         reaches right-most in each iteration of the main loop;
@@ -257,28 +258,33 @@ But it is full of arithmetic for symmetry transformations, key look ups, etc.
 These arithmetic mappings degrade its readability quite a bit.
 
 \begin{savenotes}
-\begin{table}[h]
-    \centering
-    \caption{\label{tab:Semantics-arithmetic} Semantics of index arithmetic expressions given
-    \code{i} being the palindromic center and \code{x} an arbitrary index, both in the augmented
-    string.}
-    \vskip 10pt
-    \begin{tabular}{l|l}
-        \hline
-        Arithmetic expression & Semantic Description\\
-        \hline
-        \code{2 * i - x} & mirror index of \code{x} about the center \\
-        \code{i - lengths[i]} & left bounding index of the palindromic substring\\
-        \code{i + lengths[i]} & right bounding index of the palindromic substring \\
-        \code{(i - lengths[i]) / 2} & left index mapped to the original string \footnote{This
-        is because if center is even, length of the palindromic substring around this
-    center can only be even.
-        Conversely, if center is odd, length of the palindromic substring
-    around this center can only be odd}\\
-        \code{(i + lengths[i]) / 2} & right index mapped to the original string \\
-        \hline
-    \end{tabular}
-\end{table}
+    \begin{table}[h]
+        \centering
+        \caption{\label{tab:Semantics-arithmetic} Semantics of index arithmetic expressions given
+        \code{i} being the palindromic center and \code{x} an arbitrary index, both in the augmented
+        string; \code{lps} is the array storing lengths of palindromic substrings.}
+%        \vskip 10pt
+        \begin{tabular}{l|l}
+            \hline
+            Arithmetic & Semantic\\
+            \hline
+            \code{i / 2} & The left center in the original string.
+            meaningful only for even \code{i}\\
+            \code{(i - 1) / 2} & The center in the original string.
+            meaningful only for odd \code{i}\\
+            \code{2 * i - x} & mirror index of \code{x} about the center \\
+            \code{i - lps[i]} & left bounding index of the palindromic substring\\
+            \code{i + lps[i]} & right bounding index of the palindromic substring \\
+            \code{(i - lps[i]) / 2} & left index mapped to the original string \footnote{
+            \label{odd-odd-even-even} This is because if center is even, length of the
+            palindromic substring around this center can only be even.
+            Conversely, if center is odd, length of the palindromic substring
+            around this center can only be odd} \\
+            \code{(i + lps[i]) / 2} & right index mapped to the original string
+            \textsuperscript{\ref{odd-odd-even-even}} \\
+            \hline
+        \end{tabular}
+    \end{table}
 \end{savenotes}
 
 Suppose we want to create a more readable, modular code,
@@ -288,7 +294,7 @@ Let us use the version ~\autoref{lst:LongestPalindrome.java} as a demonstration
 on how to apply the techniques that are discussed in this book.
 
 \newpage
-\lstinputlisting[label={lst:LongestPalindrome.java},
+\lstinputlisting[label={lst:LongestPalindrome.java},firstline=3,
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeSolver.java}

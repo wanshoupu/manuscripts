@@ -233,14 +233,8 @@ without actually doing it.
 It helps reduce memory footprint and also free us from the burden of choosing a character
 that avoids clashes with any of the characters in the original string.
 
-~\autoref{lst:longest_palindromic_substring.py} and ~\autoref{lst:LongestPalindrome.java} are
+~\autoref{lst:LongestPalindrome.java} are
 implementations in \python and \java respectively based on `virtual augmentation'.
-
-\begin{clisting}
-    \lstinputlisting[label={lst:longest_palindromic_substring.py},
-    caption={A \python implementation of longest palindromic substring.}]
-    {case-study/longest-palindrome/longest_palindromic_substring.py}
-\end{clisting}
 
 ~\autoref{lst:LongestPalindrome.java} is a \java version.
 Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
@@ -261,6 +255,31 @@ The virtual mapping in place of physically augmenting the input string is compac
 with optimal runtime complexity and memory footprint.
 But it is full of arithmetic for symmetry transformations, key look ups, etc.
 These arithmetic mappings degrade its readability quite a bit.
+
+\begin{savenotes}
+\begin{table}[h]
+    \centering
+    \caption{\label{tab:Semantics-arithmetic} Semantics of index arithmetic expressions given
+    \code{i} being the palindromic center and \code{x} an arbitrary index, both in the augmented
+    string.}
+    \vskip 10pt
+    \begin{tabular}{l|l}
+        \hline
+        Arithmetic expression & Semantic Description\\
+        \hline
+        \code{2 * i - x} & mirror index of \code{x} about the center \\
+        \code{i - lengths[i]} & left bounding index of the palindromic substring\\
+        \code{i + lengths[i]} & right bounding index of the palindromic substring \\
+        \code{(i - lengths[i]) / 2} & left index mapped to the original string \footnote{This
+        is because if center is even, length of the palindromic substring around this
+    center can only be even.
+        Conversely, if center is odd, length of the palindromic substring
+    around this center can only be odd}\\
+        \code{(i + lengths[i]) / 2} & right index mapped to the original string \\
+        \hline
+    \end{tabular}
+\end{table}
+\end{savenotes}
 
 Suppose we want to create a more readable, modular code,
 how should we go about do it?

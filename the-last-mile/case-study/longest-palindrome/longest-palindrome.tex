@@ -279,12 +279,6 @@ original string without actually constructing the augmented string in memory.
 It helps reduce memory footprint and also free us from the burden of choosing a dummy character.
 Following closely to what has been discussed, we implemented the `virtual augmentation' as
 shown in ~\autoref{lst:LongestPalindrome}.
-    // Specifications of palindromic substrings in the input:
-    // The i-th element in array 'lsp' records the max length of palindrome centered
-    // on a char or between two adjacent chars of the input string depends on the parity of i:
-    // if i is even, it is centered between the (i/2)th char and the (i/2 + 1)th char;
-    // if i is odd, it is centered on the (i-1)/2th char in string input
-    // lps[0] = 0 by definition
 Implementation ~\autoref{lst:LongestPalindrome} has $O(N)$ complexity for both runtime memory.
 So far, it is one of the most performant implementations known.
 

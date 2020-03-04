@@ -1,9 +1,5 @@
 public String longestPalindrome(String input) {
     int[] lps = new int[input.length() * 2 + 1];
-    //lps records the max-length of the palindrome centered at the ith position:
-    //if i is even it's between two chars in the string
-    //else if i is odd, it's one char in the string
-    //lps[0] = 0 by definition
     for (int i = 1, maxi = 0; i < lps.length; ++i) {
         if (maxi + lps[maxi] <= i) {
             lps[i] = palength(input, i, i);

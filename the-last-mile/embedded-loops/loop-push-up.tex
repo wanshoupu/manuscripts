@@ -645,7 +645,7 @@ As a result, the initialization statement `\code{int j = 0}' is duplicated with 
 at the forefront of the outer loop with the other after the last statement within the outer loop.
 Also the inner loop now becomes an unconditional loop \code{while(true)}.
 If you are still with me, the code now looks like this:
-\lstinputlisting[escapechar=$]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
+\lstinputlisting[escapechar=~]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
 It is important to check and verify that this code still passes the same amount of
 unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does.
 This is the invariant that should be maintained at each important milestone

@@ -46,6 +46,9 @@ Particularly, for a coordinate at $x$, its transformed coordinate $x^\prime$ \te
 
 \begin{figure}[H]
     \centering
+    \caption{Two axes of reflection symmetry simultaneously present near each other will partition
+    the entire space periodically and infinitely.
+    Overlapping palindromes also form similar periodic patterns.}\label{fig:ReflectionSymmetry}
     \begin{subfigure}{.4\textwidth}
         \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-axis-a.jpg}
         \caption{An axis of reflection symmetry}
@@ -69,10 +72,6 @@ Particularly, for a coordinate at $x$, its transformed coordinate $x^\prime$ \te
         \caption{Overlapping palindromes}
         \label{fig:palindrome-symmetry}
     \end{subfigure}
-
-    \caption{Two axes of reflection symmetry simultaneously present near each other will partition
-    the entire space periodically and infinitely.
-    Overlapping palindromes also form similar periodic patterns.}\label{fig:ReflectionSymmetry}
 \end{figure}
 
 As shown in ~\autoref{fig:a-axis-reflection-symmetry}, axis of symmetry $A$ partitions the entire $1$D
@@ -121,10 +120,10 @@ This intuition of the multiple reflection symmetry is the key to understand Mana
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
-    \caption{The top $4$ palindromic substrings of the example string ``bananas''
+    \caption{\label{fig:bananas.palindrome}
+    The top $4$ palindromic substrings of the example string ``bananas''
     labeled as `$1$`, `$2$`, and `$3$`.}
-    \label{fig:bananas.palindrome}
+    \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
 \end{figure}
 
 The paradigm of dynamic programming readily lends itself as the calculation of new
@@ -151,119 +150,99 @@ palindrome `$2$'.
 In one loop, there are two frontiers: center and rightmost checked char.
 within the right wing as we scan down the centers.
 
+\begin{alisting}[htb]
+    \caption{\label{alg:lps-algorithm}
+    Algorithm for calculating the length of LPS based on Manacher's algorithm}
+    \begin{enumerate}
+        \item Initialize an array \code{LPS} of size \code{2 * n + 1} and element at index \code{i}
+        stores length of \code{LPS(i)}.
+        \item Initialize \code{rightMost = 0}, which stores the palindrome center whose right wing
+        reaches rightmost in each iteration of the main loop;
+        \item For each \code{char} at \code{j = 0, 1, ..., n} in the augmented array,
+        \begin{enumerate}[label={\roman*:}]
+            \item If \code{j} lies to the right of the right wing of \code{PS(rightMost)},
+            calculate \code{LPS(j)} from scratch;
+            update \code{rightMost} accordingly;
+            skip to the next iteration.
+            \item Otherwise, find the mirror image of \code{j}
+            with respect to \code{rightMost} and call it \code{jp}.
+            \item If \code{LPS(jp)} is completely contained within \code{LPS(rightMost)}'s wing,
+            then \code{LPS(j)=LPS(jp)};
+            \item Otherwise (part of \code{LPS(j)} could pierce through
+            the wing of \code{LPS(rightMost)}),
+            then all we need is to calculate the exposed portion of \code{LPS(j)} to the right of
+            \code{LPS(rightMost)}.
+        \end{enumerate}
+    \end{enumerate}
+\end{alisting}
+
 In some implementations, the original array is augmented by inserting
 dummy \code{char}s in between each pair of neighboring \code{char}s in the original string and
 require the palindrome substrings be centered on one of the \code{char} of the augmented string
 (dummy \code{char} or original \code{char} alike).
 So for \code{string} ``bananas'', the augmented array would be
-\begin{center}
-    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
-        \hline
-        \hline
-        & b && a && n && a && n && a && s &\\
-        \hline
-        \hline
-    \end{tabular}
-\end{center}
+\begin{figure}[h]
+    \centering
+    \caption{\label{fig:augmented-array-banana}
+    Augmented array for \code{string} ``bananas''.
+    The augmenting character chosen here is the blank space (ASCII 32).}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            \hline
+            & b && a && n && a && n && a && s &\\
+            \hline
+            \hline
+        \end{tabular}
+    \end{center}
+\end{figure}
+
 Then all the palindromic substrings are centered on one of the \code{char} in the augmented
 string for sake of implementation.
-Algorithm outline is as follows, where $PS(i)$ denotes the LPS centered at \code{i}, and $LPS(i)$
-denotes length of it.
-\begin{alisting}
-    \caption{Algorithm for calculating the length of LPS based on Manacher's algorithm}
-    \begin{enumerate}
-        \item Initialize an array \code{lps} of size $2 * n + 1$ that stores $LPL(i)$,
-        with \code{i} being one of the indexes of the array;
-        \item Initialize \code{maxCenter = 0}, which stores the palindrome center whose right wing
-        reaches right-most in each iteration of the main loop;
-        \item For each \code{char} at \code{j = 0, 1, ..., n} in the augmented array,
-        \begin{enumerate}[label={\roman*:}]
-            \item If $PS(j)$ lies within the right wing of $PS(\code{maxCenter})$,
-            check the $PS(j^\prime)$, where $j^\prime$ is the mirrored center
-            \textit{w.r.t.} \code{maxCenter}.
-            If $PS(j^\prime)$ is completely tucked under the $PS(\code{maxCenter})$'s left wing,
-            then the $LPS(j)$ is same as $PS(j^\prime)$.
-            \item Otherwise, if part of $PS(j^\prime)$ protrudes from
-            the left wing of $PS(\code{maxCenter})$,
-            then we can inherit the part under the left wing and all
-            we need is to calculate the portion protruding from the right wing of $PS
-            (\code{maxCenter})$.
-            \item Otherwise, we have to calculate from scratch the length of the longest
-            palindrome centered on \code{j}.
-        \end{enumerate}
-    \end{enumerate}
-\end{alisting}
+Algorithm is outlined in ~\autoref{alg:lps-algorithm}.
 
-\section{Implementations}\label{sec:implementation.longestPalindrome}
 
-\begin{clisting}
-    \lstinputlisting[label={lst:LongestPalindromeAugment.java},
-    caption={Java implementation of longest
-    palindrome substring Manacher's aglorithm with augmented string.}]
-    {case-study/longest-palindrome/LongestPalindromeAugment.java}
-\end{clisting}
+\section{Naive Augmented-String Implementations}\label{sec:implementation-longestPalindrome}
 
-Published on the Internet are several implementations---
+With the background information and outline of the algorithm in ~\autoref{alg:lps-algorithm},
+it is straightforward to implement Manacher's algorithm literally following the algorithm.
+In fact several implementations may be found on the Internet.
 A \java version by CS department of Princeton
 University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}},
-A \python version by Fred Akalin\footnote{\url{https://www.akalin
-.com/longest-palindrome-linear-time}},
+A \python version by Fred Akalin\footnote{\url{https://www.akalin .com/longest-palindrome-linear-time}},
 An explanation of the algorithm and a Haskell
 implementation in Johan Jeuring's blog\footnote{
 \url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}},
 along with others.
+An implementation of my own is also provided here for sake of argument and reference
+(~\autoref{lst:LongestPalindromeAugment}).
+(For comparison purposes, all the implementations made in this chapter are in \java.)
 
-\subsection{Augmented string}\label{subsec:palindrom.augmentedString}
-
-The most straightforward implementation of Manacher's algorithm is to literally
-augment the original string by inserting dummy \code{char}'s as palindromic center
-and restrict searches to odd-length palindromic substrings.
-One such implementation has been presented in ~\autoref{lst:LongestPalindromeAugment.java}.
-There are several drawbacks to this approach.
-First, one need to construct new strings doubling the length of the original which takes extra
-memory.
-Secondly, the choice of dummy characters must not appear in the original string or else it may
-introduce spurious result.
-
-\subsection{Virtual mapping for augmented string}\label{subsec:virtualMapping}
-
-In this section, we seek to find a better way to implement Manacher's algorithm using
-index arithmetic to map characters between the original and augmented string.
-That is, one can simulate a `virtualized augmentation' of the original string
-without actually doing it.
-It helps reduce memory footprint and also free us from the burden of choosing a character
-that avoids clashes with any of the characters in the original string.
-
-~\autoref{lst:LongestPalindrome.java} are
-implementations in \python and \java respectively based on `virtual augmentation'.
-
-~\autoref{lst:LongestPalindrome.java} is a \java version.
-Note that with an extra variable before the loop, the global LPS can be obtained in one iteration.
-But we choose not to complicate the monolithic logic in the loop and choose to instead obtain
-this information later.
-We think this way the code is easier to read and refactor.
-\begin{clisting}
-    \lstinputlisting[label={lst:LongestPalindrome.java},
-    caption={A \java implementation of LPS Manacher's aglorithm.}]
-    {case-study/longest-palindrome/LongestPalindrome.java}
+\newpage
+\begin{clisting}[H]
+    \lstinputlisting[label={lst:LongestPalindromeAugment},language=Java,escapechar=~,
+    caption={A implementation of Manacher's algorithm for the LPS problem.
+    Original string is literally augmented in memory.}]
+    {case-study/longest-palindrome/LongestPalindromeAugment.java}
 \end{clisting}
-Implementation 4 (of Algorithm 3 below) (O(N) runtime O(N) space).
-This is one of the most performing implementations known so far.
 
-\subsection{Modularized solution}\label{subsec:palindrom.modularized}
+\section{Virtual mapping for augmented string}\label{sec:virtualMapping}
 
-The virtual mapping in place of physically augmenting the input string is compact, neat solution
-with optimal runtime complexity and memory footprint.
-But it is full of arithmetic for symmetry transformations, key look ups, etc.
-These arithmetic mappings degrade its readability quite a bit.
+Beside the tedious and memory-doubling augmentation process,
+it is also painstaking to choose a augmenting character that is free from conflict with
+the real characters to avoid spurious result may result.
+In this section, we seek to find a more concise and economic way to
+implement Manacher's algorithm.
+The idea is based on the index mapping between the original and augmented strings.
+
 
 \begin{savenotes}
-    \begin{table}[h]
+    \begin{table}[htb]
         \centering
-        \caption{\label{tab:Semantics-arithmetic} Semantics of index arithmetic expressions given
+        \caption{\label{tab:semantics-arithmetic} Semantics of index arithmetic expressions given
         \code{i} being the palindromic center and \code{x} an arbitrary index, both in the augmented
         string; \code{lps} is the array storing lengths of palindromic substrings.}
-%        \vskip 10pt
+        %        \vskip 10pt
         \begin{tabular}{l|l}
             \hline
             Arithmetic & Semantic\\
@@ -287,17 +266,73 @@ These arithmetic mappings degrade its readability quite a bit.
     \end{table}
 \end{savenotes}
 
-Suppose we want to create a more readable, modular code,
-how should we go about do it?
 
-Let us use the version ~\autoref{lst:LongestPalindrome.java} as a demonstration
-on how to apply the techniques that are discussed in this book.
+Consider the string ``bananas'' (~\autoref{fig:bananas.palindrome}) and its augmented string as
+shown in ~\autoref{fig:augmented-array-banana}, there is a $1:1$ correspondence between the
+indexes in the original and the augmented strings.
+Arithmetic expressions with certain semantic meaning has been created in
+table ~\autoref{tab:semantics-arithmetic}.
+
+
+By extensively using index arithmetic, one can simulate a `virtualized augmentation' of the
+original string without actually constructing the augmented string in memory.
+It helps reduce memory footprint and also free us from the burden of choosing a dummy character.
+Following closely to what has been discussed, we implemented the `virtual augmentation' as
+shown in ~\autoref{lst:LongestPalindrome}.
+    // Specifications of palindromic substrings in the input:
+    // The i-th element in array 'lsp' records the max length of palindrome centered
+    // on a char or between two adjacent chars of the input string depends on the parity of i:
+    // if i is even, it is centered between the (i/2)th char and the (i/2 + 1)th char;
+    // if i is odd, it is centered on the (i-1)/2th char in string input
+    // lps[0] = 0 by definition
+Implementation ~\autoref{lst:LongestPalindrome} has $O(N)$ complexity for both runtime memory.
+So far, it is one of the most performant implementations known.
 
 \newpage
-\lstinputlisting[label={lst:LongestPalindrome.java},firstline=3,
+\begin{clisting}[H]
+    \lstinputlisting[label={lst:LongestPalindrome},language=Java,escapechar=~,
+    caption={Implementation of Manacher's aglorithm using index mapping.}]
+    {case-study/longest-palindrome/LongestPalindromeIndexMapping.java}
+\end{clisting}
+
+\section{Solutions for Readability}\label{sec:palindrom.modularized}
+
+The virtual mapping frees us from actually augmenting the input string and proves a great
+solution with both optimal runtime complexity and optimal memory footprint.
+But looking at the code in ~\autoref{lst:LongestPalindrome}, it is far from clean or compact.
+In fact it is quite unreadable.
+This is because there are full of arithmetic expressions for symmetry transformations, key look
+ups, \textit{etc.}
+These arithmetic mappings degrade its readability quite a bit.
+
+
+How can go about making it more readable?
+The key is two-fold.
+First, reduce duplicate code.
+If you look carefully, there are quite a few occurrences of soft duplication.
+Secondly, refactor the monolithic implementation into succinct, meaningful helper functions.
+This goal is correlated with the first in that some of the helper functions may be reused to
+reduce duplicate code.
+Let us start with ~\autoref{lst:LongestPalindrome} and use it to demonstrate
+how to apply techniques discussed in this book to achieve our goal.
+
+First, observe that the code is bloated with duplicate code.
+For example, a pattern is repeated on line ~\autoref{line:lps-soft-duplication}:
+\begin{lstlisting}
+    if (im - lps[im] > maxi - lps[maxi])
+\end{lstlisting}
+It may be obscure to untrained eyes.
+But the pattern is clear---given an index, get the index minus the element
+at the index as the result.
+So we can factor that out into a function and get rid of the duplication.
+What name should we give the function?
+Well, what's being returned?
+
+\lstinputlisting[label={lst:lpsModuler},firstline=3,language=Java,escapechar=~,
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindromeSolver.java}
+{case-study/longest-palindrome/LongestPalindromeModular.java}
+
 
 \section{Conclusion}\label{sec:conclusion}
 %TODO

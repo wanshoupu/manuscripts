@@ -17,20 +17,27 @@ particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to make
 one's
 implementation into neat, understandable, and beautiful solution.
 
-\section{The problem and its optimal algorithm}\label{sec:Manacher.algorithm}
+\section{The problem Statement}\label{sec:lps-statement}
 
-The problem is simply stated as
+The problem of finding palindromic substring has various forms and has been studied for decades.
+For the sake argument, we take the following form as the problem statement:
 \begin{quote}
     ``Given a string \code{S}, find the longest palindromic substring in \code{S}.''
 \end{quote}
 According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or sequence that reads
 the same backward as forward''.
-The problem of finding palindromic substring has various forms and has been studied for decades.
-The optimal algorithm for detecting the LPS in a string originates from
-idea presented in a paper by Glenn Manacher~\cite{Manacher:1975}.
 
-Although it is not the focus of this chapter, the Manacher's algorithm itself is worth a
-good understanding for the reader before moving on to implementations.
+Even to a programming newbie, the problem is not super hard.
+For example, one may perform a symmetric comparison for each possible center---centers that are
+on one of the chars and centers that lies in between two adjacent ones.
+The runtime complexity of such a naive solution would be $O(N^2)$.
+But there is a better way to do it.
+In fact, the optimal solution originates from a paper by Glenn Manacher
+which is what is referred to as \textit{the Manacher's algorithm}~\cite{Manacher:1975}.
+To gain a reasonable understanding of Manacher's algorithm, we need a little bit of math.
+
+\section{Reflection symmetry}\label{sec:reflection-symmetry}
+
 The basic idea has is mathematical origin from reflection symmetry in one-dimensional ($1$D) space,
 \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}}.
@@ -84,20 +91,22 @@ repetitively applying the reflection transformation, one may find infinitely man
 periodically located along the $x$-axis and they partition the entire space into periodic regions
 with period $2d$, where $d$ is the distance between the two axes of symmetry (see
 ~\autoref{fig:two-axes-reflection-symmetry}).
-You may have experienced such an illusion by stepping into two parallel mirrors \ldots
+This effect may not be unfamiliar to
+you if you have ever stepped in between two parallel mirrors---an array of clones of `you' appear,
+alternately facing toward and away from you, aligned and coordinated.
+This intuition of the multiple reflection symmetry is the key to understand Manacher's algorithm.
 
+\section{Problem Analysis}\label{sec:palindrome-problem-analysis}
+
+Back to the palindromic substring and view it in the perspective of discrete $1$D space.
 The palindromic property of string is a manifestation of reflection symmetry as shown in
 ~\autoref{fig:palindrome-symmetry}.
-In reality space may be limited so are strings.
+In reality, we do not have infinite space or string.
+So the aforementioned symmetry may not be perfect.
 Nevertheless as long as the regions of two reflection symmetry overlaps,
 the above periodic argument still applies within the overlapping regions.
-
-\section{Manacher's algorithm}\label{sec:manacherAlgorithm}
-
-Now let us go back to the palindromic substring and view it in the perspective of discrete $1$D
-space.
-Note that the center of symmetry of a palindrome lies on either a \code{char} or
-between two \code{char}s in the original string in which case we refer the two \code{char}s as
+Note that the center of symmetry of a palindrome may be either a \code{char} or
+between two \code{char}s in the original string in which case we refer to the two \code{char}s as
 the left/right centers, respectively.
 To facilitate coding and discussion, there are few special cases.
 Firstly we treat the left and right end of the string as centers of zero length palindrome.
@@ -114,9 +123,6 @@ When this happens, symmetric operations in the palindromic symmetry group may be
 applied in again and again, in any combination by any order.
 As a result, a substring $S$ may be mapped to mirror images $S^\prime$'s, images of images
 $S^{\prime\prime}$'s, and so on.
-This is the same effect as
-one steps into two parallel mirrors---a periodic array of `you' appear, aligned and coordinated.
-This intuition of the multiple reflection symmetry is the key to understand Manacher's algorithm.
 
 \begin{figure}[htb]
     \centering
@@ -126,14 +132,15 @@ This intuition of the multiple reflection symmetry is the key to understand Mana
     \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
 \end{figure}
 
-The paradigm of dynamic programming readily lends itself as the calculation of new
-uses the result of old.
-Properly cached results is the key to reduce the time complexity to polynomial.
+\section{Manacher's algorithm}\label{sec:manacherAlgorithm}
+
+Manacher's algorithm is programming with memoir.
+The key is to avoid repeated character comparisons.
 Taking string ``bananas'' as an example, a few of its palindromic substrings are shown in
 ~\autoref{fig:bananas.palindrome}.
 Note that these substrings overlap with one another.
-Particularly, palindrome `$1$' tucks under its left and right wings shorter palindromes `$2$', and
-`$3$'---exactly as we discussed above.
+Particularly, palindrome `$1$' tucks shorter palindromes `$2$', and
+`$3$' under its left and right wings---exactly as we discussed above.
 It's common practice that one iterate through the string from left to right and as one does so,
 one caches the result, \textit{e.g.} the length as the following table shows.
 \begin{center}

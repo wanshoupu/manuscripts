@@ -7,45 +7,65 @@
 
 The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
 question.
-It also have applications in music, architecture, mathematics, chemistry, physics,
-human DNA sequencing, \textit{etc.}
-This topic was picked mainly because the author would like achieve two things.
-Firstly, we want to promote the application of applying mathematical insights to understand a
-fairly complicated algorithm.
+It has also found widespread applications in mathematics, physics, chemistry, genetics, music,
+\textit{etc.}
+Here I pick it for two things.
+First, to promote the conscious application of the study of symmetry to
+understand and reduce a fairly complicated problem.
+For any problem, identifying the hidden symmetry is the key to discover great
+solutions to it.
+Symmetry almost always brings saving and break of symmetry is almost always costly.
 Secondly, we want to demonstrate how to apply the techniques explained earlier in this book,
-particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to make improvement on
-one's
-implementation into neat, understandable, and beautiful solution.
+particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to turn unreadable code
+into more readable solution.
+Let's jump to start.
+
 
 \section{The problem Statement}\label{sec:lps-statement}
 
-The problem of finding palindromic substring has various forms and has been studied for decades.
-For the sake argument, we take the following form as the problem statement:
+The problem statement of finding palindromic substrings take various forms in the literature.
+
+For the sake argument, we state it as this:
 \begin{quote}
-    ``Given a string \code{S}, find the longest palindromic substring in \code{S}.''
+    ``Given an input string, find the longest palindromic substring in it.
+    Find the first if more than one exist.''
 \end{quote}
 According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or sequence that reads
 the same backward as forward''.
+Note that the length of a palindromic string can be odd or even and we can classify them as odd
+palindrome and even palindrome, respectively.
+For odd palindrome, its center of symmetry, or simply ``center'', falls on a
+\code{char}.
+For nonempty even palindrome, its center falls between two \code{char}s, which in this book
+will be referred to as ``left center'' and ``right center'', respectively.
+It becomes immediately obvious that there are a total of $2N+1$ palindromic substrings
+in the input string and their centers include all the characters and boundaries between
+adjacent characters.
 
-Even to a programming newbie, the problem is not super hard.
-For example, one may perform a symmetric comparison for each possible center---centers that are
-on one of the chars and centers that lies in between two adjacent ones.
-The runtime complexity of such a naive solution would be $O(N^2)$.
-But there is a better way to do it.
-In fact, the optimal solution originates from a paper by Glenn Manacher
-which is what is referred to as \textit{the Manacher's algorithm}~\cite{Manacher:1975}.
-To gain a reasonable understanding of Manacher's algorithm, we need a little bit of math.
+To some programmers, merely solving the problem may not be ``hard'' so to speak.
+For example, one may iterate through each possible center and for each center calculate the
+length of LPS, searching successively for symmetric mismatches from center to brim.
+The runtime complexity of such a supposed solution is no better than $O(N^2)$.
+What is hard about this problem is to find a solution that beats the quadratic runtime.
+In his paper in 1975, Glenn Manacher discovered a linear time solution to find the LPS that is a
+prefix to a given string.
+It was later found that his method works not only for the prefix but for all LPS's in the input
+string.
+This algorithm is the so-called \textit{the Manacher's algorithm}~\cite{Manacher:1975}.
+We will dedicate some paragraph to understand this algorithm.
+But first we need a little bit of math of symmetry as background information.
+
 
 \section{Reflection symmetry}\label{sec:reflection-symmetry}
 
-The basic idea has is mathematical origin from reflection symmetry in one-dimensional ($1$D) space,
-\textit{a.k.a.}, mirror-image symmetry
-\footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}}.
-Reflection symmetry in $1$D space refers to space invariance under reflection transformation.
+Reflection symmetry, \textit{a.k.a.}, mirror-image symmetry
+\footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}} refers to space invariance
+under reflection transformation.
 A reflection transformation is the operation that transforms coordinates to their
-mirror-image with respect to the fixed point, which we will refer as axis of symmetry or center
-of symmetry.
-Particularly, for a coordinate at $x$, its transformed coordinate $x^\prime$ \textit{w.r.t.} axis $a$ is:
+mirror-image with respect to the fixed point, which we will refer as the ``axis of symmetry'' or
+``center of symmetry''.
+In one-dimensional ($1$D) space, a coordinate at $x$, its transformed coordinate $x^\prime$
+\textit{w.r.t.} axis $a$ is:
 \begin{equation}
     \label{eq:reflection-transform}
     x^\prime = 2a - x.
@@ -70,7 +90,7 @@ Particularly, for a coordinate at $x$, its transformed coordinate $x^\prime$ \te
     \vspace{1mm}
     \begin{subfigure}[b]{.4\textwidth}
         \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-2-axes.jpg}
-        \caption{Two conconurrent axes}
+        \caption{Two concurrent axes}
         \label{fig:two-axes-reflection-symmetry}
     \end{subfigure}
     ~
@@ -94,20 +114,18 @@ with period $2d$, where $d$ is the distance between the two axes of symmetry (se
 This effect may not be unfamiliar to
 you if you have ever stepped in between two parallel mirrors---an array of clones of `you' appear,
 alternately facing toward and away from you, aligned and coordinated.
-This intuition of the multiple reflection symmetry is the key to understand Manacher's algorithm.
+This intuition of the multiple reflection symmetry is the key underlying the Manacher's algorithm.
+
 
 \section{Problem Analysis}\label{sec:palindrome-problem-analysis}
 
-Back to the palindromic substring and view it in the perspective of discrete $1$D space.
-The palindromic property of string is a manifestation of reflection symmetry as shown in
+Back to the LPS problem, we need to put it in the perspective of a discretized $1$D space.
+The palindromic property of an infinite string manifest the reflection symmetry as shown in
 ~\autoref{fig:palindrome-symmetry}.
 In reality, we do not have infinite space or string.
 So the aforementioned symmetry may not be perfect.
 Nevertheless as long as the regions of two reflection symmetry overlaps,
 the above periodic argument still applies within the overlapping regions.
-Note that the center of symmetry of a palindrome may be either a \code{char} or
-between two \code{char}s in the original string in which case we refer to the two \code{char}s as
-the left/right centers, respectively.
 To facilitate coding and discussion, there are few special cases.
 Firstly we treat the left and right end of the string as centers of zero length palindrome.
 For empty string, the left and right ends collapse into one and that is the one and only
@@ -133,15 +151,15 @@ $S^{\prime\prime}$'s, and so on.
 \end{figure}
 
 \section{Manacher's algorithm}\label{sec:manacherAlgorithm}
-
-Manacher's algorithm is programming with memoir.
+%TODO
+Manacher's algorithm is with memoir.
 The key is to avoid repeated character comparisons.
 Taking string ``bananas'' as an example, a few of its palindromic substrings are shown in
 ~\autoref{fig:bananas.palindrome}.
 Note that these substrings overlap with one another.
 Particularly, palindrome `$1$' tucks shorter palindromes `$2$', and
-`$3$' under its left and right wings---exactly as we discussed above.
-It's common practice that one iterate through the string from left to right and as one does so,
+`$3$' under its left and right wings as we discussed in the previous section.
+It's common practice that we iterate through the string from left to right and as one does so,
 one caches the result, \textit{e.g.} the length as the following table shows.
 \begin{center}
     \begin{tabular}{cccccccccccccccc}
@@ -154,7 +172,7 @@ totally or partially determine the palindrome length.
 For example, one can save on the calculation of the palindrome `$3$' by using the result of
 palindrome `$2$'.
 
-In one loop, there are two frontiers: center and rightmost checked char.
+In one loop, there are two frontiers: center and checked char.
 within the right wing as we scan down the centers.
 
 \begin{alisting}[htb]
@@ -163,22 +181,22 @@ within the right wing as we scan down the centers.
     \begin{enumerate}
         \item Initialize an array \code{LPS} of size \code{2 * n + 1} and element at index \code{i}
         stores length of \code{LPS(i)}.
-        \item Initialize \code{rightMost = 0}, which stores the palindrome center whose right wing
+        \item Initialize \code{refCenter = 0}, which stores the palindrome center whose right wing
         reaches rightmost in each iteration of the main loop;
         \item For each \code{char} at \code{j = 0, 1, ..., n} in the augmented array,
         \begin{enumerate}[label={\roman*:}]
-            \item If \code{j} lies to the right of the right wing of \code{PS(rightMost)},
+            \item If \code{j} lies to the right of the right wing of \code{PS(refCenter)},
             calculate \code{LPS(j)} from scratch;
-            update \code{rightMost} accordingly;
+            update \code{refCenter} accordingly;
             skip to the next iteration.
             \item Otherwise, find the mirror image of \code{j}
-            with respect to \code{rightMost} and call it \code{jp}.
-            \item If \code{LPS(jp)} is completely contained within \code{LPS(rightMost)}'s wing,
+            with respect to \code{refCenter} and call it \code{jp}.
+            \item If \code{LPS(jp)} is completely contained within \code{LPS(refCenter)}'s wing,
             then \code{LPS(j)=LPS(jp)};
             \item Otherwise (part of \code{LPS(j)} could pierce through
-            the wing of \code{LPS(rightMost)}),
+            the wing of \code{LPS(refCenter)}),
             then all we need is to calculate the exposed portion of \code{LPS(j)} to the right of
-            \code{LPS(rightMost)}.
+            \code{LPS(refCenter)}.
         \end{enumerate}
     \end{enumerate}
 \end{alisting}
@@ -209,7 +227,7 @@ string for sake of implementation.
 Algorithm is outlined in ~\autoref{alg:lps-algorithm}.
 
 
-\section{Naive Augmented-String Implementations}\label{sec:implementation-longestPalindrome}
+\section{Augmented-String Implementations}\label{sec:implementation-lps-augmented}
 
 With the background information and outline of the algorithm in ~\autoref{alg:lps-algorithm},
 it is straightforward to implement Manacher's algorithm literally following the algorithm.
@@ -233,14 +251,15 @@ An implementation of my own is also provided here for sake of argument and refer
     {case-study/longest-palindrome/LongestPalindromeAugment.java}
 \end{clisting}
 
+
 \section{Virtual mapping for augmented string}\label{sec:virtualMapping}
 
-Beside the tedious and memory-doubling augmentation process,
-it is also painstaking to choose a augmenting character that is free from conflict with
-the real characters to avoid spurious result may result.
+The string-augmentation process in ~\autoref{lst:LongestPalindromeAugment} is not
+only tedious and costly in memory footprint, it also demands the identification of
+an augmenting character that is absent from the original string to avoid spurious result.
 In this section, we seek to find a more concise and economic way to
 implement Manacher's algorithm.
-The idea is based on the index mapping between the original and augmented strings.
+The idea is based on index mapping between the original and augmented strings.
 
 
 \begin{savenotes}

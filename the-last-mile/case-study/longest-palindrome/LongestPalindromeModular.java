@@ -21,22 +21,22 @@ public class LongestPalindromeSolver {
      * Solve the longest palindrome problem and cache the result
      */
     void solve() {
-        for (int i = 1, rm = 0; i < lps.length; ++i) {
-            // rm = center reaching the rightmost
-            if (getRightBound(rm) <= i) {
+        for (int i = 1, refCenter = 0; i < lps.length; ++i) {
+            // refCenter = center reaching to the right farthest
+            if (getRightBound(refCenter) <= i) {
                 lps[i] = palength(i, i);
-                rm = i; // i becomes the rightmost palindrome
+                refCenter = i; // i becomes the rightmost palindrome
                 continue;
             }
-            int mi = toMirrorImage(rm, i);
+            int mi = toMirrorImage(refCenter, i);
             //assert mi >= 0
-            if (getLeftBound(mi) > getLeftBound(rm)) {
-                // palindrome is covered entirely
+            if (getLeftBound(mi) > getLeftBound(refCenter)) {
+                // palindrome is wrapped
                 lps[i] = lps[mi];
             } else {
                 //calculate the part outside
-                lps[i] = palength(i, getRightBound(rm));
-                rm = i;
+                lps[i] = palength(i, getRightBound(refCenter));
+                refCenter = i;
             }
         }
     }

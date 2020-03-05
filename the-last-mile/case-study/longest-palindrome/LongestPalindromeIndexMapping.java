@@ -1,27 +1,28 @@
 public String longestPalindrome(String input) {
     int[] lps = new int[input.length() * 2 + 1];
-    for (int i = 1, maxi = 0; i < lps.length; ++i) {
-        if (maxi + lps[maxi] <= i) {
+    for (int i = 1, refCenter = 0; i < lps.length; ++i) {
+        // refCenter = center reaching to the right farthest
+        if (refCenter + lps[refCenter] <= i) {
             lps[i] = palength(input, i, i);
-            maxi = i;
+            refCenter = i;
         } else {
-            int im = maxi * 2 - i;
+            int im = refCenter * 2 - i;
             //assert im >= 0
-            if (im - lps[im] > maxi - lps[maxi]) {
+            if (im - lps[im] > refCenter - lps[refCenter]) {
                 lps[i] = lps[im];
             } else {
-                lps[i] = palength(input, i, maxi + lps[maxi]);
-                maxi = i;
+                lps[i] = palength(input, i, refCenter + lps[refCenter]);
+                refCenter = i;
             }
         }
     }
 
-    for (int i = 0, maxi = 0; ; ++i) {
+    for (int i = 0, refCenter = 0; ; ++i) {
         if (i == lps.length) {
-            return substring(input, maxi, lps[maxi]);
+            return substring(input, refCenter, lps[refCenter]);
         }
-        if (lps[i] > lps[maxi]) {
-            maxi = i;
+        if (lps[i] > lps[refCenter]) {
+            refCenter = i;
         }
     }
 }

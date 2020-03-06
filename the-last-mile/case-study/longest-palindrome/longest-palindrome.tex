@@ -32,15 +32,19 @@ For the sake argument, we state it as this:
 \end{quote}
 According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or sequence that reads
 the same backward as forward''.
-Note that the length of a palindromic string can be odd or even and we can classify them as odd
-palindrome and even palindrome, respectively.
-For odd palindrome, its center of symmetry, or simply ``center'', falls on a
-\code{char}.
+The length of a palindromic string is either an odd number or an even one.
+Accordingly, we may classify palindromic strings as odd or even.
+For odd palindrome, its center of symmetry, \textit{e.g.}, palindromic center
+or simply ``center'', falls on a \code{char}.
 For nonempty even palindrome, its center falls between two \code{char}s, which in this book
 will be referred to as ``left center'' and ``right center'', respectively.
-It becomes immediately obvious that there are a total of $2N+1$ palindromic substrings
-in the input string and their centers include all the characters and boundaries between
-adjacent characters.
+Obviously, emtpy string is also palindromic---the trivial case.
+Palindromic substring of a string is any substring that is a palindrome.
+For a string of length $N$, there are $(2 * N + 1)$ palindromic substrings, some of which may be
+trivial.
+For empty string, the sole LPS is trivial.
+For nonempty string, the first and last LPS's must be trivial.
+
 
 To some programmers, merely solving the problem may not be ``hard'' so to speak.
 For example, one may iterate through each possible center and for each center calculate the
@@ -62,7 +66,7 @@ Reflection symmetry, \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}} refers to space invariance
 under reflection transformation.
 A reflection transformation is the operation that transforms coordinates to their
-mirror-image with respect to the fixed point, which we will refer as the ``axis of symmetry'' or
+mirror-image \textit{w.r.t.} the fixed point, which we will refer to as the ``axis of symmetry'' or
 ``center of symmetry''.
 In one-dimensional ($1$D) space, a coordinate at $x$, its transformed coordinate $x^\prime$
 \textit{w.r.t.} axis $a$ is:
@@ -104,9 +108,8 @@ In one-dimensional ($1$D) space, a coordinate at $x$, its transformed coordinate
 As shown in ~\autoref{fig:a-axis-reflection-symmetry}, axis of symmetry $A$ partitions the entire $1$D
 space into left half-space and right half-space about itself, and points in the half-spaces have
 one-to-one mapping.
-Axis $B$ does similarly except \textit{w.r.t.} its own axis of symmetry
-(\autoref{fig:b-axis-reflection-symmetry}).
-If the two axes of reflection symmetry are simultaneously present along the $x$-axis, by
+Axis $B$ does similarly (\autoref{fig:b-axis-reflection-symmetry}).
+If the axes of reflection symmetry for the two are simultaneously present along the $x$-axis, by
 repetitively applying the reflection transformation, one may find infinitely many axes
 periodically located along the $x$-axis and they partition the entire space into periodic regions
 with period $2d$, where $d$ is the distance between the two axes of symmetry (see
@@ -114,35 +117,29 @@ with period $2d$, where $d$ is the distance between the two axes of symmetry (se
 This effect may not be unfamiliar to
 you if you have ever stepped in between two parallel mirrors---an array of clones of `you' appear,
 alternately facing toward and away from you, aligned and coordinated.
-This intuition of the multiple reflection symmetry is the key underlying the Manacher's algorithm.
+This intuition of the multiple reflection symmetry is the key to solve the LPS problem efficiently.
 
 
-\section{Problem Analysis}\label{sec:palindrome-problem-analysis}
-
-Back to the LPS problem, we need to put it in the perspective of a discretized $1$D space.
+Let us consider the LPS problem from the perspective of a discretized $1$D space.
 The palindromic property of an infinite string manifest the reflection symmetry as shown in
 ~\autoref{fig:palindrome-symmetry}.
 In reality, we do not have infinite space or string.
-So the aforementioned symmetry may not be perfect.
+So the aforementioned symmetry may not be perfectly realized.
 Nevertheless as long as the regions of two reflection symmetry overlaps,
-the above periodic argument still applies within the overlapping regions.
-To facilitate coding and discussion, there are few special cases.
-Firstly we treat the left and right end of the string as centers of zero length palindrome.
-For empty string, the left and right ends collapse into one and that is the one and only
-palindrome of the string.
-All in all, for a string of length $n$, there are $(2 * n + 1)$ palindromic centers.
-On each one of the centers, the longest palindrome can be found by extending the left and right
-boundaries as far as the equally distant pairs of \code{char}s match.
-It is interesting to consider the collective effect among these palindromic substrings.
-The left and right wings of a palindromic string may host smaller palindromes.
-When nearby palindromic substrings overlap, dwelling palindromes in the overlapping areas will be
-mirrored to other parts of the string by symmetry,
-When this happens, symmetric operations in the palindromic symmetry group may be
-applied in again and again, in any combination by any order.
-As a result, a substring $S$ may be mapped to mirror images $S^\prime$'s, images of images
-$S^{\prime\prime}$'s, and so on.
+the above periodic argument will apply in the overlapping regions.
 
-\begin{figure}[htb]
+
+The collection of crowded and overlapping LPS's is of great interest to us.
+We know that under the left and right wings of some LPS, some shorter palindromes may be taking
+shelter.
+On the other hand, the larger LPS that cloaks over the shorter ones will project the latter's
+mirror image to the other wing due to reflection symmetry (see ~\autoref{fig:bananas.palindrome}).
+This reflective projection may be applied recursively as many times as there are
+enclosing palindromes.
+As a result, a substring $S$ may be projected to its mirror image $S^\prime$, which, in turn,
+may be projected to its image $S^{\prime\prime}$ and so on.
+
+\begin{figure}[tbh]
     \centering
     \caption{\label{fig:bananas.palindrome}
     The top $4$ palindromic substrings of the example string ``bananas''
@@ -150,30 +147,29 @@ $S^{\prime\prime}$'s, and so on.
     \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
 \end{figure}
 
-\section{Manacher's algorithm}\label{sec:manacherAlgorithm}
-%TODO
-Manacher's algorithm is with memoir.
-The key is to avoid repeated character comparisons.
-Taking string ``bananas'' as an example, a few of its palindromic substrings are shown in
-~\autoref{fig:bananas.palindrome}.
-Note that these substrings overlap with one another.
-Particularly, palindrome `$1$' tucks shorter palindromes `$2$', and
-`$3$' under its left and right wings as we discussed in the previous section.
-It's common practice that we iterate through the string from left to right and as one does so,
-one caches the result, \textit{e.g.} the length as the following table shows.
+\section{Manacher's Algorithm}\label{sec:manacherAlgorithm}
+
+Now we are in a good position to discuss Manacher's algorithm.
+Manacher's algorithm is an algorithm relying on memoir caching of previously calculated LPS's.
+The reflective projection provides a key step in helping us avoid repeated character comparisons.
+Again taking string ``bananas'' for an example shown in ~\autoref{fig:bananas.palindrome},
+suppose we already calculated all the LPS's before LPS $3$, since we know that $2$ has
+length $3$, we can skip directly to compare the next outer character pair, which is `n' and `s'
+and know that they do not match and thus LPS $3$ is pinned to be of length $3$ also.
+
+
+Thus we may iterate through the string from left to right and cache the result, \textit{e.g.}l
+the length as the following table shows.
 \begin{center}
     \begin{tabular}{cccccccccccccccc}
         index:&0,&1,&2,&3,&4,&5,&6,&7,&8,&9,&10,&11,&12,&13,&14\\
         length:&0,&1,&0,&1,&0,&3,&0,&5,&0,&3,&0,&1,&0,&1,&0
     \end{tabular}
 \end{center}
-When examining a new center, the cached information for certain mirror image of it may be useful to
-totally or partially determine the palindrome length.
-For example, one can save on the calculation of the palindrome `$3$' by using the result of
-palindrome `$2$'.
-
-In one loop, there are two frontiers: center and checked char.
-within the right wing as we scan down the centers.
+Throughout the iterations, we also keep as a reference LPS that which reaches farthest right.
+When examining a new center, we first check the length of LPS centered at the mirror image of it
+and avoid redundant calculation in all or in portion, just as in the case of ``bananas''.
+With no more ado, ~\autoref{alg:lps-algorithm} lists the Manacher's algorithm.
 
 \begin{alisting}[htb]
     \caption{\label{alg:lps-algorithm}
@@ -190,7 +186,7 @@ within the right wing as we scan down the centers.
             update \code{refCenter} accordingly;
             skip to the next iteration.
             \item Otherwise, find the mirror image of \code{j}
-            with respect to \code{refCenter} and call it \code{jp}.
+            \textit{w.r.t.} \code{refCenter} and call it \code{jp}.
             \item If \code{LPS(jp)} is completely contained within \code{LPS(refCenter)}'s wing,
             then \code{LPS(j)=LPS(jp)};
             \item Otherwise (part of \code{LPS(j)} could pierce through
@@ -201,42 +197,24 @@ within the right wing as we scan down the centers.
     \end{enumerate}
 \end{alisting}
 
-In some implementations, the original array is augmented by inserting
-dummy \code{char}s in between each pair of neighboring \code{char}s in the original string and
-require the palindrome substrings be centered on one of the \code{char} of the augmented string
-(dummy \code{char} or original \code{char} alike).
-So for \code{string} ``bananas'', the augmented array would be
-\begin{figure}[h]
-    \centering
-    \caption{\label{fig:augmented-array-banana}
-    Augmented array for \code{string} ``bananas''.
-    The augmenting character chosen here is the blank space (ASCII 32).}
-    \begin{center}
-        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
-            \hline
-            \hline
-            & b && a && n && a && n && a && s &\\
-            \hline
-            \hline
-        \end{tabular}
-    \end{center}
-\end{figure}
-
-Then all the palindromic substrings are centered on one of the \code{char} in the augmented
-string for sake of implementation.
-Algorithm is outlined in ~\autoref{alg:lps-algorithm}.
-
 
 \section{Augmented-String Implementations}\label{sec:implementation-lps-augmented}
 
-With the background information and outline of the algorithm in ~\autoref{alg:lps-algorithm},
-it is straightforward to implement Manacher's algorithm literally following the algorithm.
-In fact several implementations may be found on the Internet.
-A \java version by CS department of Princeton
+Now we are ready to talk about the implementations of Manacher's algorithm.
+Traditionally the implementations of Manacher's algorithm assumes augmenting the original array with
+a dummy \code{char}s in between neighboring \code{char}s in the original string.
+By this, each of the LPS's in the original string is mapped to an odd LPS (and thus is centered
+on a character) in the augmented string.
+So for \code{string} \mbox{``bananas''}, the augmented string would be \mbox{`` b a n a n a s ''},
+assuming blank space being chosen as the augmenting character.
+
+With the augmented string, implementing Manacher's algorithm literally becomes straightforward.
+Several implementations have been published using various programming languages, \textit{e.g.},
+a \java version by CS department of Princeton
 University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}},
-A \python version by Fred Akalin\footnote{\url{https://www.akalin .com/longest-palindrome-linear-time}},
-An explanation of the algorithm and a Haskell
-implementation in Johan Jeuring's blog\footnote{
+a \python version by Fred Akalin\footnote{\url{https://www.akalin.com/longest-palindrome-linear-time}},
+a Haskell implementation along with a discussion of the algorithm itself
+in Johan Jeuring's blog\footnote{
 \url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}},
 along with others.
 An implementation of my own is also provided here for sake of argument and reference
@@ -254,12 +232,15 @@ An implementation of my own is also provided here for sake of argument and refer
 
 \section{Virtual mapping for augmented string}\label{sec:virtualMapping}
 
-The string-augmentation process in ~\autoref{lst:LongestPalindromeAugment} is not
-only tedious and costly in memory footprint, it also demands the identification of
-an augmenting character that is absent from the original string to avoid spurious result.
+Even though the string-augmentation process for the implementation Manacher's algorithm has found
+widespread use, this is neither convenient nor economic.
+For large strings such as DNA chains in genome sequencing, it is very costly to have to
+reconstruct the string doubling the memory footprint.
+It may is also annoying to have to identify a dummy character of augmentation
+that is absent from the original string to avoid spurious result.
 In this section, we seek to find a more concise and economic way to
-implement Manacher's algorithm.
-The idea is based on index mapping between the original and augmented strings.
+implement Manacher's algorithm with no need of string augmentation.
+The key is to establish an index mapping between the original and augmented strings.
 
 
 \begin{savenotes}
@@ -293,16 +274,21 @@ The idea is based on index mapping between the original and augmented strings.
 \end{savenotes}
 
 
-Consider the string ``bananas'' (~\autoref{fig:bananas.palindrome}) and its augmented string as
-shown in ~\autoref{fig:augmented-array-banana}, there is a $1:1$ correspondence between the
-indexes in the original and the augmented strings.
-Arithmetic expressions with certain semantic meaning has been created in
-table ~\autoref{tab:semantics-arithmetic}.
+Consider the string \mbox{``bananas''} (~\autoref{fig:bananas.palindrome}) and its augmented string
+\mbox{`` b a n a n a s ''}, there is a $1:1$ correspondence between the
+indexes of the original string and the even indexes of the augmented string.
+For each operation we do with respect to the original string and substrings, we do so in terms of
+the indexes of the augmented string.
+That is to say, we need not the augmented string, but only the indexes.
+Therefore as long as we establish a mapping between operations and the arithmetic expressions in
+terms of the augmented indexes, we can simulate a `virtualized augmentation' of the
+original string.
+This frees us from actually constructing the augmented string in memory at all.
+We are also freed from the burden of choosing a dummy character.
+Some arithmetic expressions and their semantic meanings have been tabulated in
+~\autoref{tab:semantics-arithmetic} for reference.
 
 
-By extensively using index arithmetic, one can simulate a `virtualized augmentation' of the
-original string without actually constructing the augmented string in memory.
-It helps reduce memory footprint and also free us from the burden of choosing a dummy character.
 Following closely to what has been discussed, we implemented the `virtual augmentation' as
 shown in ~\autoref{lst:LongestPalindrome}.
 Implementation ~\autoref{lst:LongestPalindrome} has $O(N)$ complexity for both runtime memory.
@@ -317,24 +303,24 @@ So far, it is one of the most performant implementations known.
 
 \section{Solutions for Readability}\label{sec:palindrom.modularized}
 
-The virtual mapping frees us from actually augmenting the input string and proves a great
-solution with both optimal runtime complexity and optimal memory footprint.
+This is great.
 But looking at the code in ~\autoref{lst:LongestPalindrome}, it is far from clean or compact.
-In fact it is quite unreadable.
-This is because there are full of arithmetic expressions for symmetry transformations, key look
-ups, \textit{etc.}
-These arithmetic mappings degrade its readability quite a bit.
-
-
+In fact it is not so readable as we expected.
+The first impression it gives me is ``That's full of arithmetic expressions!''
+These arithmetic expressions are for symmetry transformations, key look ups, \textit{etc.}
+But they degrade the code readability quite a bit.
 How can go about making it more readable?
 The key is two-fold.
 First, reduce duplicate code.
-If you look carefully, there are quite a few occurrences of soft duplication.
-Secondly, refactor the monolithic implementation into succinct, meaningful helper functions.
-This goal is correlated with the first in that some of the helper functions may be reused to
-reduce duplicate code.
-Let us start with ~\autoref{lst:LongestPalindrome} and use it to demonstrate
-how to apply techniques discussed in this book to achieve our goal.
+If you look carefully, some arithmetic operations are repeated time and again.
+Some of them stands out as hard `copy-n-paste;
+more belong to the category of ``soft duplication''.
+Secondly, refactor the monolithic implementation into succinct, meaningful and reusable helper
+functions.
+This goal is coupled with the first in that reuse of helper functions reduce duplicate code.
+Starting with ~\autoref{lst:LongestPalindrome}, we are going to demonstrate
+how to apply techniques discussed in this book to achieve these goals.
+
 
 First, observe that the code is bloated with duplicate code.
 For example, a pattern is repeated on line ~\autoref{line:lps-soft-duplication}:

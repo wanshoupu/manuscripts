@@ -8,7 +8,7 @@ public String longestPalindrome(String input) {
         } else {
             int im = refCenter * 2 - i;
             //assert im >= 0
-            if (im - lps[im] > refCenter - lps[refCenter]) {
+            if (im - lps[im] > refCenter - lps[refCenter]) {~\label{line:lps-soft-duplication}~
                 lps[i] = lps[im];
             } else {
                 lps[i] = palength(input, i, refCenter + lps[refCenter]);

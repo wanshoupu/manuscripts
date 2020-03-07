@@ -18,7 +18,7 @@ Symmetry almost always brings saving and break of symmetry is almost always cost
 Secondly, we want to demonstrate how to apply the techniques explained earlier in this book,
 particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to turn unreadable code
 into more readable solution.
-Let's jump to start.
+Let's get started.
 
 
 \section{The problem Statement}\label{sec:lps-statement}
@@ -230,7 +230,7 @@ An implementation of my own is also provided here for sake of argument and refer
 \end{clisting}
 
 
-\section{Virtual mapping for augmented string}\label{sec:virtualMapping}
+\section{Virtual Augmentation}\label{sec:virtualMapping}
 
 Even though the string-augmentation process for the implementation Manacher's algorithm has found
 widespread use, this is neither convenient nor economic.
@@ -291,10 +291,9 @@ Some arithmetic expressions and their semantic meanings have been tabulated in
 
 Following closely to what has been discussed, we implemented the `virtual augmentation' as
 shown in ~\autoref{lst:LongestPalindrome}.
-Implementation ~\autoref{lst:LongestPalindrome} has $O(N)$ complexity for both runtime memory.
+Implementation ~\autoref{lst:LongestPalindrome} has $O(N)$ complexity for both runtime and memory.
 So far, it is one of the most performant implementations known.
 
-\newpage
 \begin{clisting}[H]
     \lstinputlisting[label={lst:LongestPalindrome},language=Java,escapechar=~,
     caption={Implementation of Manacher's aglorithm using index mapping.}]
@@ -303,42 +302,64 @@ So far, it is one of the most performant implementations known.
 
 \section{Solutions for Readability}\label{sec:palindrom.modularized}
 
-This is great.
-But looking at the code in ~\autoref{lst:LongestPalindrome}, it is far from clean or compact.
-In fact it is not so readable as we expected.
-The first impression it gives me is ``That's full of arithmetic expressions!''
-These arithmetic expressions are for symmetry transformations, key look ups, \textit{etc.}
-But they degrade the code readability quite a bit.
-How can go about making it more readable?
-The key is two-fold.
-First, reduce duplicate code.
-If you look carefully, some arithmetic operations are repeated time and again.
-Some of them stands out as hard `copy-n-paste;
-more belong to the category of ``soft duplication''.
-Secondly, refactor the monolithic implementation into succinct, meaningful and reusable helper
-functions.
+By virtual augmentation, we resolved the memory footprint issue and the shadowy dummy character.
+That goal is achieved.
+But it does not mean we we can settle here.
+Looking at the code in ~\autoref{lst:LongestPalindrome}, it is like a bowl of spaghetti.
+It takes a lot of courage for one to go over it, even for myself in just a couple days after I wrote
+it.
+Its cleanliness suffers.
+If it is not readable, it is not acceptable.
+
+
+Let us see how to make it more readable.
+Obviously it is full of arithmetic expressions for symmetry
+transformations, key look ups, \textit{etc.}
+They are introduced because we switched from literal string augmentation to virtual augmentation.
+%But they also degrade the code readability quite a bit.
+%How can go about making it more readable?
+%It does not take long to realize that the code is full with arithmetic expressions.
+%The key is two-fold.
+%First, reduce duplicate code.
+But if you look carefully, you may spot some arithmetic operations are repeated.
+In fact, the code is bloated with duplicate code.
+Some of them are hard ``copy-n-paste'' repetitions;
+more belong to the category of ``soft duplicate''~\autoref{ch:loops}.
+Secondly, refactor the monolithic implementation into meaningful, single-purposed, and reusable
+helper functions.
 This goal is coupled with the first in that reuse of helper functions reduce duplicate code.
 Starting with ~\autoref{lst:LongestPalindrome}, we are going to demonstrate
 how to apply techniques discussed in this book to achieve these goals.
 
 
-First, observe that the code is bloated with duplicate code.
-For example, a pattern is repeated on line ~\autoref{line:lps-soft-duplication}:
+Taking as an example line ~\autoref{line:lps-soft-duplication} in ~\autoref{lst:LongestPalindrome}:
 \begin{lstlisting}
     if (im - lps[im] > maxi - lps[maxi])
 \end{lstlisting}
 It may be obscure to untrained eyes.
-But the pattern is clear---given an index, get the index minus the element
-at the index as the result.
-So we can factor that out into a function and get rid of the duplication.
-What name should we give the function?
-Well, what's being returned?
+But the pattern is ``Given an index, get the result as the index minus the element
+at the index''.
+So we can factor that out into a function, \textit{e.g.}, \code{getLeftBound}, and get rid of the
+duplication.
+Most of the arithmetic expressions in ~\autoref{tab:semantics-arithmetic} are worth of being
+refactored into light-weight, proper-named, reusable functions.
+If we get this done, not only is cured code duplication problem but also the solution becomes
+modular.
+The intention of each section of code is clear by its function name.
+The final solution is listed in ~\autoref{lst:lpsModular}.
 
-\lstinputlisting[label={lst:lpsModuler},firstline=3,language=Java,escapechar=~,
+\lstinputlisting[label={lst:lpsModular},firstline=3,language=Java,escapechar=~,
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
 {case-study/longest-palindrome/LongestPalindromeModular.java}
 
 
 \section{Conclusion}\label{sec:conclusion}
-%TODO
+
+In conclusion, we went through a complete case for the longest palindromic substring
+problem---the analysis of the problem, the reflection symmetry of it, the Manacher's algorithm
+and its various implementations.
+We presented a novel implementation of the Manacher's algorithm that avoided the tedious and costly
+string augmentation.
+Using the techniques presented in this book, we refactored the monolithic, bloated solution
+into a modular, readable one.

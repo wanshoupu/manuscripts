@@ -126,3 +126,61 @@ caption={MatrixIteratorNonIdempotent}]
 \lstinputlisting[label={lst:MatrixIteratorNonIdempotent_duplicate_code},
 caption={MatrixIteratorNonIdempotent duplicate code}]
 {object-oriented-design/MatrixIteratorNonIdempotent_duplicate_code.java}
+
+
+\section{Case study --- producer/consumer design}\label{sec:case-study-producer-consumer-design}
+
+Let's consider a real-world example---the design of producer/consumer service.
+This topic should not be unfamiliar to those who has experience with distributed message queues
+such as Kafka, AMQP, \textit{etc.}
+To make the problem small enough to fit in this book, we will design wrapper classes on top of
+one of the message queue clients, \textit{e.g.}, Kafka.
+
+
+The \java client of Kafka producer/consumer classes have the following public interfaces:
+
+\lstinputlisting[label={lst:kafka-client-producer-consumer},
+caption={Kafka client: Producer and Consumer}]
+{object-oriented-design/kafka_client_producer_consumer.java}
+
+As one can tell, the Kafka client is asymmetric in terms of its producer/consumer interface:
+Producer publishes a message of type \code{String} whereas Consumer consumes a message of type
+\code{ConsumeStreamMessage}:
+\begin{lstlisting}
+    class ConsumeStreamMessage {
+
+    }
+\end{lstlisting}
+
+\lstinputlisting[label={lst:fake-ood},
+caption={Fake OOD example}]
+{object-oriented-design/fake_ood.js}
+
+\section{Object Interaction}\label{sec:object-interaction}
+
+When two systems need to interact, where should the logic reside?
+Take for example you are building a system consisting of two system---\code{Storage} and
+\code{Dispatcher}.
+\code{Storage} is the system that maintains the storage of items waiting to be delivered whereas
+\code{Dispatcher} is the system that is in charge of logistics and delivery.
+Aside from these two components, there is a \code{System} that runs the entire system.
+There is the core functionality for transferring items to be delivered from \code{Storage} to
+\code{Dispatcher}.
+How would you design the components API and their interactions?
+
+There are three easy possibilities:
+\begin{itemize}
+    \item Put the logic in \code{System}
+    \item Pass \code{Dispatcher} as an argument to method of \code{Storage}
+    \item Pass \code{Storage} as an argument to method of \code{Dispatcher}
+\end{itemize}
+
+\lstinputlisting[label={lst:clean-object-interaction-dispatcher},
+caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a clean design for
+object interaction}]
+{object-oriented-design/good_component_interaction.py}
+
+\lstinputlisting[label={lst:confusing-object-interaction-dispatcher},
+caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a confusing
+design for object interaction}]
+{object-oriented-design/bad_component_interaction.py}

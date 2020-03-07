@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{footnote}  % allow \savenote
 \usepackage{newfloat}
 \usepackage{psfig}            % Allows inclusion of eps files.
 \usepackage{epsfig} % Allows inclusion of eps files.
@@ -57,12 +58,14 @@
 \newtheorem*{notation}{Notation}
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \newcommand{\ilcode}[1]{\mbox{\texttt{#1}}}
-\newcommand{\java}{\code{Java}}
-\newcommand{\python}{\code{Python}}
-\newcommand{\cpp}{\code{C++}}
+\newcommand{\java}{Java }
+\newcommand{\python}{Python }
+\newcommand{\cpp}{C++ }
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\mbox{\autoref*{#1}~}``\nameref*{#1}''}}
 
 \newcommand{\blankpage}{\newpage\thispagestyle{empty}\mbox{}\newpage}
+\definecolor{lhcolor}{gray}{0.80}
+\newcommand{\hl}[1]{\colorbox{lhcolor}{#1}}
 
 %\makeindex
 
@@ -72,6 +75,7 @@
     \definecolor{mauve}{rgb}{0.58,0,0.82}
 
     \lstset{frame=tb,
+    escapeinside={(*@}{@*)},
     language=Java,
     alsolanguage=Python,
     aboveskip=3mm,

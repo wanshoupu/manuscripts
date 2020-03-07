@@ -33,42 +33,56 @@ If the symmetry is broken, then it need to broken in a consistent way.
 If you leave equal elements on the left partition, then you should compensate for this by
 shortening the partition to the left, and vice versa.
 
-int* part(int* s, int*e) {
+Problems with binary search
+\begin{enumerate}
+    \item Binary search may be equally implemented recursively or iteratively.
+    \item refrain from extra 'shortcut' statements other than base case(s).
+    For example,
+    if m >= e:
+    return -1
+    \item Pay attention to the flooring/ceiling when obtaining index for the ``middle'' element.
+    \item About the exclusiveness/inclusiveness of boundaries: when the search involves searching
+    empty ranges or \emph{a} result is not guaranteed, use exclusive boundary `$\left[..\right)$';
+    otherwise, use inclusive boundary `$\left[..\right]$'.
+\end{enumerate}
+
+\begin{verbatim}
+    int* part(int* s, int*e) {
     int* const pivot = s;
     swap(s, s + rand() % (e - s));
     while(true) {
-         // the left partition is strictly less than the pivot
-         while(s < e && *++s < *pivot); // find the next element >= pivot
-         // the right partition is  greater than or equal to the pivot
-         while(s < e && *--e >= *pivot); // find the prev element < pivot
-         if (e <= s) {
-             swap(pivot, s - 1); // insert the pivot element
-             return s - 1; // shortening the left partition by shrink back the pivot element
-         }
-         swap(s, e); //swap the out-of-place elements
+    // the left partition is strictly less than the pivot
+    while(s < e && *++s < *pivot); // find the next element >= pivot
+    // the right partition is greater than or equal to the pivot
+    while(s < e && *--e >= *pivot); // find the prev element < pivot
+    if (e <= s) {
+    swap(pivot, s - 1); // insert the pivot element
+    return s - 1; // shortening the left partition by shrink back the pivot element
     }
-}
+    swap(s, e); //swap the out-of-place elements
+    }
+    }
 
-int* part1(int* s, int*e) {
+    int* part1(int* s, int*e) {
     int * p = s + rand() % (e - s);
     swap(s, p);
     p = s;
     for(int* i = s; i < e; i++ ) {
-        if (*i < *s) {
-            swap(++p, i); //swap the out-of-place elements
-        }
+    if (*i < *s) {
+    swap(++p, i); //swap the out-of-place elements
+    }
     }
     swap(s, p);
     return p;
-}
+    }
 
-void qSort(int* s, int* e) {
-     if (e - s < 2) return;
-     int* p = part(s, e);
-     qSort(s, p);
-     qSort(p + 1, e);
-}
-
+    void qSort(int* s, int* e) {
+    if (e - s < 2) return;
+    int* p = part(s, e);
+    qSort(s, p);
+    qSort(p + 1, e);
+    }
+\end{verbatim}
 Quick sort and binary search are closely related
 
 Binary search may be implemented highly structured
@@ -82,6 +96,31 @@ Example: \code{org.shoupu.binarySearch.SearchRange}
     a sorted array}
     \item Post-processing in binary search \label{Evernote:Find median of two sorted arrays}
 \end{itemize}
+
+\section{Generic Binary Search Strategy}\label{generic-binary-search}
+
+A lot of the buggy implementations of binary search came from the fitting and nudging work
+required to make binary search work for a specific application.
+These include but are not limited to infinite loop, out of boundary, skewed choices, and
+miss-by-one problem.
+
+I believe making binary search work on the application level is over-engineering.
+Many times a lot of work is done to make every bit work together perfectly and this is not
+necessary.
+In this section, I am going to propose a generic binary search strategy that requires less
+implementation effort and yet brings about most of the savings of a precise binary search algorithm
+would.
+It can be used for many scenarios where binary search is used.
+\begin{clisting}
+    \lstinputlisting[label={lst:generic-binary-search},
+    caption={Structure of a generic binary search.
+    Each iteration, it shrinks the search range by half.
+    When there are only two choices, we switch to iterative solution instead.
+    It is essentially a $80:20$ strategy---with $20\%$ coding effort we achieve $80\%$ of
+    the benefit of binary search.}]
+    {functions/generic_binary_search.py}
+\end{clisting}
+
 
 \section{Case Study-Hadoop}
 As a real-world case, let's dive into the depth of \code{Hadoop} source code and take a look at

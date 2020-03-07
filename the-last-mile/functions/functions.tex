@@ -355,3 +355,65 @@ how they are created to be reused.
     \lstinputlisting[label={lst:ValidNumber.java},
     caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
 \end{clisting}
+
+why modularity?
+Why refactor?
+The following example will demonstrate why this is important.
+\begin{verbatim}
+
+    Imagine we have an image. We'll represent this image as a simple 2D array where every pixel is a
+    1 or a 0.
+
+    There are N shapes made up of 0s in the image. They are not necessarily rectangles -- they are
+    odd shapes ('islands'). Find them.
+
+    image1 = [
+    [1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 0, 1, 1],
+    [1, 1, 1, 0, 0, 0, 1],
+    [1, 0, 1, 1, 0, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 1, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 0],
+    ]
+
+    Every single pixel in each shape. For reference, these are (in [row,column] format):
+
+    findShapes(image1) =>
+    [
+    [[0,1],[1,1],[1,2]],
+    [[1,4],[2,3],[2,4],[2,5],[3,4]],
+    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
+    [[7,6]],
+    ]
+
+    Other test cases:
+
+    image2 = [
+    [0],
+    ]
+
+    findShapes(image2) =>
+    [
+    [[0,0]],
+    ]
+
+    image3 = [
+    [1],
+    ]
+
+    findShapes(image3) => []
+\end{verbatim}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:conneted_shapes},
+    caption={Humongous implementation for problem ``find connected shapes''.}]
+    {functions/humongous_buggy_find_shapes.py}
+    \lstinputlisting[label={lst:conneted_shapes},
+    caption={Refactored implementation.
+    The data structures are separated.
+    It's easier to tell what data structure is for what purpose.}]
+    {functions/find_shapes.py}
+    \caption{Find connected shapes problem.}
+\end{clisting}

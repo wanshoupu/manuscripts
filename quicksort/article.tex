@@ -1,0 +1,177 @@
+\documentclass[a4paper,titlepage]{article}
+
+
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts % for underscore char
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{color}
+\usepackage[svgnames]{xcolor}
+\usepackage[title]{appendix}
+
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\mbox{\autoref*{#1}~}``\nameref*{#1}''}}
+\newcommand{\code}[1]{\mbox{\lstinline{#1}}}
+\lstset{frame=tb,
+escapeinside={(*@}{@*)},
+language=C++,
+alsolanguage=Python,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=left,
+numberstyle=\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{green},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}
+
+\title{Loop Programming Practices that Simplify Quicksort Implementations}
+
+
+\author{Shoupu Wan \\
+\texttt{wanshoupu@gmail.com} \\
+}
+
+\begin{document}
+    \maketitle
+
+    \begin{abstract}
+        Quicksort algorithm with Hoare's partition scheme is traditionally implemented with
+        nested loops.
+        In this article, we present loop programming and refactoring techniques
+        that lead to simplified implementation for Hoare's quicksort algorithm consisting of a
+        single loop.
+        We believe that the techniques are beneficial for general programming and may be used for
+        the discovery of more novel algorithms.
+    \end{abstract}
+
+
+    % keywords can be removed
+    \keywords{Quicksort \and Loop rotation \and Nested loop thinning \and Cascading conditional
+    \and Sentinel}
+
+
+    \section{Introduction}\label{sec:introduction}
+    Loops are one of the most widely used programming constructs featured
+    in almost all programming languages.
+    A loop is an productivity amplifier.
+    With nominal overheads (\textit{e.g.}, state-registering variables, \textit{etc.}),
+    the static body of a loop can be reused for unlimited number of times.
+
+
+    A key building block as loop, one would suppose its best practices should have been widely
+    known.
+    On the opposite, however, the best practices for loop has been so largely ignored that
+    haphazardly constructed loops with duplication issues is not uncommon even in production code.
+    Common problems in loop programming include, but are not limited to, duplicate code, nested
+    loops, leaky loop variables, and oversized initialization.
+    I will explain each of them next.
+
+
+    Duplicate code here refers to duplication between code in the loop body and code before (after)
+    the loop.
+    It is the biggest problem in loop programming and is the most common root causes for bugs.
+    Duplicate code anywhere is bad.
+    But duplicate code of this type is harder to realize or get rid of.
+
+
+    Uses of nested loops are sometimes controversial.
+    Many readers are ready to argue about this.
+    Anyhow, what is wrong with nested loop?
+    %    The use of nested loops in many occasions seems to be reasonable, necessary,
+    %    and at least harmless at first sight.
+    %    But unfortunately this point of view does not stand for long.
+    For almost all cases, nested loops bring complexity rather than convenience,
+    obstruct readability rather than facilitating it.
+    It turns what could have been coded as different components into monolithic mess and
+    discourages code reusing.
+    deepen the coupling rather than reducing it and discourage code reusability rather than encouraging it.
+
+
+    Loop variables refers to variables used to register loop state.
+    Many developers rely on exposed variable(s) to implicitly pass information from loop to
+    subsequent program.
+    However, uncontrolled exposure of loop variable to subsequent code is a violation of the
+    encapsulation principle.
+    While sometimes convenient, it usually does more harm than good.
+
+
+    Loop initialization is the prelude code needed for instantiating initial loop state.
+    It should be small and light-weight.
+    rather than light-weight, succinct ones.
+    However unseasoned programmers may code disproportionally heavy initializations.
+    With due skills and perseverance, loop initializations can be made succinct one-liner.
+
+
+    It is beyond the scope of this article to address all the topics.
+    Instead we will focus on duplicate code and nested loops.
+    We will present two pillar loop programming techniques---`loop rotation' and `Nested loop
+    thinning' which I found are effective in fighting against above programming foes.
+    These are the two pillars for loop programming.
+    Proper use of them help developers avoid commonly made mistakes.
+
+
+    We have tried these techniques on several case studies.
+    Particularly, we will apply them to simplify traditional quicksort algorithm to prove the
+    effectiveness of these techniques---the implementation of quicksort algorithms.
+    First invented in 1960, quicksort has been studied and analyzed well over the
+    years\cite{Hoare1961,Hoare1962,sedgewick:1978,Bentley:1986:PP}.
+    As one of the earliest `divide-n-conquer` algorithms, quicksort has become the
+    \textit{de facto} sorting algorithm in practice for its excellent expected performance.
+    Recently named one of the top $10$ algorithms of $20$th century, quicksort has a
+    profound influence on the history of programming\cite{top10algorithm:2000}.
+
+
+    We will walk you through the multi-stage refactor process that leads to the discovery of a
+    brand-new implementation of Hoare's quicksort algorithm.
+    We use Python as the working language in this article.
+
+
+    \section{Loop Rotation}\label{sec:loop-rotation}
+    \input{loop-rotation}
+
+    \section{Nested Loop thinning Technique}\label{sec:loop-thinning-technique}
+    \input{nested-loop-thinning-technique}
+
+    \section{Case Study: quicksort}\label{sec:nested-loop-quick-sort}
+    \input{case-study-quicksort}
+
+    \section{Experiment}\label{sec:experiment}
+    \include{quicksort_perf_cmp}
+
+    \section{Conclusion}\label{sec:conclusion}
+    In this article, we presented a couple of techniques for optimizing loop constructs in
+    high-level programming languages.
+    Taking advantage of the circular symmetry of loop constructs, loop rotation may be applied to a
+    loop to either reduce code duplication (forward rotation) or to shift certain part of the
+    code within the loop body (reverse rotation).
+    Another technique is loop thinning for simplifying nested loop complications.
+    These are two of the empirical techniques that helps programmers achieve software development
+    best practices.
+    As an example, we applied these techniques in simplifying a traditional implementation of
+    Hoare's quicksort algorithm.
+    We provided the simplified implementation in C++.
+    More generally, the programming techniques we developed in this article are applicable to all
+    programming languages that supports loop and conditional constructs.
+    \begin{appendices}
+        \appendix
+        \include{partition-functions}
+        \include{use-sentinel}
+    \end{appendices}
+    \bibliographystyle{unsrt}
+    \bibliography{article}
+\end{document}

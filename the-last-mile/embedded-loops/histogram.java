@@ -1,4 +1,4 @@
-public int largestRectangleArea(int[] heights) {
+int largestRectangleArea(int[] heights) {
     Stack<Integer> stack = new Stack<>();
     int maxRec = 0;
     for (int i = 0; i <= heights.length; ) {

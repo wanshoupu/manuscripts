@@ -6,5 +6,5 @@ def spiral_term(m, n):
         j += 1
         m -= 2
         n -= 2
-    # post process logic ...
+    # calculate offsets for special cases
     return i, j

@@ -1,21 +1,7 @@
-board = BoardGame(board_size=8)
-board.printLegend()
-board.printBoard()
-move = board.getMove()
-print "Your move: {}".format(move)
-board.applyMove(move)
+...
 while True:
     if board.gameOver():
         print "Human win!"
+        exit()
     state = board.computerMove()
-    if state is None:
-        print "Game Over: Draw"
-        exit()
-    elif state:
-        print "Computer wins!"
-        exit()
-    board.printLegend()
-    board.printBoard()
-    move = board.userInput()
-    print "Your move: {}".format(move)
-    board.applyMove(move)
+    ...

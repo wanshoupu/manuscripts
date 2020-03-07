@@ -1,8 +1,8 @@
 def spiral_term(m, n):
     """
     There are two conditions that are relevant:
-    out of m and n, who is smaller?
-    the parity of the smaller
+    the minimum between m and n and
+    the parity of the minimal value
     Return the position where the clock-wise spiral order terminates
     :param m:
     :param n:

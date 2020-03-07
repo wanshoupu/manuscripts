@@ -1,0 +1,115 @@
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{loose-spool.jpg}
+        \caption{\label{fig:loose-spool}}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{tight-spool.jpg}
+        \caption{\label{fig:tight-spool}}
+    \end{subfigure}
+    \caption{\label{fig:spool-loop} Using spool as a metaphor for loop construct in program,
+    duplicate code around a loop would be like tightening messy yarns into neat spool.
+    `Loop rotation' can be pictorially depicted as winding up loose yarns onto a spool.
+    \protect\subref{fig:loose-spool}: Duplicate, sloppy code is analogous to loose, unorganized
+    yarn around a spool.
+    \protect\subref{fig:tight-spool}: A neat loop is analogous to a tidy spool.}
+\end{figure}
+
+
+Coming with the productivity amplification power is the coding complexity of loops.
+There are two key observations about loops.
+First, a loop seldom lives in vacuum.
+Loops are often used as an embedded subunits in a program just like an organelle in a living cell.
+So it has to get along with its neighbors.
+As a result, a large part of loop programming is to ``fit it in''.
+Secondly, there are many moving parts in a loop construct and they are tightly coupled, changes in
+one necessarily demand changes in others.
+As we discussed in ~\autoref{sec:introduction}, the biggest problem with loop programming is
+duplicate code in and around the loop.
+The foremost goal in implementing loop is to reduce duplicate code.
+`Loop rotation' is an important technique for that purpose.
+
+
+It is beneficial to visualize a loop construct as a spool.
+Loops are to program as spools are to yarn---just as spools are used to organize yarn, loops are
+invented to organize program.
+Behind this analogy is an important symmetry with respect to circular shifts---the rotational
+symmetry shared by them.
+Aside from the point of entrance and one or more exits, a loop or a spool may be mathematically
+represented by a circular sequence, that is, a sequence with rotational symmetry.
+One can thus take this rotational degrees of freedom to one's advantage to decide where
+to enter and exit the loop.
+Coalescing duplicate code in a loop is analogous to
+winding up loose and messy yarn into a tidy spool (~\autoref{fig:spool-loop}).
+
+
+Let's take a board game as an example to illustrate loop rotation.
+Imagine that the following subroutines are ready to use:
+\code{Init}: Initialize game;
+\code{BD}: Draw board;
+\code{PR}: Print legends and prompts;
+\code{UI}: Take user inputs;
+\code{EX}: Execute user inputs;
+\code{CM}: Compute moves;
+\code{PO}: Poll game status;
+\code{End}: End of game.
+~\autoref{board_game_dupcode} shows pseudo-code for the driver program.
+The duplicate code between the loop and in the vicinity of the loop is conspicuous.
+With a ``loop rotation'' procedure (to be explained below), the code may be refactored into
+~\autoref{board_game_rotated}.
+
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=python,
+    caption={\label{board_game_dupcode}Board game driver program}]{board_game_dupcode.py}
+\end{minipage}\hfill
+\begin{minipage}[t]{.4\textwidth}
+    \lstinputlisting[language=python,
+    caption={\label{board_game_rotated}Refactored driver program}]{board_game_rotated.py}
+\end{minipage}
+
+
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{ferris-wheel.jpg}
+        \caption{\label{fig:ferris-wheel-dup-node}}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{ferris-wheel-rotated.jpg}
+        \caption{\label{fig:ferris-wheel-rotated}}
+    \end{subfigure}
+    \caption{\label{fig:loop-rotation}
+    Pictorial example of how loop rotation coalesces duplicate code.
+    Legend: blue are loop statements, green are non-loop statements.
+    The statements ``\code{BO}'', ``\code{PR}'', ``\code{UI}'', and ``\code{EX}''
+    are duplicated between pre-loop and loop.
+    They may be coalesced by a loop rotation.
+    \protect\subref{fig:ferris-wheel-dup-node}: Original program;
+    \protect\subref{fig:ferris-wheel-rotated}: Rotated program.}
+\end{figure}
+
+
+Looking at ~\autoref{fig:loop-rotation}, as we rotate the loop, the duplicate code can be aligned
+and coalesced line by line.
+As can been seen in ~\autoref{fig:ferris-wheel-dup-node},
+the last statement in the loop and the last statement before the loop
+are verbatim duplicate and aligned.
+As such, we `roll up' the spool so that the two can be coalesced.
+This process can be repeated until all the duplicates are coalesced
+(~\autoref{fig:ferris-wheel-rotated}).
+
+
+Getting rid of duplicate code is one of the main application scenario for ``loop rotation''.
+Another application scenario for the ``loop rotation'' procedure is for the effect of
+shifting code within a loop, for example, to move a portion of the code from the beginning to the
+end.
+This is often called ``reverse rotation'' of the loop.
+As a side effect, doing so will result in duplicate code.
+Given that this prepares ways for subsequent refactors, this adverse effect is often paid
+off with larger optimizations.
+In practice, one may start with the more malleable ``\code{while (true)}'' or
+``\code{for (; ;)}'' loops which
+helps one focus on getting a correct program first.
+Once \emph{a} working and flexible code has been secured,
+the `loop rotation' technique can be used to fine-tune the program.

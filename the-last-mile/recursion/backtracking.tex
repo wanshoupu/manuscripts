@@ -1,0 +1,26 @@
+%! Author = shoupu_wan
+%! Date = 2/14/20
+
+\chapter{Backtracking}\label{ch:backtracking}
+
+Backtracking is a recursive algorithm by nature.
+But some special treatments are usually needed before entering into a recursive call.
+That is the reason that we discuss this algorithm separately from the main chapter.
+
+According to Wikipedia, correct implementation of backtracking algorithm contains 4 components:
+\begin{itemize}
+    \item reject
+    \item accept
+    \item
+\end{itemize}
+\begin{clisting}
+    \lstinputlisting[label={lst:four-color-alg-flawed},
+    caption={Flawed implementation of backtracking algorithm for the `Four-color problem`.}]
+    {recursion/four_color_problem_flawed.py}
+\end{clisting}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:four-color-alg-correct},
+    caption={Correct implementation of backtracking algorithm for the `Four-color problem`.}]
+    {recursion/four_color_problem_correct.py}
+\end{clisting}

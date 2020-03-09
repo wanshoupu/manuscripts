@@ -1,27 +1,27 @@
 public String longestPalindrome(String input) {
-    int[] lps = new int[input.length() * 2 + 1];
-    for (int i = 1, refCenter = 0; i < lps.length; ++i) {
+    int[] pss = new int[input.length() * 2 + 1];
+    for (int i = 1, refCenter = 0; i < pss.length; ++i) {
         // refCenter = center reaching to the right farthest
-        if (refCenter + lps[refCenter] <= i) {
-            lps[i] = palength(input, i, i);
+        if (refCenter + pss[refCenter] <= i) {
+            pss[i] = palength(input, i, i);
             refCenter = i;
         } else {
             int im = refCenter * 2 - i;
             //assert im >= 0
-            if (im - lps[im] > refCenter - lps[refCenter]) {~\label{line:lps-soft-duplication}~
-                lps[i] = lps[im];
+            if (im - pss[im] > refCenter - pss[refCenter]) {~\label{line:lps-soft-duplication}~
+                pss[i] = pss[im];
             } else {
-                lps[i] = palength(input, i, refCenter + lps[refCenter]);
+                pss[i] = palength(input, i, refCenter + pss[refCenter]);
                 refCenter = i;
             }
         }
     }
 
     for (int i = 0, refCenter = 0; ; ++i) {
-        if (i == lps.length) {
-            return substring(input, refCenter, lps[refCenter]);
+        if (i == pss.length) {
+            return substring(input, refCenter, pss[refCenter]);
         }
-        if (lps[i] > lps[refCenter]) {
+        if (pss[i] > pss[refCenter]) {
             refCenter = i;
         }
     }

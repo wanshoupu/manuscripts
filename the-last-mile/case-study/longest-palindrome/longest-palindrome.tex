@@ -329,11 +329,11 @@ By virtual augmentation, we resolved the memory footprint issue and the shadowy 
 That goal has been achieved.
 But it does not mean we should settle here.
 Looking at the code in ~\autoref{lst:LongestPalindrome}, it is like spaghetti noodle to me.
+Even though the code is divided up into three functions, its cleanliness still suffers.
 It takes enormous courage for me to go over it in just a couple days after I wrote it, lest for
 one who is not familiar with this piece of code.
-In a word, its cleanliness suffers.
-If it is not readable, it is not acceptable.
-Let us see how to make it more readable.
+A principle that I personally stick to is ``If it is not readable, it is not acceptable''.
+We will next take on the challenge to make it more readable.
 
 
 The code is full of arithmetic expressions for symmetry
@@ -359,52 +359,51 @@ how to apply techniques discussed in this book to achieve these goals.
 
 Taking as an example line ~\autoref{line:lps-soft-duplication} in ~\autoref{lst:LongestPalindrome}:
 \begin{lstlisting}
-    if (im - pss[im] > maxi - pss[maxi])
+    if (im - pss[im] > refCenter - pss[refCenter])
 \end{lstlisting}
 It may be obscure to untrained eyes.
 But the pattern is ``Given an index, get the result as the index minus the element
 at the index''.
-So we can factor that out into a function, \textit{e.g.}, \code{getLeftBound}, along with 3 other
-places where the same logic is repeated.
-By doing this, we also get rid of a duplication of $3$x.
-In fact, all occurrences of arithmetic expressions in ~\autoref{tab:semantics-arithmetic} may be
+So we can factor that out into a function, \textit{e.g.}, \code{getLeftBound}.
+All $3$ occurrences of logic is may be replaced by the function call.
+This alone helps get rid of $3$x duplications.
+In fact, many of the arithmetic expressions in ~\autoref{tab:semantics-arithmetic} may be
 refactored into light-weight, semantically named, reusable functions.
-Not only is cured the code duplication problem but also the solution becomes modular.
-The final solution is listed in ~\autoref{lst:lpsModular-main} and
-~\autoref{lst:lpsModular-helper}.
+Not only is cured the code duplication problem but also the solution becomes more modular.
+
 
 \begin{clisting}[tb]
     \lstinputlisting[label={lst:lpsModular-main},firstline=3,language=Java,escapechar=~,
-    caption={Modularized solution of the LPS problem.
-    The public function only does the bookkeeping part of the job.
-    The \code{solve} function implements the Manacher's aglorithm.
-    All others are helper functions refactored from the monolithic solution
-    ~\autoref{lst:LongestPalindrome}.
-    }]
+    caption={Modularized solution of the LPS problem.}]
     {case-study/longest-palindrome/LongestPalindromeModular_main.java}
 \end{clisting}
+Our final refactored solution is listed in ~\autoref{lst:lpsModular-main} and
+~\autoref{lst:lpsModular-helper}---the \code{class LongestPalindromeSolver}.
+The class has two private fields, one for input and the other output.
+The only the point of entry is the public method \code{longestPalindrome} which
+helps with bookkeeping and dispatching.
+All others are helper functions refactored from the monolithic solution
+~\autoref{lst:LongestPalindrome} and are listed in ~\autoref{lst:lpsModular-helper}.
+Out of these, the \code{solve} function implements the large part of the Manacher's algorithm.
+The rest of the methods are explained below.
+Methods \code{getLeftBound}, \code{getRightBound}, \code{palength}, and \code{toMirrorImage}
+each corresponds with an index mapping expressions in ~\autoref{tab:semantics-arithmetic}.
+Method \code{isMismatch} checks for pairwise character mismatch.
+Method \code{substring} helps construct the final result---the LPS\@.
+Method \code{argmax} is, as suggested by its name, a quick-n-dirty implementation of the $argmax$
+mathematical function.
 
-\begin{clisting}[tb]
-    \lstinputlisting[label={lst:lpsModular-helper},firstline=3,language=Java,escapechar=~,
-    caption={
-    The method \code{solve} houses the meat of Manacher's algorithm.
-    Methods \code{getLeftBound}, \code{getRightBound}, \code{palength}, and \code{toMirrorImage}
-    are wrappers of the index mapping expressions in ~\autoref{tab:semantics-arithmetic}.
-    Method \code{isMismatch} checks if there is a mismatch between the pair of characters.
-    Method \code{substring} helps construct the final result---the LPS.
-    Method \code{argmax} is, as suggested by its name, a quick-n-dirty implementation of the $argmax$
-    mathematic function.
-    All methods are private.
-    }]
-    {case-study/longest-palindrome/LongestPalindromeModular_helper.java}
-\end{clisting}
+\lstinputlisting[label={lst:lpsModular-helper},language=Java,escapechar=~,
+caption={The refactored helper functions.}]
+{case-study/longest-palindrome/LongestPalindromeModular_helper.java}
 
 \section{Conclusion}\label{sec:conclusion}
 
-In conclusion, we went through a complete case for the longest palindromic substring
-problem---the analysis of the problem, the reflection symmetry of it, the Manacher's algorithm
-and its various implementations.
-We presented a novel implementation of the Manacher's algorithm that avoided the tedious and costly
-string augmentation.
-Using the techniques presented in this book, we refactored the monolithic, bloated solution
-into a modular, readable one.
+In conclusion, we went through the longest palindromic substring
+problem as a case of study.
+We discussed the reflection symmetry required to understand the Manacher's algorithm.
+We also went through detailed implementations of Manacher's algorithm and their drawbacks.
+We also presented a novel implementation of the Manacher's algorithm that avoided the tedious and
+costly string augmentation.
+Using the techniques presented in previous chapters of this book, we refactored the monolithic,
+bloated solution and obtained a modular, readable one.

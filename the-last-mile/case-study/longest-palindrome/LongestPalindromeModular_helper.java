@@ -22,19 +22,6 @@ void solve() {
     }
 }
 
-/*
- * Find the index of maximum palindromic substring
- */
-int argmax() {
-    int maxi = 0;
-    for (int i = 0; i < pss.length; ++i) {
-        if (pss[i] > pss[maxi]) {
-            maxi = i;
-        }
-    }
-    return maxi;
-}
-
 int getLeftBound(int i) {
     return i - pss[i];
 }
@@ -43,10 +30,16 @@ int getRightBound(int i) {
     return i + pss[i];
 }
 
-String substring(int center) {
-    int left = getLeftBound(center) / 2;
-    int right = getRightBound(center) / 2;
-    return input.substring(left, right);
+int toMirrorImage(int axis, int x) {
+    return 2 * axis - x;
+}
+
+/*
+ * Determine if there is a mismatch between virtual char at i and j
+ * A mismatch happens if both indexes are even and the charAt not equal
+ */
+boolean isMismatch(int i, int j) {
+    return (i & 1) == 1 && input.charAt(i / 2) != input.charAt(j / 2);
 }
 
 /*
@@ -62,14 +55,21 @@ int palength(int center, int index) {
     }
 }
 
-/*
- * Determine if there is a mismatch between virtual char at i and j
- * A mismatch happens if both indexes are even and the charAt not equal
- */
-boolean isMismatch(int i, int j) {
-    return (i & 1) == 1 && input.charAt(i / 2) != input.charAt(j / 2);
+String substring(int center) {
+    int left = getLeftBound(center) / 2;
+    int right = getRightBound(center) / 2;
+    return input.substring(left, right);
 }
 
-int toMirrorImage(int axis, int x) {
-    return 2 * axis - x;
+/*
+ * Find the index of maximum palindromic substring
+ */
+int argmax() {
+    int maxi = 0;
+    for (int i = 0; i < pss.length; ++i) {
+        if (pss[i] > pss[maxi]) {
+            maxi = i;
+        }
+    }
+    return maxi;
 }

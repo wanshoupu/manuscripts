@@ -1,0 +1,104 @@
+\documentclass[a4paper,titlepage]{article}
+
+\usepackage[svgnames]{xcolor}
+\usepackage{footnote}  % allow \savenote
+\usepackage[osf]{libertine} % Use the Libertine font
+\usepackage[shortlabels]{enumitem}
+
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts % for underscore char
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{color}
+\usepackage{float}
+\usepackage[title]{appendix}
+
+\newcommand{\code}[1]{\mbox{\lstinline{#1}}}
+\lstset{frame=tb,
+escapeinside={(*@}{@*)},
+language=C++,
+alsolanguage=Python,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=left,
+numberstyle=\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{green},
+stringstyle=\color{mauve},
+breaklines=true,
+breakatwhitespace=true,
+tabsize=3,
+upquote=true
+}
+
+\title{Loop Programming Practices that Simplify Quicksort Implementations}
+
+
+\author{Shoupu Wan \\
+\texttt{wanshoupu@gmail.com} \\
+}
+
+\begin{document}
+    \maketitle
+
+    \begin{abstract}
+        Longest palindromic substring.
+        Even though the string-augmentation has found widespread use for
+        the implementation Manacher's algorithm, this is neither convenient nor economic.
+    \end{abstract}
+
+
+    % keywords can be removed
+    \keywords{palindrome \and modular \and longest palindromic substring \and reflection symmetry
+    \and symmetry \and soft duplicate \and manacher \and algorithm }
+
+
+    \section{Introduction}\label{sec:introduction}
+
+    The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
+    question.
+    It has also found widespread applications in mathematics, physics, chemistry, genetics, music,
+    \textit{etc.}
+    Here I pick it for two things.
+    First, to promote the conscious application of the study of symmetry to
+    understand and reduce a fairly complicated problem.
+    For any problem, identifying the hidden symmetry is the key to discover great
+    solutions to it.
+    Symmetry almost always brings saving and break of symmetry is almost always costly.
+    Secondly, we want to demonstrate how to apply the techniques explained earlier in this book,
+    particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to turn unreadable code
+    into more readable solution.
+    Let's get started.
+
+    We will walk through the multi-stage refactor process that leads to the discovery of a
+    simplified version of Manacher's algorithm.
+    We use Java as the working language in this article.
+
+    \include{longest-palindrome}
+    \section{Experiment}\label{sec:experiment}
+    \include{perf_test}
+
+    \section{Conclusion}\label{sec:conclusion}
+
+    In conclusion, we went through the longest palindromic substring
+    problem as a case of study.
+    We discussed the reflection symmetry required to understand the Manacher's algorithm.
+    We also went through detailed implementations of Manacher's algorithm and their drawbacks.
+    We also presented a novel implementation of the Manacher's algorithm that avoided the tedious and
+    costly string augmentation.
+    Using the techniques presented in previous chapters of this book, we refactored the monolithic,
+    bloated solution and obtained a modular, readable one.
+    \bibliographystyle{unsrt}
+    \bibliography{article}
+\end{document}

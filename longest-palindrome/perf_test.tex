@@ -2,3 +2,24 @@
 %! Date = 3/7/20
 
 Performance test
+
+\begin{table}[htb]
+    \def\arraystretch{1.5}
+    \centering
+    \caption{\label{tab:perf-test} \autoref{lst:LongestPalindromeAugment}}
+    %        \vskip 10pt
+    \begin{tabular}{r|c|c|l}
+        \hline
+        Length & \autoref{lst:LongestPalindromeAugment} & \autoref{lst:LongestPalindrome} &
+        Modular Solution \\
+        \hline
+        1000 & 0.52 & 0.48 & 0.43 \\
+        10000 & 0.5 & 0.43 & 0.45 \\
+        100000 & 0.52 & 0.51 & 0.54 \\
+        1000000 & 0.63 & 0.63 & 0.63 \\
+        10000000 & 1.69 & 1.2 & 1.16 \\
+        100000000 & 1.71 & 1.16 & 1.04 \\
+        \hline
+    \end{tabular}
+\end{table}
+

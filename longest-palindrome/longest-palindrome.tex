@@ -3,23 +3,6 @@
 %% 8/22/18
 %%
 
-The longest palindrome substrings problem (LPS) has long been an interesting problem.
-It has found widespread applications in mathematics, physics, chemistry, genetics, music,
-\textit{etc.}
-In this chapter I pick it for an in-length discussion mainly for two reasons.
-First, this problem has a mathematical background in the study of symmetry.
-A beautiful algorithm to this problem is deeply rooted in the study of reflection symmetry.
-What I am trying to promote is the conscious application of the study of mathematics
-solve a fairly complicated problem.
-For most problems, careful study of its symmetry property is often the key step to the discovery
-of great solutions.
-Secondly, we want to demonstrate how the techniques explained earlier in this book help us
-arrive at progressively better solutions.
-Particularly relevant are the materials in
-~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} which explain step-by-step how to
-refactor unreadable code into clean and self-explaining solution.
-
-
 \section{The problem Statement}\label{sec:lps-statement}
 
 The problem statement of finding palindromic substrings take various forms in the literature.
@@ -82,7 +65,7 @@ In one-dimensional space ($1$D), a coordinate at $x$, its transformed coordinate
 
 \begin{figure}[H]
     \centering
-    \caption{Two axes of reflection symmetry simultaneously present near each other will partition
+    \caption{Two nearby axes of reflection symmetry partition
     the entire space periodically and infinitely.
     Overlapping palindromes also form similar periodic patterns.}\label{fig:ReflectionSymmetry}
     \begin{subfigure}{.4\textwidth}
@@ -231,7 +214,7 @@ There is also a Haskell implementation along with a discussion of the algorithm 
 in Johan Jeuring's blog\footnote{
 \url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}}.
 Lastly, an implementation of my own is also provided for sake of reference
-(~\autoref{lst:LongestPalindromeAugment}).
+(~\autoref{lst:LongestPalindromeAugment})~\cite{jeuring1993theories}.
 
 \lstinputlisting[label={lst:LongestPalindromeAugment},language=Java,escapechar=~,
 caption={An implementation of Manacher's algorithm based on literally augmented string.}]
@@ -332,7 +315,7 @@ because we switched from literal string augmentation to virtual augmentation.
 But if you look carefully, you may spot repetitions of some arithmetic operations.
 In fact, the code is bloated with duplicate code.
 Some of them are hard ``copy-n-paste'' of others while
-more belong to the category of so-called ``soft duplicate''~\autoref{ch:loops}.
+more belong to the category of so-called ``soft duplicate''~\cite{Wan:book}.
 Also the implementation is monolithic, meaning in the same function is trying to do everything it
 needs on the spot.
 A well organized solution consists of a group of meaningful, single-purposed, and reusable
@@ -347,7 +330,7 @@ Starting with ~\autoref{lst:LongestPalindrome}, we are going to demonstrate
 how to apply techniques discussed in this book to achieve these goals.
 
 
-Taking as an example line ~\autoref{line:lps-soft-duplication} in ~\autoref{lst:LongestPalindrome}:
+Take as an example line ~\autoref{line:lps-soft-duplication} in ~\autoref{lst:LongestPalindrome}:
 \begin{lstlisting}
     if (im - pss[im] > refCenter - pss[refCenter])
 \end{lstlisting}
@@ -381,7 +364,6 @@ Method \code{substring} helps construct the final result---the LPS\@.
 Method \code{argmax} is, as suggested by its name, a quick-n-dirty implementation of the $argmax$
 mathematical function.
 
-\newpage
 \lstinputlisting[label={lst:lpsModular-helper},language=Java,escapechar=~,
 caption={The refactored helper functions.}]
 {LongestPalindromeModular_helper.java}

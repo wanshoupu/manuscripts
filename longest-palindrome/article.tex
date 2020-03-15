@@ -34,7 +34,7 @@ basicstyle={\small\ttfamily},
 numbers=left,
 numberstyle=\color{gray},
 keywordstyle=\color{blue},
-commentstyle=\color{green},
+commentstyle=\color{green!50!black},
 stringstyle=\color{mauve},
 breaklines=true,
 breakatwhitespace=true,
@@ -53,9 +53,13 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Longest palindromic substring.
-        Even though the string-augmentation has found widespread use for
-        the implementation Manacher's algorithm, this is neither convenient nor economic.
+        Manacher's algorithm is an efficient algorithm for finding longest palindromic substring.
+        The implementation of this algorithm has traditionally requires in-memory construction of
+        a augmented string that doubles the length of the original string.
+        The author argues that though the string-augmentation preprocessing has found widespread use
+        for the implementation Manacher's algorithm, this is neither convenient nor economic.
+        A readable implementation based on index mapping is found for Manacher's algorithm which
+        does away with the string augmentation.
     \end{abstract}
 
 
@@ -71,23 +75,24 @@ upquote=true
     It has also found widespread applications in mathematics, physics, chemistry, genetics, music,
     \textit{etc.}
     Here I pick it for two things.
-    First, to promote the conscious application of the study of symmetry to
-    understand and reduce a fairly complicated problem.
-    For any problem, identifying the hidden symmetry is the key to discover great
-    solutions to it.
-    Symmetry almost always brings saving and break of symmetry is almost always costly.
-    Secondly, we want to demonstrate how to apply the techniques explained earlier in this book,
-    particularly ~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} to turn unreadable code
-    into more readable solution.
-    Let's get started.
+    First, this problem has a mathematical background in the study of symmetry.
+    A beautiful algorithm to this problem is deeply rooted in the study of reflection symmetry.
+    What I am trying to promote is the conscious application of the study of mathematics
+    solve a fairly complicated problem.
+    For most problems, careful study of its symmetry property is often the key step to the discovery
+    of great solutions.
+    Secondly, the author would like to demonstrate how to refactor unreadable code into more
+    readable solution step-by-step.
+    Some of the techniques are discussed in depth in book~\cite{Wan:book}.
+
 
     We will walk through the multi-stage refactor process that leads to the discovery of a
     simplified version of Manacher's algorithm.
     We use Java as the working language in this article.
 
-    \include{longest-palindrome}
-    \section{Experiment}\label{sec:experiment}
-    \include{perf_test}
+
+    \input{longest-palindrome}
+    \input{perf_test}
 
     \section{Conclusion}\label{sec:conclusion}
 

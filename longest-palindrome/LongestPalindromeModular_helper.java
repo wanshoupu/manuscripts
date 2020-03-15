@@ -47,8 +47,8 @@ boolean isMismatch(int i, int j) {
  */
 int palength(int center, int index) {
     for (int mi = toMirrorImage(center, index); ; ++index, --mi) {
-        // if one of the conditions: reaching the left end, reaching the right end, or
-        // encountered char mismatch
+        // if one of the conditions: reaching the left end,
+        // reaching the right end, or encountered char mismatch
         if (mi < 0 || index >= pss.length || isMismatch(index, mi)) {
             return index - center - 1;
         }

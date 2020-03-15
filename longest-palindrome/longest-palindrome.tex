@@ -16,8 +16,8 @@ the same backward as forward''.
 The length of a palindromic string can be either odd or even.
 Accordingly, we may classify palindromic strings as odd or even.
 For odd palindrome, its center of symmetry, \textit{e.g.}, \emph{palindromic center}
-or simply \emph{center}, falls on a \code{char}.
-For nonempty even palindrome, its center falls between two \code{char}s, which in this book
+or simply \emph{center}, falls on a character.
+For nonempty even palindrome, its center falls between two characters, which in this book
 will be referred to as \emph{left center} and \emph{right center}, respectively.
 Obviously, emtpy string is also palindromic---it is the trivial case.
 Palindromic substring (PSS) of a string is any substring that is a palindrome.
@@ -168,7 +168,7 @@ With no more ado, lists the Manacher's algorithm.
     stores length of $\mbox{PSS}(i)$.
     \item Initialize \code{refCenter = 0}, which stores the palindrome center whose right wing
     reaches rightmost in each iteration of the main loop;
-    \item For each \code{char} at \code{j = 0, 1, ..., n} in the augmented array,
+    \item For each character at \code{j = 0, 1, ..., n} in the augmented array,
     \begin{enumerate}[label={\roman*:}]
         \item If \code{j} lies to the right of the right wing of \code{pss(refCenter)},
         calculate $\mbox{PSS}(j)$ from scratch;

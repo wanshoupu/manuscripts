@@ -55,9 +55,9 @@ upquote=true
 
     \begin{abstract}
         Manacher's algorithm is optimal for the longest palindromic substring problem.
-        The implementation of this algorithm has traditionally required in-memory construction of
+        The implementation of this algorithm traditionally requires in-memory construction of
         an augmented string that doubles the length of the original string.
-        Though the string-augmentation preprocessing has found widespread use
+        Although the string-augmentation preprocessing has found widespread use
         for the implementation Manacher's algorithm, this is neither economic nor necessary.
         In this article, a readable implementation of the Manacher's algorithm based
         on index mapping is found which does away with the string augmentation.
@@ -82,14 +82,14 @@ upquote=true
     mathematical thinking when implementing a complicated problem.
     For most problems, careful study of its symmetry property is often the key step to the discovery
     of great solutions.
-    Secondly, the author would like to demonstrate how to refactor unreadable code into more
+    Secondly, the author would like to demonstrate how to refactor unreadable code into a more
     readable solution step-by-step.
     Some of the techniques are discussed in depth in book~\cite{Wan:book}.
 
 
     We will walk through the multi-stage refactor process that leads to the discovery of a
     simplified version of Manacher's algorithm.
-    We use Java as the working language in this article.
+    We will use Java as the working language in this article.
 
 
     \input{longest-palindrome}
@@ -99,9 +99,9 @@ upquote=true
 
     In conclusion, we went through the longest palindromic substring
     problem as a case of study.
-    We discussed the reflection symmetry required to understand the Manacher's algorithm.
+    We discussed the reflection symmetry required to understand Manacher's algorithm.
     We also went through detailed implementations of Manacher's algorithm and their drawbacks.
-    We also presented a novel implementation of the Manacher's algorithm that avoided the tedious and
+    We also presented a novel implementation of Manacher's algorithm that avoided the tedious and
     costly string augmentation.
     Using the techniques presented in previous chapters of this book, we refactored the monolithic,
     bloated solution and obtained a modular, readable one.

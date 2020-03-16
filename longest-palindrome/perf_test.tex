@@ -29,7 +29,12 @@ we designed a simple experiment to compare the implementations listed in this ar
 We randomly generated strings of various lengths $L$ using $M$ alphabets as the benchmark for
 testing for $L = 1k, 10k, 100k, 1M, 10M, 100M, 1B$ and $M = 2, 3, 5, 8, 13, 21$.
 To reduce error, each run is repeated three times and the average is taken.
-We found no correlation between runtime and any of the following parameters:
-length of alphabets, the length of maximum palindromic substring.
-Looking at the last two rows in ~\autoref{tab:perf-test}, the linearity of the runtime vs size of
-input string is quite obvious.
+We found no strong correlation between runtime and
+length of alphabets or the length of maximum palindromic substring.
+But as shown in the last two rows in ~\autoref{tab:perf-test}, the linearity of the runtime vs
+size of input string is quite obvious.
+In conclusion, our implementations behave as expected---no regression is caught.
+Where the implementation with augmented string fails, the virtualized augmentation approach can
+still run.
+Besides the readability, there is slight improvement in runtime in our modularized solution,
+~\autoref{lst:lpsModular-main}, over its predecessor, ~\autoref{lst:LongestPalindrome}.

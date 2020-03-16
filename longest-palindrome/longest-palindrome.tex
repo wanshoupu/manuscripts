@@ -15,12 +15,12 @@ According to Merriam-Webster dictionary, a palindrome is ``a word, phrase, or se
 the same backward as forward''.
 The length of a palindromic string can be either odd or even.
 Accordingly, we may classify palindromic strings as odd or even.
-For odd palindrome, its center of symmetry, \textit{e.g.}, \emph{palindromic center}
+For an odd palindrome, its center of symmetry, \textit{e.g.}, \emph{palindromic center}
 or simply \emph{center}, falls on a character.
 For a nonempty even palindrome, its center falls between two characters, which in this book
 will be referred to as \emph{left center} and \emph{right center}, respectively.
-Obviously, emtpy string is also palindromic---it is the trivial case.
-Palindromic substring (PSS) of a string is any substring that is a palindrome.
+Obviously, an emtpy string is also palindromic---it is the trivial case.
+A palindromic substring (PSS) of a string is any substring that is a palindrome.
 For a string of length $N$, there are $(2 * N + 1)$ palindromic centers, albeit some of
 them may be trivial.
 The sole PSS of an empty string is trivial.
@@ -35,7 +35,7 @@ Without loss of generality, we will limit our discussion on prime palindromic su
 To some, solving the problem is not ``hard'' so to speak if optimality is not concerned.
 One possible solution, for example, may be that
 \begin{quotation}
-    Iterate through each possible center and for each center, calculate the length of PSS.
+    Iterate through each possible center and for each center, calculate the length of PSS\@.
     To calculate the length of PSS at a specific center, one can dispatch two indexes off the center
     outwardly in opposite directions symmetrically.
     If, at any step, a mismatch is encountered, stop.
@@ -47,19 +47,19 @@ In his paper of 1975, Glenn Manacher discovered an algorithm with linear runtime
 It was later found that his method works not only for prefix PSS but for all PSS's.
 This algorithm is now the so-called \textit{the Manacher's algorithm}~\cite{Manacher:1975}.
 We will dedicate the next few sections to get a thorough understanding for this algorithm.
-First we need a little bit of math about symmetry.
+First, we need a little bit of math about symmetry.
 
 
 \section{Reflection symmetry}\label{sec:reflection-symmetry}
 
 Reflection symmetry, \textit{a.k.a.}, mirror-image symmetry
 \footnote{\url{https://en.wikipedia.org/wiki/Reflection_symmetry}} refers to spacial invariance
-under reflection transformation.
+under a reflection transformation.
 A reflection transformation is the operation that transforms coordinates to their
 mirror-image \textit{w.r.t.} a fixed point, which we will refer to as the \emph{axis of symmetry} or
 \emph{center of symmetry}.
-In one-dimensional space ($1$D), a coordinate at $x$, its transformed coordinate $x^\prime$
-\textit{w.r.t.} axis $a$ is:
+In one-dimensional space ($1$D), a coordinate, $x$, and its transformed coordinate, $x^\prime$
+\textit{w.r.t.} axis $a$ are related by equation:
 \begin{equation}
     \label{eq:reflection-transform}
     x^\prime = 2a - x.
@@ -96,31 +96,30 @@ In one-dimensional space ($1$D), a coordinate at $x$, its transformed coordinate
 \end{figure}
 
 As shown in ~\autoref{fig:a-axis-reflection-symmetry}, axis of symmetry $A$ partitions the entire $1$D
-space into $2$ half-spaces about itself---left and right.
-There is a one-to-one mapping between equidistant points in the $2$ half-spaces.
+space into $2$ half-spaces about itself---one on the left and one on the right.
+There is a one-to-one mapping between the points in the $2$ half-spaces.
 Axis $B$ does similarly (\autoref{fig:b-axis-reflection-symmetry}).
 It is truly magical when two axes of reflection symmetry are present near each other
-along the
-$x$-axis.
-By recursively applying the reflection transformation, one may find infinitely many axes
-alternately along the $x$-axis and collectively they partition the entire space
+along the $x$-axis.
+By repeatedly applying the reflection transformation, one may find infinitely many axes of symmetry
+alternately along the $x$-axis, and collectively they partition the entire space
 into periodic regions with period $2d$, where $d$ is the distance between the two axes of
 symmetry (see~\autoref{fig:two-axes-reflection-symmetry}).
 This effect may not be unfamiliar to
 you if you have ever stepped in between two parallel mirrors---an array of clones of `you' appear,
 alternately facing toward and away from you, aligned and coordinated.
-This symmetric configuration in a discretized $1$D space resulted from multiple reflections
+This symmetric configuration in a discretized $1$D space resulting from multiple reflections
 is the key intuition to the LPS problem.
 
 
 ~\autoref{fig:palindrome-symmetry} shows an infinite palindromic string.
-In reality, however, the aforementioned symmetry does not exist as there is
+In reality, however, the aforementioned symmetry does not exist, as there is
 no infinite space or string.
-Nevertheless the argument still holds for the finite string in the overlapping regions.
-Of prime interest to us are a collection of crowded and overlapping PSS's.
-Under the wings of some large PSS, some shorter palindromes may be sheltered.
+Nevertheless, the argument still holds for the finite string in the overlapping regions.
+Of prime interest to us are a collection of `crowded', overlapping PSS's.
+Under the wings of some large PSS's, some shorter palindromes may take shelter.
 On the other hand, the larger PSS that cloaks over the shorter ones will project the latter's
-mirror image to the opposite wing due to reflection symmetry
+mirror image to the opposite wing, due to reflection symmetry
 (see ~\autoref{fig:bananas-palindrome}).
 This reflective projection may be applied recursively as many times as there are
 enclosing palindromes.
@@ -190,7 +189,7 @@ With no more ado, lists the Manacher's algorithm.
 
 \section{Augmented-String Implementations}\label{sec:implementation-lps-augmented}
 
-Hope you have already grasped the gist of the Manacher's algorithm before we talk about its
+I hope you have already grasped the gist of the Manacher's algorithm before we talk about its
 implementations.
 Traditionally the implementations of Manacher's algorithm assumes augmenting the original array
 by inserting a dummy character between each adjacent pair of characters in the
@@ -207,14 +206,14 @@ Otherwise, spurious result may result.
 
 With the literally augmented string, implementing Manacher's algorithm becomes straightforward.
 One can refer to several published implementations in different programming languages.
-There is a Java version by CS department of Princeton
+There is a Java version by the CS department of Princeton
 University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
 There is a Python version by Fred
 Akalin\footnote{\url{https://www.akalin.com/longest-palindrome-linear-time}}.
 There is also a Haskell implementation along with a discussion of the algorithm itself
 in Johan Jeuring's blog\footnote{
 \url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}}.
-Lastly, an implementation of my own is also provided for sake of reference
+Lastly, an implementation of my own is also provided for the sake of reference
 (~\autoref{lst:LongestPalindromeAugment})~\cite{jeuring1993theories}.
 
 \lstinputlisting[label={lst:LongestPalindromeAugment},language=Java,escapechar=~,
@@ -288,7 +287,7 @@ the hypothetical augmented string and this frees us from the need to construct t
 in memory.
 We name this method ``index mapping'' and the process of relying on mapped indexes for
 palindromic substrings ``virtualized augmentation''.
-Not only this frees us the doubled memory footprint, but are we also freed from the burden of
+Not only does this free us the doubled memory footprint, but are it also freed us from the burden of
 choosing dummy characters.
 Some arithmetic expressions and their semantic meanings have been tabulated in
 ~\autoref{tab:semantics-arithmetic} for reference.
@@ -307,7 +306,7 @@ caption={Implementation of Manacher's aglorithm using index mapping.}]
 By virtual augmentation, we resolved the memory footprint issue and the shadowy dummy character.
 The mission is well accomplished.
 But by no means should we settle here.
-The code in ~\autoref{lst:LongestPalindrome} is like spaghetti noodle, isn't it?
+The code in ~\autoref{lst:LongestPalindrome} is like a bowl of spaghetti noodle, isn't it?
 Even though the code is divided up into three functions, its cleanliness still suffers.
 It takes some courage for me to go over it just a couple days after I wrote it.
 I would not imagine it is easier for one who is not familiar with this piece of code.

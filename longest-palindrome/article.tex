@@ -20,6 +20,7 @@
 \usepackage{color}
 \usepackage{float}
 \usepackage[title]{appendix}
+\usepackage{csquotes}
 
 \newcommand{\code}[1]{\mbox{\lstinline{#1}}}
 \lstset{frame=tb,
@@ -53,13 +54,13 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Manacher's algorithm is an efficient algorithm for finding longest palindromic substring.
-        The implementation of this algorithm has traditionally requires in-memory construction of
-        a augmented string that doubles the length of the original string.
-        The author argues that though the string-augmentation preprocessing has found widespread use
-        for the implementation Manacher's algorithm, this is neither convenient nor economic.
-        A readable implementation based on index mapping is found for Manacher's algorithm which
-        does away with the string augmentation.
+        Manacher's algorithm is optimal for the longest palindromic substring problem.
+        The implementation of this algorithm has traditionally required in-memory construction of
+        an augmented string that doubles the length of the original string.
+        Though the string-augmentation preprocessing has found widespread use
+        for the implementation Manacher's algorithm, this is neither economic nor necessary.
+        In this article, a readable implementation of the Manacher's algorithm based
+        on index mapping is found which does away with the string augmentation.
     \end{abstract}
 
 
@@ -73,12 +74,12 @@ upquote=true
     The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
     question.
     It has also found widespread applications in mathematics, physics, chemistry, genetics, music,
-    \textit{etc.}
-    Here I pick it for two things.
-    First, this problem has a mathematical background in the study of symmetry.
-    A beautiful algorithm to this problem is deeply rooted in the study of reflection symmetry.
-    What I am trying to promote is the conscious application of the study of mathematics
-    solve a fairly complicated problem.
+    \textit{etc.}~\cite{Manacher:1975, shiu2010data, jeuring1993theories, galil1981string,
+    crochemore1994text}
+    Here I pick it for two reasons.
+    First, this problem has to do with the study of symmetry.
+    By elaborating on this problem, I would like to promote the conscious application of
+    mathematical thinking when implementing a complicated problem.
     For most problems, careful study of its symmetry property is often the key step to the discovery
     of great solutions.
     Secondly, the author would like to demonstrate how to refactor unreadable code into more

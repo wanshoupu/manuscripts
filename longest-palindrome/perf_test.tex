@@ -2,16 +2,7 @@
 %! Date = 3/7/20
 \section{Experiment}\label{sec:experiment}
 
-To test the performance of the implementations and catch possible regressions,
-we designed a simple experiment to compare the implementations listed in this article.
-We randomly generated strings of various lengths $L$ using $M$ alphabets as the benchmark for
-testing for $L = 1k, 10k, 100k, 1M, 10M, 100M, 1B$ and $M = 2, 3, 5, 8, 13, 21$.
-To reduce error, each run is repeated three times and the average is taken.
-We found no correlation between runtime and any of the following parameters:
-length of alphabets, the length of maximum palindromic substring.
-Looking at the last two rows in ~\autoref{tab:perf-test}, the linearity of the runtime vs size of
-input string is quite obvious.
-\begin{table}[htb]
+\begin{table}[b]
     \def\arraystretch{1.5}
     \centering
     \caption{\label{tab:perf-test} Runtime measurement for
@@ -32,3 +23,13 @@ input string is quite obvious.
         \hline
     \end{tabular}
 \end{table}
+
+To test the performance of the implementations and catch possible regressions,
+we designed a simple experiment to compare the implementations listed in this article.
+We randomly generated strings of various lengths $L$ using $M$ alphabets as the benchmark for
+testing for $L = 1k, 10k, 100k, 1M, 10M, 100M, 1B$ and $M = 2, 3, 5, 8, 13, 21$.
+To reduce error, each run is repeated three times and the average is taken.
+We found no correlation between runtime and any of the following parameters:
+length of alphabets, the length of maximum palindromic substring.
+Looking at the last two rows in ~\autoref{tab:perf-test}, the linearity of the runtime vs size of
+input string is quite obvious.

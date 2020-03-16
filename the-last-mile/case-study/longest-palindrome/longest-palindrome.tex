@@ -64,7 +64,7 @@ The runtime complexity of such a naive solution is $O(N^2)$.
 The difficulty about this problem is how to beat the quadratic runtime.
 In his paper of 1975, Glenn Manacher discovered an algorithm with linear runtime.
 It was later found that his method works not only for prefix PSS but for all PSS's.
-This algorithm is now the so-called \textit{the Manacher's algorithm}~\cite{Manacher:1975}.
+This algorithm is now the so-called \textit{Manacher's algorithm}~\cite{Manacher:1975}.
 We will dedicate the next few sections to get a thorough understanding for this algorithm.
 First, we need a little bit of math about symmetry.
 
@@ -156,7 +156,7 @@ may be projected to its image $S^{\prime\prime}$ and so on.
 \section{Manacher's Algorithm}\label{sec:manacherAlgorithm}
 
 Equipped with this understanding of the reflection symmetry, we are in a better position to
-crack the mystery of the Manacher's algorithm.
+crack the mystery of Manacher's algorithm.
 Manacher's algorithm leans heavily on cached PSS's.
 The reflective projection relates the be-calculated palindromic center with its mirror image in
 the cache and this is the key step to avoid repeated character comparisons.
@@ -183,7 +183,7 @@ reference.
 Depending on the relationship between its mirror image PSS and the reference PSS,
 some or all character comparisons for the new center may be spared, just as in the case of
 ``bananas''.
-With no more ado, ~\autoref{alg:lps-algorithm} lists the Manacher's algorithm.
+With no more ado, ~\autoref{alg:lps-algorithm} lists Manacher's algorithm.
 
 \begin{alisting}[htb]
     \caption{\label{alg:lps-algorithm}
@@ -213,7 +213,7 @@ With no more ado, ~\autoref{alg:lps-algorithm} lists the Manacher's algorithm.
 
 \section{Augmented-String Implementations}\label{sec:implementation-lps-augmented}
 
-I hope you have already grasped the gist of the Manacher's algorithm before we talk about its
+I hope you have already grasped the gist of Manacher's algorithm before we talk about its
 implementations.
 For comparison purposes, all the implementations made in this chapter are in \java.
 Traditionally the implementations of Manacher's algorithm assumes augmenting the original array
@@ -401,7 +401,7 @@ explained below.
 caption={The refactored helper functions.}]
 {case-study/longest-palindrome/LongestPalindromeModular_helper.java}
 
-The \code{solve} function implements the large part of the Manacher's algorithm.
+The \code{solve} function implements the large part of Manacher's algorithm.
 Methods \code{getLeftBound}, \code{getRightBound}, \code{palength}, and \code{toMirrorImage}
 each corresponds with an index mapping expressions in ~\autoref{tab:semantics-arithmetic}.
 Method \code{isMismatch} checks for pairwise character mismatch.
@@ -413,9 +413,9 @@ mathematical function.
 
 In conclusion, we went through the longest palindromic substring
 problem as a case of study.
-We discussed the reflection symmetry required to understand the Manacher's algorithm.
+We discussed the reflection symmetry required to understand Manacher's algorithm.
 We also went through detailed implementations of Manacher's algorithm and their drawbacks.
-We also presented a novel implementation of the Manacher's algorithm that avoided the tedious and
+We also presented a novel implementation of Manacher's algorithm that avoided the tedious and
 costly string augmentation.
 Using the techniques presented in previous chapters, we refactored the monolithic,
 bloated solution and obtained a modular, readable one.

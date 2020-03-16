@@ -1,5 +1,5 @@
 /*
- * Implement the Manacher's algorithm
+ * Implement Manacher's algorithm
  */
 void solve() {
     for (int i = 1, refCenter = 0; i < pss.length; ++i) {

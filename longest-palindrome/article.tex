@@ -56,11 +56,11 @@ upquote=true
     \begin{abstract}
         Manacher's algorithm is optimal for the longest palindromic substring problem.
         The implementation of this algorithm traditionally requires in-memory construction of
-        an augmented string that doubles the length of the original string.
+        an augmented string that is twice as long as the original string.
         Although the string-augmentation preprocessing has found widespread use
         for the implementation Manacher's algorithm, this is neither economic nor necessary.
         In this article, a readable implementation of Manacher's algorithm based
-        on index mapping is found which does away with the string augmentation.
+        on index mapping is developed which does away with the string augmentation.
     \end{abstract}
 
 
@@ -71,25 +71,44 @@ upquote=true
 
     \section{Introduction}\label{sec:introduction}
 
-    The longest palindrome substrings (LPS) in a given string has posed itself as an interesting
-    question.
-    It has also found widespread applications in mathematics, physics, chemistry, genetics, music,
+    Finding a longest palindrome substring (LPS) in a given string is a fundamentally important
+    question as it has widespread applications in mathematics, physics, chemistry, genetics, music,
     \textit{etc.}~\cite{Manacher:1975, shiu2010data, jeuring1993theories, galil1981string,
-    crochemore1994text}
-    Here I pick it for two reasons.
-    First, this problem has to do with the study of symmetry.
-    By elaborating on this problem, I would like to promote the conscious application of
-    mathematical thinking when implementing a complicated problem.
-    For most problems, careful study of its symmetry property is often the key step to the discovery
-    of great solutions.
-    Secondly, the author would like to demonstrate how to refactor unreadable code into a more
-    readable solution step-by-step.
-    Some of the techniques are discussed in depth in book~\cite{Wan:book}.
+    crochemore1994text}.
+    To one who is familiar with the song ``Rhythm of the Rain'', the prelude music might be
+    very impressive.
+    That is an example of musical palindromes.
+    In genetics, palindromic sequences has an important capability---forming
+    hairpins~\cite{chaos2008palindromelifeorigin}.
+    It is amazing to learn that palindromes played such an importance from the very beginning of
+    life.
+    But here I pick the LPS problem for two reasons.
+    First, this problem is closely related to the study of symmetry.
+    Often times, uncovering the underlying symmetry is the key for great solutions.
+    This problem exemplifies how conscious application of
+    mathematical analysis can help devise an algorithm.
+    Secondly, this problem can be used to demonstrate how to refactor messy and monolithic
+    code with bloating duplications into a succinct and modular solution free from duplications
+    step-by-step.
+    Most of the techniques are discussed in depth in book~\cite{Wan:book}.
 
 
-    We will walk through the multi-stage refactor process that leads to the discovery of a
-    simplified version of Manacher's algorithm.
-    We will use Java as the working language in this article.
+    Here is the structure of this article.
+    In ~\autoref{sec:lps-statement}, we will set the problem statement.
+    In ~\autoref{sec:reflection-symmetry}, the reflection symmetry with necessary
+    mathematical context will be explained with aim at the application toward the LPS problem.
+    In ~\autoref{sec:manacherAlgorithm}, Manacher's algorithm is presented together with some
+    intuition.
+    Then ~\autoref{sec:implementation-lps-augmented} we will discuss existing solutions
+    with the string-augmentation preprocessing.
+    In ~\autoref{sec:virtualMapping} and ~\autoref{sec:palindrom.modularized},
+    we will present the new approach of index mapping to implement Manacher's algorithm.
+    Also in these sections, we will perform multi-stage refactor process that eventually leads to
+    a modulalr solution to the LPS problem with high readability.
+    Finally in ~\autoref{sec:experiment}, we will put all the implementations presented in this
+    article to test.
+    We will compare the performance test result for different approaches.
+    All solutions provided in this article will be implemented in Java.
 
 
     \input{longest-palindrome}
@@ -100,11 +119,14 @@ upquote=true
     In conclusion, we went through the longest palindromic substring
     problem as a case of study.
     We discussed the reflection symmetry required to understand Manacher's algorithm.
-    We also went through detailed implementations of Manacher's algorithm and their drawbacks.
-    We also presented a novel implementation of Manacher's algorithm that avoided the tedious and
+    We presented a novel implementation of Manacher's algorithm that avoided the tedious and
     costly string augmentation.
-    Using the techniques presented in previous chapters of this book, we refactored the monolithic,
-    bloated solution and obtained a modular, readable one.
+    We also went through two approaches to implement Manacher's algorithm---one with
+    string-augmentation and one with index mapping.
+    We also compared the performance of the new approach against that of string-augmentation in
+    terms of memory and runtime complexities.
+    Using the techniques presented in previous chapters of this book, we refactored the monolithic
+    solution with bloating duplication into a more modular and readable one.
     \bibliographystyle{unsrt}
     \bibliography{article}
 \end{document}

@@ -5,21 +5,28 @@
 
 \chapter{Case Study: Longest Palindrome Substrings}\label{ch:longestPalindromeSubstrings}
 
-The longest palindrome substrings problem (LPS) has long been an interesting problem.
-It has found widespread applications in mathematics, physics, chemistry, genetics, music,
-\textit{etc.}
+Finding a longest palindrome substring (LPS) in a given string is a fundamentally important
+question as it has widespread applications in mathematics, physics, chemistry, genetics, music,
+\textit{etc.}~\cite{Manacher:1975, shiu2010data, jeuring1993theories, galil1981string,
+crochemore1994text}.
+To one who is familiar with the song ``Rhythm of the Rain'', the prelude music might be
+very impressive.
+That is an example of musical palindromes.
+In genetics, palindromic sequences has an important capability---forming
+hairpins~\cite{chaos2008palindromelifeorigin}.
+It is amazing to learn that palindromes had played such an important role in life from the
+very beginning.
 In this chapter I pick it for an in-length discussion mainly for two reasons.
-First, this problem has a mathematical background in the study of symmetry.
-A beautiful algorithm to this problem is deeply rooted in the study of reflection symmetry.
-What I am trying to promote is the conscious application of the study of mathematics
-solve a fairly complicated problem.
-For most problems, careful study of its symmetry property is often the key step to the discovery
-of great solutions.
-Secondly, we want to demonstrate how the techniques explained earlier in this book help us
-arrive at progressively better solutions.
-Particularly relevant are the materials in
-~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic} which explain step-by-step how to
-refactor unreadable code into clean and self-explaining solution.
+First, this problem is closely related to the study of symmetry.
+Often times, uncovering the underlying symmetry is the key for great solutions.
+This problem exemplifies how conscious application of
+mathematical analysis can help devise an algorithm.
+Secondly, this problem is a perfect case of study for demonstrating how to refactor messy and
+monolithic code with bloating duplications into a succinct and modular solution free
+from duplications step-by-step.
+Most of the techniques are discussed in depth in book~\cite{Wan:book}.
+Most of the techniques are discussed in depth in
+~\autoref{prt:flowControl} and ~\autoref{prt:advancedTopic}.
 
 
 \section{The problem Statement}\label{sec:lps-statement}
@@ -138,7 +145,7 @@ Nevertheless, the argument still holds for the finite string in the overlapping 
 Of prime interest to us are a collection of `crowded', overlapping PSS's.
 Under the wings of some large PSS's, some shorter palindromes may take shelter.
 On the other hand, the larger PSS that cloaks over the shorter ones will project the latter's
-mirror image to the opposite wing, due to reflection symmetry
+mirror image to the opposite wing, because of reflection symmetry
 (see ~\autoref{fig:bananas-palindrome}).
 This reflective projection may be applied recursively as many times as there are
 enclosing palindromes.
@@ -158,7 +165,7 @@ may be projected to its image $S^{\prime\prime}$ and so on.
 Equipped with this understanding of the reflection symmetry, we are in a better position to
 crack the mystery of Manacher's algorithm.
 Manacher's algorithm leans heavily on cached PSS's.
-The reflective projection relates the be-calculated palindromic center with its mirror image in
+The reflective projection relates the to-be-calculated palindromic center with its mirror image in
 the cache and this is the key step to avoid repeated character comparisons.
 
 Taking string ``bananas'' for example as shown in ~\autoref{fig:bananas-palindrome},
@@ -166,7 +173,7 @@ knowing that PSS-$2$ has length $3$ and that PSS-$1$ mirrors (part of) PSS-$3$ t
 PSS-$2$, we can skip all but the outermost pairs, which are `n' and `s'.
 Upon seeing that they do not match, the length of PSS-$3$ is finally pinned at $3$.
 So with one additional character comparison, we obtained the length of PSS-$3$.
-That where savings come about.
+That is where savings come from.
 
 
 To sum up, let us iterate through the string from left to right and cache the result in an array,
@@ -195,7 +202,7 @@ With no more ado, ~\autoref{alg:lps-algorithm} lists Manacher's algorithm.
         reaches rightmost in each iteration of the main loop;
         \item For each character at \code{j = 0, 1, ..., n} in the augmented array,
         \begin{enumerate}[label={\roman*:}]
-            \item If \code{j} lies to the right of the right wing of \code{pss(refCenter)},
+            \item If \code{j} lies outside of \code{pss(refCenter)} to the right,
             calculate $\mbox{PSS}(j)$ from scratch;
             update \code{refCenter} accordingly;
             skip to the next iteration.
@@ -204,8 +211,7 @@ With no more ado, ~\autoref{alg:lps-algorithm} lists Manacher's algorithm.
             \item If $\mbox{PSS}(k)$ is completely contained in \mbox{PSS(\code{refCenter})},
             then \code{pss(k)=pss(j)};
             \item Otherwise, we need to calculate the $\mbox{PSS}(j)$, but only the portion
-            protruding the right end of \mbox{PSS(\code{refCenter})}, if any.
-            the wing of \mbox{PSS(\code{refCenter})}.
+            outside of \mbox{PSS(\code{refCenter})}, if any.
         \end{enumerate}
     \end{enumerate}
 \end{alisting}
@@ -216,7 +222,7 @@ With no more ado, ~\autoref{alg:lps-algorithm} lists Manacher's algorithm.
 I hope you have already grasped the gist of Manacher's algorithm before we talk about its
 implementations.
 For comparison purposes, all the implementations made in this chapter are in \java.
-Traditionally the implementations of Manacher's algorithm assumes augmenting the original array
+Traditionally the implementations of Manacher's algorithm assumes augmenting the original string
 by inserting a dummy character between each adjacent pair of characters in the
 original string.
 For uniformity, we also add dummy characters at the ends (insert one dummy
@@ -235,9 +241,10 @@ There is a \java version by the CS department of Princeton
 University\footnote{\url{https://algs4.cs.princeton.edu/53substring/Manacher.java.html}}.
 There is a \python version by Fred
 Akalin\footnote{\url{https://www.akalin.com/longest-palindrome-linear-time}}.
-There is also a Haskell implementation along with a discussion of the algorithm itself
+There is even a Haskell implementation along with a discussion of the algorithm itself
 in Johan Jeuring's blog\footnote{
-\url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}}.
+\url{http://finding-palindromes.blogspot.com/2012/05/finding-palindromes-efficiently.html}} and
+also book~\cite{jeuring1993theories}.
 Lastly, an implementation of my own is also provided for the sake of reference
 (~\autoref{lst:LongestPalindromeAugment}).
 
@@ -250,12 +257,12 @@ Lastly, an implementation of my own is also provided for the sake of reference
 
 \section{Virtual Augmentation}\label{sec:virtualMapping}
 
-Even though the string-augmentation has found widespread use for
+Even though the string-augmentation approach has found widespread use for
 the implementation of Manacher's algorithm, this is neither convenient nor necessary.
 For large strings such as DNA chains in genome sequencing, it is costly to have to
 construct the augmented string with doubled memory footprint~\cite{shiu2010data}.
-Furthermore, it may be annoying and onerous to identify a suitable dummy character for
-the augmentation process.
+Furthermore, it is onerous and sometimes quite annoying to have to identify a suitable dummy
+character for the augmentation process.
 In this section, we seek a more concise and economic way to
 implement Manacher's algorithm---sparing the string augmentation process.
 
@@ -303,25 +310,26 @@ augmented string with an odd index.
 So there is a one-to-one correspondence between the
 indexes of the original string and the odd indexes of the augmented string.
 The even indexes of the augmented string, however, corresponds to the inner boundaries between
-each pair of adjacent characters.
-Together, they establish a one-to-one mapping between each PSS of the original string and an odd
-PSS in the augmented string.
-It is easy to see that the the PSS's in the
-augmented string are completely determined by the corresponding PSS in the original string
-and the added characters for augmentation do not alter this.
+adjacent characters.
+Together, they establish a one-to-one mapping between PSS's of the original string and odd
+PSS's in the augmented string.
+It is easy to see that a PSS in the
+augmented string are completely determined by the corresponding PSS in the original string.
+The added augmentation characters do not interfere at all.
 Therefore, if we can formulate the PSS's of the original string in terms of the indexes of
-the hypothetical augmented string and this frees us from the need to construct the augmented string
-in memory.
-We name this method ``index mapping'' and the process of relying on mapped indexes for
-palindromic substrings ``virtualized augmentation''.
-Not only does this free us the doubled memory footprint, but are it also freed us from the burden of
-choosing dummy characters.
+the hypothetically augmented string, we would be freed from the need to construct the augmented
+string in memory.
+We name this method ``index mapping''.
+Accordingly, the process of relying on mapped indexes for calculating
+palindromic substrings are named ``virtualized augmentation''.
+Not only does virtualized augmentation makes the double-sized memory consumption obsolete,
+but it also frees us from the burden of choosing dummy characters.
 Some arithmetic expressions and their semantic meanings have been tabulated in
 ~\autoref{tab:semantics-arithmetic} for reference.
 Based on the idea of virtual augmentation, we come up with a new approach to implement
 Manacher's algorithm (~\autoref{lst:LongestPalindrome}).
 Note that the solution listed in ~\autoref{lst:LongestPalindrome} has
-$O(N)$ runtime complexity and $O(N)$ memory complexity.
+$O(N)$ runtime as well as memory complexity.
 
 \begin{clisting}[H]
     \lstinputlisting[label={lst:LongestPalindrome},language=Java,escapechar=~,
@@ -336,8 +344,9 @@ The mission is well accomplished.
 But by no means should we settle here.
 The code in ~\autoref{lst:LongestPalindrome} is like a bowl of spaghetti noodle, isn't it?
 Even though the code is divided up into three functions, its cleanliness still suffers.
-It takes some courage for me to go over it just a couple days after I wrote it.
-I would not imagine it is easier for one who is not familiar with this piece of code.
+It takes some courage for me to read it and try to figure out what each line does in just a couple
+days after I wrote it.
+I can not imagine it would be easier for one who has just come across the code.
 A principle that all developers should stick to is
 ``If it is not readable, it is not acceptable''.
 Our next goal is to seek a more readable way to implement it.
@@ -358,9 +367,10 @@ and reusable functions.
 
 So we have two tasks that are somehow related---one for elimination of duplicate code and the
 other to make the solution more modular.
-Our starting is ~\autoref{lst:LongestPalindrome}.
-One approach to both tasks is to understand the semantics of some operations, especially those
-that are repeated, and factor them out into helper functions.
+Our starting point is ~\autoref{lst:LongestPalindrome}.
+We may approach both tasks first with an understanding of the semantics of some operations,
+especially those that are repeated.
+If it helps, we can factor them out into helper functions.
 
 
 Take as an example line ~\autoref{line:lps-soft-duplication} in ~\autoref{lst:LongestPalindrome}:
@@ -372,9 +382,9 @@ But the pattern is ``Given an index, get the result as the index minus the eleme
 at the index''.
 So we can factor that out into a function, \textit{e.g.}, \code{getLeftBound}
 (see~\autoref{tab:semantics-arithmetic}).
-All occurrences of logic is may be replaced by the function call.
+All occurrences of the same logic may be replaced by a call of function \code{getLeftBound}.
 This alone helps get rid of $3$x duplications.
-In fact, similar refactor may be performed for several entries in
+In fact, similar refactor may be performed for other entries in
 ~\autoref{tab:semantics-arithmetic}.
 By doing so, we first modularized the solution by creating succinct, easily understandable helper
 functions.
@@ -394,7 +404,7 @@ Our refactored solution---the \code{class LongestPalindromeSolver}---is listed i
 The class has two private fields, one for input and the other output.
 The only point of entry is the public method \code{longestPalindrome} which
 helps with bookkeeping and dispatching.
-All others are helper functions which are listed in ~\autoref{lst:lpsModular-helper} and
+All others are helper functions listed in ~\autoref{lst:lpsModular-helper} and
 explained below.
 
 \lstinputlisting[label={lst:lpsModular-helper},language=Java,escapechar=~,
@@ -403,7 +413,7 @@ caption={The refactored helper functions.}]
 
 The \code{solve} function implements the large part of Manacher's algorithm.
 Methods \code{getLeftBound}, \code{getRightBound}, \code{palength}, and \code{toMirrorImage}
-each corresponds with an index mapping expressions in ~\autoref{tab:semantics-arithmetic}.
+each corresponds with an index mapping expressions in \mbox{~\autoref{tab:semantics-arithmetic}}.
 Method \code{isMismatch} checks for pairwise character mismatch.
 Method \code{substring} helps construct the final result---the longest palindromic substring.
 Method \code{argmax} is, as suggested by its name, a quick-and-dirty implementation of the $argmax$
@@ -414,8 +424,9 @@ mathematical function.
 In conclusion, we went through the longest palindromic substring
 problem as a case of study.
 We discussed the reflection symmetry required to understand Manacher's algorithm.
-We also went through detailed implementations of Manacher's algorithm and their drawbacks.
-We also presented a novel implementation of Manacher's algorithm that avoided the tedious and
-costly string augmentation.
-Using the techniques presented in previous chapters, we refactored the monolithic,
-bloated solution and obtained a modular, readable one.
+We presented a novel implementation of Manacher's algorithm that avoided the tedious and
+costly string augmentation with index mapping.
+We compared the performance of the new approach against that of string-augmentation in
+terms of memory and runtime complexities.
+Using the techniques presented in previous chapters of this book, we refactored the monolithic
+solution with bloating duplication into a more modular and readable one.

@@ -348,6 +348,12 @@ See ~\fullref{ch:spiralMatrix} for a refactor example on the solution of `Spiral
 Just breaking up a 100-line of function into five 20-line function does not create modularity.
 That only makes it worse.
 
+Exactly what makes a function is an individual taste.
+The general guideline is the the single-responsibility principle---a function should serve
+exactly one purpose.
+A rule of thumb judgement can be made based on the readability of a function---if it takes
+substantial effort to figure out how the function body achieve what the function is supposed to
+do, then consider refactor it into yet smaller functions.
 The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
 how they are created to be reused.
 

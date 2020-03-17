@@ -4,18 +4,17 @@
 
 To test the performance of the implementations and catch possible regressions,
 we designed a simple experiment to compare the implementations listed in this article.
-We randomly generated strings of various lengths $L$ using $A$ alphabets as the benchmark for
-testing for $L = 1K, 10K, 100K, 1M, 10M, 100M, 1B$ and $A = 2, 3, 5, 8, 13, 21$.
+We randomly generated strings of various lengths $L$ using $A$ alphabets as the testing benchmarks
+for $L = 1K, 10K, 100K, 1M, 10M, 100M, 1B$ and $A = 2, 3, 5, 8, 13, 21$.
 To reduce error, each run is repeated three times and the average is taken.
 We found no strong correlation between runtime and
 $A$ or the length of longest palindromic substrings.
-But as shown in the last two rows in ~\autoref{tab:perf-test}, the linearity of the runtime vs
-size of input string stands out quite obviously.
+The linearity of the runtime vs size of input string stands out quite obviously
+in ~\autoref{tab:perf-test} which is expected.
 In summary, our new index-mapping based implementations perform similarly as the approach based on
 string-augmentation but is more efficient in terms of memory footprint.
-Where the implementation with augmented string fails, the virtualized augmentation approach can
-still run.
-These are all as expected.
+Where the implementation with augmented string fails, the virtualized augmentation approach still
+runs successfully.
 Besides the readability, there is also slight improvement in runtime in our modularized solution.
 
 \begin{table}[H]

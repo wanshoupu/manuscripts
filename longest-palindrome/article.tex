@@ -43,7 +43,7 @@ tabsize=3,
 upquote=true
 }
 
-\title{A New Implementation of Manacher's Algorithm}
+\title{An Efficient Implementation of Manacher's Algorithm}
 
 
 \author{Shoupu Wan \\
@@ -54,13 +54,14 @@ upquote=true
     \maketitle
 
     \begin{abstract}
-        Manacher's algorithm is optimal for the longest palindromic substring problem.
-        The implementation of this algorithm traditionally requires in-memory construction of
-        an augmented string that is twice as long as the original string.
-        Although the string-augmentation preprocessing has found widespread use
-        for the implementation Manacher's algorithm, this is neither economic nor necessary.
-        In this article, a readable implementation of Manacher's algorithm based
-        on index mapping is developed which does away with the string augmentation.
+        Manacher's algorithm has been shown to be optimal to the longest palindromic substring
+        problem.
+        Many of the existing implementations of this algorithm, however, unanimously required
+        in-memory construction of an augmented string that is twice as long as the original string.
+        Although it has found widespread use, we found that this preprocessing is
+        neither economic nor necessary.
+        We present a more efficient implementation of Manacher's algorithm based
+        on index mapping that makes the string augmentation process obsolete.
     \end{abstract}
 
 

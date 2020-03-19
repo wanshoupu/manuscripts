@@ -6,59 +6,100 @@
 
 Yes single responsibility principle (SRP) is applicable to functions.
 
+
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
 firmwares, \textit{etc.}.
-To understand every detail taking place beneath the execution of a simple ``Hello, world''
-program is beyond anyone's capability.
-%If one looks down the full call stack of a remote procedure call (RPC), it may cause
-%acrophobia in many.
+Just to understand all the code that runs behind the scene of a simple program is
+beyond anyone's capability.
+To compile and run a simple ``Hello, World'' program written in C for example,
+\lstinputlisting[label={lst:hellow-world},language=C]
+{functions/hw.c}
+would require the following steps and components
+~\footnote{\url{https://www.geeksforgeeks.org/how-does-a-c-program-executes/}}:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{r|c|l}
+        \hline
+        Step & Description & Component \\
+        \hline
+        1 & Compile the C program into machine code & Compiler \\
+        2 & Link the compiled code with library functions & Linker \\
+        3 & Load the executable into memory & Loader \\
+        4 & Execute the program & Microprocessor \\
+        \hline
+    \end{tabular}
+\end{table}
+Each of these components are by themselves a huge topic in computer science.
+Remember this is just a simple program.
+More complicated programs will likely involve I/O operations, network resources, database queries,
+\textit{etc.}
+If one looks down the call stack of a remote procedure call (RPC), it may cause
+acrophobia for many.
+%The network protocol, for instance, is a layered design.
+%The TCP/IP model of network protocol has 4 layers---the application, the transport, the Internet,
+%and the network interface layers.
 
-%In just the network protocol stack there are five layers.
-%
 %That's overly complicated, isn't it?
 %Is that necessary?
 %Why are they the way they are?
 
-Fortunately, no one needs to understand that amount of details all at once as the computation
-details have been wrapped into reusable modules in a hierarchical architecture.
-Just as one does not need a degree in biochemistry to take a medicine, developers at one
-level of the hierarchy does not need domain knowledge of the level below.
-This is the power of abstraction, a key trait of human being.
-Abstraction and encapsulation plays a key roll in software engineering.
+
+Fortunately, you as a developer do not need to understand everything to work on a small part of
+the system.
+As the implementation details of many parts of the system have been wrapped into components and
+modules and the directly related components and modules interact through a carefully designed
+API's.
+The implementation detail of each component or module has been hidden away.
+This is called abstraction and encapsulation and it plays a key roll in software engineering.
+In fact the ability to abstract in general is a unique trait of human being.
+Without abstraction, human would not be able to think and reason very far.
+Needless to say, the concept of abstraction has been applied everywhere in computer science.
+Control flow abstraction resulted in the creation of high-level programming languages;
+data abstraction enabled the creation of generic data structures;
+object oriented programming is entirely based on object abstractions in hierarchy and composition.
 Abstraction and encapsulation is recursive.
 As illustrated in ~\autoref{fig:hierarchy-of-encap}, a fairly complex system
 is usually made up of a number of components and each component may be yet
 another complex system and so on.
+As a chef need not know how to garden,
+a developer need not know how the underlying components were implemented.
+He or she may focus on how to put them together to accomplish the task at hand based on the API
+specifications.
+
 
 \begin{figure}[htb]
     \begin{center}
         \includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}
-        \caption{Encapsulation everywhere on the hierarchy of software system}
+        \caption{Hierarchy of software system}
         \label{fig:hierarchy-of-encap}
     \end{center}
 \end{figure}
 
-When we develop a piece of software, we seldom do it from ground up but utilizing existing,
-pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
-when one uses these pre-built modules, one usually doesn't need to know more detail than the
-documentations of the API of the module.
-Among all, function design is the foundation of everything else, especially object-oriented design.
-In this chapter, we are to study how to write clean, reusable functions as the building blocks of
-larger pieces.
+%When we develop a piece of software, we seldom do it from ground up but utilizing existing,
+%pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
+%when one uses these pre-built modules, one usually doesn't need to know more detail than the
+%documentations of the API of the module.
+Designing clean, reusable functions is the foundation of software engineering,
+especially object-oriented design.
+In this chapter, we will get our hands dirty and show you how to write clean,
+reusable functions step-by-step.
+
 
 \section{Function anatomy}\label{sec:functionAnatomy}
 
-In all mainstream programming languages, a fully implemented function must have a name, an argument
-list, and a body.
+In all mainstream programming languages, a properly implemented function has a function name, an
+argument list, and a body.
 \java and \cpp also requires a return type.
-We will omit all other language-specific features of function in the current
-discussion\footnote{for \cpp, it is possible to omit return type
-if it's an \code{int} type as a legacy support for backward compatibility with C;
-\java may optionally have a \code{throws} exception list which we omit in the current discussion.}.
+In \java each method may optionally specify an exception list with keyword \code{throws}.
+For \cpp, it is possible to omit return type
+if it's an \code{int} type as a legacy support for backward compatibility with C\@.
+In \python 2.x, the return type is implicit.
+We will next ignore all the language-specific features but focus on what is
+essential---the function name, the arguments, and the body.
 
 %\begin{itemize}
-%    \item Name: unique identifier for the function within certain scope or namespace
+%    \item
 %    \item argument specification: specifying what input(s) are needed and / or accepted
 %    \item return specification: specifying what output(s) are produced at return of function
 %    \item exception declaration: what checked exception(s) caller need to handle (\java only)
@@ -81,22 +122,23 @@ if it's an \code{int} type as a legacy support for backward compatibility with C
 %    \end{center}
 %\end{table}
 
-Above all, naming a function plays a pivotal role in software development.
-Computer programming is about naming.
-Many books has talked about the best practices of naming, including function naming
-\cite{Martin-R-2009, Mcconnell.2004}.
-As a rule-of-thumb, function names should be clear and concise, in that order, to serve as an
-abstract for what it does.
+Naming is everything in software development.
+Your software is what you name it to.
+Many books has talked about the best practices of naming ~\cite{Martin-R-2009, Mcconnell.2004}.
+Function name, just as variable names, must be a unique identifier within certain scope or
+namespace.
+As a rule-of-thumb, function names should be clear and then concise, in that order.
+It should well articulate what it does.
 But clarity and conciseness are conflicting requirements.
-Therefore skill of naming is a balancing art.
-So another rule I follow in practice is ``The length of a variable name is proportional to its
-scope.''
-A short-living variable names may have shorter names or even an acronym, \textit{e.g.}, \code{temp},
-\code{t}, \code{tmptr}.
-A field variable, on the opposite, should have a fully qualified name, \textit{e.g.},
-\code{temperatureOfLivingRoom}.
-Also, function names in test code may be lengthier than its production counterpart as test cases
-may be combinatorial and that may be reflected in names.
+So naming is also an art of balancing.
+As to the length of variable names, in practice I follow this guideline---that the length of a
+variable name shall be proportional to the length of the scope it belongs to.
+A short-lived variable names may have shorter names or even an acronym, \textit{e.g.},
+\code{temp}, \code{t}, \code{tmptr}.
+A long-living variable, such as a member variable of a class, on the opposite, should have a fully
+qualified name, \textit{e.g.}, \code{temperatureOfLivingRoom}.
+Also, function names in test code may be lengthier than its production counterpart as clarity
+prevails over conciseness in test and that test cases are often combinatorial.
 
 \begin{table}[h]
     \begin{center}
@@ -137,7 +179,7 @@ may be combinatorial and that may be reflected in names.
     \end{center}
 \end{table}
 
-I would like discuss about the argument list of a function.
+The argument list of a function is the input part of the interface and tends to be abused.
 Beside variable naming,
 the rules regarding arguments are mostly concerned with its size.
 My take of the rules of argument list size is much stricter than , the shorter, the better.

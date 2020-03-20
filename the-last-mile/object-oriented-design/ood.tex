@@ -5,6 +5,46 @@
 
 \chapter{Object-Oriented Design} \label{ch:ood}
 
+Fortunately, you as a developer do not need to understand everything to work on a small part of
+the system.
+As the implementation details of many parts of the system have been wrapped into components and
+modules and the directly related components and modules interact through a carefully designed
+API's.
+The implementation detail of each component or module has been hidden away.
+This is called abstraction and encapsulation and it plays a key roll in software engineering.
+In fact the ability to abstract in general is a unique trait of human being.
+Without abstraction, human would not be able to think and reason very far.
+Needless to say, the concept of abstraction has been applied everywhere in computer science.
+Control flow abstraction resulted in the creation of high-level programming languages;
+data abstraction enabled the creation of generic data structures;
+object oriented programming is entirely based on object abstractions in hierarchy and composition.
+Abstraction and encapsulation is recursive.
+As illustrated in ~\autoref{fig:hierarchy-of-encap}, a fairly complex system
+is usually made up of a number of components and each component may be yet
+another complex system and so on.
+As a chef need not know how to garden,
+a developer need not know how the underlying components were implemented.
+He or she may focus on how to put them together to accomplish the task at hand based on the API
+specifications.
+
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[height=6cm]{object-oriented-design/hierarchy-of-capsule.jpg}
+        \caption{Hierarchy of software system}
+        \label{fig:hierarchy-of-encap}
+    \end{center}
+\end{figure}
+
+%When we develop a piece of software, we seldom do it from ground up but utilizing existing,
+%pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
+%when one uses these pre-built modules, one usually doesn't need to know more detail than the
+%documentations of the API of the module.
+Designing clean, reusable functions is the foundation of software engineering,
+especially object-oriented design.
+In this chapter, we will get our hands dirty and show you how to write clean,
+reusable functions step-by-step.
+
 When to choose OOD?
 When not to?
 It depends on the purpose of the code---to how much degree will the code be reused.

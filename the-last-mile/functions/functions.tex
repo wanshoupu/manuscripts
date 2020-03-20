@@ -4,15 +4,12 @@
 %%
 \chapter{Make Reusable Functions}\label{ch:reusableFunctions}
 
-Yes single responsibility principle (SRP) is applicable to functions.
-
-
 Modern computing systems are hierarchical and modular, with various components such as libraries,
 frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
 firmwares, \textit{etc.}.
 Just to understand all the code that runs behind the scene of a simple program is
 beyond anyone's capability.
-To compile and run a simple ``Hello, World'' program written in C for example,
+To compile and run a simple ``Hello, World'' program for example,
 \lstinputlisting[label={lst:hellow-world},language=C]
 {functions/hw.c}
 would require the following steps and components
@@ -30,12 +27,16 @@ would require the following steps and components
         \hline
     \end{tabular}
 \end{table}
-Each of these components are by themselves a huge topic in computer science.
-Remember this is just a simple program.
-More complicated programs will likely involve I/O operations, network resources, database queries,
-\textit{etc.}
-If one looks down the call stack of a remote procedure call (RPC), it may cause
-acrophobia for many.
+Correspondingly, we need the components---the compiler, the linker, the loader, and
+the instruction set.
+I only authored the $5$ lines of C code and about the rest of the components that I depend on
+I have little knowledge.
+Each of these other components consists a field of specialty in computer science.
+And remember this ``Hello World!'' program is just a simple program.
+More complicated programs may involve I/O operations, network resources, remote procedure call
+(RPC), database queries, \textit{etc.}
+%If one looks down the call stack of a remote procedure call (RPC), it may cause
+%acrophobia for many.
 %The network protocol, for instance, is a layered design.
 %The TCP/IP model of network protocol has 4 layers---the application, the transport, the Internet,
 %and the network interface layers.
@@ -43,47 +44,6 @@ acrophobia for many.
 %That's overly complicated, isn't it?
 %Is that necessary?
 %Why are they the way they are?
-
-
-Fortunately, you as a developer do not need to understand everything to work on a small part of
-the system.
-As the implementation details of many parts of the system have been wrapped into components and
-modules and the directly related components and modules interact through a carefully designed
-API's.
-The implementation detail of each component or module has been hidden away.
-This is called abstraction and encapsulation and it plays a key roll in software engineering.
-In fact the ability to abstract in general is a unique trait of human being.
-Without abstraction, human would not be able to think and reason very far.
-Needless to say, the concept of abstraction has been applied everywhere in computer science.
-Control flow abstraction resulted in the creation of high-level programming languages;
-data abstraction enabled the creation of generic data structures;
-object oriented programming is entirely based on object abstractions in hierarchy and composition.
-Abstraction and encapsulation is recursive.
-As illustrated in ~\autoref{fig:hierarchy-of-encap}, a fairly complex system
-is usually made up of a number of components and each component may be yet
-another complex system and so on.
-As a chef need not know how to garden,
-a developer need not know how the underlying components were implemented.
-He or she may focus on how to put them together to accomplish the task at hand based on the API
-specifications.
-
-
-\begin{figure}[htb]
-    \begin{center}
-        \includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}
-        \caption{Hierarchy of software system}
-        \label{fig:hierarchy-of-encap}
-    \end{center}
-\end{figure}
-
-%When we develop a piece of software, we seldom do it from ground up but utilizing existing,
-%pre-built modules-frameworks, libraries, APIs, \textit{etc.} and
-%when one uses these pre-built modules, one usually doesn't need to know more detail than the
-%documentations of the API of the module.
-Designing clean, reusable functions is the foundation of software engineering,
-especially object-oriented design.
-In this chapter, we will get our hands dirty and show you how to write clean,
-reusable functions step-by-step.
 
 
 \section{Function anatomy}\label{sec:functionAnatomy}
@@ -95,8 +55,8 @@ In \java each method may optionally specify an exception list with keyword \code
 For \cpp, it is possible to omit return type
 if it's an \code{int} type as a legacy support for backward compatibility with C\@.
 In \python 2.x, the return type is implicit.
-We will next ignore all the language-specific features but focus on what is
-essential---the function name, the arguments, and the body.
+We will next ignore all the language-specific features but focus on
+the function name, the arguments, and return type.
 
 %\begin{itemize}
 %    \item
@@ -185,7 +145,7 @@ the rules regarding arguments are mostly concerned with its size.
 My take of the rules of argument list size is much stricter than , the shorter, the better.
 As to how many parameters a function should have there are varying advice given and many magic
 numbers occur: some advises `Beat all the odds to keep it no more than 2', some shook their head
-saying that's too strick make it $<5$, still some other say $8$ as they claim that some Linux
+saying that's too strict make it $<5$, still some other say $8$ as they claim that some Linux
 kernel functions has up to that number of parameters.
 
 \begin{clisting}
@@ -217,7 +177,7 @@ you should leave a comment reminding/challenging yourself to revisit it later.
 
 
 Finally, a word on return values.
-Usually a function returns a single value.
+Usually a function returns a single primitive value.
 But sometimes you wish to return a bunch of values.
 There are ways to do so.
 Some languages, \textit{e.g.}, \python, you can simply return multiple values by implicitly
@@ -225,14 +185,106 @@ returning a \code{tuple}, thanks to language support for convenient packing/unpa
 For other languages that do not support this, you can return \code{Pair}, \code{Tuple}, or
 objects of a user-defined type.
 
-\section{Function tree}\label{sec:functionFamilies}
 
-According to the Single responsibility principle, every module should take care of one and only
-one aspect of the whole.
+\section{Modularity}\label{sec:function-modularity}
+
+Yes single responsibility principle (SRP) is applicable to functions.
+The prevalence of hierarchical structures in software systems is caused by SRP and
+divide-and-conquer.
+According to SRP, each module should have one and only one purpose.
+As to a specific function, it should do one and only one thing.
+Why not two or more?
+
 Robert C. Martin put it as, ``A class should have only one reason to change.''\cite{Martin-R-2003}.
 I am extending that to ``A function should have only one reason to change.''
 In practice, one still need to define what oneness means.
 I tend to interpret the oneness as ``A single task or a tightly coupled group of tasks''.
+
+Just breaking up a 100-line of function into five 20-line function does not create modularity.
+That only makes it worse.
+Exactly what makes a function is an individual taste.
+The general guideline is the the single-responsibility principle---a function should serve
+exactly one purpose.
+A rule of thumb judgement can be made based on the readability of a function---if it takes
+substantial effort to figure out how the function body achieve what the function is supposed to
+do, then consider refactor it into yet smaller functions.
+The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
+how they are created to be reused.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:ValidNumber.java},
+    caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
+\end{clisting}
+
+why modularity?
+Why refactor?
+The following example will demonstrate why this is important.
+\begin{verbatim}
+
+    Imagine we have an image.
+    We'll represent this image as a simple 2D array where every pixel is a
+    1 or a 0.
+
+    There are N shapes made up of 0s in the image.
+    They are not necessarily rectangles -- they are
+    odd shapes ('islands').
+    Find them.
+
+    image1 = [
+    [1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 0, 1, 1],
+    [1, 1, 1, 0, 0, 0, 1],
+    [1, 0, 1, 1, 0, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 1, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 0],
+    ]
+
+    Every single pixel in each shape.
+    For reference, these are (in [row,column] format):
+
+    findShapes(image1) =>
+    [
+    [[0,1],[1,1],[1,2]],
+    [[1,4],[2,3],[2,4],[2,5],[3,4]],
+    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
+    [[7,6]],
+    ]
+
+    Other test cases:
+
+    image2 = [
+    [0],
+    ]
+
+    findShapes(image2) =>
+    [
+    [[0,0]],
+    ]
+
+    image3 = [
+    [1],
+    ]
+
+    findShapes(image3) => []
+\end{verbatim}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:conneted_shapes},
+    caption={Humongous implementation for problem ``find connected shapes''.}]
+    {functions/humongous_buggy_find_shapes.py}
+    \lstinputlisting[label={lst:conneted_shapes},
+    caption={Refactored implementation.
+    The data structures are separated.
+    It's easier to tell what data structure is for what purpose.}]
+    {functions/find_shapes.py}
+    \caption{Find connected shapes problem.}
+\end{clisting}
+
+
+\section{Function tree}\label{sec:functionFamilies}
+
 Therefore, to solve a fairly complicated problem, one should construct a `function tree'
 \footnote{Please note that strictly speaking, recursive functions do not fit in this picture as
 it will turn the function tree to a function graph.
@@ -293,7 +345,7 @@ Bugs can hide at all the levels in the hierarchy.
 It's truly a miracle that our software world runs at all this very moment.
 
 %A modern piece of program is so complicated that if it works on the first run, you should
-%be immediately suspicious.
+%be alerted.
 
 The rationale behind function tree is divide-n-conquer.
 By creating and assemble single-purposed functions, one promotes code reusability and testability.
@@ -385,83 +437,3 @@ idempotent: 1+ call of the function are equivalent to 1 call.
 
 See ~\fullref{ch:spiralMatrix} for a refactor example on the solution of `Spiral Matrix' problem.
 
-\section{Modularity}
-
-Just breaking up a 100-line of function into five 20-line function does not create modularity.
-That only makes it worse.
-
-Exactly what makes a function is an individual taste.
-The general guideline is the the single-responsibility principle---a function should serve
-exactly one purpose.
-A rule of thumb judgement can be made based on the readability of a function---if it takes
-substantial effort to figure out how the function body achieve what the function is supposed to
-do, then consider refactor it into yet smaller functions.
-The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
-how they are created to be reused.
-
-\begin{clisting}
-    \lstinputlisting[label={lst:ValidNumber.java},
-    caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
-\end{clisting}
-
-why modularity?
-Why refactor?
-The following example will demonstrate why this is important.
-\begin{verbatim}
-
-    Imagine we have an image. We'll represent this image as a simple 2D array where every pixel is a
-    1 or a 0.
-
-    There are N shapes made up of 0s in the image. They are not necessarily rectangles -- they are
-    odd shapes ('islands'). Find them.
-
-    image1 = [
-    [1, 0, 1, 1, 1, 1, 1],
-    [1, 0, 0, 1, 0, 1, 1],
-    [1, 1, 1, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1, 1],
-    [1, 0, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 1],
-    [1, 1, 1, 0, 0, 1, 1],
-    [1, 1, 1, 1, 1, 1, 0],
-    ]
-
-    Every single pixel in each shape. For reference, these are (in [row,column] format):
-
-    findShapes(image1) =>
-    [
-    [[0,1],[1,1],[1,2]],
-    [[1,4],[2,3],[2,4],[2,5],[3,4]],
-    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
-    [[7,6]],
-    ]
-
-    Other test cases:
-
-    image2 = [
-    [0],
-    ]
-
-    findShapes(image2) =>
-    [
-    [[0,0]],
-    ]
-
-    image3 = [
-    [1],
-    ]
-
-    findShapes(image3) => []
-\end{verbatim}
-
-\begin{clisting}
-    \lstinputlisting[label={lst:conneted_shapes},
-    caption={Humongous implementation for problem ``find connected shapes''.}]
-    {functions/humongous_buggy_find_shapes.py}
-    \lstinputlisting[label={lst:conneted_shapes},
-    caption={Refactored implementation.
-    The data structures are separated.
-    It's easier to tell what data structure is for what purpose.}]
-    {functions/find_shapes.py}
-    \caption{Find connected shapes problem.}
-\end{clisting}

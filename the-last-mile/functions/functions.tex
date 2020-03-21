@@ -188,26 +188,34 @@ objects of a user-defined type.
 
 \section{Modularity}\label{sec:function-modularity}
 
-Yes single responsibility principle (SRP) is applicable to functions.
-The prevalence of hierarchical structures in software systems is caused by SRP and
-divide-and-conquer.
-According to SRP, each module should have one and only one purpose.
-As to a specific function, it should do one and only one thing.
-Why not two or more?
+The single responsibility principle (SRP) is applicable to functions just as it does at other levels
+on the software hierarchy.
+Specifically, each function should serve exactly one purpose.
+Robert C. Martin once said ``A class should have only one reason to change.''~\cite{Martin-R-2003}.
+What he said is also true for functions---``A function should have only one reason to change.''
+%What if otherwise?
 
-Robert C. Martin put it as, ``A class should have only one reason to change.''\cite{Martin-R-2003}.
-I am extending that to ``A function should have only one reason to change.''
-In practice, one still need to define what oneness means.
-I tend to interpret the oneness as ``A single task or a tightly coupled group of tasks''.
+%In practice, one still need to define what oneness means.
+%I tend to interpret the oneness as ``A single task''.
 
-Just breaking up a 100-line of function into five 20-line function does not create modularity.
-That only makes it worse.
-Exactly what makes a function is an individual taste.
-The general guideline is the the single-responsibility principle---a function should serve
-exactly one purpose.
-A rule of thumb judgement can be made based on the readability of a function---if it takes
-substantial effort to figure out how the function body achieve what the function is supposed to
-do, then consider refactor it into yet smaller functions.
+Although it is quite personal as to what consists of ``one task'',
+there is consensus regarding what functions are modular.
+Simply breaking up a 100-line of function into five 20-line function does not produce modularity.
+As a rule of thumb, if function has neither simplicity, nor cohesion, nor homogeneity,
+then it may very likely be violating SRP and should be refactored.
+Some functions may be long (\textit{e.g.} $> 50$ lines) but consist of similar lines,
+it is serving a single purpose.
+Some functions may be short but hard to comprehend, such as one that implements dynamic
+programming algorithm.
+As long as it is highly cohesive, however, it is a well designed function.
+On the opposite, if a function performs significant calculation and at the same time it fetches
+internet resources, that is a clear violation of SRP and should be refactored.
+
+
+When a complicated function is to be refactored, semantic analysis may shed light on how to start.
+First the analysis may reveal the subtasks it performs.
+Each of these subtasks may be a good candidate for new functions.
+it up into groups with more cohesive code.
 The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
 how they are created to be reused.
 

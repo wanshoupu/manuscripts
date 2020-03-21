@@ -208,20 +208,37 @@ it is serving a single purpose.
 Some functions may be short but hard to comprehend, such as one that implements dynamic
 programming algorithm.
 As long as it is highly cohesive, however, it is a well designed function.
-On the opposite, if a function performs significant calculation and at the same time it fetches
-internet resources, that is a clear violation of SRP and should be refactored.
+On the opposite, if a function performs significant calculation and at the same time it makes
+\code{HTTP} request, that will be a violation of SRP and should be refactored.
 
 
-When a complicated function is to be refactored, semantic analysis may shed light on how to start.
-First the analysis may reveal the subtasks it performs.
-Each of these subtasks may be a good candidate for new functions.
-it up into groups with more cohesive code.
-The code in ~\autoref{lst:ValidNumber.java} illustrates the idea of what are modular functions and
+When a complicated function is to be refactored, semantic analysis of the function body often sheds
+light on where to start.
+Depending on the result of the analysis, one or more tasks usually become manifest.
+If there are copy-and-paste duplicates or `soft duplicates' and the duplicate code spans more
+than one line, then the duplicate code should certainly
+be factored out as a standalone helper function.
+If there is a section of code that is intrinsically different, detached from the rest, and poses
+such a significant presence that it disrupts the latter,
+consider factor it out to a helper function.
+Once you get a sense of it, these intrinsically different sections can be easily recognized.
+Examples of them include lengthy calculations of auxiliary data,
+requests for resources over network, interactions with database, disk IOs, \textit{etc.} in
+functions whose main task is beyond what is formerly named.
+
+
+The code in ~\autoref{lst:ValidNumberNeedRefactor} illustrates the idea of what are modular functions and
 how they are created to be reused.
 
 \begin{clisting}
-    \lstinputlisting[label={lst:ValidNumber.java},
-    caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
+    \lstinputlisting[label={lst:ValidNumberNeedRefactor},firstline=3,language=Java,escapechar=~,
+    caption={Numerical string validation.}]{functions/ValidNumberToBeRefactored.java}
+\end{clisting}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:ValidNumberRefactoredMain},firstline=3,language=Java,escapechar=~,
+    caption={Numerical string validation.}]
+    {functions/ValidNumber.java}
 \end{clisting}
 
 why modularity?
@@ -293,7 +310,10 @@ The following example will demonstrate why this is important.
 
 \section{Function tree}\label{sec:functionFamilies}
 
-Therefore, to solve a fairly complicated problem, one should construct a `function tree'
+Give a complicated problem, stuff everything into one function is almost certainly a
+bad idea.
+should construct a
+`function tree'
 \footnote{Please note that strictly speaking, recursive functions do not fit in this picture as
 it will turn the function tree to a function graph.
 But we may apply a special treatment to recursive function(s) and maintain the validity of the

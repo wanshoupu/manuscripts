@@ -227,23 +227,26 @@ requests for resources over network, interactions with database, disk IOs, \text
 functions whose main task is beyond what is formerly named.
 
 
-The code in ~\autoref{lst:ValidNumberNeedRefactor} illustrates the idea of what are modular functions and
-how they are created to be reused.
+The code in ~\autoref{lst:ValidNumberNeedRefactor} illustrates the contrast between
+monolithic and modular solutions.
+First, let us look at the monolithic solution ~\autoref{lst:ValidNumberNeedRefactor}.
+It is bloated with close to $50$ lines.
+Also many of these lines are identical or similar---a sign of code duplication.
 
-\begin{clisting}
-    \lstinputlisting[label={lst:ValidNumberNeedRefactor},firstline=3,language=Java,escapechar=~,
-    caption={Numerical string validation.}]{functions/ValidNumberToBeRefactored.java}
-\end{clisting}
 
-\begin{clisting}
-    \lstinputlisting[label={lst:ValidNumberRefactoredMain},firstline=3,language=Java,escapechar=~,
-    caption={Numerical string validation.}]
-    {functions/ValidNumber.java}
-\end{clisting}
+\lstinputlisting[label={lst:ValidNumberNeedRefactor},firstline=5,language=Java,escapechar=~,
+caption={Numerical string validation.}]{functions/ValidNumberToBeRefactored.java}
+
+
+\lstinputlisting[label={lst:ValidNumberRefactoredMain},firstline=5,lastline=15,
+language=Java,escapechar=~,caption={Numerical string validation.}]
+{functions/ValidNumber.java}
 
 why modularity?
 Why refactor?
 The following example will demonstrate why this is important.
+
+
 \begin{verbatim}
 
     Imagine we have an image.
@@ -325,6 +328,13 @@ expression tree for evaluation\footnote{\url{https://en.wikipedia
 
 Your functions should be built upon one another.
 Together they tell a complex and complete story, with outlines as well as details at the right place.
+
+The collection of helper functions are arranged in tree-like structure and they are built on top
+of each others.
+First, each of the helper functions are small and readable.
+Secondly, each with a meaningful name, the helper functions act as navigating signs.
+Browsing through them is effortless and reader can easily navigate through them without being lost.
+
 
 ~\autoref{fig:functree} illustrates the idea with a fictitious tree structure and the pseudocode
 is shown in ~\autoref{lst:functree}.

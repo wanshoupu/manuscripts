@@ -188,9 +188,9 @@ objects of a user-defined type.
 
 \section{Modularity}\label{sec:function-modularity}
 
-The single responsibility principle (SRP) is applicable to functions just as it does at other levels
+The single responsibility principle (SRP) is applicable to functions as well as to other levels
 on the software hierarchy.
-Specifically, each function should serve exactly one purpose.
+When applied to functions, it requires that a function serve exactly one purpose.
 Robert C. Martin once said ``A class should have only one reason to change.''~\cite{Martin-R-2003}.
 What he said is also true for functions---``A function should have only one reason to change.''
 %What if otherwise?
@@ -198,23 +198,28 @@ What he said is also true for functions---``A function should have only one reas
 %In practice, one still need to define what oneness means.
 %I tend to interpret the oneness as ``A single task''.
 
-Although it is quite personal as to what consists of ``one task'',
-there is consensus regarding what functions are modular.
-Simply breaking up a 100-line of function into five 20-line function does not produce modularity.
-As a rule of thumb, if function has neither simplicity, nor cohesion, nor homogeneity,
-then it may very likely be violating SRP and should be refactored.
-Some functions may be long (\textit{e.g.} $> 50$ lines) but consist of similar lines,
-it is serving a single purpose.
-Some functions may be short but hard to comprehend, such as one that implements dynamic
-programming algorithm.
-As long as it is highly cohesive, however, it is a well designed function.
-On the opposite, if a function performs significant calculation and at the same time it makes
-\code{HTTP} request, that will be a violation of SRP and should be refactored.
+Although it is quite ambiguous as to what consists of ``oneness'' in functions,
+readability, length, and cohesion are the top $3$  orthogonal measurements of it.
+%being modular is among the consensus concerning modularity.
+If a lengthy function also lacks simplicity and homogeneity,
+chance is that it violates SRP and should be refactored.
+Some functions may be long (\textit{e.g.} $> 50$ lines) but consist mostly of lines of similar
+structure, it is still considered okay.
+Some relatively short functions may be hard to comprehend, \textit{e.g.}, an implementation of
+a dynamic programming algorithm.
+But it may be argued that it is in compliance with the SRP as its code are highly cohesive.
+From this perspective, however, it is a well designed function.
+But to some creative developers, they may still find ways to make the implementation to be more
+readable by factoring some subtasks out of the main function.
+On the opposite, if a function performs sophisticated calculation while making
+\code{HTTP} request, its cohesion score would be questionable and should probably be refactored.
 
 
-When a complicated function is to be refactored, semantic analysis of the function body often sheds
-light on where to start.
-Depending on the result of the analysis, one or more tasks usually become manifest.
+However, not all functions with 100+ lines must be broken down to smaller functions.
+Conversely, simply breaking a 100-line function to shorter functions does not
+produce the desired result, either.
+Before refactoring, semantic analysis of the function often sheds light on where to start.
+Depending on the result, some tasks manifest themselves.
 If there are copy-and-paste duplicates or `soft duplicates' and the duplicate code spans more
 than one line, then the duplicate code should certainly
 be factored out as a standalone helper function.
@@ -227,18 +232,69 @@ requests for resources over network, interactions with database, disk IOs, \text
 functions whose main task is beyond what is formerly named.
 
 
-The code in ~\autoref{lst:ValidNumberNeedRefactor} illustrates the contrast between
-monolithic and modular solutions.
-First, let us look at the monolithic solution ~\autoref{lst:ValidNumberNeedRefactor}.
-It is bloated with close to $50$ lines.
-Also many of these lines are identical or similar---a sign of code duplication.
+So far we have not considered the difficulty of developing and debugging the code into the picture.
+A lengthy, complicated, and monolithic function usually does not pop out of someone's mind in one
+day.
+It is a process filled with bug fixes, feature additions, edge behavior tunings over the course of
+months or years.
+As code accumulate, it becomes increasingly difficult to the next person to add to it, to fix
+it, or to change its behavior.
+Duplicate code in it will exacerbate this process by multiplying the difficulty by a factor of
+two or more.
+
+
+To illustrate what have been discussed in this section, we are going to study a concrete
+coding problem.
+Suppose you are given a string representation of a numerical literal, determine if it is in a valid
+form.
+This is a fairly common coding exercise as well as practical programming task in everyday life
+of a developer.
+We first provide a coding sample in ~\autoref{lst:ValidNumberNeedRefactor}.
+It works fine in terms of the benchmarking test cases.
+But the problem of this solution is obvious.
+It is monolithic.
+It is anything but readable.
+Presumably, a lot of time has been spent to debug the program to pass all the test cases.
+Predictably, a lot more effort would be needed if we want to change the behavior
+with respect to new edge cases.
+
+
+Listed in ~\autoref{lst:ValidNumberRefactoredMain} is another solution.
+This solution is resulted from a refactor process based on the previous.
+The contrast between the solutions are stark.
+The first is monolithic whereas the second modular.
+The first is bloated with close to $50$ lines.
+The second, given its multitude of function definitions, consists of only $39$ lines.
+The first contains many repeated segments such as \code{s1.startsWith("+") || s1.startsWith("-")}.
+The second does not.
+The behavior of the first solution is hard to bound.
+But the behavior of the second solution is defined by that of each helper function collectively.
+Last but not least, it takes immensely different time for a person who is new to this problem to
+gain an understanding of both solutions.
+It would take a long and uninterrupted period of time to get through the first solution and come
+out with a clear understanding.
+But the same person can choose to go through the second solution, one function at a time, taking
+breaks in between.
+The most significant contrast would come when the same person need to change the behavior for both
+solutions.
+The first solution is very error prone with respect to modification.
+Every line is so delicate.
+A simple modification may have to be made at multiple places due to duplicate code.
+The process of modifying the behavior will likely be a mire full of pitfalls.
+The second solution, however, is modular and the modification may be broken down to the
+modification of a few helper functions or may even boil down to one function.
+Also since it is free from duplicate code, each change should only be needed once.
+
+
+Suppose that both of them need debug, which is easier?
+Just looking at the code in ~\autoref{lst:ValidNumberNeedRefactor} would cause headache in me.
 
 
 \lstinputlisting[label={lst:ValidNumberNeedRefactor},firstline=5,language=Java,escapechar=~,
 caption={Numerical string validation.}]{functions/ValidNumberToBeRefactored.java}
 
 
-\lstinputlisting[label={lst:ValidNumberRefactoredMain},firstline=5,lastline=15,
+\lstinputlisting[label={lst:ValidNumberRefactoredMain},firstline=5,
 language=Java,escapechar=~,caption={Numerical string validation.}]
 {functions/ValidNumber.java}
 
@@ -247,68 +303,68 @@ Why refactor?
 The following example will demonstrate why this is important.
 
 
-\begin{verbatim}
+%\begin{verbatim}
 
-    Imagine we have an image.
-    We'll represent this image as a simple 2D array where every pixel is a
-    1 or a 0.
+%    Imagine we have an image.
+%    We'll represent this image as a simple 2D array where every pixel is a
+%    1 or a 0.
+%
+%    There are N shapes made up of 0s in the image.
+%    They are not necessarily rectangles -- they are
+%    odd shapes ('islands').
+%    Find them.
+%
+%    image1 = [
+%    [1, 0, 1, 1, 1, 1, 1],
+%    [1, 0, 0, 1, 0, 1, 1],
+%    [1, 1, 1, 0, 0, 0, 1],
+%    [1, 0, 1, 1, 0, 1, 1],
+%    [1, 0, 1, 1, 1, 1, 1],
+%    [1, 0, 0, 0, 0, 1, 1],
+%    [1, 1, 1, 0, 0, 1, 1],
+%    [1, 1, 1, 1, 1, 1, 0],
+%    ]
+%
+%    Every single pixel in each shape.
+%    For reference, these are (in [row,column] format):
+%
+%    findShapes(image1) =>
+%    [
+%    [[0,1],[1,1],[1,2]],
+%    [[1,4],[2,3],[2,4],[2,5],[3,4]],
+%    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
+%    [[7,6]],
+%    ]
+%
+%    Other test cases:
+%
+%    image2 = [
+%    [0],
+%    ]
+%
+%    findShapes(image2) =>
+%    [
+%    [[0,0]],
+%    ]
+%
+%    image3 = [
+%    [1],
+%    ]
+%
+%    findShapes(image3) => []
+%\end{verbatim}
 
-    There are N shapes made up of 0s in the image.
-    They are not necessarily rectangles -- they are
-    odd shapes ('islands').
-    Find them.
-
-    image1 = [
-    [1, 0, 1, 1, 1, 1, 1],
-    [1, 0, 0, 1, 0, 1, 1],
-    [1, 1, 1, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1, 1],
-    [1, 0, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 1],
-    [1, 1, 1, 0, 0, 1, 1],
-    [1, 1, 1, 1, 1, 1, 0],
-    ]
-
-    Every single pixel in each shape.
-    For reference, these are (in [row,column] format):
-
-    findShapes(image1) =>
-    [
-    [[0,1],[1,1],[1,2]],
-    [[1,4],[2,3],[2,4],[2,5],[3,4]],
-    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
-    [[7,6]],
-    ]
-
-    Other test cases:
-
-    image2 = [
-    [0],
-    ]
-
-    findShapes(image2) =>
-    [
-    [[0,0]],
-    ]
-
-    image3 = [
-    [1],
-    ]
-
-    findShapes(image3) => []
-\end{verbatim}
-
-\begin{clisting}
-    \lstinputlisting[label={lst:conneted_shapes},
-    caption={Humongous implementation for problem ``find connected shapes''.}]
-    {functions/humongous_buggy_find_shapes.py}
-    \lstinputlisting[label={lst:conneted_shapes},
-    caption={Refactored implementation.
-    The data structures are separated.
-    It's easier to tell what data structure is for what purpose.}]
-    {functions/find_shapes.py}
-    \caption{Find connected shapes problem.}
-\end{clisting}
+%\begin{clisting}
+%    \lstinputlisting[label={lst:conneted_shapes},
+%    caption={Humongous implementation for problem ``find connected shapes''.}]
+%    {functions/humongous_buggy_find_shapes.py}
+%    \lstinputlisting[label={lst:conneted_shapes},
+%    caption={Refactored implementation.
+%    The data structures are separated.
+%    It's easier to tell what data structure is for what purpose.}]
+%    {functions/find_shapes.py}
+%    \caption{Find connected shapes problem.}
+%\end{clisting}
 
 
 \section{Function tree}\label{sec:functionFamilies}
@@ -332,7 +388,9 @@ Together they tell a complex and complete story, with outlines as well as detail
 The collection of helper functions are arranged in tree-like structure and they are built on top
 of each others.
 First, each of the helper functions are small and readable.
-Secondly, each with a meaningful name, the helper functions act as navigating signs.
+Secondly, each helper function provides a checkpoint which, when times come for debugging, would
+be very helpful in testing and verification.
+Last but not least, each with a meaningful name, the helper functions act as navigating signs.
 Browsing through them is effortless and reader can easily navigate through them without being lost.
 
 

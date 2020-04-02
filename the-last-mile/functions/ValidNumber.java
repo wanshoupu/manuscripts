@@ -20,20 +20,20 @@ public class ValidNumber {
     }
 
     boolean isFloat(String s) {
-        if (s.startsWith("+") || s.startsWith("-")) {
-            s = s.substring(1);
-        }
+        s = stripSign(s);
         String[] parts = s.split("\\.", 2);
         if (parts.length == 1) {
-            return parts[0].matches("\\d+");
+            return isUnsigned(parts[0]);
         }
-        return Arrays.stream(parts).allMatch(p -> p.isEmpty() || p.matches("\\d+"));
+        return Arrays.stream(parts).allMatch(p -> p.isEmpty() || isUnsigned(p));
+    }
+
+    String stripSign(String s) {
+        return s.startsWith("+") || s.startsWith("-") ? s.substring(1) : s;
     }
 
     boolean isInteger(String s) {
-        if (s.startsWith("+") || s.startsWith("-")) {
-            s = s.substring(1);
-        }
+        s = stripSign(s);
         return isUnsigned(s);
     }
 

@@ -4,101 +4,81 @@
 %%
 \chapter{Make Reusable Functions}\label{ch:reusableFunctions}
 
-Modern computing systems are hierarchical and modular, with various components such as libraries,
-frameworks, compilers, interpreters, virtual machines, operating systems, network protocols,
-firmwares, \textit{etc.}.
-Just to understand all the code that runs behind the scene of a simple program is
-beyond anyone's capability.
-To compile and run a simple ``Hello, World'' program for example,
-\lstinputlisting[label={lst:hellow-world},language=C]
-{functions/hw.c}
-would require the following steps and components
-~\footnote{\url{https://www.geeksforgeeks.org/how-does-a-c-program-executes/}}:
-\begin{table}[H]
-    \centering
-    \begin{tabular}{r|c|l}
-        \hline
-        Step & Description & Component \\
-        \hline
-        1 & Compile the C program into machine code & Compiler \\
-        2 & Link the compiled code with library functions & Linker \\
-        3 & Load the executable into memory & Loader \\
-        4 & Execute the program & Microprocessor \\
-        \hline
-    \end{tabular}
-\end{table}
-Correspondingly, we need the components---the compiler, the linker, the loader, and
-the instruction set.
-I only authored the $5$ lines of C code and about the rest of the components that I depend on
-I have little knowledge.
-Each of these other components consists a field of specialty in computer science.
-And remember this ``Hello World!'' program is just a simple program.
-More complicated programs may involve I/O operations, network resources, remote procedure call
-(RPC), database queries, \textit{etc.}
-%If one looks down the call stack of a remote procedure call (RPC), it may cause
-%acrophobia for many.
-%The network protocol, for instance, is a layered design.
-%The TCP/IP model of network protocol has 4 layers---the application, the transport, the Internet,
-%and the network interface layers.
+Modern computing systems are hierarchical and modular.
+Seldom any developer write code that runs on bare metal.
+Instead, we write code on top of myriad other components such as compilers, system
+libraries, third-party frameworks, operating systems, firmwares, virtual machines, network
+protocols, \textit{etc}.
+To give you an idea about that, let us consider a simple C program---"Hello World!"
+~\autoref{lst:hello-world}.
+To execute it on your laptop, you will need to compile it into machine code,
+link it with built-in libraries, load the executable into main memory,
+and schedule instructions sequentially for CPU cycles.
+To compile the high-level program into machine code, compilers are invoked.
+To locate and incorporate the \code{stdio} library needed for the \code{printf} function, linkers
+come to the rescue.
+To execute, the executable is loaded into the main memory by loaders.
+As you can see, although the program has only $5$ lines, vast amount of code in the
+underlying systems and components are depended on to fill in the gap between authoring the C code
+and executing the program on machine.
 
-%That's overly complicated, isn't it?
-%Is that necessary?
-%Why are they the way they are?
 
+Functions are the predominant basic building blocks at each level of the hierarchical software
+system.
+A complex task should be realized by a function tree (sometimes function graph under certain
+circumstances).
+Each function should be single-responsibility principle (SRP) compliant---easily understood, used,
+and changed.
+In this chapter, we are going to go over the most important part when designing and implementing
+functions for a complex task.
 
 \section{Function anatomy}\label{sec:functionAnatomy}
 
-In all mainstream programming languages, a properly implemented function has a function name, an
+In all mainstream programming languages, a function has a name, an
 argument list, and a body.
 \java and \cpp also requires a return type.
 In \java each method may optionally specify an exception list with keyword \code{throws}.
 For \cpp, it is possible to omit return type
-if it's an \code{int} type as a legacy support for backward compatibility with C\@.
-In \python 2.x, the return type is implicit.
-We will next ignore all the language-specific features but focus on
-the function name, the arguments, and return type.
+if it's an \code{int} as a legacy support for backward compatibility with C\@.
+In \python 2.x, the return type is implicit, although one may specify it in \python 3+.
+In this section, we will elaborate how to engineer function names and arguments.
 
-%\begin{itemize}
-%    \item
-%    \item argument specification: specifying what input(s) are needed and / or accepted
-%    \item return specification: specifying what output(s) are produced at return of function
-%    \item exception declaration: what checked exception(s) caller need to handle (\java only)
-%    \item body: The main body of implementation
-%\end{itemize}
-%
-%\begin{table}[h]
-%    \begin{center}
-%        \caption{Function anatomy\label{tbl:function-part-supported-lang}}
-%        \begin{tabular}{|l|l|l|l|}
-%            \hline
-%            item & \python & \java & \cpp \\
-%            \hline
-%            name & \checkmark & \checkmark & \checkmark \\
-%            argument spec & \checkmark & \checkmark & \checkmark \\
-%            return spec & & \checkmark & \checkmark \\
-%            body & \checkmark  & \checkmark & \checkmark \\
-%            \hline
-%        \end{tabular}
-%    \end{center}
-%\end{table}
+\subsection{Function Names}\label{subsec:function-names}
 
-Naming is everything in software development.
-Your software is what you name it to.
+The importance of naming can never be overemphasized.
+In a sense, your software is what you name it.
 Many books has talked about the best practices of naming ~\cite{Martin-R-2009, Mcconnell.2004}.
-Function name, just as variable names, must be a unique identifier within certain scope or
-namespace.
-As a rule-of-thumb, function names should be clear and then concise, in that order.
-It should well articulate what it does.
-But clarity and conciseness are conflicting requirements.
-So naming is also an art of balancing.
-As to the length of variable names, in practice I follow this guideline---that the length of a
-variable name shall be proportional to the length of the scope it belongs to.
+I'm not going to repeat.
+Instead, I am going to introduce a new term to help clarify the various needs for
+function names.
+When it comes to the requirements for names, there are multiple angle of views.
+For one, a name serves as an identifier, a label, or a bookmark----it should be brief but concise.
+For another, a name is a caption, a direction, or a manual---it need be informational and
+descriptive.
+But briefness and descriptiveness are conflicting requirements.
+They cannot be satisfied completely and simultaneously.
+A spectrum is formed when emphasis of one aspect
+over the other varies and it will be referred to as the 'naming spectrum' for the discussion of
+this chapter and the book.
+When it comes to designing a function, one should keep this in mind and make conscious trade-offs.
+So naming a function is an art of balancing.
+In general, descriptiveness is emphasized over briefness in function naming.
+But there are also other factors that systematically affect the length of function names.
+Many of such factors are of historic reasons.
+In Unix/Linux system, for example, library function names tend to be brief, such as \code{umask,
+chmod, execve, fork}, \textit{etc}.
+Whereas libraries written for high-level programming languages tend to have
+formal, full names with no abbreviation.
+As a rule-of-thumb, the length of a name should be proportional to its scope---long-living names
+should be more informational than concise and vice versa.
 A short-lived variable names may have shorter names or even an acronym, \textit{e.g.},
 \code{temp}, \code{t}, \code{tmptr}.
 A long-living variable, such as a member variable of a class, on the opposite, should have a fully
 qualified name, \textit{e.g.}, \code{temperatureOfLivingRoom}.
 Also, function names in test code may be lengthier than its production counterpart as clarity
 prevails over conciseness in test and that test cases are often combinatorial.
+
+\subsection{Function Argument List}\label{subsec:argument-list}
 
 \begin{table}[h]
     \begin{center}
@@ -118,7 +98,8 @@ prevails over conciseness in test and that test cases are often combinatorial.
             & \\
             \hline
             Eliminate redundancy
-            & Some argument(s) may be derivable from other(s)
+            & Some argument(s) may be derivable from other(s).
+            Make arguments orthogonal to each other.
             & \\
             \hline
             Use field variable
@@ -139,6 +120,7 @@ prevails over conciseness in test and that test cases are often combinatorial.
     \end{center}
 \end{table}
 
+As the input part of the interface, the argument list of a function tends to be abused.
 The argument list of a function is the input part of the interface and tends to be abused.
 Beside variable naming,
 the rules regarding arguments are mostly concerned with its size.
@@ -176,17 +158,7 @@ In the extreme case where you seem to run out of all wit and have to do or die,
 you should leave a comment reminding/challenging yourself to revisit it later.
 
 
-Finally, a word on return values.
-Usually a function returns a single primitive value.
-But sometimes you wish to return a bunch of values.
-There are ways to do so.
-Some languages, \textit{e.g.}, \python, you can simply return multiple values by implicitly
-returning a \code{tuple}, thanks to language support for convenient packing/unpacking.
-For other languages that do not support this, you can return \code{Pair}, \code{Tuple}, or
-objects of a user-defined type.
-
-
-\section{Modularity}\label{sec:function-modularity}
+\section{Single Responsibility Principle}\label{sec:function-modularity}
 
 The single responsibility principle (SRP) is applicable to functions as well as to other levels
 on the software hierarchy.
@@ -198,6 +170,7 @@ What he said is also true for functions---``A function should have only one reas
 %In practice, one still need to define what oneness means.
 %I tend to interpret the oneness as ``A single task''.
 
+We want to elaborate how to make the functions we build comply with SR\@..
 Although it is quite ambiguous as to what consists of ``oneness'' in functions,
 readability, length, and cohesion are the top $3$  orthogonal measurements of it.
 %being modular is among the consensus concerning modularity.
@@ -232,12 +205,12 @@ requests for resources over network, interactions with database, disk IOs, \text
 functions whose main task is beyond what is formerly named.
 
 
-So far we have not considered the difficulty of developing and debugging the code into the picture.
-A lengthy, complicated, and monolithic function usually does not pop out of someone's mind in one
-day.
-It is a process filled with bug fixes, feature additions, edge behavior tunings over the course of
-months or years.
-As code accumulate, it becomes increasingly difficult to the next person to add to it, to fix
+So far we have ignored the cost of developing and debugging the code when comparing monolithic
+vs modular code.
+Obese functions seldom come into being from day one.
+The history of a function usually undergoes a development process over the course of
+months or years---bug fixes, feature additions, edge case handling, \textit{etc}.
+As code accumulates, it becomes increasingly difficult for the next person to add to it, to fix
 it, or to change its behavior.
 Duplicate code in it will exacerbate this process by multiplying the difficulty by a factor of
 two or more.

@@ -25,12 +25,17 @@ and executing the program on machine.
 
 Functions are the predominant basic building blocks at each level of the hierarchical software
 system.
-A complex task should be realized by a function tree (sometimes function graph under certain
-circumstances).
+A complex task should be divided up and each subtask becomes its own function.
+In total, the task is implemented by a collection of functions, forming a directional acyclic
+graph.
+~\autoref{sec:functionFamilies} will get to more detail on this.
 Each function should be single-responsibility principle (SRP) compliant---easily understood, used,
 and changed.
+This will be the main focus for ~\autoref{sec:function-modularity}.
 In this chapter, we are going to go over the most important part when designing and implementing
 functions for a complex task.
+First, let us get the most basic things straight.
+
 
 \section{Function anatomy}\label{sec:functionAnatomy}
 
@@ -53,13 +58,22 @@ Instead, I am going to introduce a new term to help clarify the various needs fo
 function names.
 When it comes to the requirements for names, there are multiple angle of views.
 For one, a name serves as an identifier, a label, or a bookmark----it should be brief but concise.
-For another, a name is a caption, a direction, or a manual---it need be informational and
-descriptive.
+For another, a name is a caption, a direction, or a manual, as it is needed for navigation
+through the various part of the code---it need be informational and descriptive.
 But briefness and descriptiveness are conflicting requirements.
 They cannot be satisfied completely and simultaneously.
-A spectrum is formed when emphasis of one aspect
-over the other varies and it will be referred to as the 'naming spectrum' for the discussion of
-this chapter and the book.
+A spectrum is formed when names with varying emphasis between briefness and descriptiveness are
+lined up which will be referred to as the 'naming spectrum'
+for the discussion of this chapter and the book (~\autoref{fig:namingspectrum}).
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{functions/naming-spectrum.jpg}
+    \caption{\label{fig:namingspectrum}
+    Naming spectrum for a sequence of variables with varying length.
+    All of them denote the temperature of a living room.}
+\end{figure}
+
 When it comes to designing a function, one should keep this in mind and make conscious trade-offs.
 So naming a function is an art of balancing.
 In general, descriptiveness is emphasized over briefness in function naming.
@@ -205,6 +219,27 @@ requests for resources over network, interactions with database, disk IOs, \text
 functions whose main task is beyond what is formerly named.
 
 
+Give a complicated problem, while it is problematic to stuff all the logic into a monolithic
+function,
+it is also mistake to arbitrarily chop up a function into pieces to ``promote modularity''.
+True modularity comes from code cohesion.
+Much like making the cut of final scores into `A', `B', `C', \textit{etc.}, a skillful programmer
+looks for certain signals to determine if a new function (or class) is to break off the main one.
+Some of these signals are as follows:
+
+\begin{itemize}
+    \item The logic to obtain certain an intermediate value or object obstructs the main flow of
+    control
+    \item A code snippet whose runtime complexity may be drastically different from the main
+    \item A portion of the code need to enter a critical section
+    \item Certain portion but not all of the code need error handling as a \code{try .. catch}
+    \item A chunk of identical or almost identical code occurs at multiple places
+    \item Auxiliary concerns such as counting or logging of certain operations
+    \item You find it takes a while to look back at your code a day later
+    \item The logic you want to test is hard to test
+\end{itemize}
+
+
 So far we have ignored the cost of developing and debugging the code when comparing monolithic
 vs modular code.
 Obese functions seldom come into being from day one.
@@ -215,6 +250,8 @@ it, or to change its behavior.
 Duplicate code in it will exacerbate this process by multiplying the difficulty by a factor of
 two or more.
 
+
+\subsection{Example for modular functions}\label{subsec:example-for-modular-functions}
 
 To illustrate what have been discussed in this section, we are going to study a concrete
 coding problem.
@@ -241,7 +278,7 @@ The second, given its multitude of function definitions, consists of only $39$ l
 The first contains many repeated segments such as \code{s1.startsWith("+") || s1.startsWith("-")}.
 The second does not.
 The behavior of the first solution is hard to bound.
-But the behavior of the second solution is defined by that of each helper function collectively.
+But the behavior of the second is collectively defined by the helper functions.
 Last but not least, it takes immensely different time for a person who is new to this problem to
 gain an understanding of both solutions.
 It would take a long and uninterrupted period of time to get through the first solution and come
@@ -271,169 +308,68 @@ caption={Numerical string validation.}]{functions/ValidNumberToBeRefactored.java
 language=Java,escapechar=~,caption={Numerical string validation.}]
 {functions/ValidNumber.java}
 
-why modularity?
-Why refactor?
-The following example will demonstrate why this is important.
-
-
-%\begin{verbatim}
-
-%    Imagine we have an image.
-%    We'll represent this image as a simple 2D array where every pixel is a
-%    1 or a 0.
-%
-%    There are N shapes made up of 0s in the image.
-%    They are not necessarily rectangles -- they are
-%    odd shapes ('islands').
-%    Find them.
-%
-%    image1 = [
-%    [1, 0, 1, 1, 1, 1, 1],
-%    [1, 0, 0, 1, 0, 1, 1],
-%    [1, 1, 1, 0, 0, 0, 1],
-%    [1, 0, 1, 1, 0, 1, 1],
-%    [1, 0, 1, 1, 1, 1, 1],
-%    [1, 0, 0, 0, 0, 1, 1],
-%    [1, 1, 1, 0, 0, 1, 1],
-%    [1, 1, 1, 1, 1, 1, 0],
-%    ]
-%
-%    Every single pixel in each shape.
-%    For reference, these are (in [row,column] format):
-%
-%    findShapes(image1) =>
-%    [
-%    [[0,1],[1,1],[1,2]],
-%    [[1,4],[2,3],[2,4],[2,5],[3,4]],
-%    [[3,1],[4,1],[5,1],[5,2],[5,3],[5,4],[6,3],[6,4]],
-%    [[7,6]],
-%    ]
-%
-%    Other test cases:
-%
-%    image2 = [
-%    [0],
-%    ]
-%
-%    findShapes(image2) =>
-%    [
-%    [[0,0]],
-%    ]
-%
-%    image3 = [
-%    [1],
-%    ]
-%
-%    findShapes(image3) => []
-%\end{verbatim}
-
-%\begin{clisting}
-%    \lstinputlisting[label={lst:conneted_shapes},
-%    caption={Humongous implementation for problem ``find connected shapes''.}]
-%    {functions/humongous_buggy_find_shapes.py}
-%    \lstinputlisting[label={lst:conneted_shapes},
-%    caption={Refactored implementation.
-%    The data structures are separated.
-%    It's easier to tell what data structure is for what purpose.}]
-%    {functions/find_shapes.py}
-%    \caption{Find connected shapes problem.}
-%\end{clisting}
-
 
 \section{Function tree}\label{sec:functionFamilies}
 
-Give a complicated problem, stuff everything into one function is almost certainly a
-bad idea.
-should construct a
-`function tree'
-\footnote{Please note that strictly speaking, recursive functions do not fit in this picture as
-it will turn the function tree to a function graph.
-But we may apply a special treatment to recursive function(s) and maintain the validity of the
-above argument.
-For more information, see ~\fullref{ch:recursion}.
-} much as the construction of an
-expression tree for evaluation\footnote{\url{https://en.wikipedia
-.org/wiki/Binary_expression_tree}}.
+From \autoref{lst:ValidNumberRefactoredMain}, we have got an idea about what great code should be like.
+Namely, a complicated problem may be divided up into subtasks and conquered separately.
+For each subtask, if it is simple enough to be implemented by a SRP-compliant function, do so.
+Otherwise, divide it again and so on, much as the construction of an expression tree
+~\footnote{\url{https://en.wikipedia.org/wiki/Binary_expression_tree}}.
+As the reader can tell, the rationale behind function tree is divide-and-conquer.
+Thus, the original problem is solved collectively by a group of functions.
+If each function is deemed as a node and the invocations of functions as edges, then the
+collection of all the functions form a graph.
+In most cases, this graph is a directional acyclic (DAG).
+But under rare circumstances when recursive functions are involved, this graph may contain cycles.
+We will limit our discussion in this section to DAG only.
+Inclusion of recursive functions does not alter the argument.
+For more information on recursive functions, see ~\fullref{ch:recursion}.
 
-Your functions should be built upon one another.
-Together they tell a complex and complete story, with outlines as well as details at the right place.
 
-The collection of helper functions are arranged in tree-like structure and they are built on top
-of each others.
+By creating and assemble single-purposed functions, one promotes code reusability and testability.
+More importantly, we constrain the span of variables to a more limited scope and thus
+eliminate a lot of possible hiding places for bug.
+As we can see from the examples in \autoref{lst:ValidNumberRefactoredMain}, the benefits of a
+function DAG solution are many.
 First, each of the helper functions are small and readable.
 Secondly, each helper function provides a checkpoint which, when times come for debugging, would
 be very helpful in testing and verification.
-Last but not least, each with a meaningful name, the helper functions act as navigating signs.
-Browsing through them is effortless and reader can easily navigate through them without being lost.
-
-
-~\autoref{fig:functree} illustrates the idea with a fictitious tree structure and the pseudocode
-is shown in ~\autoref{lst:functree}.
-
+Last but not least, each with a meaningful name, the helper functions act as navigational aid.
+With these functions, browsing through the code is made easier and reader can easily
+navigate through them without being lost.
+~\autoref{fig:functree} illustrates the function DAG for ~\autoref{lst:ValidNumberRefactoredMain}.
 \begin{figure}[htb]
     \begin{center}
         \includegraphics[height=8cm]{functions/functree.jpg}
-        \caption{
-        Function tree diagram.
-        The function \code{main} delegates certain parts of
-        the calculation to \code{foo}, \code{bar}, and \code{baz};
-        Function \code{foo}, in turn, delegates to function \code{xIsTrue} and
-        \code{bar} to \code{getY} and \code{invokeRPC}.}
+        \caption{Function DAG for ~\autoref{lst:ValidNumberRefactoredMain}.}
         \label{fig:functree}
     \end{center}
 \end{figure}
 
-\begin{clisting}
-    \lstinputlisting[label={lst:functree},caption={Illustrative function tree.}]
-    {functions/functree.py}
-\end{clisting}
 
-It's a common problem among beginners to stuff all the logic into a monolithic function.
-But it is a fairly subtle mistake for intermediate professionals to arbitrarily chop
-up a function into pieces to ``promote modularity''.
-True modularity comes from coherence and coherence is beautiful.
-Much like making the cut of final scores into `A', `B', `C', \textit{etc.}, a skillful programmer
-looks for certain signals to determine if a new function (or class) is to break off the main one.
-Some of these signals are as follows:
-
-\begin{itemize}
-    \item The logic to obtain certain an intermediate value or object obstructs the main flow of
-    control
-    \item A code snippet whose runtime complexity may be drastically different from the main
-    \item A portion of the code need to enter a critical section
-    \item Certain portion but not all of the code need error handling as a \code{try .. catch}
-    \item A chunk of identical or almost identical code occurs at multiple places
-    \item Auxiliary concerns such as counting or logging of certain operations
-    \item You find it takes a while to look back at your code a day later
-    \item The logic you want to test is hard to test
-\end{itemize}
-
-Our world is run on a conglomeration of hierarchical, systems built on top one another, made of
-various code of all varieties, large or small, open source and proprietary.
-Bugs can hide at all the levels in the hierarchy.
-It's truly a miracle that our software world runs at all this very moment.
+%Our world is run on a conglomeration of hierarchical, systems built on top one another, made of
+%various code of all varieties, large or small, open source and proprietary.
+%Bugs can hide at all the levels in the hierarchy.
+%It's truly a miracle that our software world runs at all this very moment.
 
 %A modern piece of program is so complicated that if it works on the first run, you should
 %be alerted.
 
-The rationale behind function tree is divide-n-conquer.
-By creating and assemble single-purposed functions, one promotes code reusability and testability.
-More importantly, we constrain the span of variables to a more limited scope and thus
-eliminate a lot of possible hiding places for bug.
 
 %Because some of the bug is burnt into the chips you are using.
 %Since electrons follow principle of quantum mechanics, uncertainty principles
 %guarantees you that your programs works only probabilistically.
 %That is to say, some bugs are intrinsic to the computing hardware we are using today.
 
-Sometimes reusable functions are deeply blended in the code and hard to identify.
-But if you spend due diligence, you will be able to do a better job in producing more concise and
-reusable code.
-
-A case study for this.
-
-\label{Evernote:Rotate array by k times}
-\label{Evernote:Search for start and end of a target in a sorted array}
+%Sometimes reusable functions are deeply blended in the code and hard to identify.
+%But if you spend due diligence, you will be able to do a better job in producing more concise and
+%reusable code.
+%
+%A case study for this.
+%
+%\label{Evernote:Rotate array by k times}
+%\label{Evernote:Search for start and end of a target in a sorted array}
 
 %This book only outlines heuristics that inspires like minds with desire for continuous improvement.
 %It's not a recipe to craft bug free code.
@@ -455,7 +391,6 @@ A case study for this.
 %I've seen too many times that developers, my former self included, treat each public method as
 %isolated island and implement them from head to toe in one monolithic block as the following:
 
-\lstinputlisting[language=Java]{functions/foo.java}
 
 %``What else can we do when the interface contains remotely related methods?'' you may being
 %protesting by now.
@@ -491,18 +426,4 @@ A case study for this.
 %Then we build structures with these blocks.
 %Finally, we assemble structures into pyramid.
 %Higher level constructions depends on lower level constructions.
-
-\section{Idempotence}\label{sec:idempotence}
-
-Especially paying attention to creation
-of read-only  \textit{vs.} state-altering functions,
-idempotent  \textit{vs.} non-idempotent functions.
-
-Idempotence is an important characteristics of member methods in object-oriented design.
-idempotent: denoting an element of a set which is unchanged in value when multiplied or otherwise operated on by itself.
-
-immutable: constant function has no state altering operation whatsoever
-idempotent: 1+ call of the function are equivalent to 1 call.
-
-See ~\fullref{ch:spiralMatrix} for a refactor example on the solution of `Spiral Matrix' problem.
 

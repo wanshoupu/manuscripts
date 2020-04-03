@@ -151,6 +151,21 @@ The protobufVisitor example.
 caption={MatrixIterator}]
 {object-oriented-design/MatrixIterator.java}
 
+\section{Idempotence}\label{sec:idempotence}
+
+Especially paying attention to creation
+of read-only  \textit{vs.} state-altering functions,
+idempotent  \textit{vs.} non-idempotent functions.
+
+Idempotence is an important characteristics of member methods in object-oriented design.
+idempotent: denoting an element of a set which is unchanged in value when multiplied or otherwise operated on by itself.
+
+immutable: constant function has no state altering operation whatsoever
+idempotent: 1+ call of the function are equivalent to 1 call.
+
+See ~\fullref{ch:spiralMatrix} for a refactor example on the solution of `Spiral Matrix' problem.
+
+
 \lstinputlisting[label={lst:MatrixIteratorHasNextIdempotent},
 caption={MatrixIteratorHasNextIdempotent}]
 {object-oriented-design/MatrixIteratorHasNextIdempotent.java}

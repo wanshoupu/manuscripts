@@ -1,0 +1,322 @@
+%%
+%% Author: shoupu_wan
+%% 8/22/18
+%%
+
+\chapter{Case Study: Minimum Containing Window}\label{ch:minimumContainingWindow}
+
+In this chapter, I will demonstrate through a coding practice question
+how to start with some rough ideas, make improvements progressively, and arrive at a neat, readable
+solution.
+Out of the coding questions I've worked on, `Minimum containing window' is one such problem
+that is simple to state, has intuitive algorithms, but
+to code up a succinct, production-quality solution is by no means as straightforward.
+For an inexperienced beginner, correct implementation of a solution can easily grow into a bloated,
+obscure program.
+When I first encountered this problem, I stumbled badly after a few failed attempts to
+implement a clean and readable solution.
+Over the years, I kept visiting, revisiting this problem and each time I worked on it, I ended up
+with new insights.
+The more I reflect on it, the more amazed I grew because I realized this will forever remain a
+new problem to me.
+On the other hand, when I search through public available resources for implementations of this
+problem\footnote{One source may be Leetcode submitted solutions, visible only after you
+successfully submit a solution}, I was disappointed to see that almost all
+implementations I encountered are verbose, containing duplicate code here and there, and hard to
+read.
+
+So this motivated me to do in-depth demonstration on how to start with an initial solution and
+gradually transform it into succinct, modular, and readable code.
+As Bruce Lee once said ``to the free, creative mastermind, `Absorb what is useful, reject what is
+useless, and add what is essentially your own'.''
+I hope you would find this sharing useful and inspiring.
+Let's get started with the problem statement.
+
+\section{Problem statement}\label{sec:problemStatement.min-window}
+
+The problem is stated as follows:
+\begin{quote}
+    Given two strings \code{S} and \code{T}, find the minimum window in \code{S}
+    which will contain all the characters in \code{T}.
+\end{quote}
+
+\section{Analysis of the problem}\label{sec:analysis.min-window}
+
+We zoom in straight to a greedy algorithm with the following ideas behind:
+\begin{alisting}
+    \caption{Greedy algorithm for the `minimum window' problem.}
+    \begin{enumerate}
+        \item Find a containing window starting at the left end.
+        \item Then attempts to `push-and-squash' the containing window toward the right one element
+        at a time.
+        \item At each step, record the \emph{smallest containing window} so far.
+        \item Return the smallest containing window.
+    \end{enumerate}
+\end{alisting}
+
+Once initialized, the containing window, while maintaining the containment invariant, moves like an
+earthworm---it pushes itself way forward with longitudinal waves starting from the behind.
+It attempts to prune the left most \code{char} with a replacement from within
+the window and if this is not possible, it extends to the right until the end
+of the string.
+While doing this, the minimal containing window is kept outside of the loop and compared with
+each and every one of the containing windows found.
+Finally the minimal containing window is returned.
+
+To facilitate the lookup for replacement char, it would be useful to use an intermediate
+buffer to store character surplus within the window, \textit{e.g.},
+those characters in string \code{S} that could be used but not used in between the start and end
+of the containing window.
+Useful data structures for that would be maps or dictionaries.
+If properly implemented, the algorithm runs in linear time complexity $O(M+N)$
+where $M$ and $N$ are the lengths of the strings \code{T} and \code{S}, respectively.
+~\autoref{fig:min-window-algorithm.jpg} depicts the algorithm.
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[height=6cm]{case-study/min-window/min-window-algorithm.jpg}
+        \caption{A visualization of the algorithm for finding the minimum window containing all
+        the characters in the target string \code{T} in source string \code{S}.}
+        \label{fig:min-window-algorithm.jpg}
+    \end{center}
+\end{figure}
+
+As one can see, my specification of algorithm is pretty high-level and omits many details.
+That's because up to now I really don't know what would be best.
+I don't want to restrict myself too much.
+I intend to figure out more useful insights for optimization at implementation time.
+
+\section{Implementations}\label{sec:implementations.min-window}
+
+Now let's see how to implement the outlined solutions.
+All the solutions in this chapter are provided in \java.
+
+\subsection{First ever solution}
+
+The importance of the role played by a modest first solution can never be overestimated.
+There are some things that must be built only to be thrown away.
+As a cold start, we have no other insights but the outline as shown in
+~\autoref{fig:min-window-algorithm.jpg}.
+So we firstly `find a containment window'.
+To do that, we firstly build up an account of the unique \code{char}s and their counts based on target
+string and store that in a map (a dictionary in \python) \code{repository}.
+Using \code{repository}, we look for a prefix string of the source string such that all the
+chars in \code{T} are included in the prefix string at least as many times as they occur in
+\code{repository}.
+Should we find that the source string is short of \code{char}s to cover that of the need
+of the target string, we short-circuit the program and return the empty string.
+
+The next step is dynamic push the left boundary of the window while maintaining the invariant
+that the window be a cover of \code{repository}.
+When we prune the leftmost \code{char} from the window, we look for a substitute firstly within the
+window.
+If that is not possible, we extend the window boundary to the right until one is found or end of
+string is reached.
+To help us decide if it is necessary to extend the window boundary,
+we need a similar map data structure as \code{repository} to store surplus \code{char}s found within the
+window.
+There is an insight that might help us save the number of data structures we need---once we are
+done finding a `containment window', we don't need the exact \code{char} balance
+any more.
+All we need in the remaining program is to substitute a \code{char} for the pruned one.
+This will enable us to unify the two data structure into one.
+We firstly negate the counts of \code{char} in \code{repository}, which is to be understood as deficits.
+Then in step two, as we discover `useful' \code{char}s we add to the map as surplus.
+This map would also serve as a balance sheet as we only need to maintain all of the integers to
+be non-negative.
+
+As can be seen, there are two main operations on \code{repository}---add and remove.
+A good analogy is to compare the `add char' operation as deposit and `spend char' as withdrawal.
+The flow of \code{char}s may be pictured as:
+\begin{quote}
+    \code{rightBoundary} $\rightarrow$ \code{repository} $\rightarrow$ \code{leftBoundary}
+\end{quote}
+Deposit to the buffer is done in one part of the code, and extraction from the buffer is done in
+another.
+This creates separate grounds for the two major operations and thus promotes modular designs.
+The final solution is presented in ~\autoref{lst:MinWindowSubstringVerbose}.
+
+\lstinputlisting[label={lst:MinWindowSubstringVerbose},
+caption={An earlier implementation for the `Minimum window' problem.}]
+{case-study/min-window/MinWindowSubstringVerbose.java}
+
+Before we let go and move forward, let's have some reflection on the solution.
+This solution is reminiscent to concurrent programming with two threads, one for deposit
+and the other for withdrawal.
+It reminds me of the well-known `producer-consumer' problem.
+And indeed one may adapt the code to a multi-threaded program similar to it.
+Beyond this algorithm bucket, there are other ideas which I would like to compare briefly.
+I've seen solutions that start with an open set---a set of indexes that are not
+sufficient to cover the character deficit.
+But I find that starting with a closed set---a contained window---and then trying
+to shorten it is a more manageable, faster convergence solution.
+This is similar to fighter aircraft chasing target---lock and follow is a way better strategy
+than others, if at all possible.
+
+\subsection{Improvements}
+Now that we have our first version of solution that passes all the unit tests we can think of.
+Let us take a moment to reflect on the program and how to improve it.
+As long as one takes the time, it's not hard to spot that
+it has several issues including but not limited to
+\begin{itemize}
+    \item `Loop and half' problem discussed in ~\autoref{sec:loop-and-a-half-Problem} and this
+    results in significant duplicate code,
+    \item Nested loop also discussed in ~\autoref{sec:loop-and-a-half-Problem} and this
+    decrease readability,
+    \item `Oversize initialization' for finding the first containment window,
+    \item `Monolithic, multitasking function', consisting of 80+ lines of code,
+    \item Long-living variables like \code{repository}, whose scope spans all the way from
+    beginning to end of the program,
+    \item Exposed loop-variables such as \code{c} which may cause unexpected behavior.
+\end{itemize}
+As a result of these issues, our first version of solution is very delicate and buggy.
+Moreover, it has very poor readability.
+Nevertheless, it is a good starting point---a fully functional correct solution.
+Let's see how we can improve on these identified issues.
+
+First of all, we can attempt to remove the duplicate code from the `loop and a half' problem.
+Using the techniques discussed in ~\autoref{ch:loops}, particularly
+~\autoref{sec:loop-and-a-half-Problem}, we can solve this problem by choosing the right loop
+construct and use the `one-more-loop' technique(see ~\autoref{sec:one-more-cycle}).
+Also the `exposed loop variables' problem may also be solved if we use \code{for}-loop properly
+restrict the scopes of relevant variables to the loop body.
+
+Next, note that in ~\autoref{lst:MinWindowSubstringVerbose}, finding the first containment
+window takes quite a chunk of code to initialize.
+`Initialization' clicks with our learning in ~\fullref{ch:sentinels}.
+Going through the techniques we covered, is it possible to shorten the initialization code?
+It seems that the code for finding the initial containment window is totally a different code
+from that of squeezing it.
+Would sentinel help save this lengthy initialization?
+That's good point.
+Indeed as we discussed in ~\autoref{ch:sentinels}, sentinel is a preprocessing technique for
+that enables uniform treatment in later code.
+Also note that the target string is a containment window for itself.
+So if we prepend \code{T} onto \code{S}, then in the resulting composite string the initial
+containment window would be obvious without no computation---the prefix as long as \code{T}.
+This totally frees us from the lengthy initialization, with the caveat that the later dynamic
+squeezing loop need to take care of if the window has left the target string boundary in the
+composite string.
+
+The next biggest problem with ~\autoref{lst:MinWindowSubstringVerbose} is the nested loops.
+One may argue that nested loop is acceptable as long as the layout is readable.
+While there are different aesthetic taste, I would propose to try alternatives before make a
+personal judgement.
+In my opinion, if we can solve a problem with one loop, don't use nested loop for reasons I
+listed in ~\autoref{ch:loops}.
+
+\lstinputlisting[label={lst:MinWindowSubstringSentinel},
+caption={A second version of implementation for the `Minimum window' problem.}]
+{case-study/min-window/MinWindowSubstring.java}
+
+With the improvements we discussed so far, our code is greatly improved
+~\autoref{lst:MinWindowSubstringSentinel}.
+Not only duplicate code is removed, the initialization is also shortened, thanks to
+the sentinel idea.
+Surprisingly, there is also extra bonus---the long-living-variable problem is also alleviated.
+Especially, the entire function consists of a single-loop.
+That by itself is beautiful.
+
+\subsection{Further room of improvement}
+
+~\autoref{lst:MinWindowSubstringSentinel} is a neat solution for the problem it solves.
+But it is no perfect solution.
+The issues are within the loop of squeezing window.
+First, note that the logic of checking if a \code{char} might be useful to
+the target string is done twice: once at the increment of the left window boundary when a \code{char} is
+prune and once at that of the right window boundary when a \code{char} is taken in.
+(Note the two nullity checks for \code{count}? That is what I'm talking about.)
+This is implicitly a type of duplicate code.
+Second, because of this repeated check, the \code{for}-loop was made fragmented and quite lengthy.
+(note the two occurrences of \code{++left}? This signifies that the code cohesion is low.)
+Additionally, the variable \code{c} also trespasses multiple blocks of code and different tasks,
+which makes the code fragile and buggy when someone want to extend or reuse the code in the future.
+All these issues convey a clear signal that there is sufficient room for improvement.
+It is possible that each one of these issues need to be fixed separately.
+Or it may be that all the issues are related to a common one.
+Let us investigate.
+
+First and foremost, the indexes \code{left} and \code{right} increment takes much code and is
+done repeatedly at several places.
+In ~\autoref{lst:MinWindowSubstringSentinel} such logic is intermingled with logic for other
+tasks and telling apart which is which may be hard for first-timers, lest creating a common
+function that can be used for two distinct tasks is challenging.
+There are several connected tasks that distress me when I attempt to refactor this piece of code:
+\begin{enumerate}[label={Task \arabic*}]
+    \item\label{itm:indexincrement} Increment indexes \code{left} and \code{right},
+    \item\label{itm:substitute} Attempt to substitute the pruned \code{char} at index \code{left} of
+    the window,
+    \item\label{itm:recruit} Recruit new the \code{char} at at index \code{right} of
+    the window for window extension.
+\end{enumerate}
+Obviously, \code{repository} plays a pivotal role in all these places because all of them consult
+\code{repository} before making a decision.
+In ~\ref{itm:indexincrement}, \code{repository} is consulted to decide if it contains a \code{char} as key;
+In ~\ref{itm:substitute}, a surplus in \code{repository} is searched for and deducted as substitute
+for a pruned \code{char} at the left verge of the window;
+In ~\ref{itm:recruit}, the newly encountered \code{char} is accounted for in \code{repository}.
+
+We seek to factor out the
+logic of incrementing indexes into a function such that it only stops on positions where the
+\code{char}is one of the keys in \code{repository}.
+This way, it may be used both at time of \code{char} recruiting and \code{char} substitution.
+Once this concern is taken away, the remaining tasks would be greatly simplified.
+In searching for and make a \code{char} substitute, we only need to decide if the char at
+consideration has a positive balance in \code{repository} and if so, decrement it.
+The function returns a \code{boolean} to indicate if the substitution is successful.
+Likewise, recruiting is made straightforward as well because the \code{char} on index
+\code{right} is certainly to be recruited as long as the index is a valid index ($<$ \code{S.length()}).
+The only caveat is that the semantic shifting in the meaning of index \code{right}---it used to
+be exclusive in ~\autoref{lst:MinWindowSubstringSentinel} and now it must be inclusive.
+
+After this round of refactor, the third version is shown in
+~\autoref{lst:MinWindowSubstringModular}.
+
+\lstinputlisting[label={lst:MinWindowSubstringModular},
+caption={A readable version of implementation for the `Minimum window' problem.}]
+{case-study/min-window/MinWindowSubstring2018.java}
+
+I must say that this solution is rarely required or useful for interview.
+But this is the ony acceptable version if this code is to be used in production
+environment as for a prestigious company with a sustainable, long-term engineering mission.
+This version of the code is still not perfect.
+For example, the parameter list for function \code{nextIndex} is pretty long.
+Using techniques from ~\autoref{ch:reusableFunctions},
+an instance-based solution will reduce the number of parameters for several functions and this
+solution is presented in ~\autoref{lst:MinWindowSubstringSolver}.
+
+\lstinputlisting[label={lst:MinWindowSubstringSolver},
+caption={An object-oriented problem solver for the `Minimum window' problem.}]
+{case-study/min-window/MinWindowSubstringSolver.java}
+
+In this last version of the solutions, once an instance of class \code{MinWindowSubstringSolver}
+is created, it can be invoked as many times as you need.
+The function \code{minWindow} is the public API, accepting input \code{src} and \code{tgt}.
+It then does the housekeeping part---copy input to member variables, reset states in
+\code{repository}, and invokes the calculation at \code{solver}.
+The \code{solver} function is responsible for finding a trivial initial containment window and
+then push it along to find the optimal solution among all possibilities.
+In the end, \code{solver} yields the answer.
+\code{solver} uses the help of three other short functions---\code{tryPrune}, \code{nextIndex}, and
+\code{recruitChar}, each taking one parameter.
+
+Overall, the solution \code{MinWindowSubstringSolver} is much readable than its predecessors.
+
+\section{Conclusion}\label{sec:minWindowSubstringConclusion}
+
+What is demonstrated in this chapter is a case study on the progressive improvement I made for
+solutions of one of the intensely practiced coding questions among coding skill learners and ones
+doing technical interview prep.
+Starting off with rough idea, we came with a rough solution with many issues.
+Nevertheless this humble solution serves as the springboard for a better solution applying the
+techniques of sentinel.
+Then modular and object-oriented concepts are used to make many other improvement over the
+successively better solutions.
+
+Online coding questions are a great way to practice coding skills.
+Many enthusiastic coders aim at successful submissions to as many problems as they can.
+Seldom do they spend time to quest why their code works and how to polish their code to a neater
+solution.
+Getting your solutions accepted by online judges only scratches the surface of software development.
+Much of the required skills for proficient software development are only the result of
+iterative retrospection, contemplations and improvement.

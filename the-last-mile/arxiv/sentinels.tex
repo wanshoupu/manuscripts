@@ -1,0 +1,618 @@
+%%
+%% Author: shoupu_wan
+%% 7/14/18
+%%
+
+\chapter{Magic of Sentinels} \label{ch:sentinels}
+Sentinels have been put to good use in military, mathematics, and civil engineering, long before
+computer science became a science.
+Particularly, sentinels hold a more prominent position in computer science,
+it has become a programming philosophy.
+Sentinels find widespread applications in computer engineering, architecture design,
+compiler design, and programming languages.
+Even in high-level programming languages, proper use of sentinels brings about
+simplicity.
+In this chapter we will give the reader a full exposure to sentinels through a few selected cases
+of study.
+We will demonstrate how the use of sentinels lead to great code simplification.
+By doing so, we want to put sentinel in the toolset of the to-be software engineers and encourage
+conscious and deliberate use of it.
+
+
+\section{``Elephant in Cairo''}\label{sec:elephant-in-cairo}
+
+You may have heard of ``Elephant in Cairo''.
+It refers to the fictitious programming question ``how to hunt elephants in Africa''.
+First published on ``Pachydermic Personnel Prediction'' ~\cite{elephant-in-Cairo:1989},
+this question and the published solutions vividly illustrate the basics
+behind sentinel values and we will repeat some of the discussions there.
+
+
+%It explains the working of a sentinel very well.
+Following is the algorithm based on the original, slightly modified for proper termination:
+\begin{alisting}[H]
+    \caption{\label{enum:elephant-hunt-algo-A}
+    Algorithm for solving the `Elephant in Cairo' question.}
+    \begin{enumerate}
+        \item Go to Africa.
+        \item Start at the Cape of Good Hope.
+        \item Work northward in an orderly manner, traversing the continent alternately east and west.
+        \item During each traverse pass,
+        \begin{enumerate}
+            \item Catch each animal seen.
+            \item Compare each animal caught to a known elephant.
+            \item Stop when a match is detected.
+        \end{enumerate}
+    \end{enumerate}
+\end{alisting}
+The above algorithm, however, may not end happily in the rare and
+unfortunate case when there is no elephant in Africa and the hunters end up drowning in the
+Mediterranean Sea.
+To avoid the dreadful situation, one may add a check before each traversal to ensure
+that to ensure that the hunters stop in time just before reaching the north end of Africa.
+
+
+But an experienced computer scientist would borrow an elephant beforehand and place it
+in Cairo before proceeding with elephant hunting.
+Magically, no modification is needed---~\autoref{enum:elephant-hunt-algo-A} can be used as-is
+except that a little post-hunting processing is needed---hunters have to inspect the animal they
+caught and see if it is the elephant they placed in Cairo.
+If yes, the hunting trip is a failure;
+otherwise a success.
+Of course at the end of the program, one always need to remember a cleanup step---bring
+the placed elephant back home.
+
+
+\section{The Concept of Sentinel in General}\label{sec:concept-of-sentinel}
+
+In the above mentioned fictitious question, the elephant placed beforehand is the `sentinel value'.
+It serves as two roles.
+One it guarantees that ~\autoref{enum:elephant-hunt-algo-A} terminates.
+Second, it guarantees that an animal is at hand when ~\autoref{enum:elephant-hunt-algo-A}
+terminates.
+In doing so it helps save the repeated, unnecessary termination check.
+Of course at the end of the program, extra effort is needed to check
+if the catch is the placed elephant.
+That is the price to be paid.
+But the benefit can pay off this price.
+
+
+Starting from here, the more development work I do, the more generalized the
+concept of sentinel becomes to me.
+It goes much beyond mere savings on condition checking for termination.
+Benefits of using sentinels are summarized as follows:
+\begin{enumerate}
+    \item\label{itm:sentinel:performance} Avoid costly condition-checking on performance-critical
+    loops.
+    \item\label{itm:sentinel:loop-and-a-half} Help get rid of `Loop-and-a-half' issue
+    \item\label{itm:sentinel:oddball} Avoid the `Oddball solution' smell~\cite{Fowler1999}
+    \item\label{itm:sentinel:ds} Act as a boundary-padding in data structures,
+    such as linked list, \textit{etc}.
+    \item Added as a complementary part to fit a mathematical concept
+    or to form a generalized algorithm.
+\end{enumerate}
+
+
+To me, the benefits of sentinels are many, varied, and hard to grasp.
+This remains until a day with an enlightenment, I came to realize: ``Isn't it the old ragged
+symmetry that is behind all these?''
+Indeed, in each and every of the aforementioned scenarios,
+sentinel unanimously makes the problem at hand more symmetric.
+
+
+It is easy to explain sentinel with symmetry.
+But what is symmetry in non-technical terms?
+Without explaining symmetry, it would be like explaining a mystery with another mystery.
+%``What do you mean by `symmetric'?'' you ask dubiously.
+Symmetry is the language behind beauty.
+Why does symmetry embody beauty?
+Because human brain is symmetry sucker---it constantly searches for patterns out of chaos.
+Why are our brains suckers of symmetry?
+Because `pattern` means order and order means fewer interruptions, irregularities, anomalies, or
+surprises.
+(One who works on an assembly line has a deep feeling about this.)
+In the end, all of these means lower information entropy.
+So by leveraging symmetry, our brains seek the most economic way to handle information and thus
+conserve energy.
+In summary, outwardly, symmetry is pleasing to the eye;
+inwardly, it helps save energy.
+
+
+Now back to the use of sentinels in programs.
+It is so for human brain, so also for computer `brain'.
+From \code{for}-loops to regular expressions (regex), from standardized exit codes
+to \code{null} pointers, from recursion to sentinels, computer science tirelessly
+pursue and take advantage of symmetry to treat things uniformly, whenever and wherever possible.
+In doing so, it reduces memory footprint, saves CPU cycles, minimize energy consumption.
+In doing so, it does more with less.
+%Symmetry represents uniformity and uniformity implies resource saving.
+%Sentinel embodies the idea of symmetry perfectly.
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower.jpg}
+        \caption{\label{fig:symmetric-flower}Symmetric sunflower seeds forms beautiful spiral
+        patterns.}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/sunflower-asymm.jpg}
+        \caption{\label{fig:asymmetric-flower}The missing seeds in this otherwise symmetric image
+        causes irregularity and anomaly.}
+    \end{subfigure}
+    \caption{\label{fig:line-view}Symmetry in sunflower pedal is at peace.
+    With the missing seeds, the cost to process the sunflower is elevated.}
+\end{figure}
+
+
+The representation of `$23:59$' as `one minute to midnight' embodies the idea behind sentinels.
+Here is what it means by `one minute to midnight':
+first, put in one minute to make it evenly \emph{12 o'clock am};
+then when you need the time, remember to take away the minute.
+The `pluses and minuses' are implied.
+To many, this representation `looks cleaner' and is preferred.
+
+
+This is also how sentinels work.
+In the opening example, `Elephant in Cairo', an elephant was added in the beginning and
+deducted at the end.
+Apart from being added at the beginning and taken away at the end, sentinel values remain intact.
+This is reminiscent to catalysts in chemical reactions.
+%In the early stages, the catalyst binds with the reactants to form intermediate products and in
+%the late stages, the intermediate products disintegrate to form
+%the final product and catalysts are released.
+Catalysts are added to accelerate reaction but they themselves are not consumed by the reaction.
+%catalysts remain intact but an alternative, easier (lower in energy) reaction path is realized.
+%In the same way works sentinel.
+%A sentinel value is added at the beginning and removed at the end, nothing else is affected except
+%program runs faster and / or programming is made easier.
+For this reason, we may refer to sentinels as `the catalysts of programming'.
+%It is not exaggerating to call sentinels `the catalysts of programming'.
+
+
+%Some digressions on sentinels.
+The mechanism of sentinels also has physical analogies.
+You may have noticed that dews are often found on the surface of something---
+water bottle, stone, leaves, \textit{etc.}
+This is because it is much effective and faster for water vapor to condense on
+the surface of a solid or liquid core.
+Spontaneous condensation in gaseous phase is possible but it is so energetically costly that it
+takes hours in the so-called supersaturated state for that to take place.
+Water vapor in the cloud condenses more readily on some non-gaseous cores called `cloud
+condensation nuclei' or CCN for short ~\cite{condensation:2005}.
+The non-gaseous cores are essentially borrowed sentinels.
+You see, even rain need sentinel ushers!
+
+
+In practice, sentinels help shift certain operations from performance-critical
+section to non-critical section, from inconvenient location to convenient
+location and reduce the number of such operations from many to one.
+Thanks to sentinels, one can thus optimize code to be more elegant and performant.
+In the following sections, we will identify opportunities to apply the concept of sentinel through
+a couple of cases of study.
+
+
+
+\section{Case Study: quicksort}\label{sec:quick-sort-sentinel}
+
+
+I came to learn about sentinels from the book ``Numerical Receipt in C''
+~\cite{NumericalRecipes:1992} in the section ``Quicksort''.
+It was eye-opening to see how the authors gracefully avoided the array boundary checks
+with the use of sentinels.
+I psychologically accepted the pitch made for sentinels while I was with the book.
+Closing the book, however, I am still dubious about its plausibility until I myself have a
+success implementing it.
+In this section, I pick this work to make a pitch to the reader about sentinels.
+
+
+For stark effect of the sentinels, we will first fix the traditional implementation of `Hoare's
+partitioning' scheme from ~\fullref{ch:loop-thinning}:
+~\fullref{lst:QuickSortOutline} gives the outline of the program and
+~\fullref{lst:nestedLoopHoareMethod} gives a fully implemented partitioning function.
+As mentioned in ~\autoref{ch:loop-thinning}, one can get involved in the thick of implementing
+`Hoare's quicksort algorithm'.
+Not only the problem itself is tricky but also the way we implement it.
+By picking Hoare's quicksort scheme over its alternative (such as Lomuto's),
+we insist on the robust $O(N log N)$ expected runtime.
+
+
+We attempt to get rid of the boundary checking using sentinels.
+These boundary checking are there to ensure that the pointers `\code{s}' and `\code{e}' do not slip
+off the ends of the array.
+In large arrays, these boundary check operations may get in the way of performance of the algorithm.
+But the main reason of doing so is to remove clutter in the code.
+%For another, we are consciously attacking the problem with an precautions approach against
+%performance degradation so there is a price we have to pay.
+
+
+The main idea is to make boundary checking redundant by effecting some artifacts that catch the
+pointers before the `out of boundary' error happens.
+This is exactly what sentinel is good at!
+By deploying sought-after values, the `sentinels', at the ends of the array before the control
+hits the loop, the following will happen:
+\begin{enumerate}
+    \item the pointers, `\code{s}' and `\code{p}', would have to stop when they hit the ends of
+    array;
+    \item the subsequent logic will guarantee the termination of the outer loop and
+    thus guarantee the inner loop would not be executed again.
+\end{enumerate}
+
+
+What are the sought-after values by `\code{s}' and `\code{e}'?
+The out-of-place values!
+Particularly, \code{s} is looking for values that are `$\geq$ the pivot';
+\code{e} is looking for values `$\leq$ the pivot'.
+So then instead of randomly picking one value for pivot, we now randomly pick $3$ values, the median
+of which be elected as the pivot as usual, the minimum be deployed to the left end, and the maximum
+to the right end.
+We group these operations into a function called `\code{init_swap}':
+\lstinputlisting[]{sentinels/qsort_init_swap.c}
+
+
+Now back the function `\code{part}'.
+As we mentioned before, the deployment of sentinels in function `\code{init_swap}' makes
+the conditional expressions `\code{s < e}' and `\code{pivot < e}' semantically redundant.
+They can now be safely removed.
+Below is the function `\code{part}' after all the refactoring is done.
+\lstinputlisting[]{sentinels/qsort_part_sentinel.c}
+Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
+cleans out clutter in the loop conditions in the inner loops.
+We `float' the control all the way through the termination of the program on a `touchless' rail made
+by sentinels, without ever needing to check boundary condition.
+Of course, the onus is shifted to the initialization before the loop.
+Comparing with the inner loops, that section is non-critical.
+Not only that the code is made less cluttered, but also the number of such checks
+is reduced from $O(N)$ to $O(1)$.
+More importantly, by not checking boundary conditions at the most critical section,
+we avoid bugs that would otherwise cost us many hours of debugging time.
+
+
+So by use of sentinels on the traditional Hoare's quicksort algorithm,
+we shifted the complexity among the nested loops to a non-critical part of the program,
+effectively reduced its coding complexity.
+Remember that we came up with a new, single-loop implementation for the Hoare's quicksort algorithm
+in ~\fullref{ch:loop-thinning}, as presented in ~\autoref{lst:singleLoopHoarePart}.
+Can we apply the idea of sentinel to make it even better?
+Yes, it may be applied equally well.
+Below is the implementation of the function `\code{part}' with a single loop and simplified
+boundary condition with sentinel values.
+\lstinputlisting[]{sentinels/quicksort_partition_single_loop_sentinel.c}
+This brings implementations of Hoare's quicksort to the next level of simplicity.
+
+
+\section{String terminating sentinels}\label{sec:stringTerminationSentinels}
+
+Despite of controversial opinions\cite{Ritchie:1993,expensive-one-byte:2011}, the
+null-terminated strings in C is another brilliant use of sentinel.
+Even though saving memory is a major concern when it was originally designed, the
+null-terminated string has many programming advantages.
+One example is the expression \code{*p == '\0'} which test if the pointer \code{p} points to end
+of the string.
+Without using null character as a sentinel, it would not be so convenient to perform this test.
+Null-terminated strings in other languages has been deprecated largely due to development
+of containers and collections.
+But the idea of it is still inspiring to us.
+A coding problem `Word abbreviation problem' will help illustrate this.
+The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.com}}:
+\begin{quote}
+    Given a non-empty string \code{s} of English word and an abbreviation \code{abbr},
+    return whether the string matches with the given abbreviation.
+    You may assume the string \code{s} consists only the 26 English alphabet with cases.
+    Abbreviation of word is made if zero, one or more non-overlapping substrings
+    are replaced by the length of the substring in decimal format.
+    \emph{Example 1:}
+    Given \code{s = "internationalization"}, \code{abbr = "i12iz4n"}:
+    Return true.
+    \emph{Example 2:}
+    Given \code{s = "apple"}, \code{abbr = "a2e"}:
+    Return false.
+\end{quote}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
+    \caption{\label{fig:letter-number-section} The word `pseudoanthropological'
+    as an example for string abbreviation.}
+\end{figure}
+In the most obvious way, the following tasks are needed to solve the problem:
+\begin{enumerate}
+    \item\label{itm:breakup.letter.number} Break up the string \code{abbr} into alternating
+    alphabetic groups and numeric groups;
+    \item\label{itm:parse.numbers} Validate and parse the numeric groups as integers;
+    \item\label{itm:skip-char} Inflating each numeric group with the corresponding number of
+    wildcard characters;
+    \item\label{itm:check.letters} Check if the string \code{s} and the inflated \code{abbr} match.
+\end{enumerate}
+
+
+Numeric group validation is where `gotchas' hide.
+Since the length of non-empty substrings is positive integer,
+numeric group only consists of digits $0$ - $9$.
+Additionally, leading `$0$' will also render the numeric group invalid.
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Possible combinations
+        \label{tab:letter-number-combination}}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            starting group & ending group & example \\
+            \hline
+            \multicolumn{2}{|c|}{one group of alphabet} & `apple' \\
+            \multicolumn{2}{|c|}{one group of numeral} & `13' \\
+            alphabet & alphabet & `int8al' \\
+            numeral & numeral & `5nation2' \\
+            alphabet & numeral & `inter8' \\
+            numeral & alphabet & `5national' \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+Apart from that, other nuisances are awaiting.
+Even though the ordering of alphabetic groups and numeric groups are fixed,
+the starting and ending groups can be of either type.
+Additionally there are edge cases when the starting and ending groups are one and the same.
+It would be onerous to deal with each and every one of the cases separately.
+~\autoref{tab:letter-number-combination} lists the distinct cases.
+
+
+It turns out that the beginning group is actually not so troublesome as it appears.
+We can always assume the beginning group is alphabetic because
+in the case when the beginning group is numeric, we can assume an empty alphabetic group before it.
+This insight reduces the number of cases to $2$---either a numeric group or an
+alphabetic group concludes the abbreviation.
+%This does not render in special treatment in code at all.
+%TODO
+%But as to the ending group, we are not so lucky.
+In the implementation of ~\autoref{lst:ValidWordAbbrev}, we perform all the tasks,
+~\autoref{itm:breakup.letter.number}, ~\autoref{itm:parse.numbers},
+and ~\autoref{itm:check.letters} in one loop.
+It turns out that coded in such a way, the particular beginning group does not require any special
+treatment.
+But the ending group does regardless.
+Namely, when the ending group is number, the last parsed number and the remaining suffix of the
+word would be left unexamined in the loop, causing a potential bug.
+One would have to complete a one-time cross-examination of the two after the loop as we do in
+~\autoref{lst:ValidWordAbbrev}.
+\lstinputlisting[label={lst:ValidWordAbbrev},
+caption={One-pass loop implementation for validating abbreviation of a word.}]
+{sentinels/valid_word_abbreviation.py}
+As you may have recognized, this is reminiscent of the so-called `loop-and-a-half' problem.
+Can we get rid of the residual post-loop processing code?
+``Yes, we can with the help of sentinel!'' as you guess correctly.
+In fact, all we have to do is to
+append a letter group as sentinel to both the word and the abbreviation arguments
+and then we can delete the post-loop processing code as shown in
+~\autoref{lst:ValidWordAbbrev.sentinel}.
+\lstinputlisting[label={lst:ValidWordAbbrev.sentinel},
+caption={Same implementation as ~\autoref{lst:ValidWordAbbrev} with use of sentinel.}]
+{sentinels/valid_word_abbrev_sentinel.py}
+
+This is a perfect demonstration of the power of sentinel to simplify code,
+an even better example
+than `Elephant in Cairo', because in this case we don't even need any post-loop processing at all.
+The application of sentinel in this case is very elegant.
+But Don't get me wrong.
+By no means do I imply that that is the only solution.
+Regular expression may provide yet another beautiful solution, in which we may use regular
+expression patterns to find the boundaries between letter groups and number groups for task
+~\autoref{itm:breakup.letter.number}.
+\@\autoref{lst:ValidWordAbbrev.regex} provides one such implementation just for your information.
+\lstinputlisting[label={lst:ValidWordAbbrev.regex},
+caption={Code for validating abbreviation of a word with use of sentinel.}]
+{sentinels/valid_word_abbrev_regex.py}
+Nevertheless, the simplicity of the implementation ~\autoref{lst:ValidWordAbbrev.sentinel} still
+stands as an exemplary model for the demonstration of the power of sentinels.
+
+
+This idea can be applied in similar situations of string processing.
+In the part ~\fullref{prt:caseStudies}, particularly ~\autoref{ch:json-prettifier}, application of
+sentinel is used extensively.
+Sentinels are often used to cure the so-called `loop-and-a-half' problem.
+
+
+\section{Sentinels in Data Structures}\label{sec:sentinelsInDS}
+
+Sentinel nodes have their niched uses in linked data structures such as linked list and tree.
+The rationale behind this is explained below.
+Linked data structures are fractured memory chunks, scattered all over the address space,
+linked together only through connectors.
+While they may have significant amount of nodes on boundaries,
+algorithms for operations on these data structures are antagonistic to symmetry-breaking boundary
+nodes.
+Sentinel nodes are nodes that are spared for the purpose of freeing algorithms from having to
+deal with boundary conditions.
+
+\subsection{Small examples for sentinel ideas}\label{subsec:small-examples-for-sentinel-ideas}
+
+Mapping data structures in some programming languages provide the `getOrDefault' method or the
+like.
+That is an application of sentinel in disguise.
+Instead of returning a witless \code{NULL} value or throwing an exception,
+the `getOrDefault' method gives user a chance to provide a `default' value
+in the case of a missing key.
+The `default' value provided at the invocation of the `getOrDefault' method
+is essentially a sentinel value.
+
+Proper use of the `getOrDefault' method can save us a line of code.
+For example, accessing \code{HashMap} in the `usual way' would be
+\lstinputlisting{sentinels/cache_access.java}
+But using the `getOrDefault' method, the method becomes one-liner
+\lstinputlisting{sentinels/cache_access_getOrDefault.java}
+
+
+\subsection{Anchoring Sentinel Node}\label{subsec:anchoringSentinels}
+
+One such example is the use of sentinel as an anchor node in algorithms concerning
+singly linked list.
+More aspects of linked list as a data structure
+will be discussed in detail in ~\autoref{ch:datastructure}.
+Most commonly, linked list is implemented by making the following declaration of \code{Node}
+\lstinputlisting[label={lst:linkedListNode},
+caption={Definition of linked list node.}]
+{sentinels/linked_list_node.py}
+Then a linked list can be defined by a \code{Node} named `\code{head}'.
+This deceivingly simple definition of a linked list conceals exceptional conditions
+for one to discover and handle properly,
+especially in the proximity of the head node.
+``What's so exceptional about it?'' you ask.
+It means the condition will often catch one off guard while coding simple algorithms such as
+delete a node.
+When deleting a node from a linked list, one need to consider if the node to be deleted could
+possibly be the `head' node.
+If so, one need extra effort in order to get the operation done correctly.
+In fact deleting node of linked list in C is such a big deal that functions often take
+a doubly-indirect pointer \code{Node** header} as argument as shown in the below function signature.
+\begin{lstlisting}
+    void delete(NODE** header, NODE* node);
+\end{lstlisting}
+This should not be unfamiliar with most C programmers.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case.jpg}
+        \caption{\label{fig:RevertLinkedList.HappyCase.original}Happy case.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_algo.jpg}
+        \caption{\label{fig:RevertLinkedList.algo}Algorithm in action.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case_result.jpg}
+        \caption{\label{fig:RevertLinkedList.HappyCase.reverted}Reverted linked list.}
+    \end{subfigure}
+    \caption{\label{fig:RevertLinkedList}`Revert linked list' algorithm illustration on
+    happy case.}
+\end{figure}
+But we are going to dedicate the rest of this subsection to illustrate the power of sentinel
+by working out a more practical problem.
+The problem statement is simply put
+\begin{quote}
+    ``Revert a linked list.''
+\end{quote}
+A happy case for the problem has been illustrated, an commonly used algorithm for
+the problem is depicted, and the resulting linked list is also given, all in
+~\autoref{fig:RevertLinkedList}.
+
+%The transition from this state to other states and from other states back to this state
+%alike require special handling, because.
+%This caused a lot of coding fragmentation.
+If you try to solve the problem literally according to the algorithm,
+then the code may going to look like ~\autoref{lst:revertLinkedList}.
+\lstinputlisting[label={lst:revertLinkedList},
+caption={Common implementation for revert linked list.}]
+{sentinels/reverse_linked_list.py}
+It may not be the case for many that they come to this solution on their first attempt.
+Some may have been staring at the problem without knowing where to start.
+Others may have been spending substantial amount of time to fix an obnoxious bug.
+Regardless, if you have come this far, you must have had a pretty good grasp for the problem
+and a feel of what a plausible solution looks like.
+
+Now I'm ready to suggest the use of the sentinel for good.
+Look at the algorithm at work as shown in ~\autoref{fig:RevertLinkedList.algo}.
+You may have noticed that I choose to snapshot the algorithm when there
+are a visible stack of nodes on the \code{newHead} and a visible queue of
+nodes on \code{oldHead}.
+With these, human imagination will be winged to make up the missing parts and
+conjure up the `flow', the momentum of the algorithm---that nodes
+are being transferred from the shrinking old pile to the growing new pile.
+
+I didn't snapshot the algorithm at the beginning or end because that way the onus is on the reader
+to figure out the missing pile to detach from or attach to the node in transit.
+You see that human imagination power is inhibited with the lack of a nucleus, a starting point,
+a stub to begin with.
+A cold start is always harder than a hot one.
+Unfortunately at the beginning of algorithm design, developers is always going to face a cold start
+and one usually does not have the luxury of a anchoring stub to begin with.
+But sometimes we can create one, and now it is the case.
+Let us create an anchoring node and assign it to the \code{newHead}.
+Now we have a clear `anchor' to attach nodes on and all of a sudden, the rest of the task becomes
+intuitive---remove next node from the \code{oldHead}, insert it immediately after \code{anchor}.
+The momentum is built up, and the `flow' is started.
+After all the nodes in the old linked list have been transferred, the anchor can be removed and
+what remains is the result.
+Following this thread, I am providing a revised implementation in
+~\autoref{lst:revertLinkedList.sentinel}.
+\lstinputlisting[label={lst:revertLinkedList.sentinel},
+caption={Implementation for revert linked list with the use of sentinel.}]
+{sentinels/reverse_linked_list_sentinel.py}
+As one can see the benefits of using an anchoring sentinel are two-fold.
+For one, it unleashes our brain's visualization power about how the algorithm works.
+It also frees up our mind from worrying about `null-pointer exception' so that it can focus on
+the main part of the algorithm.
+This is the psychological benefit.
+For other, it simplifies our coding task---our code doesn't need to deal with the case
+\code{newHead == None} any more.
+This is reflected in the simpler code in ~\autoref{lst:ValidWordAbbrev.sentinel}.
+
+
+\section{Boundary padding sentinels}\label{sec:boundaryPaddingSentinels}
+
+So far into the chapter, you should have already gained understanding about sentinels.
+Rather than let you go with the tiniest shade of doubt,
+I decide to overexpose you to the instinct of sentinels with yet another example.
+Sometimes sentinels are used as primer layer before the main treatment.
+They are added to make the rest of the work easier.
+In the example below, I am going to present a problem where using of sentinels simplifies the
+algorithm.
+The problem statement is as follows \footnote{Adapted from Leetcode \url{leetcode.com}.}
+\begin{quote}
+    Given a sorted integer array nums, where the range of elements are
+    in the inclusive range [lower, upper], return its missing ranges.
+    For example, given \code{[0, 1, 3, 50, 75]}, return \code{[2, (4,49), (51,74), (76,99)]}
+\end{quote}
+Note that the input integer array is sorted and non-decreasing.
+Also, elements in the array lie within the range \code{lower} and \code{upper}, inclusive.
+
+Here we are going to implement a `sweep-line' algorithm.
+We are going to rely on a pivotal variable `\code{sweep}' initialized to \code{lower} at first.
+It went through and repelled by the elements in the array.
+For each element \code{e}, a range, $[\code{sweep}, \code{e}]$ (reduced to single point
+\code{e} if \code{sweep == e}), is appended to the final result if valid.
+This above process can potentially leave a final range unaccounted.
+To complete algorithm, a post-loop check is needed to recover the final range (or single point).
+The implementation is shown in ~\autoref{lst:missingRangeV1}.
+\lstinputlisting[label={lst:missingRangeV1},
+caption={An implementation for problem `Missing range'.}]
+{sentinels/missing_range.py}
+The above implementation has a mixed smell of `loop-and-a-half'
+(see ~\autoref{sec:loop-and-a-half-Problem}) and `Oddball solution' problem\@\cite{Fowler1999}
+and both are in the post-loop processing logic.
+We say that it has `loop-and-a-half' smell because post-loop processing logic is disguised
+duplication to the loop-body.
+We say that it has `Oddball solution' because the post-loop logic is slightly altered version of
+that in the loop-body.
+All in all, the post-loop processing code poses itself as a nuisance.
+Is there a way to get rid of it?
+
+Yes!
+Sentinel comes to rescue.
+The post-loop logic is needed because of the possible residual range.
+Can we add an extra element in the array so that it `reaps' the remaining range?
+Along this line of thought, we can add a fictitious element `\code{upper + 1}' to the end of the
+array.
+This element won't cause any other effect except that it helps reap the possibly remaining range
+after the last \emph{true} element.
+The code is presented in ~\autoref{lst:missingRangeSentinel}.
+\lstinputlisting[label={lst:missingRangeSentinel},
+caption={A sentinel implementation for problem `Missing range'.}]
+{sentinels/missing_range_sentinel.py}
+Like the example in ~\autoref{lst:ValidWordAbbrev.sentinel},
+the addition of sentinel element 'upper+1' in the array cuts off the cluttered
+post-loop processing logic completely without any side effect.
+Both of them are neat application of sentinel I have ever seen.
+
+\section{Conclusion}
+
+In this chapter, we presented a few examples to illustrate the uses of sentinels.
+Some of the examples are typical sentinel uses such as termination signal.
+Others are beyond the typical uses.
+But they all demonstrated the power of sentinels.
+Proper use of sentinel can save you from duplicate code, ``loop-and-a-half'' problem,
+``oddball solution'' smells \textit{etc.}
+As an important tool for coding craftsmanship, you will see more examples making use of
+sentinels in later chapters of this book, especially in ~\fullref{prt:caseStudies}.

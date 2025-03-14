@@ -1,0 +1,186 @@
+%%
+%% Author: shoupu_wan
+%% 7/14/18
+%%
+
+\chapter{Object-Oriented Design} \label{ch:ood}
+
+When to choose OOD?
+When not to?
+It depends on the purpose of the code---to how much degree will the code be reused.
+
+Even though object-oriented design belongs to higher level of software design, I find it is
+fruitful to think of it in connection with algorithm design
+\footnote{\url{https://en.wikipedia.org/wiki/Algorithm}} across the hierarchical levels.
+In practice object-oriented design and algorithm design are complementary and connected
+rather than opposite and performed separate
+\footnote{\url{https://en.wikipedia.org/wiki/Object-oriented_design}}.
+
+Save messy code with OOD (\textit{e.g.}, \code{Serializable}).
+
+The following is a hypothetical analogy between object-oriented design and hierarchical structure
+of matter.
+Suppose a person is very curious about why a certain type of matter behaves the way it do and is
+determined to figure out this by taking it apart.
+Starting with a chunk of material, he breaks it piece by piece and all the pieces still have the
+same properties as the original chunk, until he arrives at the molecular scale where he
+feels the adhesive properties disappeared because the inter-molecular forces, \textit{e.g.}
+hydrogen bounds, drop down to zero, as the inter-molecular distances are way beyond certain
+range.
+He keeps going on with his job and decides to crack open the molecules and break them into atoms.
+All of a sudden, all of the molecular properties disappeared---the smells, the color, the touch,
+the feel, the thermal property---because the atomic components are so far apart from each
+other that the so-called atomic bounds are broken.
+He is so headstrong that he decide to keep chasing down the properties locked inside the atoms.
+He crack opens atoms into electrons and nuclei, then he losses all the atomic properties;
+then nuclei into nucleons (protons and neutrons) and he loses all the nuclear properties;
+then nucleons (protons and neutrons) into quarks and he loses all the electrical charges, the
+magnetic momenta;
+then quarks into vibrating strings and he loses all the mass.
+As he keeps going on and on until finally he loses all the properties of matter.
+He is left with nothing.
+After the painstaking digging and demolition, it seems that he is just chasing the
+ghost that is found in nowhere.
+Where are the properties manifested by a chunk of matter?
+They lies in the configurations and are destroyed when the configuration is altered as the person
+takes apart piece by piece.
+
+What does this story tell you?
+The hierarchical structure of material is everything.
+Without the structural organization, matter does not behave the way we see in our daily life.
+If we take things apart into its ingredients, we lose properties of the material---the finer we
+break it, the more complete loss it causes.
+In the same way, OOD is.
+Some of the complicated logic is embodied in the structure of software, in its inheritance, its
+composition, its polymorphism, its overriding methods, its template, its chain of
+responsibilities, its function trees, its modularization.
+Just like the macroscopic properties manifested by a material is due to the configurations at
+various levels of the hierarchy of matter, much information, functionalities of software is stored
+as \emph{relationship between entities}, not the entities themselves.
+
+This following listing\ref{lst:longestDistinctCharSubstring} shows how to design away
+otherwise would-be messy code by creating small, powerful classes.
+
+The behaviors of deleting entries if value is `empty' or some default value can be abstracted
+away by creating a specialty \code{dict} or \code{map} class.
+
+Not just `$0$' values, we can generalize the concept of `emptiness' to anything that evaluates to
+`\code{false}'---empty list, empty set, empty string, \code{None}, \code{null}, and so on.
+
+\lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
+label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/longest_k_uniq_char_substring.py}
+\label{Evernote:Longest Substring with At Most K Distinct Characters}
+
+This following listing shows the importance of desiging your classes to be easily extensible
+
+\lstinputlisting[caption={Example showing extensible implementation of object-oriented-design},
+label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/flatten_2d_array.py}
+\label{Evernote:Flatten 2D Vector}
+
+\lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
+label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/flatten_3d_array.py}
+\label{Evernote:Flatten 3D vector}
+
+\section{The idea of algorithm}\label{sec:algorithm}
+
+This illustrates the refactor process and creation of a specialized heap data structure.
+The whole process was driven by modular design.
+
+Given a binary search tree whose node each has an integer key, an integer as target key, and a
+number $k$, find $k$ closest keys.
+
+\section{The initial implementation}
+
+\lstinputlisting[label={lst:jump_game_ii},
+caption={First implementation.}]
+{object-oriented-design/closest_binary_tree_II_2018.py}
+
+%TODO
+Find examples that shows how to place certain methods member variables in the subclassing
+hierarchy.
+The protobufVisitor example.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:jump_game_ii},firstline=10,lastline=31,
+    caption={First implementation.}]{object-oriented-design/bound_heap.py}
+\end{clisting}
+
+\section{Case Study: flatten $2$D array}\label{sec:caseStudy:FlattenArray}
+
+\lstinputlisting[label={lst:MatrixIterator},
+caption={MatrixIterator}]
+{object-oriented-design/MatrixIterator.java}
+
+\lstinputlisting[label={lst:MatrixIteratorHasNextIdempotent},
+caption={MatrixIteratorHasNextIdempotent}]
+{object-oriented-design/MatrixIteratorHasNextIdempotent.java}
+
+\lstinputlisting[label={lst:MatrixIteratorHasNextIdempotent_duplicate_code},
+caption={MatrixIteratorHasNextIdempotent duplicate code}]
+{object-oriented-design/MatrixIteratorHasNextIdempotent_duplicate_code.java}
+
+\lstinputlisting[label={lst:MatrixIteratorNonIdempotent.java},
+caption={MatrixIteratorNonIdempotent}]
+{object-oriented-design/MatrixIteratorNonIdempotent.java}
+
+\lstinputlisting[label={lst:MatrixIteratorNonIdempotent_duplicate_code},
+caption={MatrixIteratorNonIdempotent duplicate code}]
+{object-oriented-design/MatrixIteratorNonIdempotent_duplicate_code.java}
+
+
+\section{Case study --- producer/consumer design}\label{sec:case-study-producer-consumer-design}
+
+Let's consider a real-world example---the design of producer/consumer service.
+This topic should not be unfamiliar to those who has experience with distributed message queues
+such as Kafka, AMQP, \textit{etc.}
+To make the problem small enough to fit in this book, we will design wrapper classes on top of
+one of the message queue clients, \textit{e.g.}, Kafka.
+
+
+The \java client of Kafka producer/consumer classes have the following public interfaces:
+
+\lstinputlisting[label={lst:kafka-client-producer-consumer},
+caption={Kafka client: Producer and Consumer}]
+{object-oriented-design/kafka_client_producer_consumer.java}
+
+As one can tell, the Kafka client is asymmetric in terms of its producer/consumer interface:
+Producer publishes a message of type \code{String} whereas Consumer consumes a message of type
+\code{ConsumeStreamMessage}:
+\begin{lstlisting}
+    class ConsumeStreamMessage {
+
+    }
+\end{lstlisting}
+
+\lstinputlisting[label={lst:fake-ood},
+caption={Fake OOD example}]
+{object-oriented-design/fake_ood.js}
+
+\section{Object Interaction}\label{sec:object-interaction}
+
+When two systems need to interact, where should the logic reside?
+Take for example you are building a system consisting of two system---\code{Storage} and
+\code{Dispatcher}.
+\code{Storage} is the system that maintains the storage of items waiting to be delivered whereas
+\code{Dispatcher} is the system that is in charge of logistics and delivery.
+Aside from these two components, there is a \code{System} that runs the entire system.
+There is the core functionality for transferring items to be delivered from \code{Storage} to
+\code{Dispatcher}.
+How would you design the components API and their interactions?
+
+There are three easy possibilities:
+\begin{itemize}
+    \item Put the logic in \code{System}
+    \item Pass \code{Dispatcher} as an argument to method of \code{Storage}
+    \item Pass \code{Storage} as an argument to method of \code{Dispatcher}
+\end{itemize}
+
+\lstinputlisting[label={lst:clean-object-interaction-dispatcher},
+caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a clean design for
+object interaction}]
+{object-oriented-design/good_component_interaction.py}
+
+\lstinputlisting[label={lst:confusing-object-interaction-dispatcher},
+caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a confusing
+design for object interaction}]
+{object-oriented-design/bad_component_interaction.py}

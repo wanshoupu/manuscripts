@@ -1,0 +1,73 @@
+%! Author = shoupu_wan
+%! Date = 2/2/20
+
+\section{Case Study for Data Structure Design}\label{sec:case-study-data-structure-design}
+
+This problem is an optimization problem concerning the capital gain of a company.
+Starting with an initial capital \code{cap}, the company has a to-do list, projects out of which
+the company has targeted to finish \code{k} of them.
+There are two lists of equal size, \code{capitals} and \code{profits}, which specify the required
+capital and net profit for each corresponding project.
+The question is how to select the projects and in what order to finish them so as to maximize the
+final capital gain.
+
+\subsection{Na\"{i}ve Solution}\label{subsec:max-cap-naive}
+First of all and to help reader warm up on this problem, the following greedy algorithm would
+not work and is a false start.
+\begin{enumerate}
+    \item Heapify the projects with the smallest capital and largest profit on top
+    \item heappop projects
+    \item If enough capital to finish the project, collect the profits
+    \item If not, return
+\end{enumerate}
+
+What's wrong with this?
+It fails to handle the sufficient capital but limited project case.
+
+So really this problem deals with two criteria at once---attainability and profitability.
+Attainability criteria has to do with the subset of projects attainable with the current capital.
+Profitability criteria choose the most profitable projects among those attainable.
+Because each project can only be done once, one need to update the subset of attainable projects
+each time a project is completed.
+Based on these observation, we can lay out the first algorithm
+\begin{alisting}
+    \caption{Na\"{i}ve algorithm for the `Max Capital' problem.\label{max-capital-naive-algo}}
+    \begin{enumerate}
+        \item Sort projects by `(capital, profit descending)'
+        \item Find the most profitable one among the attainable projects
+        \item Collect the profit and delete the project from projects to-do list
+        \item Repeat \code{k} times or until attainable projects run out
+    \end{enumerate}
+\end{alisting}
+
+A \python implementation of this algorithm is listed in~\fullref{lst:max-capital-brute-force}.
+The part removing a finished project from to-be-considered list is costly.
+So despite the simplicity of this solution, the runtime for this algorithm is $O(N^2)$.
+\begin{clisting}
+    \lstinputlisting[label={lst:max-capital-brute-force},
+    caption={Max capital gain.
+    A naive implementation}]
+    {data-structure/max-capital-brute-force.py}
+\end{clisting}
+
+At this time it is unclear how to beat that runtime.
+But looking back at the two criteria---attainability and profitability---we may decouple these
+two requirements and meet each of them with separate data structures.
+Therefore we may process the projects in a streamlined fashion with two stages---with the first
+stage procuring attainable projects and the second extracting the most
+profitable among the attainable.
+Also note that the total capital is a non-decreasing sequence with each finished project.
+This means that if a project was attainable before will continue to be thereafter.
+This is important to our above streamlined design---projects can only advance along the path and
+never going back or cycle back to the beginning.
+
+the heap may be chosen for both stage.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:max-capital-two-hop},
+    caption={Max capital gain.
+    A two-data-structure
+    implementation}]{data-structure/max-capital-two-hops.py}
+\end{clisting}
+Unlike the na\"{i}ve solution, this data structure design separates the concerns for attainability
+from profitability.

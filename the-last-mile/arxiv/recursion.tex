@@ -1,0 +1,182 @@
+%%
+%% Author: shoupu_wan
+%% 7/14/18
+%%
+
+\chapter{Recursive Functions} \label{ch:recursion}
+
+The concept of recursion has long been known to artists and scientists of past times and is present
+in many distinct disciplines: linguistics, logic, mathematics, \textit{etc}.
+With the advent of computer science, recursion was made the central idea for developing
+both data structures and procedures.
+Many recursive data structures, generally falling in the category of linked data structures, becomes
+the most important dynamic data structures for large-scale data retrieval and storage.
+Among the most known dynamic data structures are linked lists, trees, \textit{etc}.
+In parallel, recursive procedures and functions also consists a major programming pattern for
+recursively structured data processing.
+In this chapter, we are going to give a brief introduction ot the necessary attributes of
+recursion and then dedicate majority of the content to the discussion of
+the \emph{practical} aspects of recursion, recursive procedures, and recursive functions.
+
+%TODO add these topics
+Recursion is a paradigm of implementing algorithms for functional programming.
+Every recursive version has an equivalent (but possibly more or less complex) iterative version, and vice versa.
+
+\section{Taxonomy of recursive functions}\label{sec:taxonomy-recursive-functions}
+
+Functions become recursive because of the occurrence(s) of recursive function invocation.
+Depending on the number of recursive function invocations, recursive functions are classified
+into single and multiple recursive functions.
+The \emph{single recursive function}s are those that make exactly one recursive calls, whereas
+\emph{multiple recursive function}s are those that make more than one recursive function
+invocations in the function definition.
+Note some recursive functions make recursive calls in a loop.
+So even though there is only one recursive invocation, these are considered multiple recursive
+functions.
+One of the main reason for differentiating single and multiple recursive functions
+is for time complexity analysis.
+
+Another way for recursive function classification is based on how many participant functions
+there are in the recursive calls.
+Ordinary recursive functions involve only one function and self invocation(s).
+When there are more than one mutually recursive participant functions and hetero-invocations, all
+the participating functions will be called \emph{mutually recursive functions}.
+Mutual recursions in function design have important application in text parsing, compositional
+recursive data processing, file system programming, \textit{etc.}
+We will discuss mutual recursion in later sections of this chapter.
+For a real-world example of applications of mutual recursions, see ~\autoref{ch:json-prettifier} in
+~\fullref{prt:advancedTopic}.
+
+\section{Fallacies when programming recursions}\label{sec:recursiveFallacies}
+
+Beginners tend to picture recursions as an infinite loop because they focused too much on the
+recursive invocation statement.
+In reality, all successful implementation of recursive function are based on solid ground of base
+case(s).
+The image about recursion should be in the reverse order: think about the base case(s) first then
+about the recursive relation.
+So in this respect, execution of a recursive function is like a spiral---starting form solid
+ground it winds up its way to the summit.
+The first thing a recursive algorithm designer seeks is how to bring about convergence.
+Not the other way around.
+Going the other way around would result in the ruining departure of Martingale betting strategy
+practitioners.
+
+Stumbling block in recursion
+
+Stack is a state machine for recursion.
+Make sure that your other stateful variables do not interfere with this.
+One technique to reduce risk of modifying state of variables is to use immutable variables such
+as \code{string}, \code{tuple}, \code{pair}, \textit{etc.}
+
+The following code snippet suffers this problem.
+\lstinputlisting{recursion/bad-recursion.py}
+
+Like a sourdough recipe calling for some dough left over from the last time the same recipe was
+made.
+
+From some point of view, recursion is a special kind of loop.
+Ordinary loop such as \code{for}, \code{while} or \code{do-while} relies on local variables as
+state register to control the execution and its termination.
+Recursion, on the other hand, relies on system stack frames, which faithfully
+deposits all the relevant program information before each recursive invocation,
+to memoize states.
+
+
+\section{General design considerations of recursive functions}\label{sec:generalRecursiveFunction}
+
+\subsection{Base Case Reduction Technique}\label{subsec:baseCaseShrinkingTechnique}
+
+Similar to initialization for iterative programming, recursive base cases need to be carefully
+considered.
+Choose a base case that's both small and with an obvious solution.
+The choice of a base case contains an aesthetic sense, is reflective to one's
+engineering taste, and thus needs some training.
+
+One of the criteria for a good base class is that that it requires minimal initialization.
+
+\subsection{Remnant function parameter}\label{sec:remnantFunctionParameter}
+
+Some parameters are used only by recursive calls and
+client code who invokes this function never need to specify.
+So we may dub it as `remnant function parameter'.
+
+One could create a simpler function wrapping around this one to get rid of the remnant
+parameter.
+As an effort to take the burden away from client code to specify a confusing, useless parameter,
+it is given a default value as a clumsy remedy.
+
+\section{Case study for recursive function implementation}\label{sec:recursivecaseStudy}
+
+The questions when it comes to thinking of the base cases are:
+What if the matrix is a row array?
+Column array?
+What if the matrix is a one-cell matrix?
+Extreme question: what if the matrix is empty?
+Do you just throw exception?
+
+\begin{clisting}
+    \lstinputlisting[label={lst:matrix-spiral-term},
+    caption={Matrix spiral print termination position.}]
+    {recursion/spiral_termination_position.py}
+\end{clisting}
+
+\section{Convert Recursive Solutions to Iterative}\label{sec:recursiveToIterative}
+
+How to convert recursive solution to iterative?
+
+\section{Tail Recursion}\label{sec:tailRecursion}
+
+If last action of a function is an invocation of itself, then this recursive function is called a
+tail recursive function\footnote{\url{https://en.wikipedia.org/wiki/Tail_call}}.
+
+\section{Recursion and mathematical induction}\label{sec:recursionMathematicalInduction}
+
+Mathematical induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}}
+
+\section{Mutual recursion}\label{sec:mutual-recursion}
+
+\section{Multivariate recursive functions}\label{sec:multivariateRecursiveFunctions}
+\begin{defn}
+    A group of multivariate functions are recursive iff the invocation graph is not a directed
+    acyclic graph.
+\end{defn}
+
+When dealing with a task that is a recursive composition of subtasks of a few
+distinct types, multiple mutually recursive functions,
+with each function dedicates to solve tasks of one category,
+usually make a solution with highly cohesive code.
+A beautiful example may be found in the book ~\cite{Beautiful-Code:2007} chapter 1 for the regular
+expression \code{grep} function.
+For an example in this book, reader can refer the JSON parser of ~\fullref{ch:json-prettifier}.
+
+Topology for mutual recursion is usually star-shaped---a main function for dispatching,
+one or more leaf functions that only interact with the main function.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{recursion/multi-recursion.jpg}
+    \caption{Mutual recursion.\label{fig:mutual-recursion}}
+\end{figure}
+
+Each function in the mutual recursion group
+implementation has its specialty and is the sole expert for performing a duty.
+No function should perform this specialty except the designated function.
+When other functions need to perform this duty, they have to defer it to the designated function.
+
+
+\section{Connection with dynamic programming}
+\label{sec:recursion&DynamicProgramming}
+
+Recursive function has a close connection with dynamic programming.
+
+\section{Function argument}\label{sec:functionArgument}
+Function argument as a way of communication between frames.
+With an adjacency list representation of a tree structure, one wish to iterate through it
+recursively.
+But one difficulty is parent node is also present in the adjacency list of its children.
+One solution is to remove those redundant, troublesome parent node from the adjacency list.
+A even better way is to pass in \code{parent} as a function argument.
+\begin{lstlisting}
+    def dfs(node = 0, parent = None):
+\end{lstlisting}

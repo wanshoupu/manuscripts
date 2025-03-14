@@ -1,0 +1,61 @@
+%%
+%% Author: shoupu_wan
+%% 7/19/18
+%%
+
+\section{Linked List Pattern}\label{sec:linkedList}
+
+\label{Evernote:Reorder List}
+
+Most linked list algorithms work in an `inch worm' fashion---it pushes its way forward one node
+at a time.
+
+\subsection{Packing and Unpacking}\label{subsec:packingAndUnpacking}
+\begin{lstlisting}[language=Python]
+    a,b,c=3,4,5
+    print a,b,c # output: 3 4 5
+    b,c,a=a,b,c
+    print a,b,c # output: 5 3 4
+\end{lstlisting}
+
+This can be very useful when implementing linked lists algorithms, where rotation of
+values among multiple variables is almost always needed.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:linkedListRealCode},
+    caption={Linked list real code.}]{data-structure/LinkedListAlgorithms.java}
+\end{clisting}
+
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{data-structure/anchored-doubly-linked-list.jpg}
+    \caption{\label{fig:anchored-doubly-linked-list}A fully anchored doubly linked list.}
+\end{figure}
+
+
+\label{Evernote:Sort a linked list in O(n log n) time using constant space complexity.}
+The following linked list operation code are equivalent between the left and the right
+\begin{table}[b]
+    \begin{center}
+        \caption{An example of a table.}
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Option 1 & Option 2  \\
+            \lstinputlisting{data-structure/linked_list_operation1.java}
+            &
+            \lstinputlisting{data-structure/linked_list_operation2.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+The following linked list operation code are equivalent between the left and the right
+\begin{table}[b]
+    \begin{center}
+        \caption{An example of a table.}
+        \begin{tabular}{p{7cm}|p{7cm}}
+            Option 1 & Option 2  \\
+            \lstinputlisting{data-structure/linked_list_operation3.java}
+            &
+            \lstinputlisting{data-structure/linked_list_operation4.java} \\
+        \end{tabular}
+    \end{center}
+\end{table}

@@ -1,0 +1,788 @@
+%%
+%% Author: shoupu_wan
+%% 8/22/18
+%%
+
+\chapter{Case Study: JSON Prettifier}\label{ch:json-prettifier}
+
+By and large, JSON is familiar to most programmers, even beginners.
+Particularly, they have an intuitive idea of a `well-formatted' JSON\@.
+The problem of designing a JSON prettifier is a project that is close to production working
+environment.
+At first sight, the problem may seem to be a coding problem.
+But after careful examination, much of the complicated logic encountered in
+the problem actually can be designed away.
+For developers on intermediate tier of software development ladder,
+the problem is a good practice project, with near-production requirements and workload.
+
+This chapter serves as a showroom.
+We will demonstrate the approaches the author took in the past and
+explain how each encountered issue or task may be solved using the various strategies that were
+presented in earlier chapters of this book.
+In doing so, the author hope to put those techniques and strategies in a practical perspective
+for the inspiration of readers.
+We are going to evaluate the trade-offs with explanations of why certain choices are preferable
+that may have long-term benefit that's are hidden from the current situation.
+
+After going through this practice, I hope that reader may get strengthened on their critical
+thinking skills as well as basic OOD application skills are required.
+
+\section{The problem statement}\label{sec:theProblemStatement.Json}
+
+The JSON prettifier problem can be stated as ``Given a JSON blob in string, format
+it into pretty, multi-line string with proper indentation.''
+
+A little background information about JSON\@.
+JSON is a data serialization format.
+Primitive JSON element types include string, number, true, false, and null.
+Structural JSON element types are dictionary and list and the keys for dictionary
+must be of type string\footnote{\label{fn:json-spec}See JSON specification
+at \url{https://www.json.org/}}.
+JSON specification strictly, unambiguously specifies the JSON format standards, the rules on
+entities, punctuations, etc.
+But the specification is very accommodating on the use of whitespaces.
+JSON allows $4$ kinds of whitespace characters---tab (\code{"\t"}), newline (\code{"\n"}),
+return (\code{"\r"}), and space (\code{" "})
+One can freely insert or delete whitespaces anywhere between entities and punctuations.
+As long as values of entities of primitive types are not altered, the information encoded in a
+JSON blob would be intact, similar to many programming languages.
+But also just like programming languages,
+certain style of formatting JSON would be promote readabilities to human eyes.
+It is the intention of this JSON prettifier problem that a JSON data be formatted in such a style
+that it is `pretty' to the look.
+There are many pretty JSON styles.
+For the sake of argument, it is specified particularly in this problem as follows
+(refer to ~\autoref{fn:json-spec} for terminology):
+\begin{enumerate}
+    \label{json-style-spec}
+    \item No empty line.
+    \item No trailing space.
+    \item First line shall not be indented.
+    \item Each value shall reside in its own line, except for object entries.
+    \item Brackets of arrays or objects shall reside in their own lines, except for object entries.
+    \item For object entries, the key and the value or the opening bracket of array or object
+    shall reside in one line, separated by colon and a space.
+    \item Successive entries of arrays or objects shall be
+    \item Each line between the brackets of arrays or objects shall be indented $2$ spaces with
+    respect to the line containing their opening brackets.
+    \item Closing brackets shall be aligned to line containing the matching opening brackets.
+\end{enumerate}
+
+Beyond meeting the above specification, further complication may come from invalid JSON strings
+as the input is out of our control.
+So validation may be a prerequisite before formatting and prettifying.
+Other complexities may come from escape characters, including quotes like single/double quotes.
+We will address these as the discussion goes.
+
+\section{Problem analysis}\label{sec:outlineOfTheAlgorithm.Json}
+
+This is another example where complexity management involves separating the complexities,
+then divide and conquer strategy is used, and the complexities are handled in
+different modules.
+The input string may be a blob of strings with no newlines or spaces in between.
+Or the input may be `almost' well-formatted JSON files, off by just a few spaces or
+newlines---this requires minimal `style-compliance' formatting.
+Or the input may be invalid JSON, in which case the formatting will be interrupted
+by a report of errors found.
+
+This inspires us to divide up the task into subtask of parsing JSON strings,
+`\code{JsonParser}', and subtask of formatting
+structured object representing JSON into pretty multi-line string, `\code{JsonFormatter}'.
+Once we are clear of the structure of the solution, coding up top-level function,
+such as ~\autoref{lst:JsonPrettifier}, would
+move us one leg up the solution ladder.
+
+\lstinputlisting[label={lst:JsonPrettifier},
+caption={JSON Prettifier driver function.}]
+{case-study/my-json/JsonPrettifier.py}
+
+Reaching this point, our programming tasks and the roadmap to code complete have become very clear.
+For one, we have the subtasks laid out.
+We know better about the kind of work needed to complete the task, we can even start allocating
+resources to these subtasks.
+For another, decoupled the complexity and now the two functions, \code{parseJson(json_str)}
+and \code{toPrettyString(obj)}, may be implemented in parallel.
+In the next sections we will elaborate the implementation for each.
+
+\section{Parser for JSON string}\label{sec:jsonparser}
+
+Tokens
+Smallest building blocks for JSON
+Invalid JSON
+Take care of quote
+
+\lstinputlisting[label={lst:JsonParser.layout},
+caption={Hash out the structure of a JSON parser.}]
+{case-study/my-json/JsonParser.py}
+
+One should never underestimate the importance of breaking up a formidable task into smaller,
+simpler, bite-sized subtasks.
+First of all, you will make steady progress.
+People tend to work on easy tasks than hard ones.
+You will put more quality time to make concrete progress because the subtasks are easier, readily
+attacked.
+Just like a compiler that turns an high-level program into a series of arithmetic
+operations that machine can handle, you break up a hard project into tasks.
+Second, this helps you focus.
+If you do development in this cascade way, you get to live out the moment.
+You focus on what you are doing now and do it right, as there are no other lower level things
+bother you.
+
+I want to pause here to give a disclaimer, as
+I don't want the reader be mislead by the pretty layout at the forefront.
+Note that I didn't come out with this beautiful plan on my first stroke.
+For a long time, my code was messy and the function names were weird.
+But all that messy code is normal and encouraged at first.
+Only through working out something quick-n-dirty will you grasp much of the needed insights
+behind the problem for the right code.
+The key is to iterate over your code.
+Don't settle until you achieve certain confidence and are comfortable with your code.
+
+The functionality of the JSON parser is to convert the information encoded in the JSON string
+into a data structure that is understood by the \code{JsonFormatter}.
+So here we need to define the data structure to be shared by both the \code{JsonParser} and the
+\code{JsonFormatter}.
+We can readily make a mapping between JSON elements and the built-in types of \python and this is
+shown in ~\autoref{tab:ds-mapping}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Mapping of JSON element and \python types
+        \label{tab:ds-mapping}}
+        \begin{tabular}{r|l}
+            object & dictionary \\
+            array & list \\
+            value & string \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Note that the mapping of JSON \code{value} to \code{string} is something to be reflected on.
+In my initial design, I used the following additional mappings
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Mapping of JSON element and \python types}
+        \begin{tabular}{r|l}
+            string & \code{string} \\
+            number & \code{float} \\
+            true & \code{True} \\
+            false & \code{False} \\
+            null & \code{None} \\
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Later on when I had to overcome the difficulty of recovering the original number format did I
+realized that it is not only unnecessary to convert strings to numbers but also doing so will
+result in the lost number formatting information.
+So I not only gave up converting for numbers, but also stopped converting other primitive values
+as well.
+Then I finally arrived at the simplified mappings in ~\autoref{tab:ds-mapping}.
+At the same time, I repurposed the functions that I created for parsing the values to value
+validators.
+
+\section{Break down a JSON string with Tokenizer}\label{sec:JsonTokenizer}
+
+The foremost thing when it comes to tokenizing
+is to match quotes and honor the things intact between quotes.
+Knowing when to parse values and when to preserve strings as is.
+Another difficulty of tokenizing the input string is escape sequences, especially the escaped
+quotes.
+I decided to take care of quotes in JSON string as first step.
+So I came up with a first version that works for all
+but the escape sequences as shown in ~\autoref{lst:JsonParser.tokenizer}.
+
+\lstinputlisting[label={lst:JsonParser.tokenizer},
+caption={Components for data structure tokenizer.}]
+{case-study/my-json/JsonTokenizer_lest_esc.py}
+
+What remains now is how to gracefully handle escape sequences.
+This is another hurdle.
+If not properly handled, one will end with various bugs.
+One false start is substitute escape sequences with something else.
+Depending on the choice of substitutions, each one has its own problems.
+Firstly one cannot choose substitution from valid characters.
+For example one cannot replace \code{'\\t'} with \code{'t'}.
+
+Also, if one chooses to substitute escape sequence with the original char in unicode for example,
+one would face a difficulty of substituting escaped double-quote,
+because double-quote is a the delimiter of string in JSON\@.
+
+One would face similar difficulty if one chooses to substitute escaped sequences with
+multi-character signatures.
+How do you guarantee that multi-character signatures will not be present in the original string?
+All schemes that I thought of, I found a counterexample to rule it out.
+
+Given that one has a safe scheme of substitution, one still has to do substitutions of
+various escape sequences in certain order.
+For example, if we substitute the escape sequence \code{'\\\\'}
+followed by \code{'\\t'} on the string \code{'\\\\t'},
+we will get different result than doing it the other way around.
+
+After all the searches and explorations, I found that
+the most effective way of handling escape sequence is 'detect and preserve'
+instead of substitution.
+
+With all the considerations, I came up with the first correct implementation on top of
+~\autoref{lst:JsonParser.tokenizer} by adding the escape sequence handling code to the beginning of
+the loop body.
+\lstinputlisting[caption={First correct tokenizer.}]
+{case-study/my-json/JsonTokenizer_1st.py}
+
+Since it's a first version, it is needless to say that there are various problems with it.
+Firstly, it has the `loop-and-a-half' problem as discussed in
+~\autoref{sec:loop-and-a-half-Problem}.
+Second, the main loop contains fat logic.
+Clearly, it is overcrowded with more than one responsibilities.
+Third, the function is full of arithmetic operations regarding the usage of index:
+\code{start = indx + 1}, \code{indx += 2} or \code{indx += 1}.
+Reading such code requires extra patience and attention.
+
+Can we overcome these problems and simplify the logic?
+Let us set out to see how to improve from here.
+Firstly the `loop-and-a-half' problem, as we learned in ~\autoref{sec:loop-and-a-half-Problem},
+came from the lack of symmetry in treatment of the end-of-string (EOS).
+Using technologies we learned there, let's introduce a sentinel for EOS,
+we can get rid of the `loop-and-a-half' problem.
+We know that the character \code{U+0000}, \textit{a.k.a} \code{NULL},
+is used to denote end of string in \code{C}-like languages,
+so we will append this character at the end of the JSON string as a sentinel.
+We also add this to the collection of punctuation characters to signal the processing of the
+remaining string segment, if any before EOS\@.
+Voila, no more `loop-and-a-half' problem.
+
+I am also tired of the arithmetic around the usages of the index.
+This index is used both before and after it's incremented.
+That is the cause of the excessive index-arithmetic.
+But careful examination shows that usages of index to get the segment is before it's incremented.
+All other usages may be made after it is incremented.
+Knowing this, we obtain the segment beforehand and then increment it.
+This frees us from doing weird arithmetic operations.
+
+Third, the lines of handling escape sequence, while small and succinct, seems to be misplaced.
+Apparently, no escape sequence can exist outside of a quoted string.
+So it's safe to move this into the \code{if quoted} block.
+
+Last, the call for function \code{attemptToParseValue} is unnecessary just before entering the
+\code{quoted}-mode.
+This can be verified by JSON format specification.
+
+With these changes, we renew the solution as ~\autoref{lst:json_tokenizer_with_no_lah}.
+
+\lstinputlisting[label={lst:json_tokenizer_with_no_lah},
+caption={Tokenizer with fixes to remove the `loop-and-a-half' problem and various other problems.}]
+{case-study/my-json/JsonTokenizer_with_no_lah_problem.py}
+
+But the main loop still contains a lot of \code{if}-\code{elif}-\code{elif} and that seems overly
+complicated.
+Above all, it is still in violation of the single-responsibility-principle.
+How can we refactor it into atomic, SRP-compliant functions?
+Well, the function \code{tokenize} tokenizes both quoted string, punctuations,
+and non-string values.
+Let's see what it takes to separate the parsing of quoted string (along with escape sequences) from
+the rest.
+I experimented with two ways.
+One other way of parsing the JSON string is to split the string into quoted and unquoted.
+Splitting the string means chop it up into \code{"}-delimited segments and non-\code{"}-delimited
+portions.
+As mentioned earlier, escape sequence \code{\\"} interferes with the delimiting quotes.
+It is a chicken-and-egg problem as to whether we should solve escape sequence problem or
+to solve splitting problem first.
+
+How about refactor the loop-body so as to separate the logic for processing quoted string into
+its own function?
+As a matter of fact, this is less disrupting to existing coding paradigm.
+But since the main loop iterates using \code{indx} to the original string, we need to pass
+\code{indx} as well as \code{string} as the parameters to the separate function.
+Moreover, after the quoted-string function is done, it needs to pass back not only the quoted
+string result, but also the new value for
+\code{indx} for the caller function to continue.
+Thus the refactored function turns out to be quite verbose.
+
+To solve this verboseness, a stateful iterator over the string would be very useful.
+Unfortunately, \python has no stateful `pointer' as C does.
+But this can be made up with the use of a \code{deque} which can turn the JSON string into a
+queue of characters.
+As we discussed in ~\autoref{sec:queue}, a \code{deque} can be taken as a stateful container,
+it faithfully records which character is next to be processed.
+So let us commit the JSON string to a \code{deque} and use it as a replacement for C-like pointer.
+This lifted us the taxing burden of maintaining the index to the next unprocessed character
+in the JSON string.
+The relevant part of the refactored code is presented in ~\autoref{lst:json_tokenizer_atomic}.
+
+\begin{figure}[H]
+    \lstinputlisting[label={lst:json_tokenizer_atomic},
+    caption={JsonTokenizer that separately process quoted strings and non-quoted portions.}]
+    {case-study/my-json/JsonTokenizer_atomic.py}
+\end{figure}
+
+Note that the function \code{tokenizeStr} is solely responsible for consume all the characters
+between and including the delimiting quote characters so that after the control is returned to
+the main function, the remaining string is ready for consumption once again.
+There is no recursive call from within \code{tokenizeStr} because string is a primitive type
+requires no further parsing.
+
+\section{Assemble in-memory data structure for JSON}\label{sec:JsonAssembler}
+
+Stream of tokens come out of the tokenizer and are fed the assembler
+to be assembled into in-memory data structures such as array or dictionary
+(map in \java ~and \cpp).
+For example the JSON string
+\begin{quote}
+    \code{'\{"1":"\\"1:\{1:1\}","2":2\}'}
+\end{quote}
+will be tokenized into the following token sequence:
+\begin{lstlisting}
+    '{'
+    '"1"'
+    ':'
+    '"\"1:{1:1}"'
+    ','
+    '"2"'
+    ':'
+    '2'
+    '}'
+\end{lstlisting}
+The assembler will figure out the
+relationship among the tokens with hints from punctuation tokens such as
+curly brackets `\texttt{\{}' and `\texttt{\}}',
+square brackets `\texttt{[}' and `\texttt{]}',
+comma `\texttt{,}', colon `\texttt{:}'
+and aggregate them in corresponding data structures.
+
+JSON is recursively structured data and the token stream is flat array.
+Given the grammar of JSON \footnote{See the EBNF specification at
+\url{https://www.json.org/}},
+the job of assembling tokens into recursive data structure can be realized
+by a top-down parser.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{case-study/my-json/generalized-shunting-yard-algo.jpg}
+\caption{\label{fig:shunting-yard}The generalized 'shunting-yard' algorithm for assembling
+in-memory data structures for JSON data.}
+\end{figure}
+
+There are two ways of doing that---iterative and recursive.
+First let us attempt an iterative solution.
+The iterative solution uses two stacks---one for elements, one for punctuations.
+The algorithm is inspired by the `shunting-yard' algorithm, originally designed by Edsger Dijkstra
+\@\cite{Dijkstra-shunting-yard}.
+The Wikipedia description\@\footnote{A brief description is available at
+\url{https://en.wikipedia.org/wiki/Shunting-yard_algorithm}}
+of the `shunting-yard' algorithm works only for unary/binary operators.
+The implementation here can be viewed as generalized `shunting-yard' algorithm.
+The operation for assembling a variable number of entries into composite object or array can be
+viewed as an n-nary operation.
+There are two operations---one for assembling object and the other for array---denoted by
+\code{']'} and \code{'\}'}, respectively.
+The implementation is listed in ~\autoref{lst:JsonParser.Assembler}.
+
+\lstinputlisting[label={lst:JsonParser.Assembler},
+caption={Components for data structure assembling.}]
+{case-study/my-json/JsonAssembler.py}
+There are certain degree of redundancy in the punctuation.
+We may use these tokens for verification purposes.
+Note the use of \code{OrderedDict}.
+This is because the original order of entries
+in the object value of JSON must be preserved but the built-in type \code{dict} of \python doesn't
+guarantee any order of entries.
+
+Looking at the iterative solution one thing we can be sure is that it's pretty verbose.
+The first sight of it is formidable to a pair of new eyes without any explanation.
+That's certainly a sign that this is not the final version to settle on.
+Therefore I'm going to try the second way of implementation, that is, the recursive solution.
+
+Recall the discussions in ~\fullref{ch:recursion} that when there are more than one types of
+structures embedded within one another, a mutual recursion implementation might come to rescue.
+We are going to attempt to implement a recursive solution using techniques discussed there.
+
+Above all, we are going to convert string to a \code{deque} of characters in making up of the
+missing pointer concept in \python to facilitate stateful extraction of characters.
+We do this in the public facing wrapper function \code{assemble}.
+\begin{table}[H]
+\lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
+caption={Function wraps a string in a \code{deque}.}]
+{case-study/my-json/NewJsonAssembler.py}
+\end{table}
+
+Firstly the driver function which acts as a dispatcher---it delegates each type
+of structures to a special function to be processed---one type per function.
+What's important is that as you implement the driver, you should create function stubs as
+needed, but don't implement them as yet.
+The driver function of my implementation is as ~\autoref{lst:JsonAssemblerRecursion.driver}.
+
+\begin{table}[H]
+\lstinputlisting[label={lst:JsonAssemblerRecursion.driver},
+caption={Driving function, a dispatcher to distribute each type of structures to the
+corresponding special functions.}]
+{case-study/my-json/NewJsonAssembler_dispatcher.py}
+\end{table}
+
+Now it is time to fill the blanks---we finish implementing the stubs that we created
+while implementing the driver functions.
+We starts with the simpler structure, JSON array, because we have fewer things to deal with and the
+insights learned here may be helpful for the more complex JSON object.
+With no ado, ~\autoref{lst:JsonAssemblerRecursion.array} lists the implementation.
+
+\begin{table}[H]
+\lstinputlisting[label={lst:JsonAssemblerRecursion.array},
+caption={Assembler function for array structure}]
+{case-study/my-json/NewJsonAssembler_array.py}
+\end{table}
+
+The key logic here is the \code{while}-loop as it corresponds to the list of elements of array.
+The two base cases are easier to understand.
+When the token is \code{','}, we know its a field separator but it is totally redundant and we
+don't need it so we skip.
+When the token is \code{']'}, we know that this is a conclusion of the current array.
+So we return the control to the invoker.
+Now it comes the critical part of the mutual recursion logic.
+``Why do we invoke the dispatcher function \code{assembleDispatcher}?'' you ask.
+``Because some of the array elements may be of composite types!'' I answer.
+So we have to pass control back to the specialist function for generic assembler for each element.
+Recall the discussion in ~\autoref{ch:recursion} that each function in the mutual recursion group
+has its specialty and is the sole expert for performing a duty.
+No function should perform this specialty except the designated function.
+When other functions need to perform this duty, they have to defer it to the designated function.
+
+Sometimes the function may look too simple to be correct.
+One really doubts its correctness.
+But subjecting it to unit tests, it handles all the easily thought of cases gracefully.
+Let us put up with our doubts and use the same idea
+to finish the implementation for JSON object.
+We can come back with more thorough, complete test suites after all stubs are completed.
+JSON object is slightly more complication but not much.
+Specifically, each JSON object entry consists of a pair of elements---key and value---separated
+by a colon \code{':'}.
+The JSON object key must be string, one token.
+The JSON object value can be of any type, including primitive types as well as composite types.
+Apart from these complications, the recursion logic is identical to that for JSON array.
+So without much ado, the implementation is listed in ~\autoref{lst:JsonAssemblerRecursion.wrapper}.
+
+\begin{table}[H]
+\lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
+caption={Assembler function for object structure}]
+{case-study/my-json/NewJsonAssembler_object.py}
+\end{table}
+
+Now that we finished the implementation of JSON assembler with three compact,
+SRP-compliant functions, and they passed extensive unit tests \footnote{For a complete test
+cases, please see
+\url{https://github.com/wanshoupu/simplePythonCode/blob/master/my_json/JsonPrettifier.py}.
+Also stress test reveals that it can process JSON text of size $189\mbox{\code{MB}}$, with maximum
+recursion depth of $493,000$ or so (the system default of the particular machine that I used).}.
+
+Let's reflect on the pros and cons between the two solutions we came up with in this section.
+Both solutions belong to the family of LL$(1)$ parsers\cite{Rosenkrantz:1969:LL-parser}.
+The iterative solution is a robust solution with less concern of stack overflow.
+However the code there is not straightforward.
+In fact, it is formidable for new developers to read, understand, and modify.
+The recursive solution is elegant, succinct, and with better cohesion.
+It is an example of the recursive-descent parser with a group
+of three mutually recursive functions.
+For large JSON data or data with extremely deep recursive structures, it may run out of stack
+memory.
+In production environment, however, the property of being easy to maintain is an overwhelming
+factor especially for product fast iteration.
+Note that arguments based on the language of choice is irrelevant here as I'm merely using
+\python for illustration purposes.
+
+With the functions \code{tokenize} and \code{assemble} fully implemented,
+the functionality for JSON parsing is completed.
+Overall, \code{parseJson} is a 2-pass, LL$(1)$ parser for JSON string.
+We covered the implementation refinement process in details.
+To reiterate, the improvement process usually starts with identifying issues,
+imperfections, other non-ideal code that tickles our heart and set us uneasy.
+Once with the specific problems in hand, we already solved half the problem.
+Especially some of the techniques we explained in earlier chapters may
+resonate with the problems with a crispy snapping sound!
+That's amazing achievement.
+
+So far, we have presented half of the subtasks laid out in ~\autoref{lst:JsonPrettifier}.
+We are going to advance into the second half of the project---print the in-memory data
+structure into pretty JSON text---and we are going to be eye-witnesses of a series of
+miraculous refactor processes to simplify what looks incurable code.
+
+\section{JSON formatter}\label{sec:jsonFormatter}
+
+If we think of the JSON parsing process as climbing up a hill, then
+the formatting process is like going downhill.
+Once we successfully validated and parsed JSON data into in-memory, structured object,
+the formatting part is easy task.
+So without much mind-bending exercise, we can come to an implementation such as
+~\autoref{lst:JsonFormatter.firstVersion}.
+
+It takes an in-memory JSON-representing object and print it into well-formatted string in
+accordance with the requirements specified in ~\autoref{json-style-spec}.
+\lstinputlisting[label={lst:JsonFormatter.firstVersion},
+caption={First version for JSON formatter.}]
+{case-study/my-json/JsonFormatter_v1.py}
+Just like the parsing code of JSON data, the above formatting code is another example of
+mutually recursive implementation.
+The `public' function is
+\begin{lstlisting}[label={lst:toPrettyString}]
+def toPrettyString(obj, indent=0)
+\end{lstlisting}
+along with two other specialty functions for array and object, respectively.
+As you may have noticed there is a helper function \code{def whitespace(indent)} that provides
+the correct indentation for individual lines.
+It takes a parameter \code{indent}, the indentation level.
+This function is called for each line to provide the correct indentation.
+Despite the many issues to be explained below, the program does its job correctly.
+We may try to shrink the coding footprint by using list comprehension, which is syntactic sugar of
+\python.
+\autoref{lst:JsonFormatter.listComprehension} lists the version using list comprehension.
+
+\lstinputlisting[label={lst:JsonFormatter.listComprehension},
+caption={Json formatter using list comprehension.}]
+{case-study/my-json/JsonFormatter_comprehension.py}
+
+While the program works correctly,
+the implementations ~\autoref{lst:JsonFormatter.firstVersion} and
+~\autoref{lst:JsonFormatter.listComprehension} smell.
+Generally speaking, there is a lack of symmetry in the code and consequently
+you can feel that the code has a lot of `manual labor' in there.
+First, string segments such as \code{",\\n"} , \code{"\{\\n"} and
+\code{"[\\n"} are apparently arbitrary and redundant combinations of
+punctuations and formatting characters
+\ \code{","}, \code{"\{"}, \code{"["} and \code{"\\n"}.
+Their abounding appearances seem to reveal deeper suboptimal choices.
+Second, messy is the code that formats the enclosures of JSON arrays and objects.
+It appears that the logic is
+twisted really hard in order to achieve inserting the `all-but-last' field separator \code{","}.
+Even so, I have to confess that I stumbled and fixed many bugs to get this messy code to work
+correctly.
+In fact, I fixed a bug in the \code{if}-condition---which was
+mistakenly writen as \code{n < len(obj)}---just before I adapted the code for use in this book.
+I will leave it an exercise for the reader to figure out why this is a bug.
+I share these as testimony to show you that
+this piece of code, while working correctly, is admittedly very delicate and hard to get right.
+That's not all and here comes the third problem.
+In ~\autoref{lst:toPrettyString}, function parameter `\code{indent}' is
+never actively specified by client code
+This parameter is there dangling only because it is needed by the other recursive methods.
+As the reader may have learned, this is the so-called `remnant function parameter' discussed
+in ~\autoref{sec:remnantFunctionParameter}.
+Interested readers are encouraged to review the relevant part to get familiar.
+To free client code from having to provide a confusing, useless parameter,
+the parameter is given a default value \code{0} as a mitigation for now.
+We will come back to it later.
+
+But above all, the biggest problem to me is the bloated, multitasking functions
+\code{dictToPrettyString} and \code{arrayToPrettyString}.
+Taking the function \code{dictToPrettyString} for example,
+it does at least two distinct
+things---building a list of strings, element by element, and assembling
+them into properly indented multi-line string---in a intertwined fashion.
+By cramming multitasking code in the poor little function all at once,
+the function becomes a pile of heterogeneous conglomeration.
+This is an alarming violation of the single-purpose principle of function.
+Same issue exists in the function \code{arrayToPrettyString}.
+
+I can feel that your hearts are sunken with each of these stated issues.
+``I never expect that a perfectly working code still have so many issues in it.'' you say.
+Yes, even working code has rooms to improve.
+The word `working' is an ambiguous in this context.
+Here `working' only means it passes the unit tests.
+But to pursue higher standard, we need code that works when facing long-term maintenance,
+reusing, refactoring, \textit{etc}.
+At this time, all the above issues seem formidable and we seem desperately clueless about how to
+go about improve it.
+But do not be dismayed.
+It's the purpose of what follows that we will demonstrate how to employ the techniques discussed in
+earlier chapters to address the issues thread by thread, especially the ``variational method''
+discussed in ~\autoref{ch:variational}.
+
+We start with small and easy improvements and
+hopefully at due time, the bigger problem---including the bloated function problem---will be readily
+attacked.
+First of all, let us refactor the element-formatting logic into its own function.
+Doing so may be get us much ahead of the progress,
+but it will create space for us to experiment with more optimization attempts.
+\@\autoref{lst:ArrayFormatting.separateElement} shows how the function \code{arrayToPrettyString} is
+refactored in such a way.
+\lstinputlisting[label={lst:ArrayFormatting.separateElement},
+caption={Array formatting function with separated element formatting and style decoration.}]
+{case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
+Looking at the refactored code as ~\autoref{lst:ArrayFormatting.separateElement} you may say
+``Gee, that is messier, rather than simpler, than before.''
+True, it is not uncommon that quality of code drops at some steps of refactoring.
+But by the `quantum tunneling' effect, this is a beneficial attempt with
+value to be manifested later and is critical to subsequent refactor steps.
+
+Now the twisted logic for ``all-but-last'' field separator is still in our way.
+Let's pause and reflect on our situation a bit.
+We should come to realize that the ``all-but-last'' problem is not new to programming.
+SQL language, for example, is very strict in its use of comma as separator in its \code{select}
+list---demand the use of comma between fields but prohibit trailing comma.
+Programming languages such as \cpp doesn't tolerate trailing comma in array literals, either.
+In all these occasions, a trailing comma after the last element is a build-breaking error.
+So our predecessors must have invested due amount of effort to combat with the ``all-but-last''
+problem before and our job is to humble ourselves to take advantage of their work.
+So please convince yourself that you are reinventing the wheel trying to code for the effected
+``all-but-last'' logic.
+Indeed, the built-in method \code{str.join} in \python is already doing the ``all-but-last'' logic
+with whatever separator string
+\footnote{\url{https://docs.python.org/2/library/stdtypes.html\#str.join}}.
+For example
+\begin{lstlisting}
+>>> a = ['foo','bar','baz']
+>>> ', '.join(a)
+'foo, bar, baz'
+\end{lstlisting}
+
+But in our case, the formatting logic has to glue three things together---indentation spaces
+on top, element and the ``all-but-last'' field separator in between, and a newline at the bottom.
+It is this `sandwich operation' that obstructs our effort to make use of the power of
+\code{str.join}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.8\textwidth}
+\includegraphics[width=\textwidth]{case-study/my-json/line-view-a.jpg}
+\caption{Line view a.\label{fig:line-view-a}}
+\end{subfigure}
+\\
+\vspace{1mm}
+\begin{subfigure}{.8\textwidth}
+\includegraphics[width=\textwidth]{case-study/my-json/line-view-b.jpg}
+\caption{Line view b.\label{fig:line-view-b}}
+\end{subfigure}
+\caption{Two views of line cut in a paragraph. Each framed box is cut into a line.
+\label{fig:line-view}}
+\end{figure}
+
+How about we do a rotation on line boundaries so that both the indentation
+and the newline character are shifted to one side?
+That way, the `sandwich operation' will be simplified into a simple, generic joining operation!
+To that end, we need a perspective change.
+See ~\autoref{fig:line-view} for an illustration.
+We need to renew our view of a `line' and make `cuts' such that a line used to take the form
+\[\mbox{line} = \mbox{content} + \mbox{newline}\]
+are rotated to take the form
+\[\mbox{line} = \mbox{newline} + \mbox{content}.\]
+Along with this new perspective of lines, the meaning of
+indenting a line is also redefined as ``Insert indentation
+spaces between the \code{newline} and the rest of the line content''.
+As you may see, with this new, counterintuitive `line cut',
+it is made possible that
+the styling strings---newline character and indentation string---be added on one side of
+an element.
+The refactored example code, again for \code{arrayToPrettyString}, is shown in
+~\autoref{lst:ArrayFormatting.shifted_decoration}.
+\lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
+caption={Array formatting function with element formatting string shifted to one side.}]
+{case-study/my-json/JsonFormatter_array_element_shifted_view.py}
+Now it becomes trivial to get rid of the cluttered ``all-but-last'' logic altogether and
+rely on the built-in function \code{str.join} to do all that
+(see ~\autoref{lst:ArrayFormatting.true.str.join}).
+\lstinputlisting[label={lst:ArrayFormatting.true.str.join},
+caption={Array formatting function with element formatting string shifted to one side.}]
+{case-study/my-json/JsonFormatter_array_element_true_str_join.py}
+As we can see, the seemingly minor change of view
+about `line cut' unleashes the full power of \code{str.join} function.
+Also I will leave it as another exercise for the reader to refactor the function
+\code{dictToPrettyString} in the similarly way.
+
+Now that the two biggest issues are resolved, a lot of the related,
+previously formidable issues are suddenly exposed under our attack.
+Let us carry the refactor effort even further.
+There are some low-hanging fruits.
+As a byproduct, the myriad character combinations disappeared along with our
+refactor---no more action is needed to address that.
+The enumeration \code{for n, v in enumerate(obj)}
+over the array items are not necessary now that we don't need to track the
+index of the items.
+This can be simplified to \code{for v in obj}.
+
+To me the next biggest issue is the way we indent the lines in the multi-line text
+for which the dangling parameter \code{indent} in the public method \code{toPrettyString}
+is just the tip of the iceberg.
+However it is not straightforward simplification process.
+This also requires a fresh look at the indentation process.
+One pattern that may be subtle is \code{"\n" + whitespace(indent)} as a result of the line
+boundary rotation.
+This is understandable as the indentation always takes place after a newline character.
+Also the contents of JSON array and object are always indented one more level with respect to its
+enclosing brackets.
+This prompts us to adapt another indentation model which we name as `block indenting'.
+The `block indenting' model treats indenting whitespaces layer by layer and
+insert a layer whitespaces to a block of pre-formatted text all at once before it is embedded
+within a pair of surrounding brackets.
+Unlike the initial indenting model, in `block indenting' mode,
+the indenting whitespaces are not added all at once for
+a particular line that is indented more than one level.
+To that end, we need a function that does the multi-line indentation
+such as ~\autoref{lst:indent-function}.
+
+\lstinputlisting[label={lst:indent-function},
+caption={Multi-line indenting function}]
+{case-study/my-json/JsonFormatter_indent_function.py}
+
+To implement this algorithm, a systematic refactor of all the major functions altogether
+is required.
+To maintain the focus, let's ignore JSON object for now and consider only JSON array.
+Firstly let us copy all the functions for formatting JSON array and primitive types together in
+one file.
+Then, before making better let first make it worse---
+let's remove all the indenting logic.
+The remaining code should format correctly except that it does no indentation.
+Now, let us make use of the \code{def indent(string)} from
+~\autoref{lst:indent-function} to indent the multi-line string of array contents and
+this is only needed in the function \code{arrayToPrettyString}.
+If you are following correctly, you will be surprised to see that all the correct indentation comes
+back as if by magic.
+Now that the parameter \code{indent} in all the functions is made obsolete, let's remove them
+altogether.
+The resulting code is shown in ~\autoref{lst:JsonFormatter.layer-by-layer.experiment}.
+
+\lstinputlisting[label={lst:JsonFormatter.layer-by-layer.experiment},
+caption={Experiment with new layer-by-layer indentation model for JSON arrays.}]
+{case-study/my-json/JsonFormatter_array_element_separate_indent.py}
+Convinced that this works for JSON array, as yet another exercise, refactor and add back the
+function for formatting JSON objects.
+
+This refactor is another big hurdle.
+As you may have seen, following each major refactor are a series of `easier' refactoring.
+For example, you may have noticed that there are bunch of variables \code{whitespace = " "} as
+well as string literals such as \code{"\\n"} scattering around in the code of
+~\autoref{lst:JsonFormatter.layer-by-layer.experiment}.
+We can refactor these variables along with the relevant functions into a class
+\code{Formatter} and commit indenting responsibilities to it.
+The refactored class is in ~\autoref{lst:Formatter}.
+\lstinputlisting[label={lst:Formatter},
+caption={Formatter captures all the information needed for JSON indentation.}]
+{case-study/my-json/Formatter.py}
+Now that the indentation functions are encapsulated
+in the class \code{Formatter}, not only that our implementation of JsonFormatter is greatly
+simplified, but also that the class is made readily reusable by other modules.
+With help of an instance \code{Formatter}, the \code{JsonFormatter} can be rewritten as
+~\autoref{lst:NewJsonFormatter}.
+\lstinputlisting[label={lst:NewJsonFormatter},
+caption={A new implementation of JSON formatter.}]
+{case-study/my-json/NewJsonFormatter.py}
+The new implementation spares function such as \code{def whitespace(indent)}, it also reduces the
+size of argument lists for all the major functions.
+Most importantly, the public-facing function is free from weird dangling parameters such as
+\code{indent=0}.
+
+So far we have been discussing implementation without too much concern on performance adjustment.
+Our discussion are purely based on aesthetic and readability argument.
+You may argue that performance may be slightly better one way or the other.
+But again quoting other renowned authors, ``premature performance tuning is the evil for
+everything''.
+First of all, modern compilers are intelligent enough to account for micro-level optimization
+you are usually tempted to make in your code.
+In case when compiler missed an optimization and
+your optimizations do have a material gain over the compiler,
+the performance gained by sacrificing readability would still be most likely unworthy.
+
+``What a surprise!'', you may say upon seeing the solution in ~\autoref{lst:NewJsonFormatter} and
+~\autoref{lst:Formatter}.
+This may be totally unexpected to you at the time when we just completed the first version of
+implementation.
+Truly I want to tell you that this should be the signal you should strive for when you review your
+solutions in a particular sitting.
+Do not stop until you hit one of such `surprises'.
+Only then can you you rest assured that you have made significant step forward.

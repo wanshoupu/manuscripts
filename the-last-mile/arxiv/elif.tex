@@ -1,0 +1,583 @@
+%%
+%% Author: shoupu_wan
+%% 7/14/18
+%%
+
+\chapter{Reduction of Conditional Statements}\label{ch:organizeYourIfElse}
+
+%Conditional is a control switching mechanism to alter code execution path,
+%conditioned by boolean expressions.
+%As a control flow, conditional is one of the fundamental building blocks
+%of almost all programming languages.
+%Undoubtedly, many references---textbooks, research articles, blog posts---have already covered this
+%comprehensive discussions
+%\footnote{\url{https://en.wikipedia.org/wiki/Conditional_(computer_programming)}}.
+It may sound strange to you but I am going to talk about the `well-known'
+commonplace---conditional statements and conditional constructs.
+Supported by almost all programming languages, conditional construct is control
+flow for pivoting execution path based on the on-the-fly evaluation of a boolean expression.
+``Are you going to reinvent the pedestrian or what?'' you may be wondering.
+%Just because some topic is `well-known' does not mean that folks can or will do it right.
+Sure enough, as a universal building block, ``\code{if..else}'' is in everyone's toolbox.
+In my case, about $40\%$ of my development time is spent on write
+conditionals like ``\code{if..else}'' (with the another $40\%$ goes to designing loops and $20\%$
+for everything else).
+But it is my observation that writing optimal conditional statements and
+succinct logic remains an ``advanced'' coding skill that remains a rare trait of top developers.
+As a result, `working' but convoluted logic makes its way to production codebase abundantly.
+% convoluted conditional
+%But it is seldom the case that the first version of implementation of any non-trivial logic, if
+%correct at all, is optimal.
+Doubt it?
+Let's take on a challenge---
+\begin{quote}
+    ``Given a \code{boolean} flag, a \code{deque}, and a \code{list}, one
+    needs to pop one item from either end of the \code{deque} and append it
+    to the \code{list} and the following is the rule for the pop operation:
+    \begin{enumerate}
+        \item if \code{flag = true}, pop from the end of the \code{deque} where the value is
+        smaller;
+        \item Otherwise, the one larger.
+    \end{enumerate}
+    Assume the \code{deque} is non-empty.''
+\end{quote}
+%pop from one of the two ends of a \code{deque} and append the popped item to a list \code{result}.
+Please pause here for few minutes to think about what the code might look like before turning the
+page.
+\clearpage
+Now let's check answers.
+There are usually a variety of solutions: from commonly seen solution
+\lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
+to a one-liner.
+\lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
+%But those who are not satisfied with the above solution and further simplified the blob
+%into a one-liner, \textit{e.g.}, have bonus.
+Hopefully the difference is obvious to you.
+This shows the huge difference between `good' and `great' solutions.
+If you haven't made it a habit to strive for the `great' code, do not panic.
+I did not come up with the second solution from vacuum.
+Instead, I came up with the first one and by following a procedure, I `turned' it into the second
+one.
+This chapter is dedicated to the `How' question.
+
+
+``As long as it works, who cares if the logic is the simplest?'' some may insist.
+Take a look at the following code snippet, adapted and anonymized from a real example.
+Suppose you are tasked to modify, refactor, and modularize it into reusable functions for a library,
+do you care?
+\lstinputlisting{if-else/switching-smell-code-snippet.py}
+
+Maybe this example is a little bit too extreme.
+But `barely working' solution, if it works at all, often contains code that is buggy, brittle,
+verbose, and/or smelly.
+It is like fat deposited over time, sooner or later they will get in your way.
+Steve McConnell said ``..the primary audience [of computer programs] is made up of humans,
+not computers\cite{Mcconnell.2004}.''
+Martin Fowler puts it even more straightforward
+``Any fool can write code that a computer can understand.
+Good programmers write code that humans can understand\cite{Fowler1999}.''
+So first it is an inefficient way of communication to other programmers.
+Even worse, it will later become the roadblock for code refactor and reuse.
+Hazy conditional condition often results in redundant/duplicate code.
+Gradually your business will be derailed from fast iteration due to the friction caused by
+long-standing technical debts.
+
+%I don't blame the author of twisted code and intertwined logic, which
+%are often the victorious output of a fierce battle fought by gallant developers.
+%They ought to have my respect.
+%But I criticize anyone who intends half-cooked work for final product in defiance of the
+%production standard.
+%Unequivocally I advocate that developers finish the other half of the work
+%---polish the logic, simplify the conditional statements, craft production-quality solutions.
+%Developers finish walking the last mile, solidify your otherwise hard-won victory.
+%
+In this chapter, you are going to live through processes that turn bloated conditionals
+into simple logic.
+You will be exposed to plenty of examples and demonstrations on how to produce beautiful,
+succinct solution with simple techniques and due diligence.
+You will learn to how to avoid redundancy condition checking,
+short-circuit evaluation and its application, how to restrain variable scopes, \textit{etc.}
+You will gain skills that will routinely help you optimize your code from `good' to
+`great'.
+
+
+%Communicate clear, succinct code to colleagues and successors are much more efficient.
+%The techniques are based on my years of software development experience.
+%of how to polish complicated logic involving conditionals into simple, beautiful, and succinct code.
+
+%You will learn how to design conditional statements using \code{if}, \code{else
+%if} (or \code{elif}), \code{else}, \textit{etc.},
+%to produce effective, succinct logic.
+%You will learn to minimize occurrences of redundancy condition checking in your code and reduce
+%duplicate code overall.
+%Through plenty of examples, I demonstrate how to apply these techniques for logic simplification.
+%In doing so, I hope programmers would be inspired to strive for beautiful, succinct conditional
+%statements.
+%I believe the effort you spend in studying the basics of conditional programming
+%will soon pay itself off.
+
+\section{Strive for simpler conditional expressions}\label{sec:logicEquivalences}
+
+
+Establishing the equivalence between logic and conditional statements can be subtle.
+Simplifying them is even harder, especially when camouflaged in the
+jungle of real-world code with long variable names, complex expression, comments, \textit{etc.}
+Take a look at ~\autoref{lst:if-return-boolean-real-world}.
+At least to me, it is not yet clear how to simplify the logic or even what it does.
+\begin{clisting}
+    \lstinputlisting[caption={Code snippet for demonstration},
+    label={lst:if-return-boolean-real-world}]
+    {if-else/equivalent_statements_if_return_real_world.java}
+\end{clisting}
+But if we replace the conditional expression with \code{<test>} and filter out the
+comments, it becomes ~\autoref{lst:if-return-boolean} and then
+it is clear that the code performs a test and returns a boolean value accordingly.
+You may even realize that it is actually equivalent to ~\autoref{lst:simplified-return-boolean}.
+% side-by-side two columns
+\begin{clisting}
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Unsimplified test},
+        label={lst:if-return-boolean},
+        firstline=1,lastline=4]
+        {if-else/equivalent_statements_if_return.java}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{.45\textwidth}
+        \lstinputlisting[caption={Simplified statement},
+        label={lst:simplified-return-boolean},
+        firstline=6,lastline=6]
+        {if-else/equivalent_statements_if_return.java}
+    \end{minipage}
+\end{clisting}
+But when embedded in real problems, disguised by application-specific format, style, and so on,
+achieving optimal conditional programming would not be straightforward.
+%Even fewer people probably realize that the following two code snippets are actually equivalent,
+%assuming that \code{boolArr} is an array of \code{boolean} type.
+%% side-by-side two columns
+%\begin{clisting}
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Ternary boolean expression},
+%        label={lst:ternary-boolean-expr},
+%        firstline=1,lastline=1]
+%        {if-else/equivalent_statements_ternary_expr.java}
+%    \end{subfigure}\hfill
+%    \begin{minipage}[t]{.45\textwidth}
+%        \lstinputlisting[caption={Simplified boolean expression},
+%        label={lst:simplified-boolean-expr},
+%        firstline=3,lastline=3]
+%        {if-else/equivalent_statements_ternary_expr.java}
+%    \end{subfigure}
+%\end{clisting}
+We therefore resort to mathematical methods to help us simplify our logic.
+Many of the techniques employed in this section originates from the domain of Boolean algebra.
+I frequently make references to the logical equivalences, and normal forms, truth tables,
+\textit{etc.}
+Review and refresh your memory on relevant materials as needed.
+
+A boolean expression can be evaluated to two possible values---\code{true} or
+\code{false}.
+Depending on the evaluation result of a boolean value,
+a simple conditional test as \code{if..else} may lead to one of two execution alternatives---the
+\code{if}-block or the \code{else}-block;
+A composite condition consisting of two boolean values makes 4 alternatives.
+Three boolean values can lead to 8 alternatives.
+And so on.
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=.7\textwidth]{if-else/nested-conditionals.jpg}
+    \caption{\label{fig:conditional-branching}An example of $3$ nested conditional statements.}
+\end{figure}
+But in a real-world problem, not all the branches will be present or even make sense (See
+~\autoref{fig:conditional-branching}).
+
+
+\begin{clisting}
+    \begin{minipage}[t]{.3\textwidth}
+        \lstinputlisting[label={lst:nestedBranching},
+        caption={v1}]
+        {if-else/composite_condition_tobe_simplified.java}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.3\textwidth}
+        \lstinputlisting[label={lst:simpleBranching},
+        caption={v2}]
+        {if-else/composite_condition_simplified1.java}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.3\textwidth}
+        \lstinputlisting[label={lst:final-simplified-conditional-statement},
+        caption={v3}]
+        {if-else/composite_condition_simplified2.java}
+    \end{minipage}
+\end{clisting}
+Let us examine the nested conditional, adapted from a real-world code, as shown in
+~\autoref{lst:nestedBranching}.
+It works but `smells'---it has complicated, nested conditional statements and duplicate
+code\cite{Fowler1999}.
+The readability is compromised so much so that one can hardly follow the symbolic execution paths
+without some mental twists.
+Nevertheless, it is a good starting point.
+First let us try to eliminate the nested conditional statements.
+
+
+\begin{table}[bth]
+    \begin{center}
+        \caption{Normal forms for conditions of execution of each statement.
+        \label{tbl:breakdown-of-conditions}}
+        \begin{tabular}{|l|l|}
+            \hline
+            code & condition to execute \\
+            \hline
+            statement1 & test1 $\land$ test2 \\
+            statement2 & test1 $\land\lnot$ test2 $\lor\lnot$ test1 \\
+            statement3 & test1 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+Observing that the \code{else} block of \code{if (test1)} is much simpler, let us flip
+the logic by negating \code{test1} so that the simpler block becomes the \code{if}-block and vice
+versa.
+The reason for doing so will be clear in a moment.
+Now we can promote the nested \code{if (test2)} up to the first-level and turn the
+nested conditional statements into sequential conditional statements
+that are built on top of one another like a cascade \footnote{In fact,
+we just came across a pattern regarding conditional programming and
+~\fullref{ch:conditional-cascade} will tell more about it.}.
+
+
+The resulting code is shown in ~\autoref{lst:simpleBranching}.
+As one can see, if we promote the nested conditional statement without the boolean expression
+flip, the resulting code would be seriously out of balance.
+Comparing with ~\autoref{lst:nestedBranching} the conditional statements in
+~\autoref{lst:simpleBranching} are now streamlined and easy to understand.
+But still it contains duplicate code as both \code{statement2} and \code{statement3} are repeated.
+
+
+So please resist the temptation of settling and we are going to get rid of the `seemingly benign'
+duplicate code.
+First, let us do a back-of-envelop calculation to
+obtain the sufficient and necessary conditions (SNC) for \code{statement1}, \code{statement2}
+and \code{statement3}, respectively.
+As shown in ~\autoref{tbl:breakdown-of-conditions},
+it is clear that the key to simplify the logic lies in the conditions for the
+execution of \code{statement2}.
+
+\begin{verbatim}
+    In the following \code{if-elif} block, the first condition is cumbersome and the second condition
+    has some redundancy of the first.
+
+    if sc in s2t and s2t[sc] != tc:
+    return False
+    elif sc not in s2t:
+    s2t[sc] = tc
+
+    This may be simplified as:
+
+    if sc not in s2t:
+    s2t[sc] = tc
+    elif s2t[sc] != tc:
+    return False
+
+    There is no redundancy in condition checking also both condition expressions are simple and
+    single-purposed.
+\end{verbatim}
+
+Now it is time to do some Boolean algebra.
+Let $c$ be the condition for \code{statement2} to be executed and
+\begin{align*}
+    a &= \text{\code{test1}}, \\
+    b &= \text{\code{test2}},
+\end{align*}
+then
+\begin{align}
+    c &= a \land \lnot b \lor \lnot a  \nonumber \\
+    &= a \land \lnot b \lor (\lnot a \land \lnot b \lor \lnot a \nonumber) & \text{// absorption law
+    }\\
+    &= (a \land \lnot b \lor \lnot a \land \lnot b) \lor \lnot a \nonumber & \text{// associativity
+    law}\\
+    &= \lnot b \lor \lnot a & \text{// distributivity law} \nonumber \\
+    &=\lnot (a \land b) & \text{// De Morgan's law} \label{eq:boolean-expression-simplify}
+\end{align}
+~\autoref{eq:boolean-expression-simplify} shows that the SNC for
+\code{statement2} to be in the execution path
+is \code{!(test1 && test2)} and this is exactly the SNC of the
+\code{else}-block of the conditional statement \code{if (test1 && test2)..}.
+With this hard-earned wit, it is now straightforward to implement an even simpler version as
+~\autoref{lst:final-simplified-conditional-statement}.
+This completes our first logic simplification process.
+
+
+Another way to achieve the same goal is to use \emph{truth tables}.
+Let us see how it works.
+\begin{table}[h]
+    \begin{center}
+        \caption{True value table for \code{test1} and \code{test2}.
+        \label{tbl:true-value-table}}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \code{test1} & \code{test2} & true expr \& execution\\
+            \hline
+            F & F & \code{!test1} $\rightarrow$ \code{statement2} \\
+            F & T & \code{!test1} $\rightarrow$ \code{statement2} \\
+            T & F & \code{test1 \&\& !test2} $\rightarrow$ \code{statement2} \\
+            & & \code{test1} $\rightarrow$ \code{statement3} \\
+            T & T & \code{test1 \&\& test2} $\rightarrow$
+            \code{statement1} \\
+            & & \code{test1} $\rightarrow$ \code{statement3} \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+I have constructed a truth table with \code{test1} and \code{test2} as the variables
+(~\autoref{tbl:true-value-table}).
+Since there are two conditional variables, there are a total four rows in the table.
+Additionally, we added the third column to shows what \code{true} boolean expression leads
+the execution of which statement.
+Summarizing the table entries, we arrive at the following conclusions
+\begin{enumerate}[label={\roman*:}]
+    \item \code{statement1} is executed \emph{iff} both \code{test1} and \code{test2}
+    are \code{true};
+    \item \code{statement2} is executed \emph{iff} not both \code{test1} and \code{test2} are
+    \code{true};
+    \item \code{statement3} is executed \emph{iff} \code{test1} is \code{true}, regardless of
+    \code{test2}.
+\end{enumerate}
+With all the mental twists untied, implementation of something like
+~\autoref{lst:final-simplified-conditional-statement} naturally follows.
+
+
+Thus far we have presented two processes for logic simplification.
+One of them takes route of SNC for the execution of certain
+statements and use that to simplify the conditional expressions.
+The other starts by listing all the possible branches in a true table and looks for ways to
+combine them into as few conditional expressions as possible.
+In practice, you may try both.
+Once you form an intuition, you will find the edge of each for certain circumstances.
+
+
+To verify your understanding of the material,
+~\autoref{lst:exercise-original-conditional-statement} is reserved as an exercise.
+Please work it out with one or both of the two methods above and get the simplified solution as
+that in ~\autoref{lst:exercise-simplified-conditional-statement}.
+\begin{clisting}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:exercise-original-conditional-statement},
+        caption={Simplification exercise}]
+        {if-else/generic_conditioning1.java}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:exercise-simplified-conditional-statement},
+        caption={Simplified}]
+        {if-else/generic_conditioning2.java}
+    \end{minipage}
+\end{clisting}
+
+\subsection{Case study: Binary search with slope}\label{subsec:case-study:binary-search-direction}
+
+Let's now consider the a real problem that we will visit and revisit in this chapter.
+\begin{quote}
+    Given an array of length $>= 3$, $A$, consisting of two concatenated monotonically increasing
+    and decreasing portions such that \code{A[0] < A[1] < ... < A[i] > A[i+1] > A[i+2] > ... >
+    A[n-1]}, write an efficient program to check if a \code{target} value exists in the array.
+\end{quote}
+
+This array is like a hill with a single ridge: in the first half, it monotonically increases until
+it reaches the ridge index, \code{i}, then it monotonically decreases until the end.
+It's straightforward come up with a strategy as
+\begin{enumerate}
+    \item finds the `ridge` index of the array
+    \item Attempt to find target value in the first half before the ridge index (binary search)
+    \item Attempt to find target value in the second half on or after the ridge index similarly
+\end{enumerate}
+
+\begin{clisting}
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:binary-search-direction-nested},
+        caption={Nested implementation of binary searching direction logic}]
+        {if-else/binary_search_direction_nested.py}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.4\textwidth}
+        \lstinputlisting[label={lst:binary-search-direction-nested},
+        caption={Simplified implementation of binary searching direction logic}]
+        {if-else/binary_search_direction_simplified.py}
+    \end{minipage}
+\end{clisting}
+
+\section{Short-circuit evaluation}\label{sec:short-circuit-eval}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.7\textwidth]{if-else/short-circuit.jpg}
+    \caption{\label{fig:short-circuit-eval}  Short-circuit evaluation of the expression tree for
+    `\code{!(a||foo)&&(bar||baz)}' when \code{a=true}.
+    Solid gray nodes are evaluated whereas dashed blank ones omitted.
+    }
+\end{figure}
+Some binary logical operators, like \code{AND} and \code{OR}, have an unusual property---when
+one operand assumes certain value, the final value would be deterministically fixed
+regardless of the value of the other operand.
+For example, if \code{a = FALSE}, then the expression `\code{a AND b}' would deterministically
+evaluates to \code{FALSE}, no matter what value \code{b} assumes.
+Similarly, if \code{a = TRUE}, the expression `\code{a OR b}' evaluates to
+\code{TRUE} regardless.
+
+Taking advantage of this, certain programming languages introduce
+a boolean expression evaluation mechanism---namely, when the value of an expression
+(or subexpressions) can be unambiguously determined, it will omit the evaluation of the
+remaining part and cut short to the return value.
+This is called short-circuit evaluation (SCE).
+When this happens, control cuts short and returns from the expression,
+thus the name `short-circuit'.
+Note that SCE may be applied as many times as applicable during the evaluation of an expression.
+%insofar as their evaluation does not to affect the overall value.
+Shown in ~\autoref{fig:short-circuit-eval} is an example where SCE is applied twice.
+SCE is supported by many modern programming languages, including C, C++, \java,
+\python, and others.
+
+
+SCE becomes interesting and subtle when an operand has `side-effects'
+besides yielding the boolean value demanded by the expression---
+these `side-effects' would be \emph{no more} with the omission of the corresponding evaluation,
+for better or for worse.
+Here `side-effects' may refer to a diverse range of changes
+that usually survive the scope of the expression---
+modified variables, updated database, forms posted to websites,
+or resource allocation such as \code{malloc}, page writes, disk IO, or simply elapsing time.
+Because of the diversity and complexity of side-effects, inadvertent usage can easily result in
+unexpected results.
+Inexperienced or unwary developers may be caught by surprise.
+
+But on the other hand, SCE may be a tool for constructing elegant logic.
+Consider the following problem:
+\begin{quote}
+    ``Implement a method, \code{next}, to fetch the next item from a source
+    (whose nature is irrelevant to this problem) and store it in a member variable
+    \code{Queue cache}.
+    A method \code{procure()} has been made available to fetch an element
+    from the source, if any, into \code{cache}:
+    \lstinputlisting{if-else/getNext_procure.java}
+\end{quote}
+This is an extract from a class design task that I worked on.
+Presumably, the algorithm to solve this problem can be as ~\autoref{alg:fetch-element-into-cache}.
+\begin{alisting}
+    \caption{\label{alg:fetch-element-into-cache}}
+    \begin{enumerate}
+        \item Check \code{cache} to see if it is empty, if so
+        \begin{enumerate}
+            \item Invoke \code{procure} to populate \code{cache}
+            \item If attempt is unsuccessful
+            \begin{enumerate}[label={}]
+                \item throw ``No element is left'' exception
+            \end{enumerate}
+            \item end if
+        \end{enumerate}
+        \item end if
+        \item Return the item from the \code{cache} and clear it
+    \end{enumerate}
+\end{alisting}
+
+
+Let us first see how to implement the algorithm in the \emph{absence} of SCE mechanism.
+\lstinputlisting{if-else/getNext.java}
+That is not bad, right?
+The code seems pretty simple by itself.
+But now that \java ~ supports SCE, so one can readily implement the following
+\lstinputlisting{if-else/getNext_shortCircuit.java}
+The logic is much cleaner, dwarfing the previous version without SCE\@.
+How does the code work?
+(Can you try to figure out that before reading on?)
+
+
+When \code{cache} is full, \code{procure} will \emph{not} be invoked, by virtue of SCE
+mechanism, as the conditional expression unequivocally evaluates to \code{false}.
+When \code{cache} is empty, the evaluation process continues with the evaluation of
+the second operand, which in turn, invokes \code{procure} and its return value determines the
+overall value of the conditional expression.
+
+
+Through this example, we learn the important aspects for SCE programming.
+First of all, operator precedences and order of operands matters, \textit{e.i.}, \code{a && b} is
+not always equivalent to
+\code{b && a}, especially if the evaluation of one or both of them have side effects.
+Secondly, if one seeks to consciously avoid a group of operations using SCE
+mechanism based on certain condition,
+one should wrap those operations in easily usable functions
+with a well-defined return value of boolean type (or boolean-equivalent types).
+To that end, one needs to strive for reusable, single-purposed
+subroutines and modular design in general.
+The `\code{procure}' function in the above problem is such an example that is compliant to the
+single responsibility principle (SRP).
+Last but not least, one needs to pay attention to function idempotence and mutability, among
+other characteristics.
+We will talk more about function design in ~\fullref{ch:reusableFunctions} and
+idempotence and mutability in ~\fullref{ch:ood}.
+
+
+\section{Conditional statements in a loop}\label{sec:branchinginloop}
+
+%\begin{clisting}[t]
+%    \lstinputlisting[caption={Zoological and veterinary API.},
+%    label={lst:veterinary_api}]
+%    {if-else/zoo_veterinary_api.py}
+%\end{clisting}
+
+We know that \code{break} and \code{continue} statements may be used in a loop.
+Since straightforward uses of such statements in loop rarely have little practical gain,
+\code{break} and \code{continue} statements are usually used within conditional blocks and this
+brings both challenges and opportunities to the latter.
+
+First, it makes logic simplification in a loop more challenging.
+But it also means skilled developers have new weapons to wield for simple, succinct logic.
+Let's illustrate this in the following problem
+\begin{quote}
+    Suppose an imaginary zoo is conducting health exams for their animal collection---insects,
+    fish, birds, mammals, \textit{etc}.
+    All animals will have their overall health examined;
+    vertebrates will undergo radiography exams;
+    temperatures are taken for warm-blooded animals;
+    finally, animals in each species will have their distinct body parts examined.
+    Suppose that the needed zoological and veterinary API is provided in
+    module \code{zoo_veterinary_api}, including functions \code{isFish},
+    \code{isInsect}, \code{checkTemperature}, \code{checkExoskeleton}, \textit{etc.}
+\end{quote}
+
+
+Due to the complexity of animal taxonomy, coding up a correct and elegant conditional statements
+with no code duplication is not straightforward.
+Some developers may introduce `slightly' duplicate code as in
+\lstinputlisting{if-else/zoo_animal_health_exam_dup_code.py}
+However the seemingly innocent code duplication will bite at occasions, say,
+when new species such as `reptiles' or `crustaceans' join the zoo.
+Some may resort to nested conditional statements such as
+\lstinputlisting{if-else/zoo_animal_health_exam_nested_cond.py}
+But the nested conditional statements makes the logic visually more complicated than it actually is.
+
+
+Thankfully, keyword \code{continue} comes to rescue in this niche use case---\code{continue}
+is meant to skip the inapplicable part of the loop body.
+As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists of evenly aligned,
+compact, sequential statements, that essentially of a `cascading conditional'.
+\lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
+label={lst:continue-in-loop-conditional}]
+{if-else/zoo_animal_health_exam_continue.py}
+If desired, one may easily refactor the loop-body in ~\autoref{lst:continue-in-loop-conditional}
+into a separate function---the only change needed is to replace
+\code{continue} with \code{return} (see ~\autoref{lst:refactored-in-loop-conditional}).
+\begin{clisting}[ht]
+    \lstinputlisting[caption={Use of \code{return} in refactored conditional statements.},
+    label={lst:refactored-in-loop-conditional}]
+    {if-else/zoo_animal_health_exam_refactored.py}
+\end{clisting}
+
+
+Loop constructs will be discussed at length in ~\autoref{ch:loops} and ~\fullref{ch:loop-thinning}.
+So we are going to stop here and defer fuller presentation there.
+For a real-world application of conditional application in a loop, one may turn to
+~\pageref{lst:silhouette-skyline} for the solution of the `Skyline Problem'.
+
+%and ~\fullref{lst:matrix-spiral-term} in ~\fullref{ch:recursion} are all examples of this type.
+
+%Many of the topics overlap between here and there.
+%So we are going to stop here and defer fuller presentation accordingly.
+
+%Like a complex protein molecule, the conditional statements are assembled into a cascading conditional in
+%resemblance of hierarchical structures and together they perform the processing in a stateful loop.

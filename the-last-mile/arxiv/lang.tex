@@ -1,0 +1,34 @@
+\chapter{Programming Language Features}\label{ch:knowTheLanguageFeatures}
+
+So far I have tried to avoid talking about programming language specific syntaxes, twiddling
+tricks
+\section{Python}\label{sec:python}
+\subsection{Python lambda expression}\label{subsec:pythonLambdaExpression}
+\subsection{Slicing}\label{subsec:slicing}
+\subsection{Generator}\label{subsec:generator}
+\lstinputlisting{lang-feature/reshape_comprehension.py}
+\lstinputlisting{lang-feature/reshape_double_comprehension.py}
+\lstinputlisting{lang-feature/reshape_iter.py}
+
+graph traversal iterator:
+    def graphIterator(self, i):
+        uncharted = [i]
+        discovered = set()
+        while uncharted:
+            j = uncharted.pop()
+            if j in discovered:
+                continue
+            discovered.add(j)
+            uncharted.extend(self.graph[j])
+            yield j
+
+
+\section{Java}\label{sec:java}
+\subsection{Streaming}\label{subsec:streaming}
+\subsection{Container}\label{subsec:container}
+\subsection{Third-Party libraries}\label{subsec:third-partyLibraries}
+\subsection{Maven Repository}\label{subsec:mavenRepository}
+
+In comparison, \java
+%TODO
+\lstinputlisting[caption={Equivalent code snippets}]{lang-feature/equivalent_statements.java}

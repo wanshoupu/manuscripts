@@ -1,0 +1,334 @@
+%%
+%% Author: shoupu_wan
+%% 8/22/18
+%%
+
+\chapter{Case Study: Matrices Spiralization}\label{ch:spiralMatrix}
+
+Spiralize a $2$D matrix means to output its element in the order along a spiral from
+outer layer to the inner layer.
+Usually spiralization starts from $M[0][0]$ and works its way toward the right
+as shown in ~\autoref{fig:spiral-matrix-loop}.
+Depending on the emphasis of the problem, there are several related statements.
+\begin{enumerate}
+    \item Given two integers $m$ and $n$, generate a matrix of dimension $m \times n$ filled with
+    elements from 1 to n2 in spiral order (clockwise, same below).
+    \item Flatten a $2$D matrix in spiral order.
+    \item Give a matrix of dimension $m \times n$, print its the elements in spiral order.
+    \item Given a matrix of dimension $m \times n$, determine the last visited element if one is
+    to visit the elements in spiral order.
+\end{enumerate}
+Whichever form it may take, the problem is so crafted such that it calls for high coding
+skills to write concise, expressive program.
+The purpose of this chapter is to demonstrate the interaction between algorithm design and
+coding practice.
+Through various implementation attempts, the reader will go through the same thought process as
+the author and witness how insights derived from each coding practice
+can be used as feedback to to next iteration of algorithm design.
+Also, the reader will practice techniques explained in ~\autoref{ch:reusableFunctions}
+to meaningfully decouple and manage complexities, striving for better code coherence.
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[width=.7\textwidth]{case-study/spiral-matrix/spiral-matrix.jpg}
+        \caption{Visiting cells in a $2$D matrix in spiral order.}
+        \label{fig:spiral-matrix-loop}
+    \end{center}
+\end{figure}
+
+\section{Outline of the algorithm}\label{sec:spiral-matrix-Algorithm}
+
+Intuitively, the process is like shaving off a potato---it
+terminates when there is nothing left to shave.
+But unlike continuous material, there is the `quantum size' effect---when the matrix is reduced
+to a one-dimensional array, column or row, one simply walks down to the other end!
+There are many solutions to this problems---iterative and recursive.
+Suppose we are to attack the problem iteratively.
+We can walk down the matrix, cell by cell, making left turns when encountering corners.
+Or we can walk all the way down a straight line as much as possible in one stride and then make a
+left turn and repeat.
+Finally, one can complete one 'round' of walk---walk all the cells on the
+outermost layer---at each iteration.
+
+Unless for some special cases and/or special form of questions,
+a general algorithm for the family of spiral matrix problems may be as shown in
+~\autoref{alg:spiral-matrix}.
+\begin{alisting}
+    \caption{\label{alg:spiral-matrix}Generic algorithm for matrix spiralization.}
+    \begin{enumerate}[label=\textbf{Step.\arabic*}]
+        \label{enum:algorithm}
+        \item\label{itm:straight-move} Go straight forward
+        and visit each cell in passing as far as possible;
+        \item\label{itm:turn-right} When~\ref{itm:straight-move} is not possible
+        (facing a wall or visited cell), make a right turn to visit the cell;
+        \item\label{itm:goto-terminate} Repeat the above steps until the last cell is visited.
+    \end{enumerate}
+\end{alisting}
+As one can see this algorithm is quite intuitive.
+It is also similar to the `wall-follower algorithms' used for solving maze
+exploration problems
+~\footnote{\url{https://en.wikipedia.org/wiki/Maze_solving_algorithm\#Wall_follower}}, namely,
+if one always sticks to the wall on his left while exploring a maze, one will
+eventually find the exit or back to the entrance.
+Interested readers are encouraged to read more on this topic.
+To provide more context,
+imagine that the matrix is tightly embedded in a rectangular concrete wall with an entrance at
+$M[0][0]$.
+The goal of the algorithm is to iterate through the matrix elements such that you keep on going
+straight unless
+you would revisit a previously visited element or hit the wall.
+At which point, make a right turn.
+So on and so forth, until you exhaust all the elements.
+
+\section{Implementation}\label{sec:spiral-matrix-implementation}
+
+Both problem statement and the general-purpose algorithm are pretty intuitive, needing no more
+explanation words.
+We would expect that an implementation is just as straightforward.
+Let us take a look at one of my first correct implementations after a few false starts.
+
+\subsection{Verbose Implementation}\label{subsec:verboseImplementation}
+
+As mentioned earlier, this problem is a pure coding problem as its algorithm is pretty
+straightforward.
+
+Or is it?
+In the algorithm ~\ref{itm:straight-move} instructs one to move `straight forward'.
+However treacherous complexity is concealed in the two words as there are four directions
+to go `straight forward'---up, down, left, and right---and the logic for each of them is different
+from others.
+
+Similarly ~\ref{itm:turn-right} in that algorithm is misleadingly over simplified as there
+are four turns---right-to-down, down-to-left, left-to-up, and up-to-right and each
+takes unique logic to execute.
+
+Moreover, the semantic choice of index also takes a careful treatment---it determines
+the joint point between ~\ref{itm:straight-move} and ~\ref{itm:turn-right}.
+If not chosen properly, it may result in uneven loop lengths in successive turns or, even worse,
+certain elements may be repeated or skipped.
+
+Further, spiral motion is subtly different from circular motion in that accompanying each round of
+circular motion is \emph{translation motion}.
+Particularly in this case, the matrix is gradually `peeled off' as the program execution is
+carried out and this `peel off' motion is the extra translational motion.
+In some implementation, it may be easier if one starts and initializes at the index $-1$,
+as so labeled in ~\autoref{fig:spiral-matrix-loop}.
+
+Last but not least, this question has special cases that unprepared reader may
+stumble upon---\label{complication-special-case}
+if one or both dimensions of a $2$D matrix are odd sized, after all the outer layers are `peeled
+off', left is a $1\times n$ or $n \times 1$ array.
+If this is not handled properly, it will lead to incomplete result.
+Try with some examples, \textit{e.g.}, matrices of sizes $5 \times 1$ and $2\times 3$,
+respectively, and you will have some insights about this.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:VerboseSpiralMatrix},
+    caption={Spiral matrix \java~ implementation.}]
+    {case-study/spiral-matrix/VerboseSpiralMatrix.py}
+\end{clisting}\newpage
+
+Dealing with these complexities all at once is challenging and vulnerable to bugs.
+Even if one succeeds in implementing a working solution, it is doomed to be a mess lacking the
+necessary readability and clarity.
+~\autoref{lst:VerboseSpiralMatrix} list an earlier implementation I myself managed to complete.
+It works but it contains a lot of loops, nested loops, duplicate code, \textit{etc.}
+It is very cumbersome to read or understand.
+When I was developing this solution toward the end, my instinct told me that my code should work
+but it hadn't.
+I was desperately and blindly trying some combinations of `\code{i++}', `\code{--j}', etc., to
+make it work
+because my instinct tells me that I am `close' to pass all the unit tests.
+I have to admit that the final version works purely by accident.
+If I am asked to re-implement it without peeking at my previous code, I will have to go
+through the same painful blind testing process.
+
+
+Admittedly, this is not the first version of working solution I came up.
+This is already improved a lot.
+But still, if you want to understand why each line of code is the way it is, you have to spend some
+time reading into it before going on reading the rest of explanation.
+The main loop terminates if the left bound meets the right bound or the top bound meets the
+bottom bound.
+Then I used an ordinal number, \code{s}, to denote the direction of motion.
+Then in each of the four cases, the cells along the corresponding direction are visited.
+``Why, some indexes are decremented beforehand?'' you ask.
+It is so because of the 1-pass-index notation in indexes, \textit{e.g.}, \code{i2} and \code{j2}.
+These indexes points to 1-pass the index of elements they point to.
+Therefore one need to decrement them before using them.
+This is the hindsight revelation I obtained after I finished coding, which is result of the
+trial-and-error in the first place.
+
+Another pitfall I learned is that one can easily mess up with the spiral
+direction---mistaking counter-clockwise for clockwise and vice versa.
+Make sure you have a visual picture of the $2$D matrix, a mapping of indexes i, j, etc and their
+directions of motion.
+
+\subsection{Analysis of the implementation}\label{subsec:implement.analysis.spiral-matrix}
+
+As I have shared in previous subsection, implementing the simple-looking algorithm for flattening
+a matrix in spiral order is non-trivial and error-prune---if we do it in a brute force way.
+To the `why' question---why implementing this in a more readable way is so
+hard.
+The answer, as mentioned above, is `dealing these complexities all at once'.
+To break the implementation spell, one has to avoid dealing all the complexities at once.
+One needs to divide up the complexities and conquer them one at a time.
+In this subsection, we are going to rethink the algorithm ~\autoref{enum:algorithm} and its
+hidden complexity and how to handle these complexity strategically.
+
+Firstly, the complexities are not all at the same level.
+If one can properly separate them into different levels or categories, that will help deal with them
+at different constructs or modules.
+This is indeed the case---we may group `go right', `go down', 'go left', and `go up' into a cycle.
+After one cycle, the remaining portion is once again a matrix albeit a thinner one.
+Do you see the recursive pattern out there?
+This is a good sign---find a recursive pattern means we can transform the original
+problem into a sequence of subproblems that are progressively smaller to solve.
+As warned in ~\autoref{complication-special-case}, be sure to handle the special base case properly
+otherwise certain elements may be missing in the result.
+So a recursive solution could be as shown in ~\autoref{lst:pseudo_recursive_spiral_order}.
+
+\begin{clisting}
+    \lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
+    caption={A possible recursive implementation.}]
+    {case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
+\end{clisting}
+\newpage
+Let us keep looking for other patterns.
+Particularly, let us look into how to complete a cycle consisting of `go
+right', `go down', 'go left', and `go up'.
+In my opinion, the key to reduce code complexity in a cycle is how to break down the cells
+into one of the four sections---where the boundaries should be placed.
+Especially, which direction should cover the pivot elements at the four corners of the matrix.
+
+In ~\autoref{fig:cycle.division}, we depict three different ways of dividing up the cycle into
+the four sections.
+Pick one of them and try code it up yourself to get a feel of the difference.
+Watch out for the unexpected \python language feature when you slice a list
+with a negative step all the way to the beginning.
+You may be surprised that \code{arr[i:-1:-1]} is actually an empty list.
+This is because the above expression is equivalent to \code{arr[i:len(arr)-1:-1]}
+and the latter is empty.
+The correct slicing expression for that is \code{arr[i::-1]} with \code{i} between $\left[0,
+\mbox{\code{len(arr)}}\right)$ (open interval).
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-asymmetric.jpg}
+        \caption{Asymmetric cycle division.}
+        \label{fig:cycle.division.asymmetric}
+    \end{subfigure}
+    \vspace{2mm}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-corner-special.jpg}
+        \caption{Division singling out corner cells.}
+        \label{fig:cycle.division.corner.special}
+    \end{subfigure}
+    \vspace{2mm}
+    \begin{subfigure}{.3\textwidth}
+        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-symmetric.jpg}
+        \caption{Symmetric cycle division.}
+        \label{fig:cycle.division.symmetric}
+    \end{subfigure}
+    \caption{Division of one cycle into `upper row', `right column', `bottom row leftward',
+    and `left column upward'.
+    Each section is colored differently.\label{fig:cycle.division}}
+\end{figure}
+In coding, I used zero-based indexing and ~\fullref{fig:cycle.division.symmetric} cycle division.
+For reasons of preference for zero-based indexing please refer ~\autoref{sec:array-pattern} for
+more detailed discussion.
+Specifically, the reasons for this choice here are
+\begin{enumerate}
+    \item the ending index better matches the unvisited cells
+    \item the starting index includes the first element
+    \item the ending index serves as the first element for next section
+    \item better matches with the zero-based, close your loop more smoothly
+\end{enumerate}
+
+\begin{clisting}
+    \lstinputlisting[label={lst:flatten_cycle},
+    caption={Flattening elements in one cycle using the symmetric indexing
+    ~\autoref{fig:cycle.division.symmetric}.}]
+    {case-study/spiral-matrix/spiral_order_recursive.py}
+\end{clisting}
+
+%This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
+%code up a neat solution, it'll take a number of skills and effort.
+%
+%But implementation wise, it's not easy to implement gracefully-free from duplicate code, simple,
+%and more importantly, easy to read.
+
+Together, ~\autoref{lst:pseudo_recursive_spiral_order} and ~\autoref{lst:flatten_cycle}
+forms a recursive solution with a modular design which has much better readability.
+Once one understands the solution, one can easily refactor it or extend it for a customized task
+without any haphazard guess work.
+
+
+\subsection{New iterative implementation}\label{subsec:newIterative.spiralMatrix}
+
+The recursive solution came into being mainly as a direct product of overcoming the shortcomings
+listed in ~\autoref{subsec:verboseImplementation}.
+Recursive solutions are usually succinct, understandable, elegant.
+But as they rely heavily on stack resources, their application are usually limited to prototyping.
+In production, robustness is a big concern as input is usually out of control of the original
+author of the code\footnote{An added word here: our recursive solution shown in
+~\autoref{lst:pseudo_recursive_spiral_order} is actually a tail-recursion.
+Because of this, some compilers may take advantage of this feature and avoid spending stack
+resources altogether.
+See ~\autoref{sec:tailRecursion} for more details.}.
+Let us try to convert the recursive solution into an iterative one.
+One mechanical way, for beginners, is to mimic the function a stack frame plays in the recursive
+solution and remove the unnecessary part gradually.
+For more experienced developers, they can of course skip this lengthy process and hop to the
+necessary auxiliary data structures needed.
+
+In our case, the iterative solution needs a list to contain the result and a couple of extra
+variables used as stateful registers.
+This is so because our recursive solution is a tail-recursion (see ~\autoref{sec:tailRecursion}).
+This iterative solution is listed below.
+\lstinputlisting[label={lst:spiral_order_iterative.py},
+caption={Flattening a $2$D matrix in spiral order recursive \python implementation.}]
+{case-study/spiral-matrix/spiral_order_iterative.py}
+
+\subsection{Spiral Iterator in \python}\label{subsec:spiralIterator}
+
+In applications where a lazy, iteratable interface is needed for a delayed iteration over a $2$D
+matrix, an iterator may be a desirable solution.
+In this subsection, we also provide the \python generator interface to illustrate the application
+of OOD concepts in functional coding.
+
+Firstly, let's see what the solution would look like if we have an iterator interface that will
+iterate through a $2$D matrix in spiral order.
+The interface would look like this
+\lstinputlisting[label={lst:spiral_matrix_iter_interface},
+caption={Index generator interface for dereferencing a $m\times n$ $2$D matrix in spiral order.}]
+{case-study/spiral-matrix/spiral_matrix_iterator_interface.py}
+This design decouples the original matrix from the generator interface completely
+---all that the generator interface needs are the dimensions of the matrix with
+caveat that the dimension input be that of the matrix the generator is intended to use with.
+Each call for the generator will yield a tuple of the form \code{(x,y)}
+where \code{x} refers to the row index and \code{y} the column index.
+
+An example usage of the interface may be as follows:
+\lstinputlisting[label={lst:spiral_matrix_app},
+caption={Spiral matrix \python implementation.}]
+{case-study/spiral-matrix/spiral_matrix_app.py}
+
+All the implementation details are hidden in the implementation of the generator.
+\lstinputlisting[label={lst:spiral_matrix_iter},
+caption={Spiral matrix \python implementation.}]
+{case-study/spiral-matrix/spiral_matrix_iterator.py}
+This is another example of complexity separation---complexity of realizing a function is
+hidden away from where it is invoked.
+Also this greatly promotes code reuse by decoupling the logic of spiral
+iteration from that of specific tasks of visiting the cells---
+be it direct printing to screen, aggregation
+computations over the elements, stateful processing of elements, or any other
+arbitrary operations requiring sequential access to matrix elements.
+Suppose that someone came in and made improvement to the performance of the iterator,
+all invocations of this code will benefit with NO change in their code.
+
+Left as exercise for the reader is to ``converting one of the implementations discussed in
+~\autoref{sec:spiral-matrix-implementation} to an
+implementation of the generator interface ~\autoref{lst:spiral_matrix_iter_interface}''.

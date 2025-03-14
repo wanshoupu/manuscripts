@@ -76,7 +76,7 @@ results in one or more of these changes to the body of the final loop:
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{embedded-loops/segment-for-loop-thinning.jpg}
+    \includegraphics[width=0.6\textwidth]{segment-for-loop-thinning.jpg}
     \caption{\label{fig:segment-for-loop-thinning} Sectioning of loop body statements
     for `loop thinning' process.
     Each section receives different treatment during the `loop thinning' process.}
@@ -135,7 +135,7 @@ For example,
     while (++i < LIMIT);
 \end{lstlisting}
 shall be expanded to
-\lstinputlisting[]{embedded-loops/expanded-do-while.java}
+\lstinputlisting[]{expanded-do-while.java}
 before the start of loop thinning refactor.
 The following Golang statement should also be unfolded beforehand:
 \begin{lstlisting}
@@ -195,7 +195,7 @@ house the \emph{post-inner-loop} statements, both \code{stack.push(i)} and \code
 After all these are completed, the code looks like
 \lstinputlisting[label={lst:histogram-coalesced-loop},
 caption={Code for solving the `Maximum rectangular area under histogram' using a single loop.}]
-{embedded-loops/histogram.java}
+{histogram.java}
 
 
 In comparison with ~\autoref{lst:histogram-oneMoreCycle}, solution in
@@ -234,7 +234,7 @@ But in what follows, I am going to present the idea in \python.
 The outline of the quicksort function is as follows.
 \lstinputlisting[label={lst:QuickSortOutline},language=C,
 caption={An implementation of quicksort algorithm.}]
-{embedded-loops/quicksort_outline.c}
+{quicksort_outline.c}
 where arguments \code{s} and \code{e} are the starting (inclusive) and ending (exclusive) pointers
 to the array.
 `\code{part}' is a recursive function whose base case is no-op, namely,
@@ -259,7 +259,7 @@ With the Hoare's partitioning scheme, a tentative implementation for the functio
 follows.
 \lstinputlisting[label={lst:nestedLoopHoareMethod},language=C,
 caption={Implementation of Hoare's partition scheme for quicksort.}]
-{embedded-loops/quicksort_partition_sym.c}
+{quicksort_partition_sym.c}
 First, we randomly select a pivot element and swap it to the beginning of the array
 (ask yourself: ``why beginning of array?
 Why not end?'').
@@ -369,7 +369,7 @@ Notably, implementing this partitioning scheme only needs one loop
 (see blow ~\autoref{lst:singleLoopLomuto}).
 \lstinputlisting[label={lst:singleLoopLomuto},language=C,
 caption={Implementation of Lomuto's partition scheme for quicksort.}]
-{embedded-loops/quicksort_partition_asym.c}
+{quicksort_partition_asym.c}
 
 
 Comparing ~\autoref{lst:nestedLoopHoareMethod} with ~\autoref{lst:nestedLoopHoareMethod},
@@ -437,11 +437,11 @@ So something must be done to unfold the extraordinary loop conditions to
 ordinary ones before we proceed with the rest of the `loop thinning' procedure.
 As we learned in ~\fullref{ch:loops}, these loops may be converted first to
 `\code{do-while} loops' such as
-\lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_do_while.c}
+\lstinputlisting[language=C]{quicksort_inner_loop_do_while.c}
 and the latter are, in turn, converted to `\code{while} loops':
-\lstinputlisting[language=C]{embedded-loops/quicksort_inner_loop_while.c}
+\lstinputlisting[language=C]{quicksort_inner_loop_while.c}
 After these changes are applied, our the partition function becomes
-\lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_expanded_inner_loop.c}
+\lstinputlisting[language=C]{quicksort_partition_sym_expanded_inner_loop.c}
 You may have noticed that we have floated ~\code{--e} up in front of the first inner loop,
 and this does not affect the correctness as can be verified.
 The solution now seems equally messy, if not more so, as we started.
@@ -453,7 +453,7 @@ Now we can proceed with the next step
 of loop thinning---move the \emph{pre-inner-loop statements} out of the way.
 (``Loop rotation'' is specified in ~\fullref{sec:LoopDesignConsideration}.)
 After this step, the code becomes:
-\lstinputlisting[language=C]{embedded-loops/quicksort_partition_sym_rotated_inner_loop.c}
+\lstinputlisting[language=C]{quicksort_partition_sym_rotated_inner_loop.c}
 We have accelerated the process by tucking the \emph{post-inner-loop statements}
 resulted from the loop rotation to a conditional block.
 
@@ -465,7 +465,7 @@ exits.
 Our final result is posted below after the conversion to conditional construct:
 \lstinputlisting[label={lst:singleLoopHoarePart},language=C,escapechar=$,
 caption={Implementation of partition function for Quicksort using one pointer.}]
-{embedded-loops/quicksort_partition_single_loop.c}
+{quicksort_partition_single_loop.c}
 Note that we have combined multiple statements into a compound one `~\code{swap(s++, e--)}'.
 %By now we conclude our ``loop thinning' refactor process.
 
@@ -516,7 +516,7 @@ This will help one pick the most effective solution to the original problem.
 %%\label{Evernote:Calculate the silhouette or skyline of a group of rectangles on the horizon}
 %\lstinputlisting[label={lst:silhouette-skyline},
 %caption={Loop thinning example for skyline calculation.}]
-%{embedded-loops/silhouette.py}
+%{silhouette.py}
 %
 %\label{Evernote:Server peak load problem}
 %\label{Evernote:for-loop Loop compactification examples}
@@ -528,11 +528,11 @@ This will help one pick the most effective solution to the original problem.
 %
 %\begin{clisting}
 %    \lstinputlisting[label={lst:nestedForLoop},
-%    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_nested_loop.java}
+%    caption={Code snippet with thinned for loops.}]{int_to_roman_nested_loop.java}
 %\end{clisting}
 %\begin{clisting}
 %    \lstinputlisting[label={lst:nestedForLoop},
-%    caption={Code snippet with thinned for loops.}]{embedded-loops/int_to_roman_thinned_loop.java}
+%    caption={Code snippet with thinned for loops.}]{int_to_roman_thinned_loop.java}
 %\end{clisting}
 
 
@@ -585,7 +585,7 @@ character array of the `\code{needle}'
 Let us begin with a nested loop solution implemented in \java as follows:
 \begin{clisting}
 \lstinputlisting[label={lst:nestedLoop-string-search},caption={Code snippet with nested loops.}]
-{embedded-loops/pattern_match_nested_loop.java}
+{pattern_match_nested_loop.java}
 \end{clisting}
 We make this our starting point because it is the most easily thought of solution.
 If this problem appears in the final exam or a coding challenge for a software engineer hiring,
@@ -617,7 +617,7 @@ If done this way, the loop condition will be unnecessary as the loop is
 either aborted in an earlier iteration or terminated on the $N+1$th iteration.
 With these changes, the nested loop solution is shortened:
 \lstinputlisting[label={lst:nestedLoop-one-more-cycle},caption={Code snippet with nested loops.}]
-{embedded-loops/pattern_match_nested_loop_one_more_cycle.java}
+{pattern_match_nested_loop_one_more_cycle.java}
 
 
 With the handful of code tuning, we have made the code simpler and shorter.
@@ -645,7 +645,7 @@ As a result, the initialization statement `\code{int j = 0}' is duplicated with 
 at the forefront of the outer loop with the other after the last statement within the outer loop.
 Also the inner loop now becomes an unconditional loop \code{while(true)}.
 If you are still with me, the code now looks like this:
-\lstinputlisting[escapechar=~]{embedded-loops/pattern_match_thinning_loop_intermediate_stage.java}
+\lstinputlisting[escapechar=~]{pattern_match_thinning_loop_intermediate_stage.java}
 It is important to check and verify that this code still passes the same amount of
 unit tests as ~\autoref{lst:nestedLoop-one-more-cycle} does.
 This is the invariant that should be maintained at each important milestone
@@ -663,7 +663,7 @@ increment statement `\code{++j}', so we could shield \code{++j} in an \code{else
 Hooray!
 We are ready to remove the unconditional inner loop---and it is as simple as ``just strip it away''.
 After this step, the code looks like this:
-\lstinputlisting[]{embedded-loops/pattern_match_thinned_loop_intermediate_stage.java}
+\lstinputlisting[]{pattern_match_thinned_loop_intermediate_stage.java}
 Finally as a cleanup step, the condition on line~\ref{line:haystack-needle} of the previous listing
 may be absorbed into the loop condition.
 Also the loop condition may be switched from
@@ -676,7 +676,7 @@ to
 \end{quote}
 The final version after this change is:
 \lstinputlisting[label={lst:thinnedLoop},caption={Code snippet with nested loops.}]
-{embedded-loops/pattern_match_thinned_loop.java}
+{pattern_match_thinned_loop.java}
 without affecting correctness but made it more direct to ensure the safety of subsequent index
 operation in the expression `\code{haystack.charAt(i + j)}'.
 

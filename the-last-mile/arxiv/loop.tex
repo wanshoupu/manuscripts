@@ -140,14 +140,14 @@ and desert.
 Interested judges will approach the team and put an order of a full course.
 Other than judge orders, chef does not cook anything else.
 The competition process may be best coded with pre-test loop such as
-\lstinputlisting{loop/pre_test_loop.java}
+\lstinputlisting{pre_test_loop.java}
 
 
 Suppose, on the last night of the competition, the rule is changed so that each chef is to cook a
 course for display before judges' orders.
 One can do a `copy-n-paste' to solve the problem;
 or one can avoid `copy-n-paste' with a post-test loop:
-\lstinputlisting{loop/post_test_loop.java}
+\lstinputlisting{post_test_loop.java}
 
 
 For another example, suppose we are to develop a command line tool that takes input from
@@ -158,7 +158,7 @@ It terminates when user types `exit' or simply hits `return' key
 Then the best loop construct for that would be mid-test loop.
 But since \java does not have a specialized mid-test loop construct, we have to makeshift by using
 a \code{break} statement along with an infinite loop:
-\lstinputlisting{loop/mid_test_loop.java}
+\lstinputlisting{mid_test_loop.java}
 
 
 \section{A word on the usage of \code{continue}, \code{break}, and \code{return}}
@@ -202,7 +202,7 @@ cases of `$2$' and `$3$', respectively.
 
 Thankfully, an implementation using `\code{continue}' statement in conjunction
 with a cascade conditional is free from any of the problems listed above:
-\lstinputlisting{loop/use_of_continue.py}
+\lstinputlisting{use_of_continue.py}
 It is marvelous!
 
 %TODO settle down this presentation
@@ -210,11 +210,11 @@ It is marvelous!
 %\begin{clisting}
 %    \begin{minipage}[t]{.45\textwidth}
 %        \lstinputlisting[caption={Using \code{if-else}.}]
-%        {loop/conditional_in_loop_no_continue.java}
+%        {conditional_in_loop_no_continue.java}
 %    \end{minipage}\hfill
 %    \begin{minipage}[t]{.45\textwidth}
 %        \lstinputlisting[caption={Using \code{if..continue}.}]
-%        {loop/conditional_in_loop_continue.java}
+%        {conditional_in_loop_continue.java}
 %    \end{minipage}
 %\end{clisting}
 
@@ -222,11 +222,11 @@ It is marvelous!
 %\begin{clisting}
 %    \begin{minipage}[t]{.45\textwidth}
 %        \lstinputlisting[caption={Unsimplified code}]
-%        {loop/loop_cond_redundant_testing.java}
+%        {loop_cond_redundant_testing.java}
 %    \end{minipage}\hfill
 %    \begin{minipage}[t]{.45\textwidth}
 %        \lstinputlisting[caption={Simplified code}]
-%        {loop/loop_cond_repeated_block.java}
+%        {loop_cond_repeated_block.java}
 %    \end{minipage}
 %\end{clisting}
 %But each has their own problem.
@@ -236,7 +236,7 @@ It is marvelous!
 %The simplification of both lies in the use of \code{continue}:
 %
 %\begin{minipage}[H]{\textwidth}
-%    \lstinputlisting{loop/loop_cond_no_redundancy.java}
+%    \lstinputlisting{loop_cond_no_redundancy.java}
 %\end{minipage}
 
 
@@ -250,7 +250,7 @@ Beside the universal \code{while}-loop, is the conventional C-like \code{for}-lo
 \footnote{This is not to be confused with the iterator-based \code{foreach},
 whose functionalities has largely been replaced by streaming such as in JDK 8+.},
 another commonly used pre-test loop whose layout looks like looks like
-\lstinputlisting{loop/for_loop.java}
+\lstinputlisting{for_loop.java}
 The distinguishing parts of a \code{for}-loop are its header statements---the
 initialization \code{<init>}, the loop test \code{<test>}, and the afterthought \code{<aftrth>}.
 Below is an explanation of these header statements:
@@ -324,13 +324,13 @@ The following example illustrates this.
 In the first version, the code in the main function \code{execute} was
 misappropriated---a large part of it was usurped by the loop whose sole purpose
 is to search for `a needle in the haystack'.
-\lstinputlisting[lastline=12]{loop/refactor_conditional_in_loop.java}
+\lstinputlisting[lastline=12]{refactor_conditional_in_loop.java}
 In the following listing, we refactored the loop into a separate function.
 Not only did we greatly reduced the bulging function, but most importantly
 \code{target} and other intermediate variables are eliminated and
 their scope are caged in the new function.
 The threat of polluting the namespace in the remaining code is completely removed.
-\lstinputlisting[firstline=14]{loop/refactor_conditional_in_loop.java}
+\lstinputlisting[firstline=14]{refactor_conditional_in_loop.java}
 
 
 \section{The `\textit{loop-and-a-half}' problem}\label{sec:loop-and-a-half-Problem}
@@ -376,7 +376,7 @@ We will study a few cases for this in ~\fullref{ch:sentinels} and in
 \section{Loop Rotation}\label{sec:LoopDesignConsideration}
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=.7\textwidth]{loop/ferris-wheel.jpg}
+    \includegraphics[width=.7\textwidth]{ferris-wheel.jpg}
     \caption{\label{fig:loop-rotation}Loop as a circular sequence.
     The nodes \code{i++} and \code{print} are candidates that can matched and coalesced into
     the loop.}
@@ -409,11 +409,11 @@ initialization, state update statements and other statements in the loop body.
 \begin{figure}[htb]
     \centering
     \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{loop/loose-spool.jpg}
+        \includegraphics[width=\textwidth]{loose-spool.jpg}
         \caption{\label{fig:loose-spool}}
     \end{subfigure}
     \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{loop/tight-spool.jpg}
+        \includegraphics[width=\textwidth]{tight-spool.jpg}
         \caption{\label{fig:tight-spool}}
     \end{subfigure}
     \caption{\label{fig:spool-loop} If we use spool as a metaphor for loop in program, then
@@ -458,7 +458,7 @@ It is the driving function: it creates the players, the board, the pieces, then 
 control to the main loop, at end of the game, it presents the final result.
 So here we go, the code to be improved is listed below.
 \begin{clisting}[H]
-    \lstinputlisting[]{loop/board_game_dupcode.py}
+    \lstinputlisting[]{board_game_dupcode.py}
 \end{clisting}
 Looking at , as we rotate the loop, they can be aligned and coalesced line by line.
 As can been seen, the last statement in the loop and the immediate statement before the loop
@@ -469,17 +469,17 @@ counterparts in the loop body.
 But first of all, we need to untie the loop by `internalizing' the loop condition
 so that it becomes an unconditional `\code{while(True)}' loop:
 \begin{clisting}[H]
-    \lstinputlisting[]{loop/board_game_dupcode-0.py}
+    \lstinputlisting[]{board_game_dupcode-0.py}
 \end{clisting}
 Now watch closely---let us roll up one line:
 \begin{clisting}[H]
-    \lstinputlisting[]{loop/board_game_dupcode-1.py}
+    \lstinputlisting[]{board_game_dupcode-1.py}
 \end{clisting}
 As you noticed, we have aligned and coalesced one line of the duplicate code.
 Repeating this process $4$ more times, we would wipe out all duplicate code.
 The final program looks like the following:
 \begin{clisting}[H]
-    \lstinputlisting[]{loop/board_game_rotated.py}
+    \lstinputlisting[]{board_game_rotated.py}
 \end{clisting}
 In practice you don't have to strictly go through each and every step described here.
 Once you grasp the idea and become skillful, you can skip some of the intermediate steps
@@ -607,7 +607,7 @@ In that case, the terminating cell is at end of the line.
 For now, we are going to handle this extra complication with post-loop processing.
 Altogether, apart from the to-be-determined initialization and post-loop calculation, the main loop
 looks like
-\lstinputlisting[]{loop/spiral_termination_todo.py}
+\lstinputlisting[]{spiral_termination_todo.py}
 Now all stake is laid on the initialization.
 As long as that can be determined, the rest of the
 code will bring it where need be.
@@ -616,7 +616,7 @@ code will bring it where need be.
 
 \begin{figure}[tbh]
     \centering
-    \includegraphics[width=.4\textwidth]{loop/spiral-term.jpg}
+    \includegraphics[width=.4\textwidth]{spiral-term.jpg}
     \caption{\label{fig:spiral-term-iter}
     Iteration after one `spiral stride' in the `Spiral termination' problem.
     Purple cells denote a visited `layer'.
@@ -642,7 +642,7 @@ We can thus refer to this process as `one-less-iteration'.
 Convince yourself that by doing so, this condition `\code{1 <= min(m, n) <= 2}' will hold true
 upon loop termination and the leftover is handled in post-loop processing.
 With this fix, here comes the first complete solution that works:
-\lstinputlisting[]{loop/spiral_termination_final.py}
+\lstinputlisting[]{spiral_termination_final.py}
 In this solution, the initialization is natural and trivial.
 But still the loop condition `\code{2 < m and 2 < n}' seems little unintuitive and arbitrary.
 After all, why `$2$'?
@@ -678,7 +678,7 @@ How to proceed from here?
 
 \begin{figure}[tbh]
     \centering
-    \includegraphics[width=.4\textwidth]{loop/spiral-term-init.png}
+    \includegraphics[width=.4\textwidth]{spiral-term-init.png}
     \caption{\label{fig:spiral-term-init}
     `Spiral termination' problem: backtracking the initialization to an extrapolated,
     virtual cell.}
@@ -712,7 +712,7 @@ More importantly, it is the key to get rid of the duplicate code.
 
 
 Without much ado, here is the iterative solution with the newly discovered initialization key:
-\lstinputlisting[]{loop/spiral_termination_virtual_init.py}
+\lstinputlisting[]{spiral_termination_virtual_init.py}
 This solution has an advantage over the previous in that
 its input domain is larger than other---it can handle zero-sized matrices while its predecessor
 cannot.
@@ -734,7 +734,7 @@ implementation.
 
 Before we conclude this section, I want to let you know that there is a 3-liner solution to the
 `spiral termination' problem:
-\lstinputlisting[]{loop/spiral_termination_two_liner.py}
+\lstinputlisting[]{spiral_termination_two_liner.py}
 Or may be even simpler solutions that I don't know.
 By telling you this 3-line spoiler, I am not at all telling you that your
 optimization effort so far has been totally wasted.
@@ -798,7 +798,7 @@ Here is a brief summary of it (suppose input is an array of integers \code{heigh
 
 Based on a random sample of submissions on LeetCode, majority of the implementations
 of ~\autoref{enum:stack-limited-mining-algo} are more or less like what follows:
-\lstinputlisting[]{loop/histogram_verbose.java}
+\lstinputlisting[]{histogram_verbose.java}
 While it passes $100\%$ the unit tests and was accepted by the Online Judge, this
 solution has various smells.
 The smelliest issue is the oversize post-process code, the entire \code{while}-loop which
@@ -828,7 +828,7 @@ We successfully accomplished our goal to
 reduce code duplication between loop and the post-loop processing code.
 \lstinputlisting[label={lst:histogram-oneMoreCycle},caption={A deduped solution for
 `Maximum rectangular area under histogram' problem}]
-{loop/histogram_oneMoreCycle.java}
+{histogram_oneMoreCycle.java}
 
 
 \section{Loop Pacing}\label{sec:loop-pacing}
@@ -871,7 +871,7 @@ problem\footnote{\url{https://en.wikipedia.org/wiki/Happy_number}}:
 \end{quote}
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=.7\textwidth]{loop/happy_number.png}
+    \includegraphics[width=.7\textwidth]{happy_number.png}
     \caption{\label{fig:happy-number}The loop state, \code{n} \textit{vs.} iteration number.}
 \end{figure}
 
@@ -883,7 +883,7 @@ When a number is detected to be repetition of an earlier one, terminate the loop
 Check if the terminating value of \code{n} is one.
 A naïve implementation is as follows.
 \lstinputlisting[label={lst:nonlinear-stepping},
-caption={Dynamic stepping in a loop}]{loop/nonlinear_stepping_example.py}
+caption={Dynamic stepping in a loop}]{nonlinear_stepping_example.py}
 The state of the loop is entirely encoded in the variable \code{n}.
 The chart in ~\autoref{fig:happy-number} shows how the loop state changes as the program
 executes for $n=7$.
@@ -929,5 +929,5 @@ that is a close match to your programming requirement
 minimal loop customization, if needed at all.
 The ultimate goal is to minimize or eliminate duplicate code in and around loop.
 
-%\lstinputlisting[]{loop/NumberOfPath.java}
-%\lstinputlisting[]{loop/WildcardStringMatching.java}
+%\lstinputlisting[]{NumberOfPath.java}
+%\lstinputlisting[]{WildcardStringMatching.java}

@@ -132,12 +132,12 @@ In doing so, it does more with less.
 \begin{figure}[H]
     \centering
     \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/sunflower.jpg}
+        \includegraphics[width=\textwidth]{sunflower.jpg}
         \caption{\label{fig:symmetric-flower}Symmetric sunflower seeds forms beautiful spiral
         patterns.}
     \end{subfigure}
     \begin{subfigure}{.45\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/sunflower-asymm.jpg}
+        \includegraphics[width=\textwidth]{sunflower-asymm.jpg}
         \caption{\label{fig:asymmetric-flower}The missing seeds in this otherwise symmetric image
         causes irregularity and anomaly.}
     \end{subfigure}
@@ -248,7 +248,7 @@ So then instead of randomly picking one value for pivot, we now randomly pick $3
 of which be elected as the pivot as usual, the minimum be deployed to the left end, and the maximum
 to the right end.
 We group these operations into a function called `\code{init_swap}':
-\lstinputlisting[]{sentinels/qsort_init_swap.c}
+\lstinputlisting[]{qsort_init_swap.c}
 
 
 Now back the function `\code{part}'.
@@ -256,7 +256,7 @@ As we mentioned before, the deployment of sentinels in function `\code{init_swap
 the conditional expressions `\code{s < e}' and `\code{pivot < e}' semantically redundant.
 They can now be safely removed.
 Below is the function `\code{part}' after all the refactoring is done.
-\lstinputlisting[]{sentinels/qsort_part_sentinel.c}
+\lstinputlisting[]{qsort_part_sentinel.c}
 Comparing with the implementation ~\autoref{lst:nestedLoopHoareMethod}, this code
 cleans out clutter in the loop conditions in the inner loops.
 We `float' the control all the way through the termination of the program on a `touchless' rail made
@@ -278,7 +278,7 @@ Can we apply the idea of sentinel to make it even better?
 Yes, it may be applied equally well.
 Below is the implementation of the function `\code{part}' with a single loop and simplified
 boundary condition with sentinel values.
-\lstinputlisting[]{sentinels/quicksort_partition_single_loop_sentinel.c}
+\lstinputlisting[]{quicksort_partition_single_loop_sentinel.c}
 This brings implementations of Hoare's quicksort to the next level of simplicity.
 
 
@@ -311,7 +311,7 @@ The problem statement is as follows ~\footnote{Credit to Leetcode\url{leetcode.c
 \end{quote}
 \begin{figure}
     \centering
-    \includegraphics[width=0.3\textwidth]{sentinels/letter-number-section.jpg}
+    \includegraphics[width=0.3\textwidth]{letter-number-section.jpg}
     \caption{\label{fig:letter-number-section} The word `pseudoanthropological'
     as an example for string abbreviation.}
 \end{figure}
@@ -377,7 +377,7 @@ One would have to complete a one-time cross-examination of the two after the loo
 ~\autoref{lst:ValidWordAbbrev}.
 \lstinputlisting[label={lst:ValidWordAbbrev},
 caption={One-pass loop implementation for validating abbreviation of a word.}]
-{sentinels/valid_word_abbreviation.py}
+{valid_word_abbreviation.py}
 As you may have recognized, this is reminiscent of the so-called `loop-and-a-half' problem.
 Can we get rid of the residual post-loop processing code?
 ``Yes, we can with the help of sentinel!'' as you guess correctly.
@@ -387,7 +387,7 @@ and then we can delete the post-loop processing code as shown in
 ~\autoref{lst:ValidWordAbbrev.sentinel}.
 \lstinputlisting[label={lst:ValidWordAbbrev.sentinel},
 caption={Same implementation as ~\autoref{lst:ValidWordAbbrev} with use of sentinel.}]
-{sentinels/valid_word_abbrev_sentinel.py}
+{valid_word_abbrev_sentinel.py}
 
 This is a perfect demonstration of the power of sentinel to simplify code,
 an even better example
@@ -401,7 +401,7 @@ expression patterns to find the boundaries between letter groups and number grou
 \@\autoref{lst:ValidWordAbbrev.regex} provides one such implementation just for your information.
 \lstinputlisting[label={lst:ValidWordAbbrev.regex},
 caption={Code for validating abbreviation of a word with use of sentinel.}]
-{sentinels/valid_word_abbrev_regex.py}
+{valid_word_abbrev_regex.py}
 Nevertheless, the simplicity of the implementation ~\autoref{lst:ValidWordAbbrev.sentinel} still
 stands as an exemplary model for the demonstration of the power of sentinels.
 
@@ -437,9 +437,9 @@ is essentially a sentinel value.
 
 Proper use of the `getOrDefault' method can save us a line of code.
 For example, accessing \code{HashMap} in the `usual way' would be
-\lstinputlisting{sentinels/cache_access.java}
+\lstinputlisting{cache_access.java}
 But using the `getOrDefault' method, the method becomes one-liner
-\lstinputlisting{sentinels/cache_access_getOrDefault.java}
+\lstinputlisting{cache_access_getOrDefault.java}
 
 
 \subsection{Anchoring Sentinel Node}\label{subsec:anchoringSentinels}
@@ -451,7 +451,7 @@ will be discussed in detail in ~\autoref{ch:datastructure}.
 Most commonly, linked list is implemented by making the following declaration of \code{Node}
 \lstinputlisting[label={lst:linkedListNode},
 caption={Definition of linked list node.}]
-{sentinels/linked_list_node.py}
+{linked_list_node.py}
 Then a linked list can be defined by a \code{Node} named `\code{head}'.
 This deceivingly simple definition of a linked list conceals exceptional conditions
 for one to discover and handle properly,
@@ -472,17 +472,17 @@ This should not be unfamiliar with most C programmers.
 \begin{figure}
     \centering
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case.jpg}
+        \includegraphics[width=\textwidth]{revert_linked_list_happy_case.jpg}
         \caption{\label{fig:RevertLinkedList.HappyCase.original}Happy case.}
     \end{subfigure}
     ~
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_algo.jpg}
+        \includegraphics[width=\textwidth]{revert_linked_list_algo.jpg}
         \caption{\label{fig:RevertLinkedList.algo}Algorithm in action.}
     \end{subfigure}
     ~
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{sentinels/revert_linked_list_happy_case_result.jpg}
+        \includegraphics[width=\textwidth]{revert_linked_list_happy_case_result.jpg}
         \caption{\label{fig:RevertLinkedList.HappyCase.reverted}Reverted linked list.}
     \end{subfigure}
     \caption{\label{fig:RevertLinkedList}`Revert linked list' algorithm illustration on
@@ -505,7 +505,7 @@ If you try to solve the problem literally according to the algorithm,
 then the code may going to look like ~\autoref{lst:revertLinkedList}.
 \lstinputlisting[label={lst:revertLinkedList},
 caption={Common implementation for revert linked list.}]
-{sentinels/reverse_linked_list.py}
+{reverse_linked_list.py}
 It may not be the case for many that they come to this solution on their first attempt.
 Some may have been staring at the problem without knowing where to start.
 Others may have been spending substantial amount of time to fix an obnoxious bug.
@@ -539,7 +539,7 @@ Following this thread, I am providing a revised implementation in
 ~\autoref{lst:revertLinkedList.sentinel}.
 \lstinputlisting[label={lst:revertLinkedList.sentinel},
 caption={Implementation for revert linked list with the use of sentinel.}]
-{sentinels/reverse_linked_list_sentinel.py}
+{reverse_linked_list_sentinel.py}
 As one can see the benefits of using an anchoring sentinel are two-fold.
 For one, it unleashes our brain's visualization power about how the algorithm works.
 It also frees up our mind from worrying about `null-pointer exception' so that it can focus on
@@ -578,7 +578,7 @@ To complete algorithm, a post-loop check is needed to recover the final range (o
 The implementation is shown in ~\autoref{lst:missingRangeV1}.
 \lstinputlisting[label={lst:missingRangeV1},
 caption={An implementation for problem `Missing range'.}]
-{sentinels/missing_range.py}
+{missing_range.py}
 The above implementation has a mixed smell of `loop-and-a-half'
 (see ~\autoref{sec:loop-and-a-half-Problem}) and `Oddball solution' problem\@\cite{Fowler1999}
 and both are in the post-loop processing logic.
@@ -600,7 +600,7 @@ after the last \emph{true} element.
 The code is presented in ~\autoref{lst:missingRangeSentinel}.
 \lstinputlisting[label={lst:missingRangeSentinel},
 caption={A sentinel implementation for problem `Missing range'.}]
-{sentinels/missing_range_sentinel.py}
+{missing_range_sentinel.py}
 Like the example in ~\autoref{lst:ValidWordAbbrev.sentinel},
 the addition of sentinel element 'upper+1' in the array cuts off the cluttered
 post-loop processing logic completely without any side effect.

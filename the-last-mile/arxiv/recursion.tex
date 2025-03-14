@@ -70,7 +70,7 @@ One technique to reduce risk of modifying state of variables is to use immutable
 as \code{string}, \code{tuple}, \code{pair}, \textit{etc.}
 
 The following code snippet suffers this problem.
-\lstinputlisting{recursion/bad-recursion.py}
+\lstinputlisting{bad-recursion.py}
 
 Like a sourdough recipe calling for some dough left over from the last time the same recipe was
 made.
@@ -118,7 +118,7 @@ Do you just throw exception?
 \begin{clisting}
     \lstinputlisting[label={lst:matrix-spiral-term},
     caption={Matrix spiral print termination position.}]
-    {recursion/spiral_termination_position.py}
+    {spiral_termination_position.py}
 \end{clisting}
 
 \section{Convert Recursive Solutions to Iterative}\label{sec:recursiveToIterative}
@@ -155,7 +155,7 @@ one or more leaf functions that only interact with the main function.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{recursion/multi-recursion.jpg}
+    \includegraphics[width=\textwidth]{multi-recursion.jpg}
     \caption{Mutual recursion.\label{fig:mutual-recursion}}
 \end{figure}
 

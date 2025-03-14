@@ -81,25 +81,25 @@ In one-dimensional ($1$D) space, a coordinate at $x$, its transformed coordinate
     the entire space periodically and infinitely.
     Overlapping palindromes also form similar periodic patterns.}\label{fig:ReflectionSymmetry}
     \begin{subfigure}{.4\textwidth}
-        \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-axis-a.jpg}
+        \includegraphics[width=\textwidth]{symmetry-axis-a.jpg}
         \caption{An axis of reflection symmetry}
         \label{fig:a-axis-reflection-symmetry}
     \end{subfigure}
     ~
     \begin{subfigure}{.4\textwidth}
-        \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-axis-b.jpg}
+        \includegraphics[width=\textwidth]{symmetry-axis-b.jpg}
         \caption{Another axis of symmetry}
         \label{fig:b-axis-reflection-symmetry}
     \end{subfigure}
     \vspace{1mm}
     \begin{subfigure}[b]{.4\textwidth}
-        \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-2-axes.jpg}
+        \includegraphics[width=\textwidth]{symmetry-2-axes.jpg}
         \caption{Two concurrent axes}
         \label{fig:two-axes-reflection-symmetry}
     \end{subfigure}
     ~
     \begin{subfigure}[b]{.4\textwidth}
-        \includegraphics[width=\textwidth]{case-study/longest-palindrome/symmetry-palindrome.jpg}
+        \includegraphics[width=\textwidth]{symmetry-palindrome.jpg}
         \caption{Overlapping palindromes}
         \label{fig:palindrome-symmetry}
     \end{subfigure}
@@ -144,7 +144,7 @@ may be projected to its image $S^{\prime\prime}$ and so on.
     \caption{\label{fig:bananas.palindrome}
     The top $4$ palindromic substrings of the example string ``bananas''
     labeled as `$1$`, `$2$`, and `$3$`.}
-    \includegraphics[width=.5\textwidth]{case-study/longest-palindrome/bananas-palindromes.jpg}
+    \includegraphics[width=.5\textwidth]{bananas-palindromes.jpg}
 \end{figure}
 
 \section{Manacher's Algorithm}\label{sec:manacherAlgorithm}
@@ -226,7 +226,7 @@ An implementation of my own is also provided here for sake of argument and refer
     \lstinputlisting[label={lst:LongestPalindromeAugment},language=Java,escapechar=~,
     caption={A implementation of Manacher's algorithm for the LPS problem.
     Original string is literally augmented in memory.}]
-    {case-study/longest-palindrome/LongestPalindromeAugment.java}
+    {LongestPalindromeAugment.java}
 \end{clisting}
 
 
@@ -297,7 +297,7 @@ So far, it is one of the most performant implementations known.
 \begin{clisting}[H]
     \lstinputlisting[label={lst:LongestPalindrome},language=Java,escapechar=~,
     caption={Implementation of Manacher's aglorithm using index mapping.}]
-    {case-study/longest-palindrome/LongestPalindromeIndexMapping.java}
+    {LongestPalindromeIndexMapping.java}
 \end{clisting}
 
 \section{Solutions for Readability}\label{sec:palindrom.modularized}
@@ -351,7 +351,7 @@ The final solution is listed in ~\autoref{lst:lpsModular}.
 \lstinputlisting[label={lst:lpsModular},firstline=3,language=Java,escapechar=~,
 caption={Java implementation of longest
 palindrome substring Manacher's aglorithm.}]
-{case-study/longest-palindrome/LongestPalindromeModular.java}
+{LongestPalindromeModular.java}
 
 
 \section{Conclusion}\label{sec:conclusion}

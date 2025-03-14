@@ -47,9 +47,9 @@ page.
 \clearpage
 Now let's check answers.
 There are usually a variety of solutions: from commonly seen solution
-\lstinputlisting[firstline=2,lastline=11]{if-else/test1_test2_append.py}
+\lstinputlisting[firstline=2,lastline=11]{test1_test2_append.py}
 to a one-liner.
-\lstinputlisting[firstline=14]{if-else/test1_test2_append.py}
+\lstinputlisting[firstline=14]{test1_test2_append.py}
 %But those who are not satisfied with the above solution and further simplified the blob
 %into a one-liner, \textit{e.g.}, have bonus.
 Hopefully the difference is obvious to you.
@@ -65,7 +65,7 @@ This chapter is dedicated to the `How' question.
 Take a look at the following code snippet, adapted and anonymized from a real example.
 Suppose you are tasked to modify, refactor, and modularize it into reusable functions for a library,
 do you care?
-\lstinputlisting{if-else/switching-smell-code-snippet.py}
+\lstinputlisting{switching-smell-code-snippet.py}
 
 Maybe this example is a little bit too extreme.
 But `barely working' solution, if it works at all, often contains code that is buggy, brittle,
@@ -127,7 +127,7 @@ At least to me, it is not yet clear how to simplify the logic or even what it do
 \begin{clisting}
     \lstinputlisting[caption={Code snippet for demonstration},
     label={lst:if-return-boolean-real-world}]
-    {if-else/equivalent_statements_if_return_real_world.java}
+    {equivalent_statements_if_return_real_world.java}
 \end{clisting}
 But if we replace the conditional expression with \code{<test>} and filter out the
 comments, it becomes ~\autoref{lst:if-return-boolean} and then
@@ -139,14 +139,14 @@ You may even realize that it is actually equivalent to ~\autoref{lst:simplified-
         \lstinputlisting[caption={Unsimplified test},
         label={lst:if-return-boolean},
         firstline=1,lastline=4]
-        {if-else/equivalent_statements_if_return.java}
+        {equivalent_statements_if_return.java}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{.45\textwidth}
         \lstinputlisting[caption={Simplified statement},
         label={lst:simplified-return-boolean},
         firstline=6,lastline=6]
-        {if-else/equivalent_statements_if_return.java}
+        {equivalent_statements_if_return.java}
     \end{minipage}
 \end{clisting}
 But when embedded in real problems, disguised by application-specific format, style, and so on,
@@ -159,13 +159,13 @@ achieving optimal conditional programming would not be straightforward.
 %        \lstinputlisting[caption={Ternary boolean expression},
 %        label={lst:ternary-boolean-expr},
 %        firstline=1,lastline=1]
-%        {if-else/equivalent_statements_ternary_expr.java}
+%        {equivalent_statements_ternary_expr.java}
 %    \end{subfigure}\hfill
 %    \begin{minipage}[t]{.45\textwidth}
 %        \lstinputlisting[caption={Simplified boolean expression},
 %        label={lst:simplified-boolean-expr},
 %        firstline=3,lastline=3]
-%        {if-else/equivalent_statements_ternary_expr.java}
+%        {equivalent_statements_ternary_expr.java}
 %    \end{subfigure}
 %\end{clisting}
 We therefore resort to mathematical methods to help us simplify our logic.
@@ -184,7 +184,7 @@ Three boolean values can lead to 8 alternatives.
 And so on.
 \begin{figure}[tb]
     \centering
-    \includegraphics[width=.7\textwidth]{if-else/nested-conditionals.jpg}
+    \includegraphics[width=.7\textwidth]{nested-conditionals.jpg}
     \caption{\label{fig:conditional-branching}An example of $3$ nested conditional statements.}
 \end{figure}
 But in a real-world problem, not all the branches will be present or even make sense (See
@@ -195,17 +195,17 @@ But in a real-world problem, not all the branches will be present or even make s
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:nestedBranching},
         caption={v1}]
-        {if-else/composite_condition_tobe_simplified.java}
+        {composite_condition_tobe_simplified.java}
     \end{minipage}\hfill
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:simpleBranching},
         caption={v2}]
-        {if-else/composite_condition_simplified1.java}
+        {composite_condition_simplified1.java}
     \end{minipage}\hfill
     \begin{minipage}[t]{.3\textwidth}
         \lstinputlisting[label={lst:final-simplified-conditional-statement},
         caption={v3}]
-        {if-else/composite_condition_simplified2.java}
+        {composite_condition_simplified2.java}
     \end{minipage}
 \end{clisting}
 Let us examine the nested conditional, adapted from a real-world code, as shown in
@@ -362,12 +362,12 @@ that in ~\autoref{lst:exercise-simplified-conditional-statement}.
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:exercise-original-conditional-statement},
         caption={Simplification exercise}]
-        {if-else/generic_conditioning1.java}
+        {generic_conditioning1.java}
     \end{minipage}\hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:exercise-simplified-conditional-statement},
         caption={Simplified}]
-        {if-else/generic_conditioning2.java}
+        {generic_conditioning2.java}
     \end{minipage}
 \end{clisting}
 
@@ -393,12 +393,12 @@ It's straightforward come up with a strategy as
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:binary-search-direction-nested},
         caption={Nested implementation of binary searching direction logic}]
-        {if-else/binary_search_direction_nested.py}
+        {binary_search_direction_nested.py}
     \end{minipage}\hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:binary-search-direction-nested},
         caption={Simplified implementation of binary searching direction logic}]
-        {if-else/binary_search_direction_simplified.py}
+        {binary_search_direction_simplified.py}
     \end{minipage}
 \end{clisting}
 
@@ -406,7 +406,7 @@ It's straightforward come up with a strategy as
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=.7\textwidth]{if-else/short-circuit.jpg}
+    \includegraphics[width=.7\textwidth]{short-circuit.jpg}
     \caption{\label{fig:short-circuit-eval}  Short-circuit evaluation of the expression tree for
     `\code{!(a||foo)&&(bar||baz)}' when \code{a=true}.
     Solid gray nodes are evaluated whereas dashed blank ones omitted.
@@ -454,7 +454,7 @@ Consider the following problem:
     \code{Queue cache}.
     A method \code{procure()} has been made available to fetch an element
     from the source, if any, into \code{cache}:
-    \lstinputlisting{if-else/getNext_procure.java}
+    \lstinputlisting{getNext_procure.java}
 \end{quote}
 This is an extract from a class design task that I worked on.
 Presumably, the algorithm to solve this problem can be as ~\autoref{alg:fetch-element-into-cache}.
@@ -477,11 +477,11 @@ Presumably, the algorithm to solve this problem can be as ~\autoref{alg:fetch-el
 
 
 Let us first see how to implement the algorithm in the \emph{absence} of SCE mechanism.
-\lstinputlisting{if-else/getNext.java}
+\lstinputlisting{getNext.java}
 That is not bad, right?
 The code seems pretty simple by itself.
 But now that \java ~ supports SCE, so one can readily implement the following
-\lstinputlisting{if-else/getNext_shortCircuit.java}
+\lstinputlisting{getNext_shortCircuit.java}
 The logic is much cleaner, dwarfing the previous version without SCE\@.
 How does the code work?
 (Can you try to figure out that before reading on?)
@@ -517,7 +517,7 @@ idempotence and mutability in ~\fullref{ch:ood}.
 %\begin{clisting}[t]
 %    \lstinputlisting[caption={Zoological and veterinary API.},
 %    label={lst:veterinary_api}]
-%    {if-else/zoo_veterinary_api.py}
+%    {zoo_veterinary_api.py}
 %\end{clisting}
 
 We know that \code{break} and \code{continue} statements may be used in a loop.
@@ -544,11 +544,11 @@ Let's illustrate this in the following problem
 Due to the complexity of animal taxonomy, coding up a correct and elegant conditional statements
 with no code duplication is not straightforward.
 Some developers may introduce `slightly' duplicate code as in
-\lstinputlisting{if-else/zoo_animal_health_exam_dup_code.py}
+\lstinputlisting{zoo_animal_health_exam_dup_code.py}
 However the seemingly innocent code duplication will bite at occasions, say,
 when new species such as `reptiles' or `crustaceans' join the zoo.
 Some may resort to nested conditional statements such as
-\lstinputlisting{if-else/zoo_animal_health_exam_nested_cond.py}
+\lstinputlisting{zoo_animal_health_exam_nested_cond.py}
 But the nested conditional statements makes the logic visually more complicated than it actually is.
 
 
@@ -558,14 +558,14 @@ As shown in ~\autoref{lst:continue-in-loop-conditional}, the solution consists o
 compact, sequential statements, that essentially of a `cascading conditional'.
 \lstinputlisting[caption={Use of \code{continue} in conditional statements in a loop.},
 label={lst:continue-in-loop-conditional}]
-{if-else/zoo_animal_health_exam_continue.py}
+{zoo_animal_health_exam_continue.py}
 If desired, one may easily refactor the loop-body in ~\autoref{lst:continue-in-loop-conditional}
 into a separate function---the only change needed is to replace
 \code{continue} with \code{return} (see ~\autoref{lst:refactored-in-loop-conditional}).
 \begin{clisting}[ht]
     \lstinputlisting[caption={Use of \code{return} in refactored conditional statements.},
     label={lst:refactored-in-loop-conditional}]
-    {if-else/zoo_animal_health_exam_refactored.py}
+    {zoo_animal_health_exam_refactored.py}
 \end{clisting}
 
 

@@ -33,7 +33,7 @@ another complex system and so on.
 
 \begin{figure}[htb]
     \begin{center}
-        \includegraphics[height=6cm]{functions/hierarchy-of-capsule.jpg}
+        \includegraphics[height=6cm]{hierarchy-of-capsule.jpg}
         \caption{Encapsulation everywhere on the hierarchy of software system}
         \label{fig:hierarchy-of-encap}
     \end{center}
@@ -149,7 +149,7 @@ kernel functions has up to that number of parameters.
 \begin{clisting}
     \lstinputlisting[label={lst:allocate_resource},caption={A Linux kernel function
     allocating resources for the purpose of illustrating parameter size.},language=C]
-    {functions/allocate_resource.c}
+    {allocate_resource.c}
 \end{clisting}
 
 For me, I've seen functions on both end of the spectrum: majority of functions have $0$, $1$, $2$,
@@ -209,7 +209,7 @@ is shown in ~\autoref{lst:functree}.
 
 \begin{figure}[htb]
     \begin{center}
-        \includegraphics[height=8cm]{functions/functree.jpg}
+        \includegraphics[height=8cm]{functree.jpg}
         \caption{
         Function tree diagram.
         The function \code{main} delegates certain parts of
@@ -222,7 +222,7 @@ is shown in ~\autoref{lst:functree}.
 
 \begin{clisting}
     \lstinputlisting[label={lst:functree},caption={Illustrative function tree.}]
-    {functions/functree.py}
+    {functree.py}
 \end{clisting}
 
 It's a common problem among beginners to stuff all the logic into a monolithic function.
@@ -292,7 +292,7 @@ A case study for this.
 %I've seen too many times that developers, my former self included, treat each public method as
 %isolated island and implement them from head to toe in one monolithic block as the following:
 
-\lstinputlisting[language=Java]{functions/foo.java}
+\lstinputlisting[language=Java]{foo.java}
 
 %``What else can we do when the interface contains remotely related methods?'' you may being
 %protesting by now.
@@ -353,7 +353,7 @@ how they are created to be reused.
 
 \begin{clisting}
     \lstinputlisting[label={lst:ValidNumber.java},
-    caption={Jump Game II: an implementation with nested loops.}]{functions/ValidNumber.java}
+    caption={Jump Game II: an implementation with nested loops.}]{ValidNumber.java}
 \end{clisting}
 
 why modularity?
@@ -409,11 +409,11 @@ The following example will demonstrate why this is important.
 \begin{clisting}
     \lstinputlisting[label={lst:conneted_shapes},
     caption={Humongous implementation for problem ``find connected shapes''.}]
-    {functions/humongous_buggy_find_shapes.py}
+    {humongous_buggy_find_shapes.py}
     \lstinputlisting[label={lst:conneted_shapes},
     caption={Refactored implementation.
     The data structures are separated.
     It's easier to tell what data structure is for what purpose.}]
-    {functions/find_shapes.py}
+    {find_shapes.py}
     \caption{Find connected shapes problem.}
 \end{clisting}

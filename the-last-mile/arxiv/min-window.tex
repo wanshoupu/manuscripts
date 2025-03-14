@@ -74,7 +74,7 @@ where $M$ and $N$ are the lengths of the strings \code{T} and \code{S}, respecti
 
 \begin{figure}[htb]
     \begin{center}
-        \includegraphics[height=6cm]{case-study/min-window/min-window-algorithm.jpg}
+        \includegraphics[height=6cm]{min-window-algorithm.jpg}
         \caption{A visualization of the algorithm for finding the minimum window containing all
         the characters in the target string \code{T} in source string \code{S}.}
         \label{fig:min-window-algorithm.jpg}
@@ -138,7 +138,7 @@ The final solution is presented in ~\autoref{lst:MinWindowSubstringVerbose}.
 
 \lstinputlisting[label={lst:MinWindowSubstringVerbose},
 caption={An earlier implementation for the `Minimum window' problem.}]
-{case-study/min-window/MinWindowSubstringVerbose.java}
+{MinWindowSubstringVerbose.java}
 
 Before we let go and move forward, let's have some reflection on the solution.
 This solution is reminiscent to concurrent programming with two threads, one for deposit
@@ -207,7 +207,7 @@ listed in ~\autoref{ch:loops}.
 
 \lstinputlisting[label={lst:MinWindowSubstringSentinel},
 caption={A second version of implementation for the `Minimum window' problem.}]
-{case-study/min-window/MinWindowSubstring.java}
+{MinWindowSubstring.java}
 
 With the improvements we discussed so far, our code is greatly improved
 ~\autoref{lst:MinWindowSubstringSentinel}.
@@ -274,7 +274,7 @@ After this round of refactor, the third version is shown in
 
 \lstinputlisting[label={lst:MinWindowSubstringModular},
 caption={A readable version of implementation for the `Minimum window' problem.}]
-{case-study/min-window/MinWindowSubstring2018.java}
+{MinWindowSubstring2018.java}
 
 I must say that this solution is rarely required or useful for interview.
 But this is the ony acceptable version if this code is to be used in production
@@ -287,7 +287,7 @@ solution is presented in ~\autoref{lst:MinWindowSubstringSolver}.
 
 \lstinputlisting[label={lst:MinWindowSubstringSolver},
 caption={An object-oriented problem solver for the `Minimum window' problem.}]
-{case-study/min-window/MinWindowSubstringSolver.java}
+{MinWindowSubstringSolver.java}
 
 In this last version of the solutions, once an instance of class \code{MinWindowSubstringSolver}
 is created, it can be invoked as many times as you need.

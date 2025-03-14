@@ -5,8 +5,8 @@
 
 \chapter{Case Study: $N$ Queens}\label{ch:n-queens}
 
-\lstinputlisting[]{loop/word_breaker.py}
-\lstinputlisting[]{loop/word_breaker_other_imp.py}
+\lstinputlisting[]{word_breaker.py}
+\lstinputlisting[]{word_breaker_other_imp.py}
 
 
 \section{Solution}
@@ -22,18 +22,18 @@ This is similar to the `next permutation' problem.
 
 \lstinputlisting[label={lst:OldNQueensSolution},
 caption={Count the number of solutions for the `$N$-queens' problem.}]
-{case-study/n-queens/NQueens_old.java}
+{NQueens_old.java}
 
 After refactor to better SRP and shrunk parameter list for functions \code{place()} and
 \code{check()}.
 
 \lstinputlisting[label={lst:NQueensSolution},
 caption={Refactored code based on ~\autoref{lst:OldNQueensSolution} for the `$N$-queens' problem.}]
-{case-study/n-queens/NQueens.java}
+{NQueens.java}
 
 If one want to list solutions instead of counting them, the changes I made on top of the
 ~\autoref{lst:NQueensSolution} are shown in ~\autoref{lst:NQueensSolutionListSolutions}.
 
 \lstinputlisting[label={lst:NQueensSolutionListSolutions},
 caption={List solutions for the `$N$-queens' problem.}]
-{case-study/n-queens/NQueensListSolutions.java}
+{NQueensListSolutions.java}

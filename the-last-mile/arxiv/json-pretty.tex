@@ -94,7 +94,7 @@ move us one leg up the solution ladder.
 
 \lstinputlisting[label={lst:JsonPrettifier},
 caption={JSON Prettifier driver function.}]
-{case-study/my-json/JsonPrettifier.py}
+{JsonPrettifier.py}
 
 Reaching this point, our programming tasks and the roadmap to code complete have become very clear.
 For one, we have the subtasks laid out.
@@ -113,7 +113,7 @@ Take care of quote
 
 \lstinputlisting[label={lst:JsonParser.layout},
 caption={Hash out the structure of a JSON parser.}]
-{case-study/my-json/JsonParser.py}
+{JsonParser.py}
 
 One should never underestimate the importance of breaking up a formidable task into smaller,
 simpler, bite-sized subtasks.
@@ -195,7 +195,7 @@ but the escape sequences as shown in ~\autoref{lst:JsonParser.tokenizer}.
 
 \lstinputlisting[label={lst:JsonParser.tokenizer},
 caption={Components for data structure tokenizer.}]
-{case-study/my-json/JsonTokenizer_lest_esc.py}
+{JsonTokenizer_lest_esc.py}
 
 What remains now is how to gracefully handle escape sequences.
 This is another hurdle.
@@ -228,7 +228,7 @@ With all the considerations, I came up with the first correct implementation on 
 ~\autoref{lst:JsonParser.tokenizer} by adding the escape sequence handling code to the beginning of
 the loop body.
 \lstinputlisting[caption={First correct tokenizer.}]
-{case-study/my-json/JsonTokenizer_1st.py}
+{JsonTokenizer_1st.py}
 
 Since it's a first version, it is needless to say that there are various problems with it.
 Firstly, it has the `loop-and-a-half' problem as discussed in
@@ -272,7 +272,7 @@ With these changes, we renew the solution as ~\autoref{lst:json_tokenizer_with_n
 
 \lstinputlisting[label={lst:json_tokenizer_with_no_lah},
 caption={Tokenizer with fixes to remove the `loop-and-a-half' problem and various other problems.}]
-{case-study/my-json/JsonTokenizer_with_no_lah_problem.py}
+{JsonTokenizer_with_no_lah_problem.py}
 
 But the main loop still contains a lot of \code{if}-\code{elif}-\code{elif} and that seems overly
 complicated.
@@ -314,7 +314,7 @@ The relevant part of the refactored code is presented in ~\autoref{lst:json_toke
 \begin{figure}[H]
     \lstinputlisting[label={lst:json_tokenizer_atomic},
     caption={JsonTokenizer that separately process quoted strings and non-quoted portions.}]
-    {case-study/my-json/JsonTokenizer_atomic.py}
+    {JsonTokenizer_atomic.py}
 \end{figure}
 
 Note that the function \code{tokenizeStr} is solely responsible for consume all the characters
@@ -358,7 +358,7 @@ the job of assembling tokens into recursive data structure can be realized
 by a top-down parser.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{case-study/my-json/generalized-shunting-yard-algo.jpg}
+\includegraphics[width=0.8\textwidth]{generalized-shunting-yard-algo.jpg}
 \caption{\label{fig:shunting-yard}The generalized 'shunting-yard' algorithm for assembling
 in-memory data structures for JSON data.}
 \end{figure}
@@ -380,7 +380,7 @@ The implementation is listed in ~\autoref{lst:JsonParser.Assembler}.
 
 \lstinputlisting[label={lst:JsonParser.Assembler},
 caption={Components for data structure assembling.}]
-{case-study/my-json/JsonAssembler.py}
+{JsonAssembler.py}
 There are certain degree of redundancy in the punctuation.
 We may use these tokens for verification purposes.
 Note the use of \code{OrderedDict}.
@@ -403,7 +403,7 @@ We do this in the public facing wrapper function \code{assemble}.
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
 caption={Function wraps a string in a \code{deque}.}]
-{case-study/my-json/NewJsonAssembler.py}
+{NewJsonAssembler.py}
 \end{table}
 
 Firstly the driver function which acts as a dispatcher---it delegates each type
@@ -416,7 +416,7 @@ The driver function of my implementation is as ~\autoref{lst:JsonAssemblerRecurs
 \lstinputlisting[label={lst:JsonAssemblerRecursion.driver},
 caption={Driving function, a dispatcher to distribute each type of structures to the
 corresponding special functions.}]
-{case-study/my-json/NewJsonAssembler_dispatcher.py}
+{NewJsonAssembler_dispatcher.py}
 \end{table}
 
 Now it is time to fill the blanks---we finish implementing the stubs that we created
@@ -428,7 +428,7 @@ With no ado, ~\autoref{lst:JsonAssemblerRecursion.array} lists the implementatio
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.array},
 caption={Assembler function for array structure}]
-{case-study/my-json/NewJsonAssembler_array.py}
+{NewJsonAssembler_array.py}
 \end{table}
 
 The key logic here is the \code{while}-loop as it corresponds to the list of elements of array.
@@ -463,7 +463,7 @@ So without much ado, the implementation is listed in ~\autoref{lst:JsonAssembler
 \begin{table}[H]
 \lstinputlisting[label={lst:JsonAssemblerRecursion.wrapper},
 caption={Assembler function for object structure}]
-{case-study/my-json/NewJsonAssembler_object.py}
+{NewJsonAssembler_object.py}
 \end{table}
 
 Now that we finished the implementation of JSON assembler with three compact,
@@ -517,7 +517,7 @@ It takes an in-memory JSON-representing object and print it into well-formatted 
 accordance with the requirements specified in ~\autoref{json-style-spec}.
 \lstinputlisting[label={lst:JsonFormatter.firstVersion},
 caption={First version for JSON formatter.}]
-{case-study/my-json/JsonFormatter_v1.py}
+{JsonFormatter_v1.py}
 Just like the parsing code of JSON data, the above formatting code is another example of
 mutually recursive implementation.
 The `public' function is
@@ -536,7 +536,7 @@ We may try to shrink the coding footprint by using list comprehension, which is 
 
 \lstinputlisting[label={lst:JsonFormatter.listComprehension},
 caption={Json formatter using list comprehension.}]
-{case-study/my-json/JsonFormatter_comprehension.py}
+{JsonFormatter_comprehension.py}
 
 While the program works correctly,
 the implementations ~\autoref{lst:JsonFormatter.firstVersion} and
@@ -604,7 +604,7 @@ but it will create space for us to experiment with more optimization attempts.
 refactored in such a way.
 \lstinputlisting[label={lst:ArrayFormatting.separateElement},
 caption={Array formatting function with separated element formatting and style decoration.}]
-{case-study/my-json/JsonFormatter_array_formatting_separate_element.py}
+{JsonFormatter_array_formatting_separate_element.py}
 Looking at the refactored code as ~\autoref{lst:ArrayFormatting.separateElement} you may say
 ``Gee, that is messier, rather than simpler, than before.''
 True, it is not uncommon that quality of code drops at some steps of refactoring.
@@ -640,13 +640,13 @@ It is this `sandwich operation' that obstructs our effort to make use of the pow
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.8\textwidth}
-\includegraphics[width=\textwidth]{case-study/my-json/line-view-a.jpg}
+\includegraphics[width=\textwidth]{line-view-a.jpg}
 \caption{Line view a.\label{fig:line-view-a}}
 \end{subfigure}
 \\
 \vspace{1mm}
 \begin{subfigure}{.8\textwidth}
-\includegraphics[width=\textwidth]{case-study/my-json/line-view-b.jpg}
+\includegraphics[width=\textwidth]{line-view-b.jpg}
 \caption{Line view b.\label{fig:line-view-b}}
 \end{subfigure}
 \caption{Two views of line cut in a paragraph. Each framed box is cut into a line.
@@ -673,13 +673,13 @@ The refactored example code, again for \code{arrayToPrettyString}, is shown in
 ~\autoref{lst:ArrayFormatting.shifted_decoration}.
 \lstinputlisting[label={lst:ArrayFormatting.shifted_decoration},
 caption={Array formatting function with element formatting string shifted to one side.}]
-{case-study/my-json/JsonFormatter_array_element_shifted_view.py}
+{JsonFormatter_array_element_shifted_view.py}
 Now it becomes trivial to get rid of the cluttered ``all-but-last'' logic altogether and
 rely on the built-in function \code{str.join} to do all that
 (see ~\autoref{lst:ArrayFormatting.true.str.join}).
 \lstinputlisting[label={lst:ArrayFormatting.true.str.join},
 caption={Array formatting function with element formatting string shifted to one side.}]
-{case-study/my-json/JsonFormatter_array_element_true_str_join.py}
+{JsonFormatter_array_element_true_str_join.py}
 As we can see, the seemingly minor change of view
 about `line cut' unleashes the full power of \code{str.join} function.
 Also I will leave it as another exercise for the reader to refactor the function
@@ -718,7 +718,7 @@ such as ~\autoref{lst:indent-function}.
 
 \lstinputlisting[label={lst:indent-function},
 caption={Multi-line indenting function}]
-{case-study/my-json/JsonFormatter_indent_function.py}
+{JsonFormatter_indent_function.py}
 
 To implement this algorithm, a systematic refactor of all the major functions altogether
 is required.
@@ -739,7 +739,7 @@ The resulting code is shown in ~\autoref{lst:JsonFormatter.layer-by-layer.experi
 
 \lstinputlisting[label={lst:JsonFormatter.layer-by-layer.experiment},
 caption={Experiment with new layer-by-layer indentation model for JSON arrays.}]
-{case-study/my-json/JsonFormatter_array_element_separate_indent.py}
+{JsonFormatter_array_element_separate_indent.py}
 Convinced that this works for JSON array, as yet another exercise, refactor and add back the
 function for formatting JSON objects.
 
@@ -753,7 +753,7 @@ We can refactor these variables along with the relevant functions into a class
 The refactored class is in ~\autoref{lst:Formatter}.
 \lstinputlisting[label={lst:Formatter},
 caption={Formatter captures all the information needed for JSON indentation.}]
-{case-study/my-json/Formatter.py}
+{Formatter.py}
 Now that the indentation functions are encapsulated
 in the class \code{Formatter}, not only that our implementation of JsonFormatter is greatly
 simplified, but also that the class is made readily reusable by other modules.
@@ -761,7 +761,7 @@ With help of an instance \code{Formatter}, the \code{JsonFormatter} can be rewri
 ~\autoref{lst:NewJsonFormatter}.
 \lstinputlisting[label={lst:NewJsonFormatter},
 caption={A new implementation of JSON formatter.}]
-{case-study/my-json/NewJsonFormatter.py}
+{NewJsonFormatter.py}
 The new implementation spares function such as \code{def whitespace(indent)}, it also reduces the
 size of argument lists for all the major functions.
 Most importantly, the public-facing function is free from weird dangling parameters such as

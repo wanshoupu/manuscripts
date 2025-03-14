@@ -68,17 +68,17 @@ Not just `$0$' values, we can generalize the concept of `emptiness' to anything 
 `\code{false}'---empty list, empty set, empty string, \code{None}, \code{null}, and so on.
 
 \lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
-label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/longest_k_uniq_char_substring.py}
+label={lst:longestDistinctCharSubstring}, language=Python]{longest_k_uniq_char_substring.py}
 \label{Evernote:Longest Substring with At Most K Distinct Characters}
 
 This following listing shows the importance of desiging your classes to be easily extensible
 
 \lstinputlisting[caption={Example showing extensible implementation of object-oriented-design},
-label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/flatten_2d_array.py}
+label={lst:longestDistinctCharSubstring}, language=Python]{flatten_2d_array.py}
 \label{Evernote:Flatten 2D Vector}
 
 \lstinputlisting[caption={Example showing usage of object-oriented-design in functional coding},
-label={lst:longestDistinctCharSubstring}, language=Python]{object-oriented-design/flatten_3d_array.py}
+label={lst:longestDistinctCharSubstring}, language=Python]{flatten_3d_array.py}
 \label{Evernote:Flatten 3D vector}
 
 \section{The idea of algorithm}\label{sec:algorithm}
@@ -93,7 +93,7 @@ number $k$, find $k$ closest keys.
 
 \lstinputlisting[label={lst:jump_game_ii},
 caption={First implementation.}]
-{object-oriented-design/closest_binary_tree_II_2018.py}
+{closest_binary_tree_II_2018.py}
 
 %TODO
 Find examples that shows how to place certain methods member variables in the subclassing
@@ -102,30 +102,30 @@ The protobufVisitor example.
 
 \begin{clisting}
     \lstinputlisting[label={lst:jump_game_ii},firstline=10,lastline=31,
-    caption={First implementation.}]{object-oriented-design/bound_heap.py}
+    caption={First implementation.}]{bound_heap.py}
 \end{clisting}
 
 \section{Case Study: flatten $2$D array}\label{sec:caseStudy:FlattenArray}
 
 \lstinputlisting[label={lst:MatrixIterator},
 caption={MatrixIterator}]
-{object-oriented-design/MatrixIterator.java}
+{MatrixIterator.java}
 
 \lstinputlisting[label={lst:MatrixIteratorHasNextIdempotent},
 caption={MatrixIteratorHasNextIdempotent}]
-{object-oriented-design/MatrixIteratorHasNextIdempotent.java}
+{MatrixIteratorHasNextIdempotent.java}
 
 \lstinputlisting[label={lst:MatrixIteratorHasNextIdempotent_duplicate_code},
 caption={MatrixIteratorHasNextIdempotent duplicate code}]
-{object-oriented-design/MatrixIteratorHasNextIdempotent_duplicate_code.java}
+{MatrixIteratorHasNextIdempotent_duplicate_code.java}
 
 \lstinputlisting[label={lst:MatrixIteratorNonIdempotent.java},
 caption={MatrixIteratorNonIdempotent}]
-{object-oriented-design/MatrixIteratorNonIdempotent.java}
+{MatrixIteratorNonIdempotent.java}
 
 \lstinputlisting[label={lst:MatrixIteratorNonIdempotent_duplicate_code},
 caption={MatrixIteratorNonIdempotent duplicate code}]
-{object-oriented-design/MatrixIteratorNonIdempotent_duplicate_code.java}
+{MatrixIteratorNonIdempotent_duplicate_code.java}
 
 
 \section{Case study --- producer/consumer design}\label{sec:case-study-producer-consumer-design}
@@ -141,7 +141,7 @@ The \java client of Kafka producer/consumer classes have the following public in
 
 \lstinputlisting[label={lst:kafka-client-producer-consumer},
 caption={Kafka client: Producer and Consumer}]
-{object-oriented-design/kafka_client_producer_consumer.java}
+{kafka_client_producer_consumer.java}
 
 As one can tell, the Kafka client is asymmetric in terms of its producer/consumer interface:
 Producer publishes a message of type \code{String} whereas Consumer consumes a message of type
@@ -154,7 +154,7 @@ Producer publishes a message of type \code{String} whereas Consumer consumes a m
 
 \lstinputlisting[label={lst:fake-ood},
 caption={Fake OOD example}]
-{object-oriented-design/fake_ood.js}
+{fake_ood.js}
 
 \section{Object Interaction}\label{sec:object-interaction}
 
@@ -178,9 +178,9 @@ There are three easy possibilities:
 \lstinputlisting[label={lst:clean-object-interaction-dispatcher},
 caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a clean design for
 object interaction}]
-{object-oriented-design/good_component_interaction.py}
+{good_component_interaction.py}
 
 \lstinputlisting[label={lst:confusing-object-interaction-dispatcher},
 caption={class interfaces of \code{System}, \code{Storage}, \code{Dispatcher} of a confusing
 design for object interaction}]
-{object-oriented-design/bad_component_interaction.py}
+{bad_component_interaction.py}

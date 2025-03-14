@@ -30,7 +30,7 @@ to meaningfully decouple and manage complexities, striving for better code coher
 
 \begin{figure}[htb]
     \begin{center}
-        \includegraphics[width=.7\textwidth]{case-study/spiral-matrix/spiral-matrix.jpg}
+        \includegraphics[width=.7\textwidth]{spiral-matrix.jpg}
         \caption{Visiting cells in a $2$D matrix in spiral order.}
         \label{fig:spiral-matrix-loop}
     \end{center}
@@ -125,7 +125,7 @@ respectively, and you will have some insights about this.
 \begin{clisting}
     \lstinputlisting[label={lst:VerboseSpiralMatrix},
     caption={Spiral matrix \java~ implementation.}]
-    {case-study/spiral-matrix/VerboseSpiralMatrix.py}
+    {VerboseSpiralMatrix.py}
 \end{clisting}\newpage
 
 Dealing with these complexities all at once is challenging and vulnerable to bugs.
@@ -191,7 +191,7 @@ So a recursive solution could be as shown in ~\autoref{lst:pseudo_recursive_spir
 \begin{clisting}
     \lstinputlisting[label={lst:pseudo_recursive_spiral_order},lastline=35,
     caption={A possible recursive implementation.}]
-    {case-study/spiral-matrix/pseudo_spiral_order_recursive.py}
+    {pseudo_spiral_order_recursive.py}
 \end{clisting}
 \newpage
 Let us keep looking for other patterns.
@@ -215,19 +215,19 @@ The correct slicing expression for that is \code{arr[i::-1]} with \code{i} betwe
 \begin{figure}[t]
     \centering
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-asymmetric.jpg}
+        \includegraphics[width=\textwidth]{cycle-asymmetric.jpg}
         \caption{Asymmetric cycle division.}
         \label{fig:cycle.division.asymmetric}
     \end{subfigure}
     \vspace{2mm}
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-corner-special.jpg}
+        \includegraphics[width=\textwidth]{cycle-corner-special.jpg}
         \caption{Division singling out corner cells.}
         \label{fig:cycle.division.corner.special}
     \end{subfigure}
     \vspace{2mm}
     \begin{subfigure}{.3\textwidth}
-        \includegraphics[width=\textwidth]{case-study/spiral-matrix/cycle-symmetric.jpg}
+        \includegraphics[width=\textwidth]{cycle-symmetric.jpg}
         \caption{Symmetric cycle division.}
         \label{fig:cycle.division.symmetric}
     \end{subfigure}
@@ -250,7 +250,7 @@ Specifically, the reasons for this choice here are
     \lstinputlisting[label={lst:flatten_cycle},
     caption={Flattening elements in one cycle using the symmetric indexing
     ~\autoref{fig:cycle.division.symmetric}.}]
-    {case-study/spiral-matrix/spiral_order_recursive.py}
+    {spiral_order_recursive.py}
 \end{clisting}
 
 %This problem is also a coding-focused problem---algorithm is straightforward but if one wants to
@@ -289,7 +289,7 @@ This is so because our recursive solution is a tail-recursion (see ~\autoref{sec
 This iterative solution is listed below.
 \lstinputlisting[label={lst:spiral_order_iterative.py},
 caption={Flattening a $2$D matrix in spiral order recursive \python implementation.}]
-{case-study/spiral-matrix/spiral_order_iterative.py}
+{spiral_order_iterative.py}
 
 \subsection{Spiral Iterator in \python}\label{subsec:spiralIterator}
 
@@ -303,7 +303,7 @@ iterate through a $2$D matrix in spiral order.
 The interface would look like this
 \lstinputlisting[label={lst:spiral_matrix_iter_interface},
 caption={Index generator interface for dereferencing a $m\times n$ $2$D matrix in spiral order.}]
-{case-study/spiral-matrix/spiral_matrix_iterator_interface.py}
+{spiral_matrix_iterator_interface.py}
 This design decouples the original matrix from the generator interface completely
 ---all that the generator interface needs are the dimensions of the matrix with
 caveat that the dimension input be that of the matrix the generator is intended to use with.
@@ -313,12 +313,12 @@ where \code{x} refers to the row index and \code{y} the column index.
 An example usage of the interface may be as follows:
 \lstinputlisting[label={lst:spiral_matrix_app},
 caption={Spiral matrix \python implementation.}]
-{case-study/spiral-matrix/spiral_matrix_app.py}
+{spiral_matrix_app.py}
 
 All the implementation details are hidden in the implementation of the generator.
 \lstinputlisting[label={lst:spiral_matrix_iter},
 caption={Spiral matrix \python implementation.}]
-{case-study/spiral-matrix/spiral_matrix_iterator.py}
+{spiral_matrix_iterator.py}
 This is another example of complexity separation---complexity of realizing a function is
 hidden away from where it is invoked.
 Also this greatly promotes code reuse by decoupling the logic of spiral

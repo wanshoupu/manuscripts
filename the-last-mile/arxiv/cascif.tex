@@ -27,12 +27,12 @@ Below are some examples of cascading conditionals
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:cascadeCondElif},
         caption={CC in \python}]
-        {if-else/staircase_conditional.py}
+        {staircase_conditional.py}
     \end{minipage}\hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[label={lst:cascadeCondReturn},
         caption={CC with keyword \code{return}}]
-        {if-else/staircase_conditional_return.py}
+        {staircase_conditional_return.py}
     \end{minipage}
 \end{clisting}
 
@@ -88,7 +88,7 @@ illustrated in ~\autoref{lst:cascadeCondElif}.
     \lstinputlisting[caption={Expanded conditionals equivalent to
     ~\autoref{lst:cascadeCondElif} (in \java)},
     label={lst:cumulative-tests-expanded-equivalent}]
-    {if-else/case_stack_taken_apart.java}
+    {case_stack_taken_apart.java}
     %    \caption*{Cumulative effect of tests in a cascading conditional construct.
     %    Note the strict ordering on the left and loose grouping on the right.}
 \end{clisting}
@@ -145,7 +145,7 @@ The BSP scheme for ~\autoref{lst:cascadeCondElif} is plotted in ~\autoref{fig:bs
 %and partitions of them straddling across dimensions.
 \begin{figure}[tb]
     \centering
-    \includegraphics[width=.6\textwidth]{if-else/binary-space-partition.jpg}
+    \includegraphics[width=.6\textwidth]{binary-space-partition.jpg}
     \caption{\label{fig:bsp}A sequence of tests performs binary space partitioning.
     \code{test1} partitions the whole space $A$ into two halves (labeled as $B$ is
     the `\code{true}' space);
@@ -250,7 +250,7 @@ What if one desperately needs to create intermediate variables in the middle?
 To demonstrate this, take a look at this problem ``Based on a list of animal's sound,
 construct a list of an animal.''
 The initial code snippet is as follows
-\lstinputlisting[language=Java,alsolanguage=Java,]{if-else/tight_staircase_conditional.java}
+\lstinputlisting[language=Java,alsolanguage=Java,]{tight_staircase_conditional.java}
 Now suppose that the sounds of snakes and bees have to be amplified in order to tell them apart,
 one wants to create an amplifier instance for that.
 But where can one do that?
@@ -264,7 +264,7 @@ For most all programming languages, the
 cascade construct leaves no room for creating a new amplifier instance in the middle
 \footnote{An exception is Golang where a new variable may be declared and remain visible
 thereafter \emph{within} the cascading conditionals for example:
-\lstinputlisting[basicstyle=\footnotesize]{if-else/intermediate_var.go}
+\lstinputlisting[basicstyle=\footnotesize]{intermediate_var.go}
 }.
 
 \begin{verbatim}
@@ -304,13 +304,13 @@ Secondly, one can resort to a helper function to wrap away the verbose amplifica
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[caption={Use a helper function in CC},language=Java,
         alsolanguage=Java,label={lst:modified_tight_cascade_conditional},breaklines=false]
-        {if-else/modified_tight_staircase_conditional.java}
+        {modified_tight_staircase_conditional.java}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{.4\textwidth}
         \lstinputlisting[caption={Refactor CC to another function},language=Java,
         alsolanguage=Java,label={lst:refactor_cascade_conditional},breaklines=false]
-        {if-else/refactor_staircase_conditional.java}
+        {refactor_staircase_conditional.java}
     \end{minipage}
 \end{clisting}
 
@@ -325,7 +325,7 @@ beautiful cascading conditional design shown in ~\autoref{lst:if-stack-equals}.
 \begin{clisting}
     \lstinputlisting[label={lst:if-stack-equals},
     caption={Example implementation overriding \code{equals} in a subclass}]
-    {if-else/equals.java}
+    {equals.java}
 \end{clisting}
 Here the first condition tested is the nullity of the argument for reasons detailed previously.
 Only if it survives the nullity test will the control flows on to the next condition.
@@ -434,13 +434,13 @@ So let's pay the price and implement all three arrangements (~\autoref{lst:lca-s
 \begin{clisting}
     \lstinputlisting[label={lst:lca-straddle-first},
     caption={Solution for LCA---identifying straddling case first'.}]
-    {if-else/lca_straddle_first.java}
+    {lca_straddle_first.java}
     \lstinputlisting[label={lst:lca-skew-first},
     caption={Solution for LCA---identifying skewness cases first'.}]
-    {if-else/lca.java}
+    {lca.java}
     \lstinputlisting[label={lst:lca-exist-first},
     caption={Solution for LCA---identifying existence of keys first'.}]
-    {if-else/lca_existence_first.java}
+    {lca_existence_first.java}
 \end{clisting}
 
 By implementing the alternatives, we gain some insights.
@@ -500,7 +500,7 @@ How would you go about with refactoring nested conditionals?
     \lstinputlisting[label={lst:conditional-push-up-example},caption={Code snippet containing
     tint of duplicate code smell, unbalanced \code{if..else} blocks, and nested conditional},
     lastline=12]
-    {if-else/nested_conditional_2_cascading_conditional.py}
+    {nested_conditional_2_cascading_conditional.py}
 \end{clisting}
 
 
@@ -557,7 +557,7 @@ Do not turn the page---I shut up and you code.
 \clearpage
 Now let's examine each other's code.
 Reader might have first arrived at the following cascade conditional
-\lstinputlisting[firstline=15,lastline=24]{if-else/nested_conditional_2_cascading_conditional.py}
+\lstinputlisting[firstline=15,lastline=24]{nested_conditional_2_cascading_conditional.py}
 
 Instead of hard, `copy-n-paste' duplication, this code block contains `soft
 duplication'---hidden, `quavery', and partially duplicate code.
@@ -566,7 +566,7 @@ The above code has repeating fragments such as `\code{heappush(...)}'.
 We first introduce an intermediate variable for the argument of '\code{heappush}' operation.
 Then the duplicate code becomes manifest and accessible and we can easily `factor' it out.
 Finally, we get:
-\lstinputlisting[firstline=28]{if-else/nested_conditional_2_cascading_conditional.py}
+\lstinputlisting[firstline=28]{nested_conditional_2_cascading_conditional.py}
 
 
 Through this example, I am hopeful that the reader forms a `code-sense', an instinct, and a habit

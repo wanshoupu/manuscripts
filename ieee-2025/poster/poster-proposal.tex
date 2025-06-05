@@ -27,12 +27,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        We present a quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits in terms of a platform-independent intermediary language (IL).
-        We also present renderers to render the IL into executable quantum circuits into the target quantum computing platforms.
-        Our compilation methodology includes multi-stage decompositions such as two-level decomposition (2L), Swap decomposition (CX), control decomposition (CTRL),
-        Euler decomposition (ED), and/or Solovay-Kitaev approximation (SK).
-        The decomposition granularity is configurable, chosen to optimized for different types of quantum computing hardware.
-        The tool currently supports Qiskit and Cirq and we have plans to extend to other popular platforms of today.
+        Quantum software development is challenged by hardware heterogeneity and the lack of unified compilation frameworks.
+        We present a versatile quantum compiler designed to decompose arbitrary Hamiltonians into quantum circuits expressed via a platform-independent intermediate language (IL).
+        This IL serves as a universal representation, enabling flexible translation and optimization across diverse quantum hardware backends.
+        We also present designs of renderers to convert the IL into executable quantum circuits into the target quantum computing platforms such as Qiskit and Cirq.
     \end{abstract}
 
     \begin{IEEEkeywords}
@@ -40,44 +38,108 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{IEEEkeywords}
 
 
-    \section{Introduction}
-    Quantum software development faces fragmentation due to heterogeneous hardware and compiler stacks.
-    Developers often write bespoke code for each quantum SDK (e.g., Qiskit, Cirq, Braket).
-    To bridge this gap, we propose a cross-platform quantum compiler that inputs a user-defined Hamiltonian and outputs an optimized circuit executable on multiple quantum platforms\cite{b1}.
+    \section{Introduction}\label{sec:introduction}
+
+    Quantum software development today is hindered by fragmentation arising from diverse hardware architectures and incompatible compiler toolchains.
+    Developers often resort to writing custom code tailored for each quantum software development kit (SDK) such as Qiskit, Cirq, or Braket,
+    limiting portability and increasing development overhead.
+    To address this challenge, we present a cross-platform quantum compiler that takes a user-defined Hamiltonian as input and produces optimized quantum
+    circuits executable across multiple hardware platforms.
+    Our compilation framework employs a multi-stage decomposition strategy—including two-level decomposition (2L),
+    Swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (ED), and Solovay-Kitaev approximation (SK)—to systematically
+    translate high-level Hamiltonians into gate-level instructions~\cite{nielsen2010quantum}.
+    The compiler offers a high degree of configurability, enabling tiered optimization strategies and fine-grained control over decomposition granularity.
+    This flexibility allows tailoring the output circuits to the unique constraints and capabilities of different quantum hardware architectures,
+    thereby maximizing efficiency and portability.
+    Currently, our compiler supports popular platforms such as Qiskit and Cirq, with ongoing development to extend to additional frameworks including AWS Braket and PennyLane.
 
 
-    \section{Motivation}
-    The lack of standardized workflows hinders reproducibility and slows research progress.
-    Current toolchains lock users into specific ecosystems.
-    Our compiler promotes abstraction, portability, and rapid prototyping.
+    \section{Motivation}\label{sec:motivation}
+
+    The field of quantum computing is advancing rapidly, but software development remains fragmented
+    due to the lack of standardized workflows across quantum platforms.
+    Each hardware vendor or software framework often promotes its own SDK and compiler infrastructure,
+    creating silos that hinder collaboration, reproducibility, and long-term sustainability.
+    This fragmentation poses several challenges: researchers must rewrite or reoptimize circuits for each backend,
+    making it difficult to compare results or share code.
+    Educational materials and benchmarks tied to a specific toolchain may not translate to others, slowing down learning and adoption.
+    Furthermore, the fast-evolving nature of quantum hardware leads to shifting gate sets and constraints,
+    exacerbating incompatibility issues.
+    Existing toolchains often lock users into proprietary ecosystems, limiting flexibility and cross-platform experimentation.
+    As a result, developers face unnecessary barriers when exploring algorithm performance across different quantum processors or
+    when trying to integrate novel decomposition techniques into existing stacks.
+    To address these limitations, we introduce a cross-platform quantum compiler that decouples high-level algorithm design
+    from hardware-specific implementation details.
+    By promoting abstraction through a common intermediate representation, our compiler enables code portability,
+    encourages reproducible workflows, and accelerates the prototyping of quantum algorithms across diverse environments.
 
 
-    \section{Method}
-    Given an input Hamiltonian $H = \sum_j c_j P_j$ expressed as a linear combination of Pauli strings, we decompose $H$ using operator synthesis techniques and compile it into gate-level circuits. The compiler backend maps circuits into native gates for Qiskit, Cirq, or other selected platforms. Users can toggle basis sets and optimization levels.
+    \section{Method}\label{sec:method}
 
-    \subsection{Gate Translation Pipeline}
-    Each Pauli term is individually mapped via exponentiation: $e^{-iHt} \approx \prod_j e^{-ic_j P_j t}$. Our pipeline then:
+    Given an input Hamiltonian $H = \sum_j c_j P_j$ expressed as a linear combination of Pauli strings,
+    we decompose $H$ using operator synthesis techniques and compile it into gate-level circuits.
+    The compiler backend maps circuits into native gates for Qiskit, Cirq, or other selected platforms.
+    Users can toggle basis sets and optimization levels.
+
+
+    The compilation process proceeds in two primary stages: **operator decomposition** and **platform-specific gate synthesis**.
+
+    \subsection{Operator Decomposition}\label{subsec:operator-decomposition}
+    Each exponential term of the form $e^{-i c_j P_j t}$ must be translated into a quantum circuit.
+    Our compiler uses a configurable pipeline of operator synthesis techniques to achieve this translation.
+    The supported decomposition strategies include:
+
+    \begin{itemize}
+        \item{\textbf{Two-Level Decomposition (2L):} Breaks down multi-qubit unitaries into elementary 2-level operations.}
+        \item{\textbf{Swap Decomposition (CX):} Rewrites circuits with long-range qubit interactions into topologies
+        with nearest-neighbor constraints using SWAP and CNOT gates.}
+        \item{\textbf{Control Decomposition (CTRL):} Decomposes controlled unitaries, preserving
+        the structure of controlled operations in gate-level terms.}
+        \item{\textbf{Euler Decomposition (ED):} Converts arbitrary single-qubit unitaries into a minimal sequence of rotations
+        from a chosen basis (e.g., Z-Y-Z).}
+        \item{\textbf{Solovay-Kitaev Approximation (SK):} Approximates arbitrary unitaries with sequences over a finite universal gate set,
+            useful when target hardware supports only limited gates.}
+    \end{itemize}
+
+    These decomposition steps can be selectively enabled or ordered based on the user’s preferences and the constraints of the target hardware.
+
+    \subsection{Platform-Specific Backend Translation}\label{subsec:platform-specific-backend-translation}
+    Once the IL (intermediate language) circuit is constructed, it is passed to a backend-specific renderer that maps it into native gates supported by the desired quantum SDK—currently Qiskit or Cirq. Backend renderers are modular and support:
+
+    \begin{itemize}
+        \item Selection of the target gate basis (e.g., \{\texttt{X}, \texttt{Y}, \texttt{Z}, \texttt{H}, \texttt{CX}\} for IBM Q).
+        \item Application of transpiler passes, such as gate fusion, qubit routing, or noise-aware optimization.
+        \item Export of executable code in a form that can be directly submitted to hardware or simulators.
+    \end{itemize}
+
+    Users can configure optimization levels, toggle specific synthesis techniques, and specify target constraints such as qubit connectivity or native gate sets.
+
+    This modular design ensures that the compiler remains extensible and adaptable to future hardware changes and supports integration with additional platforms such as PennyLane, Braket, and beyond.
+
+    \subsection{Gate Translation Pipeline}\label{subsec:gate-translation-pipeline}
+    Each Pauli term is individually mapped via exponentiation: $e^{-iHt} \approx \prod_j e^{-ic_j P_j t}$.
+    Our pipeline then:
     \begin{enumerate}
         \item Translates Pauli exponentials into native gate sequences.
         \item Applies platform-specific transpilation.
         \item Outputs backend-executable code with minimal overhead.
     \end{enumerate}
 
-    \subsection{Example Output}
+    \subsection{Example Output}\label{subsec:example-output}
     \begin{figure}[htbp]
-        \centerline{\includegraphics[width=0.45\textwidth]{circuit-example.png}}
+        \centerline{\includegraphics[width=0.45\textwidth]{circuit-example}}
         \caption{Compiled circuit from a 2-qubit Heisenberg model in Cirq and Qiskit.}
         \label{fig:compiled-circuit}
     \end{figure}
 
 
-    \section{Results}
-    Initial benchmarks show the compiler produces correct circuits consistent across backends.
-    Output fidelity has been validated on local simulators.
-    Early adopters noted improvements in modularity and experimentation speed.
+    \section{Results}\label{sec:results}
+    Initial benchmarks show the compiler produces correct circuits consistent across backends,
+    demonstrating the compiler’s potential to simplify quantum algorithm development and
+    accelerate experimentation in heterogeneous quantum computing environments.
 
 
-    \section{Conclusion and Future Work}
+    \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
     This project reduces platform friction in quantum software development.
     Future work includes:
     \begin{itemize}

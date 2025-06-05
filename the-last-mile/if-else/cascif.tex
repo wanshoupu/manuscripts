@@ -267,10 +267,9 @@ thereafter \emph{within} the cascading conditionals for example:
 \lstinputlisting[basicstyle=\footnotesize]{if-else/intermediate_var.go}
 }.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-  \fbox{\begin{minipage}{0.8\textwidth}
-    \begin{verbatim}
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
         Original
             stack = [(root, self._extract_children(root)), ...]
             while stack:
@@ -292,8 +291,7 @@ thereafter \emph{within} the cascading conditionals for example:
                     ...
                 else:
                     ...
-    \end{verbatim}
-  \end{minipage}}
+    \end{lstlisting}
   \caption{This example demonstrate organizing cascading if statements the right way.}
 \end{figure}
 

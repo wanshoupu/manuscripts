@@ -261,36 +261,37 @@ Or maybe there is no snake or bee in the list and if so, creating an amplifier w
 waste.
 In the middle just before the amplifier is needed?
 For most all programming languages, the
-cascade construct leaves no room for creating a new amplifier instance in the middle
-\footnote{An exception is Golang where a new variable may be declared and remain visible
+cascade construct leaves no room for creating a new amplifier instance in the middle.
+An exception is Golang where a new variable may be declared and remain visible
 thereafter \emph{within} the cascading conditionals for example:
 \lstinputlisting[basicstyle=\footnotesize]{intermediate_var.go}
-}.
 
-\begin{verbatim}
-    \caption{This example shows how to organize the cascade if statement in natural, logical way.}
-    Original
-        stack = [(root, self._extract_children(root)), ...]
-        while stack:
-            node, children = stack[-1]
-            if node.left is None and node.right is None:
-                ...
-            elif children:
-                ...
-            else:
-                ...
+\begin{figure}[h]
+  \centering
+  \begin{lstlisting}[caption={This example demonstrate organizing cascading if statements the right way.}]
+        Original
+            stack = [(root, self._extract_children(root)), ...]
+            while stack:
+                node, children = stack[-1]
+                if node.left is None and node.right is None:
+                    ...
+                elif children:
+                    ...
+                else:
+                    ...
 
-    After optimize
-        stack = [(root, self._extract_children(root)), ...]
-        while stack:
-            node, children = stack[-1]
-            if children:
-                ...
-            elif node.left is None and node.right is None:
-                ...
-            else:
-                ...
-\end{verbatim}
+        After optimize
+            stack = [(root, self._extract_children(root)), ...]
+            while stack:
+                node, children = stack[-1]
+                if children:
+                    ...
+                elif node.left is None and node.right is None:
+                    ...
+                else:
+                    ...
+    \end{lstlisting}
+\end{figure}
 
 Well, a refactor will save one from this dilemma and there are at least two ways.
 First one can refactor the entire cascade into a separate function where the

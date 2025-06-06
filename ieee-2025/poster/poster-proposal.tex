@@ -8,6 +8,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{subfig}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -134,11 +135,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The second example we are going to show is a little sophisticated.
     It's a randomly generated \(8\times 8\) unitary matrix (group U(8)).
     We set the circuit decomposition granularity to \texttt{CTRL\_PRUNED} and the result has 1361 moments in Cirq.
+    The compiled circuit is rendered in both Cirq and Qiskit as shown in~\ref{fig:unitary-compare}
 
     \begin{figure}[htbp]
-        \centerline{\includegraphics[width=0.45\textwidth]{cirq-unitary}}
-        \caption{Compiled Cirq circuit (partial) from an arbitrary \(8 \times 8 \) unitary matrix.}
-        \label{fig:cirq-unitary}
+        \centering
+        \subfloat[Cirq circuit (partial)]{
+            \includegraphics[width=0.45\textwidth]{cirq-unitary}
+            \label{fig:cirq-unitary}
+        }
+        \hfill
+        \subfloat[Qiskit circuit (partial)]{
+            \includegraphics[width=0.45\textwidth]{qiskit-unitary}
+            \label{fig:qiskit-unitary}
+        }
+        \caption{An arbitary unitary matrix compiled once and rendered into both Cirq and Qiskit.}
+        \label{fig:unitary-compare}
     \end{figure}
 
 

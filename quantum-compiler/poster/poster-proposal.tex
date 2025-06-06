@@ -94,14 +94,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     These decomposition steps can be selectively enabled based on the constraints of the target hardware and the user’s preferences.
 
     \subsection{Platform-Specific Interpretation}\label{subsec:platform-specific-interpret}
-    Once the IL circuit is constructed, it can be saved to file or passed to a platform-specific interpreter
-    that translates it into native gates supported by the desired quantum SDK.
-    —currently Qiskit or Cirq.
-    Currently supported platforms include Qiskit or Cirq and can be easily extended to other platforms.
+    Once the quantum circuit is compiled into IL and saved to file, it can be interpreted by platform-specific interpreters
+    that translate the IL code into native circuits for the desired quantum SDK.
+    Currently, supported platforms include Qiskit and Cirq, with the architecture designed for easy extension to others.
+    Users can configure optimization levels, toggle specific synthesis settings, and specify target constraints such as qubit topology,
+    qubit connectivity grouping or native gate sets.
 
-    Users can configure optimization levels, toggle specific synthesis techniques, and specify target constraints such as qubit topology, qubit connectivity grouping or native gate sets.
-
-    This modular design ensures that the compiler remains extensible and adaptable to future hardware changes and supports integration with additional platforms such as PennyLane, Braket, and beyond.
+    This modular design ensures that the compiler remains extensible and adaptable to future hardware changes,
+    supporting integration with additional platforms such as PennyLane, Braket, and beyond.
 
 
     \section{Results}\label{sec:results}

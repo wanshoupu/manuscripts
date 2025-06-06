@@ -40,97 +40,69 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum software development today is hindered by fragmentation arising from diverse hardware architectures and incompatible compiler toolchains.
-    Developers often resort to writing custom code tailored for each quantum software development kit (SDK) such as Qiskit, Cirq, or Braket,
-    limiting portability and increasing development overhead.
-    To address this challenge, we present a cross-platform quantum compiler that takes a user-defined Hamiltonian as input and produces optimized quantum
-    circuits executable across multiple hardware platforms.
-    Our compilation framework employs a multi-stage decomposition strategy—including two-level decomposition (2L),
-    Swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (ED), and Solovay-Kitaev approximation (SK)—to systematically
-    translate high-level Hamiltonians into gate-level instructions~\cite{nielsen2010quantum}.
-    The compiler offers a high degree of configurability, enabling tiered optimization strategies and fine-grained control over decomposition granularity.
-    This flexibility allows tailoring the output circuits to the unique constraints and capabilities of different quantum hardware architectures,
-    thereby maximizing efficiency and portability.
-    Currently, our compiler supports popular platforms such as Qiskit and Cirq, with ongoing development to extend to additional frameworks including AWS Braket and PennyLane.
+    Quantum software development is currently hindered by fragmentation across diverse hardware platforms and proprietary compiler toolchains.
+    Each major quantum software development kit (SDK)—such as Qiskit, Cirq, or AWS Braket—has its own interface and backend assumptions,
+    forcing developers to rewrite or reoptimize code for each platform~\cite{qiskit2023,cirq2024,braket-zenodo}.
+    This siloed ecosystem complicates benchmarking, hinders reproducibility, and slows innovation.
 
+    To address these limitations, we introduce a cross-platform quantum compiler that accepts user-defined Hamiltonians as input and
+    produces optimized executable quantum circuits across multiple quantum platforms.
+    By decoupling high-level algorithm design from hardware-specific details, our approach promotes abstraction, portability, and reproducibility.
 
-    \section{Motivation}\label{sec:motivation}
+    Our qompiler translates Hamiltonians expressed as linear combinations of Pauli strings using a multi-stage decomposition framework.
+    This includes two-level decomposition (2L), swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (ED),
+    and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+    The tool exposes configurable options for decomposition granularity and optimization tiers, enabling users to tailor circuit generation
+    to the native constraints of specific hardware.
 
-    The field of quantum computing is advancing rapidly, but software development remains fragmented
-    due to the lack of standardized workflows across quantum platforms.
-    Each hardware vendor or software framework often promotes its own SDK and compiler infrastructure,
-    creating silos that hinder collaboration, reproducibility, and long-term sustainability.
-    This fragmentation poses several challenges: researchers must rewrite or reoptimize circuits for each backend,
-    making it difficult to compare results or share code.
-    Educational materials and benchmarks tied to a specific toolchain may not translate to others, slowing down learning and adoption.
-    Furthermore, the fast-evolving nature of quantum hardware leads to shifting gate sets and constraints,
-    exacerbating incompatibility issues.
-    Existing toolchains often lock users into proprietary ecosystems, limiting flexibility and cross-platform experimentation.
-    As a result, developers face unnecessary barriers when exploring algorithm performance across different quantum processors or
-    when trying to integrate novel decomposition techniques into existing stacks.
-    To address these limitations, we introduce a cross-platform quantum compiler that decouples high-level algorithm design
-    from hardware-specific implementation details.
-    By promoting abstraction through a common intermediate representation, our compiler enables code portability,
-    encourages reproducible workflows, and accelerates the prototyping of quantum algorithms across diverse environments.
+    Initial benchmarks confirm the correctness and consistency of the output across supported platforms, including Qiskit and Cirq.
+    We are actively extending compatibility to additional frameworks such as AWS Braket and PennyLane, with the broader goal of streamlining
+    quantum algorithm development across the heterogeneous quantum landscape~\cite{braket-zenodo,pennylane}.
 
 
     \section{Method}\label{sec:method}
-
-    Given an input Hamiltonian $H = \sum_j c_j P_j$ expressed as a linear combination of Pauli strings,
-    we decompose $H$ using operator synthesis techniques and compile it into gate-level circuits.
-    The compiler backend maps circuits into native gates for Qiskit, Cirq, or other selected platforms.
-    Users can toggle basis sets and optimization levels.
-
-
-    The compilation process proceeds in two primary stages: **operator decomposition** and **platform-specific gate synthesis**.
+    Given an input Hamiltonian $\hat{H}$, the quantum dynamics is fully prescribed by the evolution operator
+    \begin{equation}
+        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}.
+    \end{equation}
+    In a suitably chosen basis, \emph{e.g.} simultaneous to eigenvectors of the eigenenergies,
+    the evolution operator can be expressed as a unitary matrix \( U \) at any time \( t \).
+    We divide the overall workflow into two stages: compilation and interpretation.
+    During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed using an intermediate language (IL)
+    designed by us.
+    Users can toggle the output circuit granularity and optimization levels in the compilation.
+    In the interpretation stage, the \texttt{Interpreter}s maps IL circuits into native gates for the targeted platforms such as Qiskit, Cirq, or others.
+    This architectural separation decouples the computationally intensive compilation from platform-specific dependencies, ensuring cross-platform portability.
+    Consequently, users can adopt a ``compile once, run everywhere'' paradigm by running multiple \texttt{Interpreter}s to generate code for various target platforms.
 
     \subsection{Operator Decomposition}\label{subsec:operator-decomposition}
-    Each exponential term of the form $e^{-i c_j P_j t}$ must be translated into a quantum circuit.
-    Our compiler uses a configurable pipeline of operator synthesis techniques to achieve this translation.
-    The supported decomposition strategies include:
 
+    The decomposition process is elaborated here.
+    Our compiler uses a configurable pipeline of operator synthesis techniques to produce and organize IL nodes in B-tree data structure.
+    The decomposition framework is modular, comprising the following stages:
     \begin{itemize}
         \item{\textbf{Two-Level Decomposition (2L):} Breaks down multi-qubit unitaries into elementary 2-level operations.}
         \item{\textbf{Swap Decomposition (CX):} Rewrites circuits with long-range qubit interactions into topologies
         with nearest-neighbor constraints using SWAP and CNOT gates.}
         \item{\textbf{Control Decomposition (CTRL):} Decomposes controlled unitaries, preserving
         the structure of controlled operations in gate-level terms.}
-        \item{\textbf{Euler Decomposition (ED):} Converts arbitrary single-qubit unitaries into a minimal sequence of rotations
-        from a chosen basis (e.g., Z-Y-Z).}
-        \item{\textbf{Solovay-Kitaev Approximation (SK):} Approximates arbitrary unitaries with sequences over a finite universal gate set,
-            useful when target hardware supports only limited gates.}
+        \item{\textbf{Euler Angle Decomposition (EA):} Breaks down an arbitrary single-qubit unitaries into a minimal sequence of Euler rotations
+        around chosen axes (\emph{e.g.}, \(Z\)-\(Y\)-\(Z\)).}
+        \item{\textbf{Solovay-Kitaev Approximation (SK):} Approximates arbitrary single-qubit unitaries with sequences over a finite universal gate set,
+            useful when target hardware supports only limited gates.}~\cite{dawson2005solovaykitaevalgorithm}
     \end{itemize}
 
-    These decomposition steps can be selectively enabled or ordered based on the user’s preferences and the constraints of the target hardware.
+    These decomposition steps can be selectively enabled based on the constraints of the target hardware and the user’s preferences.
 
-    \subsection{Platform-Specific Backend Translation}\label{subsec:platform-specific-backend-translation}
-    Once the IL (intermediate language) circuit is constructed, it is passed to a backend-specific renderer that maps it into native gates supported by the desired quantum SDK—currently Qiskit or Cirq. Backend renderers are modular and support:
+    \subsection{Platform-Specific Interpretation}\label{subsec:platform-specific-interpret}
+    Once the IL circuit is constructed, it can be saved to file or passed to a platform-specific interpreter
+    that translates it into native gates supported by the desired quantum SDK.
+    —currently Qiskit or Cirq.
+    Currently supported platforms include Qiskit or Cirq and can be easily extended to other platforms.
 
-    \begin{itemize}
-        \item Selection of the target gate basis (e.g., \{\texttt{X}, \texttt{Y}, \texttt{Z}, \texttt{H}, \texttt{CX}\} for IBM Q).
-        \item Application of transpiler passes, such as gate fusion, qubit routing, or noise-aware optimization.
-        \item Export of executable code in a form that can be directly submitted to hardware or simulators.
-    \end{itemize}
-
-    Users can configure optimization levels, toggle specific synthesis techniques, and specify target constraints such as qubit connectivity or native gate sets.
+    Users can configure optimization levels, toggle specific synthesis techniques, and specify target constraints such as qubit topology, qubit connectivity grouping or native gate sets.
 
     This modular design ensures that the compiler remains extensible and adaptable to future hardware changes and supports integration with additional platforms such as PennyLane, Braket, and beyond.
-
-    \subsection{Gate Translation Pipeline}\label{subsec:gate-translation-pipeline}
-    Each Pauli term is individually mapped via exponentiation: $e^{-iHt} \approx \prod_j e^{-ic_j P_j t}$.
-    Our pipeline then:
-    \begin{enumerate}
-        \item Translates Pauli exponentials into native gate sequences.
-        \item Applies platform-specific transpilation.
-        \item Outputs backend-executable code with minimal overhead.
-    \end{enumerate}
-
-    \subsection{Example Output}\label{subsec:example-output}
-    \begin{figure}[htbp]
-        \centerline{\includegraphics[width=0.45\textwidth]{circuit-example}}
-        \caption{Compiled circuit from a 2-qubit Heisenberg model in Cirq and Qiskit.}
-        \label{fig:compiled-circuit}
-    \end{figure}
 
 
     \section{Results}\label{sec:results}
@@ -138,24 +110,50 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     demonstrating the compiler’s potential to simplify quantum algorithm development and
     accelerate experimentation in heterogeneous quantum computing environments.
 
+    \subsection{Examples}\label{subsec:examples}
+    For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix
+    \begin{equation}
+        \begin{bmatrix}
+            1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+            0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+        \end{bmatrix}
+    \end{equation}.
+    We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
+    The resulting gate sequence contains 279 layers and the first few are shown in~\ref{fig:cyclic-permute-circuit}.
+    \begin{figure}[htbp]
+        \centerline{\includegraphics[width=0.45\textwidth]{circuit-example}}
+        \caption{Compiled Qiskit circuit (partial) from cyclic permutation matrix.}
+        \label{fig:cyclic-permute-circuit}
+    \end{figure}
+    The second example we are going to show is a little sophisticated.
+    It's a randomly generated \(8\times 8\) unitary matrix (group U(8)).
+    We set the circuit decomposition granularity to \texttt{CTRL\_PRUNED} and the result has 1361 moments in Cirq.
+
+    \begin{figure}[htbp]
+        \centerline{\includegraphics[width=0.45\textwidth]{cirq-unitary}}
+        \caption{Compiled Cirq circuit (partial) from an arbitrary \(8 \times 8 \) unitary matrix.}
+        \label{fig:cirq-unitary}
+    \end{figure}
+
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
-    This project reduces platform friction in quantum software development.
+    This poster proposal presents a cross-platform quantum compiler project that seeks to reduce platform friction in quantum software development.
     Future work includes:
     \begin{itemize}
         \item Integrating PennyLane and AWS Braket support
-        \item Adding classical-quantum hybrid workflows
-        \item Implementing circuit equivalence checking
+        \item Adding quantum error correction capability
     \end{itemize}
     We invite collaboration and feedback from the quantum software community.
 
     \begin{thebibliography}{00}
         \bibitem{nielsen2010quantum}
         M. A. Nielsen and I. L. Chuang, \textit{Quantum Computation and Quantum Information}, Cambridge Univ. Press, 2010.
-
-        \bibitem{dawson2005solovaykitaevalgorithm}
-        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
-        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
 
         \bibitem{qiskit2023}
         H. Abraham, AduOffei, I. Y. Akhalwaya, et al.,
@@ -164,6 +162,17 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
         \bibitem{cirq2024}
         Google Quantum AI, “Cirq,” 2024. [Online]. Available: \url{https://quantumai.google/cirq}
+
+        \bibitem{braket-zenodo}
+        Amazon Web Services, ``Amazon Braket SDK,'' Zenodo, 2023. [Online]. Available: \url{https://doi.org/10.5281/zenodo.4660670}
+
+        \bibitem{pennylane}
+        J. Bergholm \emph{et al.}, ``PennyLane: Automatic differentiation of hybrid quantum-classical computations,''
+        \emph{arXiv preprint} arXiv:1811.04968, 2018. [Online]. Available: \url{https://arxiv.org/abs/1811.04968}
+
+        \bibitem{dawson2005solovaykitaevalgorithm}
+        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
+        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
     \end{thebibliography}
 
 \end{document}

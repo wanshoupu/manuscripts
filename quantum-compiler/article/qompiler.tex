@@ -60,6 +60,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Method}\label{sec:method}
+    \begin{itemize}
+        \item Controllable granularity for the output circuit.
+        \item Nary-tree data structure for compiled IR code.
+        \item Verifiability of correctness.
+        \item
+    \end{itemize}
     Given an input Hamiltonian $\hat{H}$, the quantum dynamics is fully prescribed by the evolution operator
     \begin{equation}
         \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}.
@@ -95,7 +101,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \subsection{Platform-Specific Interpretation}\label{subsec:platform-specific-interpret}
     Once the IL circuit is constructed, it can be saved to file or passed to a platform-specific interpreter
-    that translates it into native gates supported by the desired quantum SDK.
+    that translates it into native gates supported by the desired quantum SDK\@.
     —currently Qiskit or Cirq.
     Currently supported platforms include Qiskit or Cirq and can be easily extended to other platforms.
 
@@ -131,7 +137,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:cyclic-permute-circuit}
     \end{figure}
     The second example we are going to show is a little sophisticated.
-    It's a randomly generated \(8\times 8\) unitary matrix (group U(8)).
+    It's a randomly generated \(8 \times 8\) unitary matrix (group U(8)).
     We set the circuit decomposition granularity to \texttt{CTRL\_PRUNED} and the result has 1361 moments in Cirq.
     The compiled circuit is rendered in both Cirq and Qiskit as shown in~\ref{fig:unitary-compare}
 

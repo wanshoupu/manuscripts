@@ -11,9 +11,10 @@
 \RequirePackage{tikz}		% for drawing the nice rounded boxes
 \usetikzlibrary{arrows,backgrounds}
 \RequirePackage[T1]{fontenc}
-%\RequirePackage{lmodern}
+\RequirePackage{lmodern}
 \RequirePackage{textcomp}
 \RequirePackage{amsmath,amssymb}
+
 \usefonttheme{professionalfonts}
 \newcommand{\makeruleinbox}{{\usebeamercolor[bg]{block alerted title}\centering\hspace*{-0.7cm}\rule{\inboxrule}{0.5cm}}}
 \usepackage{ragged2e}
@@ -129,6 +130,7 @@
 
 
 % set the basic colors
+\setbeamercolor{titlecolor}{fg=jblue}
 \setbeamercolor{palette primary}   {fg=black,bg=white}
 \setbeamercolor{palette secondary} {fg=black,bg=white}
 \setbeamercolor{palette tertiary}  {bg=jblue,fg=white}
@@ -151,20 +153,13 @@
 \setbeamercolor{block alerted title}{fg=white,bg=jblue}
 \setbeamercolor{block alerted body}{fg=black,bg=jblue!10}
 
-% sen set colors for example blocks (blocks with frame)
-\setbeamercolor{block example title}{fg=dblue,bg=jblue!10}
-\setbeamercolor{block example body}{fg=jblue,bg=jblue!10}
-
 % set the fonts
-\setbeamerfont{section in head/foot}{series=\bfseries,family=\sffamily}
-\setbeamerfont{block title}{series=\bfseries,family=\sffamily}
-\setbeamerfont{block alerted title}{series=\bfseries,family=\sffamily}
-% sen
-\setbeamerfont{block example title}{series=\bfseries}
-%sen
+\setbeamerfont{section in head/foot}{series=\bfseries}
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamerfont{block alerted title}{series=\bfseries}
 \setbeamerfont{frametitle}{series=\bfseries}
 \setbeamerfont{frametitle}{size=\Large}
-\setbeamerfont{block body}{series=\rmfamily}
+\setbeamerfont{block body}{series=\sffamily}%\rmfamily}
 
 % set some beamer theme options
 \setbeamertemplate{title page}[default][colsep=-4bp,rounded=true]
@@ -192,19 +187,20 @@
 \setbeamertemplate{headline}{
  \leavevmode
   \begin{columns}
+   \hskip5cm
    \begin{column}{\linewidth}
     \vskip1cm
-    \centering
-    \usebeamercolor{title in headline}{\color{jblue}\Huge{\textbf{\inserttitle}}\\[0.5ex]}
+    %\centering
+    \usebeamercolor{title in headline}{\color{fg}\Huge{\textbf{\inserttitle}}\\[0.5ex]}
     \usebeamercolor{author in headline}{\color{fg}\Large{\insertauthor}\\[1ex]}
     \usebeamercolor{institute in headline}{\color{fg}\large{\insertinstitute}\\[1ex]}
     \vskip1cm
    \end{column}
    \vspace{1cm}
   \end{columns}
- \vspace{0.5in}
-% \hspace{0.5in}\begin{beamercolorbox}[wd=47in,colsep=0.15cm]{cboxb}\end{beamercolorbox}
- \vspace{0.1in}
+ %\vspace{0.5in}
+ %\hspace{0.5in}\begin{beamercolorbox}[wd=47in,colsep=0.15cm]{cboxb}\end{beamercolorbox}
+ %\vspace{0.1in}
 }
 
 % Block definition
@@ -263,41 +259,6 @@
 }
 
 \setbeamertemplate{block alerted end}
-{
-  \end{minipage}
-  \end{center}
-  \end{beamercolorbox}
-  \end{beamercolorbox}
-  \vskip\smallskipamount
-}
-
-
-
-% Example block definition (with frame)
-\setbeamertemplate{block example begin}
-{
-  \par\vskip\medskipamount
-  \begin{beamercolorbox}[sep=0ex,rounded=true,center,dp={2ex}]{block example title}
-    \vskip0.01cm
-    \usebeamerfont{block title}\large\insertblocktitle
-  \end{beamercolorbox}
-  {\parskip0pt\par}
-  \usebeamerfont{block body}
-  \vskip-0.8cm
-  \begin{beamercolorbox}[sep=0.5cm, rounded=true,center]{block example title}
-  \setlength{\inboxwd}{\linewidth}
-  \addtolength{\inboxwd}{-1cm}
-  \begin{beamercolorbox}[rounded=true,wd={\inboxwd},center]{block example body}
-  \setlength{\iinboxwd}{\inboxwd}
-  \setlength{\inboxrule}{\inboxwd}
-  \addtolength{\iinboxwd}{-0.5cm}
-  \addtolength{\inboxrule}{0.5cm}
-  \begin{center}
-  \begin{minipage}{\iinboxwd}
-  \justifying
-}
-
-\setbeamertemplate{block example end}
 {
   \end{minipage}
   \end{center}

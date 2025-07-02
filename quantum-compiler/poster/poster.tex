@@ -6,68 +6,85 @@
 \usepackage{tikz}
 \usepackage{qrcode}
 \usepackage{blkarray} % optional for QR codes
+\usepackage{xcolor}
 
-\title{Cross-Platform Quantum Compiler for Hamiltonian Decomposition}
-\author{Shoupu Wan}
-\institute{Quantum Simulations Project — GitHub: \texttt{wanshoupu/quantum-simulations}}
+\title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
+\author{Shoupu Wan \ \texttt{wanshoupu@gmail.com}}
+\institute{GitHub: \texttt{wanshoupu/quantum-simulations}}
 
 \begin{document}
 
-\begin{frame}[t]
+    \begin{frame}[t]
+        \begin{columns}[t]
 
-  \begin{columns}[t]
+            % Column 1
+            \begin{column}{0.33\textwidth}
 
-    % Column 1
-    \begin{column}{0.33\textwidth}
-      \begin{block}{Motivation}
-        Most quantum compilers are tied to specific hardware.
-        Our compiler bridges that gap, allowing...
-      \end{block}
+                \begin{block}{1. Introduction}
+                    Most quantum compilers are tied to specific hardware.
+                    Our compiler bridges that gap, allowing...
+                    Briefly introduce your research problem and motivation.
+                \end{block}
 
-      \begin{block}{Theory}
-        We consider a general Hamiltonian \( H = \sum_i \alpha_i P_i \) where \( P_i \) are Pauli strings...
-      \end{block}
-    \end{column}
+                \begin{block}{2. Background}
+                    Provide essential context or related work.
+                \end{block}
 
-    % Column 2
-    \begin{column}{0.33\textwidth}
-      \begin{block}{Architecture}
-        \includegraphics[width=\linewidth]{compiler-architecture.png}
+                \begin{block}{3. Methodology}
+                    We consider a general Hamiltonian \( H = \sum_i \alpha_i P_i \) where \( P_i \) are Pauli strings...
+                    Describe your methods, supported with visuals or flowcharts.
+                \end{block}
+            \end{column}
 
-        Pipeline: Parse → Decompose → Synthesize → Target Platform
-      \end{block}
+            % Column 2
+            \begin{column}{0.33\textwidth}
 
-      \begin{block}{Platforms Supported}
-        \begin{itemize}
-          \item Cirq
-          \item Qiskit
-          \item AWS Braket (coming)
-          \item PennyLane (planned)
-        \end{itemize}
-      \end{block}
-    \end{column}
+                \begin{block}{4. Architecture}
+                    \includegraphics[width=\linewidth]{compiler-architecture.png}
 
-    % Column 3
-    \begin{column}{0.33\textwidth}
-      \begin{block}{Demo}
-        \includegraphics[width=\linewidth]{circuit-example.png}
-      \end{block}
+                    Pipeline: Parse → Decompose → Synthesize → Target Platform
+                \end{block}
 
-      \begin{block}{Get the Code}
-        \qrcode{https://github.com/wanshoupu/quantum-simulations}
+                \begin{block}{5. Platforms Supported}
+                    \begin{itemize}
+                        \item Cirq
+                        \item Qiskit
+                        \item OpenQASM
+                        \item AWS Braket (coming)
+                        \item PennyLane (planned)
+                    \end{itemize}
+                \end{block}
+            \end{column}
 
-        \vspace{1em}
-        \texttt{github.com/wanshoupu/quantum-simulations}
-      \end{block}
+            % Column 3
+            \begin{column}{0.33\textwidth}
+                \begin{block}{6. Results}
+                    \includegraphics[width=\linewidth]{circuit-example.png}
+                \end{block}
 
-      \begin{block}{Conclusion}
-        This tool helps democratize quantum simulation and hardware mapping.
-        \textbf{Feedback and collaboration welcome!}
-      \end{block}
-    \end{column}
+                \begin{block}{7. Conclusion}
+                    This tool helps democratize quantum simulation and hardware mapping.
 
-  \end{columns}
+                    \vspace{1em}
+                    \qrcode{https://github.com/wanshoupu/quantum-simulations}
 
-\end{frame}
+                    \vspace{1em}
+                    \texttt{github.com/wanshoupu/quantum-simulations}
+
+                    \textbf{Feedback and collaboration welcome!}
+                \end{block}
+
+                \begin{block}{8. References}
+                    \begin{thebibliography}{99}
+                        \bibitem{openqasm3} A. W. Cross et al., ``OpenQASM 3: A broader and deeper quantum assembly language,'' arXiv preprint arXiv:2104.14722, 2021.
+
+                        \bibitem{openqasm2} A. W. Cross et al., ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017.
+                    \end{thebibliography}
+                \end{block}
+            \end{column}
+
+        \end{columns}
+
+    \end{frame}
 
 \end{document}

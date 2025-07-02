@@ -26,10 +26,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        Quantum software development is challenged by hardware heterogeneity and the lack of unified compilation frameworks.
-        We present a versatile quantum compiler designed to decompose arbitrary Hamiltonians into quantum circuits expressed via a platform-independent intermediate language (IL).
-        This IL serves as a universal representation, enabling flexible translation and optimization across diverse quantum hardware backends.
-        We also present designs of renderers to convert the IL into executable quantum circuits into the target quantum computing platforms such as Qiskit and Cirq.
+        We present a quantum system software framework that bridges the gap between physics modeling and quantum software development.
+        At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits, represented using a platform-independent B-Tree intermediate language (IL).
+        The B-Tree structure provides essential lineage information for circuit gate traceability and code verification.
+        The IL offers a universal, hardware-agnostic representation that enables flexible translation and optimization across diverse quantum hardware backends.
+        We demonstrate implementations that render the IL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
+        Additionally, we provide a transpiler that converts the IL into OpenQASM for broader compatibility.
     \end{abstract}
 
     \begin{IEEEkeywords}
@@ -38,26 +40,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Relevance}\label{sec:relevance}
-    This poster proposal is in the domain of Quantum Systems Software to bridge the gap between physics modeling and quantum software development.
-    It demonstrated an implementation of quantum circuit synthesizer trackable lineage.
+    Quantum simulation has demonstrated exponential advantages in applications such as chemistry, pharmaceuticals, and biological processes.
+    The field of quantum software development, however, has a relatively high learning curve, requiring expertise and many years of training in physics, math, and software engineering,
+    and this poses difficulty for many professionals to access quantum computing.
+    Furthermore, the state-of-the-art choices of transpiler are either tied to a specific platform or lack the desired translation granularity.
 
-    Quantum software development is currently hindered by fragmentation across diverse hardware platforms and proprietary compiler toolchains.
-    Each major quantum software development kit (SDK)—such as Qiskit, Cirq, or AWS Braket—has its own interface and backend assumptions,
-    forcing developers to rewrite or reoptimize code for each platform~\cite{qiskit2023,cirq2024,braket-zenodo}.
-    This siloed ecosystem complicates benchmarking, hinders reproducibility, and slows innovation.
-
-    To address these limitations, we introduce a cross-platform quantum compiler that accepts user-defined Hamiltonians as input and
-    produces optimized executable quantum circuits across multiple quantum platforms.
-    By decoupling high-level algorithm design from hardware-specific details, our approach promotes abstraction, portability, and reproducibility.
-
-    Our qompiler translates Hamiltonians expressed as linear combinations of Pauli strings using a multi-stage decomposition framework.
-    This includes two-level decomposition (2L), swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (EA),
-    and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
-    The tool exposes configurable options for decomposition granularity and optimization tiers, enabling users to tailor circuit generation
-    to the native constraints of specific hardware.
-
-    Initial benchmarks confirm the correctness and consistency of the output across supported platforms, including Qiskit and Cirq.
-    We are actively extending compatibility to additional frameworks such as AWS Braket and PennyLane, with the broader goal of streamlining
-    quantum algorithm development across the heterogeneous quantum landscape~\cite{braket-zenodo,pennylane}.
-
+    In this poster, we present a quantum circuit synthesizer that solves both problems.
+    We introduce a design and implementation of quantum circuit synthesizer with good features to solve all the problems at hand.
+    Our quantum circuit synthesizer features a cross-platform quantum compiler, built-in traceability and verifiability, and configurable gate control.
+    First, the compiler accepts user-defined Hamiltonians as input and outputs B-tree data structure as IL\@.
+    This gives the necessary lineage for each quantum gate through the parent-child relationship among the tree nodes.
+    Second, the IL is platform-independent.
+    It can be easily rendered into executables on any existing quantum computing platforms such as Qiskit and Cirq.
+    It can also be transpiled into OpenQASM for broader compatibility.
+    Third, the granularity of the IL, as an end result, is configurable.
+    For example, for superconducting quantum hardware, Pauli gates $X$, $Y$, $Z$, may be precisely implemented via \emph{e.g.}, through virtual gates with zero-error and zero-latency
+    whereas on trapped-ion platforms such as IonQ, Arbitrary axis-aligned rotations, e.g. $Rx\left(\phi\right)$, $Ry\left(\phi\right)$, and $Rz\left(\phi\right)$, are more fundamental.
+    Our design puts the fine-tuning granularity control into the hands of users.
+    Depending on the targeted hardware, the users can choose which types of gates are used in the end result.
+    Another good feature is that the IL can be transpiled into OpenQASM\@.
+    This expands the compatibility with other quantum computing platforms supporting QASM\@.
 \end{document}

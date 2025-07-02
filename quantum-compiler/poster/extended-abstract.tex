@@ -9,12 +9,29 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{subfig}
+\usepackage{listings}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\lstdefinelanguage{qasm}{
+    morekeywords={OPENQASM, qreg, creg, measure, cx, u3, u2, u1, barrier},
+    sensitive=true,
+    morecomment=[l]{//},
+    morestring=[b]"
+}
 
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    language=qasm
+}
 \begin{document}
 
-    \title{Cross-Platform Quantum Compiler for Synthesizing Quantum Circuits Based on Arbitrary Hamiltonians \\
+    \title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians \\
     \thanks{This work was supported in part by personal funding and community feedback.}
     }
 
@@ -26,10 +43,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        Quantum software development is challenged by hardware heterogeneity and the lack of unified compilation frameworks.
-        We present a versatile quantum compiler designed to decompose arbitrary Hamiltonians into quantum circuits expressed via a platform-independent intermediate language (IL).
-        This IL serves as a universal representation, enabling flexible translation and optimization across diverse quantum hardware backends.
-        We also present designs of renderers to convert the IL into executable quantum circuits into the target quantum computing platforms such as Qiskit and Cirq.
+        We present a quantum system software framework that bridges the gap between physics modeling and quantum software development.
+        At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits, represented using a platform-independent B-Tree intermediate language (IL).
+        The B-Tree structure provides essential lineage information for circuit gate traceability and code verification.
+        The IL offers a universal, hardware-agnostic representation that enables flexible translation and optimization across diverse quantum hardware backends.
+        We demonstrate implementations that render the IL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
+        Additionally, we provide a transpiler that converts the IL into OpenQASM for broader compatibility.
     \end{abstract}
 
     \begin{IEEEkeywords}
@@ -39,24 +58,32 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum software development is currently hindered by fragmentation across diverse hardware platforms and proprietary compiler toolchains.
-    Each major quantum software development kit (SDK)—such as Qiskit, Cirq, or AWS Braket—has its own interface and backend assumptions,
-    forcing developers to rewrite or reoptimize code for each platform~\cite{qiskit2023,cirq2024,braket-zenodo}.
-    This siloed ecosystem complicates benchmarking, hinders reproducibility, and slows innovation.
+    Quantum simulation has demonstrated exponential advantages in applications such as chemistry, pharmaceuticals, and biological processes.
+    However, the field of quantum software development remains a formidable task to perform in practice,
+    often requiring extensive expertise and years of training in physics, mathematics, and software engineering.
+    This high learning curve poses a significant barrier for potential users, including many professionals.
+    In addition, state-of-the-art transpilers are often tied to specific platforms and/or lack granularity control.
 
-    To address these limitations, we introduce a cross-platform quantum compiler that accepts user-defined Hamiltonians as input and
-    produces optimized executable quantum circuits across multiple quantum platforms.
-    By decoupling high-level algorithm design from hardware-specific details, our approach promotes abstraction, portability, and reproducibility.
+    In this poster, we present a quantum circuit synthesizer that addresses all of these challenges.
+    We introduce the design and implementation of a cross-platform quantum compiler with built-in traceability, verifiability, and configurable gate control.
 
-    Our qompiler translates Hamiltonians expressed as linear combinations of Pauli strings using a multi-stage decomposition framework.
+    The compiler, namely, `qompiler`, decomposes Hamiltonians into quantum circuit using a multi-stage decomposition framework.
     This includes two-level decomposition (2L), swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (EA),
     and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
     The tool exposes configurable options for decomposition granularity and optimization tiers, enabling users to tailor circuit generation
     to the native constraints of specific hardware.
 
-    Initial benchmarks confirm the correctness and consistency of the output across supported platforms, including Qiskit and Cirq.
-    We are actively extending compatibility to additional frameworks such as AWS Braket and PennyLane, with the broader goal of streamlining
-    quantum algorithm development across the heterogeneous quantum landscape~\cite{braket-zenodo,pennylane}.
+    The decomposed intermediate and end result are captured in a B-Tree data structure providing gate-level lineage through the parent-child relationships among the tree nodes.
+
+    The IL is platform-independent and can be easily rendered into executable circuits for many existing quantum computing platforms such as Qiskit and Cirq.
+    It can also be transpiled into OpenQASM for broader compatibility.
+    Importantly, the granularity of the compilation is designed to be configurable.
+    For example, on superconducting quantum hardware, Pauli gates $X$, $Y$, and $Z$ may be precisely implemented, often via virtual gates with effectively zero error and zero latency.
+    Correspondingly, one can choose to configure our compiler to use Pauli gates in the end result.
+    In contrast, on trapped-ion platforms such as IonQ, arbitrary axis-aligned rotations, such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, are more fundamental and natively supported.
+    So for applications intended to run on trapped-ion quantum hardware, our compiler can be configured to output rotation gates.
+    Thus, our design gives users fine-grained control over the gate selection in the synthesized circuit, enabling hardware-aware optimization.
+    The IL is fully compatible with OpenQASM which further broadens its applicability across quantum platforms that support QASM\@~\cite{openqasm2,openqasm3}.
 
 
     \section{Method}\label{sec:method}
@@ -64,7 +91,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{equation}
         \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}.
     \end{equation}
-    In a suitably chosen basis, \emph{e.g.} simultaneous to eigenvectors of the eigenenergies,
+    On a suitably chosen basis, \emph{e.g.} simultaneous to eigenvectors of the eigenenergies,
     the evolution operator can be expressed as a unitary matrix \( U \) at any time \( t \).
     We divide the overall workflow into two stages: compilation and interpretation.
     During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed using an intermediate language (IL)
@@ -88,7 +115,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item{\textbf{Euler Angle Decomposition (EA):} Breaks down an arbitrary single-qubit unitaries into a minimal sequence of Euler rotations
         around chosen axes (\emph{e.g.}, \(Z\)-\(Y\)-\(Z\)).}
         \item{\textbf{Solovay-Kitaev Approximation (SK):} Approximates arbitrary single-qubit unitaries with sequences over a finite universal gate set,
-            useful when target hardware supports only limited gates.}~\cite{dawson2005solovaykitaevalgorithm}
+            useful when target hardware supports only limited gates~\cite{dawson2005solovaykitaevalgorithm}.}
     \end{itemize}
 
     These decomposition steps can be selectively enabled based on the constraints of the target hardware and the user’s preferences.
@@ -105,9 +132,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Results}\label{sec:results}
-    Initial benchmarks show the compiler produces correct circuits consistent across backends,
-    demonstrating the compiler’s potential to simplify quantum algorithm development and
-    accelerate experimentation in heterogeneous quantum computing environments.
+    Initial benchmarks demonstrate that the compiler generates correct and consistent quantum circuits across multiple backends.
+    These results highlight the compiler’s potential to accelerate quantum software development, circuit optimization, and experimentation across diverse quantum computing platforms.
 
     \subsection{Examples}\label{subsec:examples}
     For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix
@@ -124,45 +150,59 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{bmatrix}
     \end{equation}.
     We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
-    The resulting gate sequence contains 279 layers and the first few are shown in~\ref{fig:cyclic-permute-circuit}.
+    The resulting gate sequence contains 279 layers, and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
     \begin{figure}[htbp]
         \centerline{\includegraphics[width=0.45\textwidth]{circuit-example}}
         \caption{Compiled Qiskit circuit (partial) from cyclic permutation matrix.}
         \label{fig:cyclic-permute-circuit}
     \end{figure}
-    The second example we are going to show is a little sophisticated.
-    It's a randomly generated \(8\times 8\) unitary matrix (group U(8)).
-    We set the circuit decomposition granularity to \texttt{CTRL\_PRUNED} and the result has 1361 moments in Cirq.
-    The compiled circuit is rendered in both Cirq and Qiskit as shown in~\ref{fig:unitary-compare}
-
-    \begin{figure}[htbp]
-        \centering
-        \subfloat[Cirq circuit (partial)]{
-            \includegraphics[width=0.45\textwidth]{cirq-unitary}
-            \label{fig:cirq-unitary}
-        }
-        \hfill
-        \subfloat[Qiskit circuit (partial)]{
-            \includegraphics[width=0.45\textwidth]{qiskit-unitary}
-            \label{fig:qiskit-unitary}
-        }
-        \caption{An arbitary unitary matrix compiled once and rendered into both Cirq and Qiskit.}
-        \label{fig:unitary-compare}
-    \end{figure}
+    \begin{lstlisting}
+    OPENQASM 3.0;
+    include "stdgates.inc";
+    qubit[3] q0;
+    qubit[1] a0;
+    h a0[0];
+    cx q0[1], a0[0];
+    tdg a0[0];
+    cx q0[0], a0[0];
+    t a0[0];
+    cx q0[1], a0[0];
+    tdg a0[0];
+    cx q0[0], a0[0];
+    tdg q0[1];
+    cx q0[0], q0[1];
+    tdg q0[1];
+    cx q0[0], q0[1];
+    s q0[0];
+    z q0[1];
+    t a0[0];
+    h a0[0];
+    ...
+    \end{lstlisting}
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
-    This poster proposal presents a cross-platform quantum compiler project that seeks to reduce platform friction in quantum software development.
-    Future work includes:
-    \begin{itemize}
-        \item Integrating PennyLane and AWS Braket support
-        \item Adding quantum error correction capability
-    \end{itemize}
+    Initial benchmarks confirm the correctness and consistency of the output across supported platforms, including Qiskit and Cirq.
+    Future work includes incorporating parallelization to improve compilation efficiency for higher-dimensional Hamiltonians.
+    We also plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
+    with the broader goal of streamlining quantum algorithm development across the heterogeneous quantum computing landscape~\cite{braket-zenodo,pennylane}.
+    In addition, we aim to integrate quantum error correction capabilities to enhance the reliability of synthesized circuits.
     We invite collaboration and feedback from the quantum software community.
 
     \begin{thebibliography}{00}
         \bibitem{nielsen2010quantum}
         M. A. Nielsen and I. L. Chuang, \textit{Quantum Computation and Quantum Information}, Cambridge Univ. Press, 2010.
+
+        \bibitem{openqasm3}
+        A. W. Cross, \textit{et al.}, ``OpenQASM 3: A broader and deeper quantum
+        assembly language,'' arXiv preprint arXiv:2104.14722, 2021. [Online]. Available: https://arxiv.org/abs/2104.14722
+
+        \bibitem{openqasm2}
+        A. W. Cross, \textit{et al.}, ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017. [Online]. Available: https://arxiv.org/abs/1707.03429
+
+        \bibitem{dawson2005solovaykitaevalgorithm}
+        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
+        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
 
         \bibitem{qiskit2023}
         H. Abraham, AduOffei, I. Y. Akhalwaya, et al.,
@@ -176,20 +216,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         Amazon Web Services, ``Amazon Braket SDK,'' Zenodo, 2023. [Online]. Available: \url{https://doi.org/10.5281/zenodo.4660670}
 
         \bibitem{pennylane}
-        J. Bergholm \emph{et al.}, ``PennyLane: Automatic differentiation of hybrid quantum-classical computations,''
+        J. Bergholm \textit{et al.}, ``PennyLane: Automatic differentiation of hybrid quantum-classical computations,''
         \emph{arXiv preprint} arXiv:1811.04968, 2018. [Online]. Available: \url{https://arxiv.org/abs/1811.04968}
-
-        \bibitem{dawson2005solovaykitaevalgorithm}
-        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
-        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
-
-        \bibitem{openqasm3}
-        A. W. Cross, A. Javadi-Abhari, T. Alexander, N. de Beaudrap, L. S. Bishop, S. Heidel, C. A. Ryan, J. Smolin, J. M. Gambetta, and B. R. Johnson, ``OpenQASM 3: A broader and deeper quantum
-        assembly language,'' arXiv preprint arXiv:2104.14722, 2021. [Online]. Available: https://arxiv.org/abs/2104.14722
-
-        \bibitem{openqasm2}
-        A. W. Cross, L. S. Bishop, J. A. Smolin, and J. M. Gambetta, ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017. [Online]. Available: https://arxiv.org/abs/1707.03429
-
     \end{thebibliography}
 
 \end{document}

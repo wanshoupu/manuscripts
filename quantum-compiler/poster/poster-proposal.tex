@@ -1,26 +1,17 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
-\usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
-\usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{subfig}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-    \title{Cross-Platform Quantum Compiler for Synthesizing Quantum Circuits Based on Arbitrary Hamiltonians \\
-    \thanks{This work was supported in part by personal funding and community feedback.}
-    }
+    \title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
 
     \author{\IEEEauthorblockN{Shoupu Wan}
     \IEEEauthorblockA{Independent Researcher \\
-    Email: wanshoupu@gmail.com\thanks{Code available at: \url{https://github.com/wanshoupu/quantum-simulations}}}
+    Email: wanshoupu@gmail.com}
     }
 
     \maketitle
@@ -33,10 +24,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         We demonstrate implementations that render the IL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
         Additionally, we provide a transpiler that converts the IL into OpenQASM for broader compatibility.
     \end{abstract}
-
-    \begin{IEEEkeywords}
-        Quantum Computing, Quantum Compilation, Hamiltonian Decomposition, Cross-Platform, Circuit Synthesis, Solovay-Kitaev Theorem,
-    \end{IEEEkeywords}
 
 
     \section{Relevance}\label{sec:relevance}

@@ -41,23 +41,23 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Relevance}\label{sec:relevance}
     Quantum simulation has demonstrated exponential advantages in applications such as chemistry, pharmaceuticals, and biological processes.
-    The field of quantum software development, however, has a relatively high learning curve, requiring expertise and many years of training in physics, math, and software engineering,
-    and this poses difficulty for many professionals to access quantum computing.
-    Furthermore, the state-of-the-art choices of transpiler are either tied to a specific platform or lack the desired translation granularity.
+    However, the field of quantum software development remains a formidable task to perform in practice,
+    often requiring extensive expertise and years of training in physics, mathematics, and software engineering.
+    This high learning curve poses a significant barrier for potential users, including many professionals.
+    In addition, state-of-the-art transpilers are often tied to specific platforms and/or lack granularity control.
 
-    In this poster, we present a quantum circuit synthesizer that solves both problems.
-    We introduce a design and implementation of quantum circuit synthesizer with good features to solve all the problems at hand.
-    Our quantum circuit synthesizer features a cross-platform quantum compiler, built-in traceability and verifiability, and configurable gate control.
-    First, the compiler accepts user-defined Hamiltonians as input and outputs B-tree data structure as IL\@.
-    This gives the necessary lineage for each quantum gate through the parent-child relationship among the tree nodes.
-    Second, the IL is platform-independent.
-    It can be easily rendered into executables on any existing quantum computing platforms such as Qiskit and Cirq.
+    In this poster, we present a quantum circuit synthesizer that addresses all of these challenges.
+    We introduce the design and implementation of a cross-platform quantum compiler with built-in traceability, verifiability, and configurable gate control.
+    The compiler accepts user-defined Hamiltonians as input and produces a B-tree data structure as an intermediate language (IL),
+    providing gate-level lineage through the parent-child relationships of the tree nodes.
+
+    The IL is platform-independent and can be easily rendered into executable circuits for many existing quantum computing platforms such as Qiskit and Cirq.
     It can also be transpiled into OpenQASM for broader compatibility.
-    Third, the granularity of the IL, as an end result, is configurable.
-    For example, for superconducting quantum hardware, Pauli gates $X$, $Y$, $Z$, may be precisely implemented via \emph{e.g.}, through virtual gates with zero-error and zero-latency
-    whereas on trapped-ion platforms such as IonQ, Arbitrary axis-aligned rotations, e.g. $Rx\left(\phi\right)$, $Ry\left(\phi\right)$, and $Rz\left(\phi\right)$, are more fundamental.
-    Our design puts the fine-tuning granularity control into the hands of users.
-    Depending on the targeted hardware, the users can choose which types of gates are used in the end result.
-    Another good feature is that the IL can be transpiled into OpenQASM\@.
-    This expands the compatibility with other quantum computing platforms supporting QASM\@.
+    Importantly, the granularity of the compilation is designed to be configurable.
+    For example, on superconducting quantum hardware, Pauli gates $X$, $Y$, and $Z$ may be precisely implemented, often via virtual gates with effectively zero error and zero latency.
+    Correspondingly, one can choose to configure our compiler to use Pauli gates in the end result.
+    In contrast, on trapped-ion platforms such as IonQ, arbitrary axis-aligned rotations, such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, are more fundamental and natively supported.
+    So for applications intended to run on trapped-ion quantum hardware, our compiler can be configured to output rotation gates.
+    Thus, our design gives users fine-grained control over the gate selection in the synthesized circuit, enabling hardware-aware optimization.
+    The IL is fully compatible with OpenQASM which further broadens its applicability across quantum platforms that support QASM\@.
 \end{document}

@@ -7,10 +7,12 @@
 \usepackage{qrcode}
 \usepackage{blkarray} % optional for QR codes
 \usepackage{xcolor}
+\newcommand{\cmark}{{\color{green!60!black} \checkmark}}
+\newcommand{\xmark}{{\color{red} $\times$}}
 
 \title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
-\author{Shoupu Wan \ \texttt{wanshoupu@gmail.com}}
-\institute{GitHub: \texttt{wanshoupu/quantum-simulations}}
+\author{Shoupu Wan, PhD \ \texttt{wanshoupu@gmail.com} \ GitHub: \texttt{wanshoupu/quantum-simulations}}
+\institute{OpenForJob}
 
 \begin{document}
 
@@ -21,13 +23,28 @@
             \begin{column}{0.33\textwidth}
 
                 \begin{block}{1. Introduction}
-                    Most quantum compilers are tied to specific hardware.
-                    Our compiler bridges that gap, allowing...
-                    Briefly introduce your research problem and motivation.
+                    Quantum simulation offers exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
+                    Despite its potential, developing quantum software remains highly challenging, demanding deep expertise in physics, mathematics, and software engineering.
+                    This steep learning curve limits access for many users and professionals who could potentially benefit.
+                    Additionally, existing quantum transpilers are often platform-specific, done in ad hoc, and lack flexible control over compilation granularity.
+
+                    To overcome these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
+                    It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
+                    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
+                    such as Qiskit, Cirq, and OpenQASM\@.
+                    Importantly, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
+                    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
                 \end{block}
 
                 \begin{block}{2. Background}
-                    Provide essential context or related work.
+                    All existing quantum compilers/transpilers/synthesizers are often suffer one or more of the following limitations:
+                    \begin{itemize}
+                        \item Tied to specific platform;
+                        \item Done in ad hoc and not reusable;
+                        \item Compilation process not traceable;
+                        \item Lack flexible control over compilation granularity.
+                    \end{itemize}
+                    \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
                 \end{block}
 
                 \begin{block}{3. Methodology}
@@ -59,7 +76,40 @@
             % Column 3
             \begin{column}{0.33\textwidth}
                 \begin{block}{6. Results}
-                    \includegraphics[width=\linewidth]{circuit-example.png}
+
+
+                    \begin{table}[h]
+                        \centering
+                        \renewcommand{\arraystretch}{1.5}
+                        \begin{tabular}{|l|c|c|c|c|}
+                            \hline
+                            \textbf{Feature}            & \textbf{qompiler} & \textbf{Qiskit} & \textbf{tket} & \textbf{Cirq} \\
+                            \hline
+                            Platform Agnostic           & \cmark            & \xmark          & \cmark        & \xmark        \\
+                            Traceability (Gate Lineage) & \cmark            & \xmark          & \xmark        & \xmark        \\
+                            Configurable Granularity    & \cmark            & \xmark          & \cmark        & \xmark        \\
+                            Built-in Verifiability      & \cmark            & \xmark          & \xmark        & \xmark        \\
+                            \hline
+                        \end{tabular}
+                        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools.}
+                    \end{table}
+                    \begin{table}[h]
+                        \centering
+                        \renewcommand{\arraystretch}{1.5} % Add spacing between rows
+                        \begin{tabular}{|l|c|c|c|c|c|c|c|}
+                            \hline
+                            \textbf{Feature}            & \textbf{qompiler} & \textbf{Qiskit} & \textbf{tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFAST} & \textbf{Staq} \\
+                            \hline
+                            Platform Agnostic           & \cmark            & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                            Traceability (Gate Lineage) & \cmark            & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                            Configurable gate type      & \cmark            & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                            Built-in Verifiability      & \cmark            & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                            \hline
+                        \end{tabular}
+                        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{tket,quilc,qfast,staq}.}
+                    \end{table}
+
+                    \includegraphics[width=\linewidth]{circuit-example}
                 \end{block}
 
                 \begin{block}{7. Conclusion}
@@ -76,9 +126,20 @@
 
                 \begin{block}{8. References}
                     \begin{thebibliography}{99}
-                        \bibitem{openqasm3} A. W. Cross et al., ``OpenQASM 3: A broader and deeper quantum assembly language,'' arXiv preprint arXiv:2104.14722, 2021.
+                        \bibitem{openqasm3} A. W. Cross \textit{et al.}, ``OpenQASM 3: A broader and deeper quantum assembly language,'' arXiv preprint arXiv:2104.14722, 2021.
 
-                        \bibitem{openqasm2} A. W. Cross et al., ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017.
+                        \bibitem{openqasm2} A. W. Cross \textit{et al.}, ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017.
+
+                        \bibitem{tket} S. Sivarajah \textit{et al.}, ``t|ket⟩: A Retargetable Compiler for NISQ Devices,'' Quantum Science and Technology,
+                        vol. 6, no. 1, p. 014003, 2020.
+
+                        \bibitem{quilc} Rigetti Computing, ``Quilc: A Quantum Instruction Language Compiler,'' [Online].
+                        Available: https://github.com/rigetti/quilc.
+
+                        \bibitem{qfast} Y. Zhang \textit{et al.}, ``QFAST: Quantum Synthesis Using Fast Approximate Search,'' in Proceedings of the 26th ACM International
+                        Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS), 2021.
+
+                        \bibitem{staq} A. Smith \textit{et al.}, ``Staq: A Full-Stack Quantum Processing Toolkit,'' in Quantum, vol. 5, p. 538, 2021.
                     \end{thebibliography}
                 \end{block}
             \end{column}

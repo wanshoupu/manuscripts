@@ -66,7 +66,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     To overcome these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
     It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
     The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
-    such as Qiskit, Cirq, and OpenQASM\@.
+    such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
     Importantly, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
     using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
 
@@ -75,7 +75,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits
     through a multi-stage decomposition framework.
     This framework integrates several key techniques, including two-level decomposition (2L), swap gate decomposition (CX),
-    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum,dawson2005solovaykitaevalgorithm}.
     The decomposition process is highly configurable, offering users fine-grained control over decomposition granularity
     and optimization levels to suit the native constraints of targeted quantum hardware.
     The intermediate and final circuit representations are captured using a B-Tree data structure,
@@ -153,19 +153,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We invite collaboration and feedback from the quantum software community.
 
     \begin{thebibliography}{00}
-        \bibitem{nielsen2010quantum}
-        M. A. Nielsen and I. L. Chuang, \textit{Quantum Computation and Quantum Information}, Cambridge Univ. Press, 2010.
-
         \bibitem{openqasm3}
         A. W. Cross, \textit{et al.}, ``OpenQASM 3: A broader and deeper quantum
         assembly language,'' arXiv preprint arXiv:2104.14722, 2021. [Online]. Available: https://arxiv.org/abs/2104.14722
 
         \bibitem{openqasm2}
         A. W. Cross, \textit{et al.}, ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017. [Online]. Available: https://arxiv.org/abs/1707.03429
-
-        \bibitem{dawson2005solovaykitaevalgorithm}
-        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
-        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
 
         \bibitem{qiskit2023}
         H. Abraham, AduOffei, I. Y. Akhalwaya, et al.,
@@ -174,6 +167,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
         \bibitem{cirq2024}
         Google Quantum AI, “Cirq,” 2024. [Online]. Available: \url{https://quantumai.google/cirq}
+
+        \bibitem{nielsen2010quantum}
+        M. A. Nielsen and I. L. Chuang, \textit{Quantum Computation and Quantum Information}, Cambridge Univ. Press, 2010.
+
+        \bibitem{dawson2005solovaykitaevalgorithm}
+        C. M. Dawson and M. A. Nielsen, “The Solovay-Kitaev algorithm,”
+        arXiv preprint quant-ph/0505030, 2005. [Online]. Available: \url{https://arxiv.org/abs/quant-ph/0505030}
 
         \bibitem{braket-zenodo}
         Amazon Web Services, ``Amazon Braket SDK,'' Zenodo, 2023. [Online]. Available: \url{https://doi.org/10.5281/zenodo.4660670}

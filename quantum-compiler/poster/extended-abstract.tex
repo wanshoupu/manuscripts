@@ -58,77 +58,40 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation has demonstrated its exponential advantages in applications such as chemistry, pharmaceuticals, and biological processes.
-    However, quantum software development remains a formidable task to perform in practice,
-    requiring extensive expertise and years of training in physics, mathematics, and software engineering.
-    This high learning curve poses a significant barrier for potential users, including many professionals.
-    In addition, state-of-the-art transpilers are often tied to specific platforms and/or lack granularity control.
+    Quantum simulation offers exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
+    Despite its potential, developing quantum software remains highly challenging, demanding deep expertise in physics, mathematics, and software engineering.
+    This steep learning curve limits access for many users and professionals who could potentially benefit.
+    Additionally, existing quantum transpilers are often platform-specific, done in ad hoc, and lack flexible control over compilation granularity.
 
-    In this poster, we present a quantum circuit synthesizer that addresses all of these challenges.
-    We introduce the design and implementation of a cross-platform quantum compiler with built-in traceability, verifiability, and configurable gate control.
-
-    The compiler, namely, `qompiler`, decomposes Hamiltonians into quantum circuit using a multi-stage decomposition framework.
-    This includes two-level decomposition (2L), swap gate decomposition (CX), control decomposition (CTRL), Euler angle decomposition (EA),
-    and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
-    The tool exposes configurable options for decomposition granularity and optimization tiers, enabling users to tailor circuit generation
-    to the native constraints of specific hardware.
-
-    The decomposed intermediate and end result are captured in a B-Tree data structure providing gate-level lineage through the parent-child relationships among the tree nodes.
-
-    The IL is platform-independent and can be easily rendered into executable circuits for many existing quantum computing platforms such as Qiskit and Cirq.
-    It can also be transpiled into OpenQASM for broader compatibility.
-    Importantly, the granularity of the compilation is designed to be configurable.
-    For example, on superconducting quantum hardware, Pauli gates $X$, $Y$, and $Z$ may be precisely implemented, often via virtual gates with effectively zero error and zero latency.
-    Correspondingly, one can choose to configure our compiler to use Pauli gates in the end result.
-    In contrast, on trapped-ion platforms such as IonQ, arbitrary axis-aligned rotations, such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, are more fundamental and natively supported.
-    So for applications intended to run on trapped-ion quantum hardware, our compiler can be configured to output rotation gates.
-    Thus, our design gives users fine-grained control over the gate selection in the synthesized circuit, enabling hardware-aware optimization.
-    The IL is fully compatible with OpenQASM which further broadens its applicability across quantum platforms that support QASM\@~\cite{openqasm2,openqasm3}.
+    To overcome these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
+    It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
+    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
+    such as Qiskit, Cirq, and OpenQASM\@.
+    Importantly, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
+    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
 
 
     \section{Method}\label{sec:method}
-    Given an input Hamiltonian $\hat{H}$, the quantum dynamics is fully prescribed by the evolution operator
-    \begin{equation}
-        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}.
-    \end{equation}
-    On a suitably chosen basis, \emph{e.g.} simultaneous to eigenvectors of the eigenenergies,
-    the evolution operator can be expressed as a unitary matrix \( U \) at any time \( t \).
-    We divide the overall workflow into two stages: compilation and interpretation.
-    During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed using an intermediate language (IL)
-    designed by us.
-    Users can toggle the output circuit granularity and optimization levels in the compilation.
-    In the interpretation stage, the \texttt{Interpreter}s maps IL circuits into native gates for the targeted platforms such as Qiskit, Cirq, or others.
-    This architectural separation decouples the computationally intensive compilation from platform-specific dependencies, ensuring cross-platform portability.
-    Consequently, users can adopt a ``compile once, run everywhere'' paradigm by running multiple \texttt{Interpreter}s to generate code for various target platforms.
+    The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits
+    through a multi-stage decomposition framework.
+    This framework integrates several key techniques, including two-level decomposition (2L), swap gate decomposition (CX),
+    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+    The decomposition process is highly configurable, offering users fine-grained control over decomposition granularity
+    and optimization levels to suit the native constraints of targeted quantum hardware.
+    The intermediate and final circuit representations are captured using a B-Tree data structure,
+    which encodes gate-level lineage via parent-child relationships among tree nodes, enabling robust traceability
+    and verifiability throughout the compilation process.
 
-    \subsection{Operator Decomposition}\label{subsec:operator-decomposition}
-
-    The decomposition process is elaborated here.
-    Our compiler uses a configurable pipeline of operator synthesis techniques to produce and organize IL nodes in B-tree data structure.
-    The decomposition framework is modular, comprising the following stages:
-    \begin{itemize}
-        \item{\textbf{Two-Level Decomposition (2L):} Breaks down multi-qubit unitaries into elementary 2-level operations.}
-        \item{\textbf{Swap Decomposition (CX):} Rewrites circuits with long-range qubit interactions into topologies
-        with nearest-neighbor constraints using SWAP and CNOT gates.}
-        \item{\textbf{Control Decomposition (CTRL):} Decomposes controlled unitaries, preserving
-        the structure of controlled operations in gate-level terms.}
-        \item{\textbf{Euler Angle Decomposition (EA):} Breaks down an arbitrary single-qubit unitaries into a minimal sequence of Euler rotations
-        around chosen axes (\emph{e.g.}, \(Z\)-\(Y\)-\(Z\)).}
-        \item{\textbf{Solovay-Kitaev Approximation (SK):} Approximates arbitrary single-qubit unitaries with sequences over a finite universal gate set,
-            useful when target hardware supports only limited gates~\cite{dawson2005solovaykitaevalgorithm}.}
-    \end{itemize}
-
-    These decomposition steps can be selectively enabled based on the constraints of the target hardware and the user’s preferences.
-
-    \subsection{Platform-Specific Interpretation}\label{subsec:platform-specific-interpret}
-    Once the quantum circuit is compiled into IL and saved to file, it can be interpreted by platform-specific interpreters
-    that translate the IL code into native circuits for the desired quantum SDK\@.
-    Currently, supported platforms include Qiskit and Cirq, with the architecture designed for easy extension to others.
-    Users can configure optimization levels, toggle specific synthesis settings, and specify target constraints such as qubit topology,
-    qubit connectivity grouping or native gate sets.
-
-    This modular design ensures that the compiler remains extensible and adaptable to future hardware changes,
-    supporting integration with additional platforms such as PennyLane, Braket, and beyond.
+    The compiler’s intermediate language (IL) is platform-independent and can be rendered into executable circuits for specific quantum platforms
+    as well as platform-independent standards such as OpenQASM for broader compatibility~\cite{openqasm2,openqasm3}.
+    A key feature of \texttt{qompiler} is its configurable compilation granularity,
+    which allows users to tailor the resulting circuit to the gate sets best suited for the target hardware.
+    For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually, offering zero-error and zero-latency execution;
+    in this case, the compiler can be configured to prioritize Pauli gates.
+    Conversely, trapped-ion platforms such as IonQ natively support arbitrary single-qubit rotations,
+    such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
+    This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
+    while maintaining traceability and cross-platform compatibility.
 
 
     \section{Results}\label{sec:results}

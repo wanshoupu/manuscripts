@@ -11,7 +11,7 @@
 \newcommand{\cmark}{{\color{green!60!black} \ding{52}}}
 \newcommand{\xmark}{\color{red} \ding{56}} % Handwritten-style cross
 
-\title{Qompiler: Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
+\title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
 \author{Shoupu Wan, PhD \ \texttt{wanshoupu@gmail.com} \ GitHub: \texttt{wanshoupu/quantum-simulations}}
 \institute{OpenForJob}
 
@@ -24,26 +24,26 @@
             \begin{column}{0.33\textwidth}
 
                 \begin{block}{1. Introduction}
-                    Quantum simulation provides exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
-                    However, quantum software development remains challenging, requiring deep expertise in physics, mathematics, and software engineering.
-                    Existing transpilers are often platform-specific and lack flexible control over circuit granularity.
+                    Quantum simulation offers exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
+                    Despite its potential, developing quantum software remains highly challenging, demanding deep expertise in physics, mathematics, and software engineering.
+                    This steep learning curve limits access for many users and professionals who could potentially benefit.
+                    Additionally, existing quantum transpilers are often platform-specific, done in ad hoc, and lack flexible control over compilation granularity.
 
-                    To address these challenges, we developed \texttt{qompiler}—a cross-platform quantum circuit synthesizer that emphasizes traceability,
-                    verifiability, and configurable gate selection.
-                    It decomposes Hamiltonians using a multi-stage framework and represents the circuits
-                    in a platform-independent B-Tree structure that supports gate-level lineage.
-
-                    \texttt{qompiler} enables hardware-aware circuit generation, supporting major frameworks such as Qiskit, Cirq, and OpenQASM,
-                    while allowing users to tailor the gate sets to match the native capabilities of different quantum devices.
+                    To overcome these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
+                    It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
+                    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
+                    such as Qiskit, Cirq, and OpenQASM\@.
+                    Importantly, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
+                    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
                 \end{block}
 
-
                 \begin{block}{2. Background}
-                    We compared \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in terms of the following aspects:
+                    Many existing quantum compilers/transpilers/synthesizers suffer one or more of the following limitations:
                     \begin{itemize}
-                        \item Whether tied to a specific platform;
-                        \item Whether the compilation process is traceable;
-                        \item Whether it has flexible control over compilation granularity.
+                        \item Tied to specific platform;
+                        \item Done in ad hoc and not reusable;
+                        \item Compilation process not traceable;
+                        \item Lack flexible control over compilation granularity.
                     \end{itemize}
                     \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
                     See Table~\ref{tab:feature-comparison} for more information.
@@ -53,36 +53,41 @@
                         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
                             \begin{tabular}{|l|c|c|c|c|c|c|c|}
                                 \hline
-                                \textbf{Feature}          & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
+                                \textbf{Feature}            & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
                                 \hline
-                                Platform Agnostic         & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
-                                Gate Lineage Traceability & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
-                                Configurable Gate Type    & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
+                                Platform Agnostic           & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
+                                Traceability (Gate Lineage) & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                                Configurable Gate Type      & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
+                                Built-in Verifiability      & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
                                 \hline
                             \end{tabular}
                         }
-                        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{tket,quilc,qfast,staq}.
-                        A gray check mark is associated with the Qiskit for its partial control over the gate types in the end result.}\label{tab:feature-comparison}
+                        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{tket,quilc,qfast,staq}.}\label{tab:feature-comparison}
                     \end{table}
                 \end{block}
 
                 \begin{block}{3. Methodology}
-                    We developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer that decomposes
-                    user-defined Hamiltonians into executable quantum circuits through a multi-stage framework.
-                    This process includes two-level decomposition (2L), swap gate decomposition (CX), control gate
-                    decomposition (CTRL), Euler angle decomposition (EA), and Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+                    The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits
+                    through a multi-stage decomposition framework.
+                    This framework integrates several key techniques, including two-level decomposition (2L), swap gate decomposition (CX),
+                    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+                    The decomposition process is highly configurable, offering users fine-grained control over decomposition granularity
+                    and optimization levels to suit the native constraints of targeted quantum hardware.
+                    The intermediate and final circuit representations are captured using a B-Tree data structure,
+                    which encodes gate-level lineage via parent-child relationships among tree nodes, enabling robust traceability
+                    and verifiability throughout the compilation process.
 
-                    The compiler provides fine-grained control over decomposition granularity and optimization levels
-                    to match the native constraints of specific quantum hardware.
-                    All intermediate and final circuits are captured in a B-Tree data structure, enabling gate-level lineage through parent-child
-                    relationships, which supports traceability and verifiability.
+                    The compiler’s intermediate language (IL) is platform-independent and can be rendered into executable circuits for specific quantum platforms
+                    as well as platform-independent standards such as OpenQASM for broader compatibility~\cite{openqasm2,openqasm3}.
+                    A key feature of \texttt{qompiler} is its configurable compilation granularity,
+                    which allows users to tailor the resulting circuit to the gate sets best suited for the target hardware.
+                    For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually, offering zero-error and zero-latency execution;
+                    in this case, the compiler can be configured to prioritize Pauli gates.
+                    Conversely, trapped-ion platforms such as IonQ natively support arbitrary single-qubit rotations,
+                    such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
+                    This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
+                    while maintaining traceability and cross-platform compatibility.
 
-                    The platform-independent intermediate language (IL) can be rendered into target-specific circuits
-                    for Qiskit, Cirq, and OpenQASM~\cite{openqasm2,openqasm3}. \texttt{qompiler} allows users to configure
-                    the final gate set to align with hardware characteristics—for example, prioritizing Pauli gates
-                    ($X$, $Y$, $Z$) for superconducting devices or rotation gates ($R_x(\phi)$, $R_y(\phi)$, $R_z(\phi)$)
-                    for trapped-ion platforms such as IonQ. This hardware-aware configurability enables efficient, optimized
-                    circuit generation while preserving cross-platform compatibility.
                 \end{block}
             \end{column}
 

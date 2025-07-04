@@ -31,7 +31,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 }
 \begin{document}
 
-    \title{Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians \\
+    \title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians \\
     \thanks{This work was supported in part by personal funding and community feedback.}
     }
 
@@ -119,29 +119,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \caption{Compiled Qiskit circuit (partial) from cyclic permutation matrix.}
         \label{fig:cyclic-permute-circuit}
     \end{figure}
-    \begin{lstlisting}
-    OPENQASM 3.0;
-    include "stdgates.inc";
-    qubit[3] q0;
-    qubit[1] a0;
-    h a0[0];
-    cx q0[1], a0[0];
-    tdg a0[0];
-    cx q0[0], a0[0];
-    t a0[0];
-    cx q0[1], a0[0];
-    tdg a0[0];
-    cx q0[0], a0[0];
-    tdg q0[1];
-    cx q0[0], q0[1];
-    tdg q0[1];
-    cx q0[0], q0[1];
-    s q0[0];
-    z q0[1];
-    t a0[0];
-    h a0[0];
-    ...
-    \end{lstlisting}
+    \lstinputlisting[caption={Generated OpenQASM 3.0 code.},label={lst:qasm}]{code.qasm}
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}

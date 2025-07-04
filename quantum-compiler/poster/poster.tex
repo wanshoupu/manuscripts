@@ -8,10 +8,11 @@
 \usepackage{qrcode}
 \usepackage{blkarray} % optional for QR codes
 \usepackage{xcolor}
+\usepackage{listings}
 \newcommand{\cmark}{{\color{green!60!black} \ding{52}}}
 \newcommand{\xmark}{\color{red} \ding{56}} % Handwritten-style cross
 
-\title{Qompiler: Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
+\title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
 \author{Shoupu Wan, PhD \ \texttt{wanshoupu@gmail.com} \ GitHub: \texttt{wanshoupu/quantum-simulations}}
 \institute{OpenForJob}
 
@@ -84,46 +85,78 @@
                     for trapped-ion platforms such as IonQ. This hardware-aware configurability enables efficient, optimized
                     circuit generation while preserving cross-platform compatibility.
                 \end{block}
+
+                \begin{block}{4. Architecture}
+                    In Figure~\ref{fig:architecture}, we present the diagram of \texttt{Qompiler} architecture.
+                    \begin{figure}[htbp]
+                        \centering
+                        \includegraphics[width=.8\linewidth]{architecture}
+                        \caption{The architectural diagram of `Qompiler', the quantum circuit compiler.
+                        The main flow is ``compiler configuration → Hamiltonian decomposition → Circuit optimization → Quantum circuit rendering''.}
+                        \label{fig:architecture}
+                    \end{figure}
+                \end{block}
             \end{column}
 
             % Column 2
             \begin{column}{0.33\textwidth}
 
-                \begin{block}{4. Architecture}
-                    \begin{figure}[htbp]
-                        \centering
-                        \includegraphics[width=.8\linewidth]{architecture}
-                        \caption{The architectural diagram of `Qompiler', the quantum circuit compiler.
-                        Pipeline: Parse → Decompose → Synthesize → Target Platform}
-                        \label{fig:architecture}
-                    \end{figure}
+                \begin{block}{4. Architecture (Continued)}
                     \begin{figure}[htbp]
                         \centering
                         \includegraphics[width=.8\linewidth]{qompiler}
                         \caption{The compilation workflow.}
                         \label{fig:qompiler}
                     \end{figure}
-                    Pipeline: Parse → Decompose → Synthesize → Target Platform
-                \end{block}
-
-                \begin{block}{5. B-Tree Data Structure}
+                    The resulting IL is basically a B-Tree data structure and is written to \textit{.qco} files.
                     \begin{figure}[htbp]
                         \centering
-                        \includegraphics[width=0.8\linewidth]{btree}
+                        \includegraphics[width=0.6\linewidth]{btree}
                         \caption{The end result as a B-Tree data structure.}
                         \label{fig:btree}
                     \end{figure}
 
                 \end{block}
+
+                \begin{block}{6. Results}
+
+
+                    For illustration, we compiled a $ 8 \times 8 $ cyclic permutation matrix
+                    \begin{equation*}
+                        \begin{bmatrix}
+                            1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+                            0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+                            0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+                            0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+                            0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+                            0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+                            0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+                            0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+                        \end{bmatrix}
+                    \end{equation*}
+                    The granularity of \texttt{CLIFFORD\_T} is chosen for the end result.
+
+                    % Top horizontal line
+                    \noindent\rule{\linewidth}{0.5pt}
+                    \vspace{0.5em}
+                    \begin{minipage}{0.48\linewidth}
+                        \lstinputlisting[firstline=1, lastline=10,label={lst:qasm1},caption={Compiled quantum circuit in QASM.}]{code.qasm}
+                    \end{minipage}\hfill
+                    \begin{minipage}{0.48\linewidth}
+                        \lstinputlisting[firstline=11,label={lst:qasm2}]{code.qasm}
+                    \end{minipage}
+                    \noindent\rule{\linewidth}{0.5pt}
+                \end{block}
             \end{column}
 
             % Column 3
             \begin{column}{0.33\textwidth}
-                \begin{block}{6. Results}
+                \begin{block}{6. Results (Continued)}
+
                     \begin{figure}[htbp]
                         \centering
                         \includegraphics[width=.9\linewidth]{circuit-example}
-                        \caption{The compilation workflow.}
+                        \caption{The compiled quantum circuit drawn in \textit{matplotlib}.}
                         \label{fig:circuit-example}
                     \end{figure}
                 \end{block}

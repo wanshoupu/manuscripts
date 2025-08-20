@@ -1,6 +1,6 @@
-\documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
+\documentclass[a4paper,titlepage]{article}
 
+\usepackage{arxiv}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
@@ -10,6 +10,9 @@
 \usepackage{hyperref}
 \usepackage{subfig}
 \usepackage{listings}
+\usepackage{pifont}  % For handwritten-style cross
+\newcommand{\cmark}{{\color{green!60!black} \ding{52}}}
+\newcommand{\xmark}{\color{red} \ding{56}} % Handwritten-style cross
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \lstdefinelanguage{qasm}{
@@ -31,13 +34,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 }
 \begin{document}
 
-    \title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians \\
-    \thanks{This work was supported in part by personal funding and community feedback.}
-    }
+    \title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
 
-    \author{\IEEEauthorblockN{Shoupu Wan}
-    \IEEEauthorblockA{Independent Researcher \\
-    Email: wanshoupu@gmail.com\thanks{Code available at: \url{https://github.com/wanshoupu/quantum-simulations}}}
+    \author{Shoupu Wan \\
+    Email: wanshoupu@gmail.com \thanks{Github link: \url{https://github.com/wanshoupu/quantum-simulations}}
     }
 
     \maketitle
@@ -51,9 +51,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         Additionally, we provide a transpiler that converts the IL into OpenQASM for broader compatibility.
     \end{abstract}
 
-    \begin{IEEEkeywords}
-        Quantum Computing, Quantum Compilation, Hamiltonian Decomposition, Cross-Platform, Circuit Synthesis, Solovay-Kitaev Theorem,
-    \end{IEEEkeywords}
+    \keywords{Quantum Computing \and Quantum Compilation \and Hamiltonian Decomposition \and Cross-Platform \and Circuit Synthesis \and Solovay-Kitaev Theorem}
 
 
     \section{Introduction}\label{sec:introduction}
@@ -67,7 +65,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
     The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
     such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    Importantly, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
+    Noticeably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
     using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
 
 
@@ -94,9 +92,73 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     while maintaining traceability and cross-platform compatibility.
 
 
+    \section{Architecture}\label{sec:architecture}
+    In Figure~\ref{fig:architecture}, we present the diagram of \texttt{Qompiler} architecture.
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=.8\linewidth]{architecture}
+        \caption{The architectural diagram of `Qompiler', the quantum circuit compiler.
+        The main flow is ``compiler configuration → Hamiltonian decomposition → Circuit optimization → Quantum circuit rendering''.}
+        \label{fig:architecture}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=.8\linewidth]{workflow}
+        \caption{The compilation workflow.}
+        \label{fig:qompiler}
+    \end{figure}
+
+    The resulting IL is basically a B-Tree data structure and is written to \textit{.qco} files.
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.6\linewidth]{btree}
+        \caption{The end result as a B-Tree data structure.}
+        \label{fig:btree}
+    \end{figure}
+
+
+    \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
+    When using quantum computing on real world applications, the size of quantum circuit can be easily huge.
+    A quantum program for simulating a simple molecule like LiH in STO-3G solution would require $1000$ quantum gates~\cite{Hong_2022}.
+    Simulation programs for moderately large molecules could consist of millions of quantum gates~\cite{poulin2014trotterstepsizerequired}.
+    It's daunting to keep track of all of these quantum gates and be sure of the correctness.
+    \texttt{qompiler} is designed with traceability and verifiability in mind upfront.
+    We organized the compiled code as a B-Tree data structure in the intermediate language.
+    The traceability is built in the parent-child relationship.
+    Each and every gate in the final program may be traced back to the specific part that produced it.
+    The built-in optimizers used in the later stages of compilation also add tracing information regarding their operations.
+
+
     \section{Results}\label{sec:results}
     Initial benchmarks demonstrate that the compiler generates correct and consistent quantum circuits across multiple backends.
     These results highlight the compiler’s potential to accelerate quantum software development, circuit optimization, and experimentation across diverse quantum computing platforms.
+
+    We compared \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in terms of the following aspects:
+    \begin{itemize}
+        \item Whether tied to a specific platform;
+        \item Whether the compilation process is traceable;
+        \item Whether it has flexible control over compilation granularity.
+    \end{itemize}
+    \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
+    See Table~\ref{tab:feature-comparison} for more information.
+    \begin{table}[h]
+        \centering
+        \renewcommand{\arraystretch}{1.5} % Add spacing between rows
+        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
+            \begin{tabular}{|l|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Feature}          & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
+                \hline
+                Platform Agnostic         & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
+                Gate Lineage Traceability & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                Configurable Gate Type    & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
+                \hline
+            \end{tabular}
+        }
+        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{tket,quilc,qfast,staq}.
+        A gray check mark is associated with the Qiskit for its partial control over the gate types in the end result.}\label{tab:feature-comparison}
+    \end{table}
 
     \subsection{Examples}\label{subsec:examples}
     For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix

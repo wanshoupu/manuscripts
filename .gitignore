@@ -25,3 +25,5 @@ out
 *.lof
 *.lot
 *.snm
+*.fls
+*.fdb_latexmk

@@ -40,3 +40,14 @@ latexmk -pdf main.tex
 ```
 This automatically handles dependencies.
 
+## 6. (Optional) Configuring JetBrains profiles
+If you want to configure a profile for your task in an IDE such as one of the JetBrains products, follow these steps
+### a. Choose a profile name
+### b. Execute option choose `Execute script`
+Put the following cmd in the `Script text`
+```bash
+latexmk -pdf main; open main.pdf; exit
+```
+### c. `Working directory`
+Put the folder containing main `.tex` file.
+### d. Check `Execute in the terminal`

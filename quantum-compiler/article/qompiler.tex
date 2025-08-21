@@ -135,7 +135,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Support for other platforms may be added easily with minimal programming.
 
 
-    \section{Implementation}\label{sec:impl}
+    \section{Design \& Implementation}\label{sec:impl}
     In Figure~\ref{fig:impl}, we present the design of the compilation framework of \texttt{Qompiler}.
     The main flow is ``Compiler configuration → Operator decomposition → Optimization → Circuit rendering''.
 
@@ -169,7 +169,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:workflow}
     \end{figure}
 
-    The resulting IL is a B-Tree data structure and is written to \textit{.qco} files.
+    The resulting IL is a B-Tree data structure and is written to \textit{.qco} files~\ref{fig:btree}.
     In the B-Tree data structure, parent nodes generally represent the coarser grained operators
     and child nodes represent the decomposed operators,
     the products of which are just the parent nodes, e.g.,
@@ -177,7 +177,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{eq:parent-child-relation}
         \hat{P} = \prod_{i=1}^{n}{\hat{C}_{i}}.
     \end{equation}
-    Generally speaking, the B-Tree data structure is layered and contains the following layers---2level unitary,
+    Generally speaking, the nodes in a B-Tree data structure are layered as---2level unitary,
     single-qubit operators, control-pruned operators, and universal gates (including Clifford+T gates).
 
     \begin{figure}[htbp]
@@ -188,12 +188,25 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
+    \section{Optimization}\label{sec:optimization}
+    The qompiler breaks down the input unitary operator to the designed quantum gates
+    in a series of decomposition processes.
+    This may be analogous to a forward digestion process.
+    Often this produces duplicate gates and/or smaller than desired quantum gates.
+    The optimization passes aim to correct this with a backward synthesis process---cancelling
+    consecutive gates or consolidating multiple gates into fewer gates.
+
+
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
 
-    One of the key features of the current implementation of \texttt{qompiler} is its built-in feature---traceability and verifiability.
-    When using quantum computing on real world applications, such as quantum chemistry, the size of quantum circuit can be easily huge.
-    A quantum program for simulating a simple molecule like LiH in STO-3G solution would require $1000$ quantum gates~\cite{Hong_2022}.
-    Simulation programs for moderately large molecules could consist of millions of quantum gates~\cite{poulin2014,google_science_2020}.
+    One of the key features of the current implementation of \texttt{qompiler} is
+    its built-in feature---traceability and verifiability.
+    When using quantum computing on real world applications, such as quantum chemistry,
+    the size of quantum circuit can be easily huge.
+    A quantum program for simulating a simple molecule like LiH in STO-3G solution
+    would require $1000$ quantum gates~\cite{Hong_2022}.
+    Simulation programs for moderately large molecules could consist of millions
+    of quantum gates~\cite{poulin2014,google_science_2020}.
     It's daunting to keep track of all of these quantum gates and be sure of the correctness.
     \texttt{qompiler} is designed with traceability and verifiability in mind upfront.
     We organized the compiled code as a B-Tree data structure in the intermediate language.
@@ -251,7 +264,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
     The resulting gate sequence contains 279 layers, and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
     \begin{figure}[htbp]
-        \centerline{\includegraphics[width=0.45\textwidth]{circuit-example}}
+        \centerline{\includegraphics[width=0.8\textwidth]{circuit-example}}
         \caption{Compiled Qiskit circuit (partial) from cyclic permutation matrix.}
         \label{fig:cyclic-permute-circuit}
     \end{figure}

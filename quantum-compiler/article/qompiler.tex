@@ -82,14 +82,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{eq:sysstate}
         \left\| \psi\left( t \right) \right> = \hat{U}\left( t \right)\left\| \psi_{0} \right>
     \end{equation}
-    where $\left\| \psi_{0} \right>$ is the initial state ket.
+    where $\left\| \psi_{0} \right>$ is the initial ket of an arbitrary system state.
     Whereas, most observable operators remain constant unless they are explicitly time-dependent.
     Equivalently, the formulation of the dynamics in Heisenberg's representation are
     \begin{equation}
         \label{eq:heisenberg}
         \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
     \end{equation}
-    where $\hat{A}_{0}$ is the initial operator for the observable.
+    where $\hat{A}_{0}$ is the initial operator for an arbitrary observable.
     Whereas, the state kets remain constants.
 
     For computational purposes, we express the evolution operator as a unitary matrix \( U \) on a suitably chosen basis, and this will be our starting point for this paper.
@@ -199,6 +199,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Examples}\label{subsec:examples}
     For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix
     \begin{equation}
+        \label{eq:cyclic-permute-mat}
         \begin{bmatrix}
             1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
             0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\

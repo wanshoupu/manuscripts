@@ -68,6 +68,32 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Noticeably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
     using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
 
+    Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in the following criteria:
+    \begin{itemize}
+        \item Whether tied to a specific platform;
+        \item Whether the compilation process is traceable;
+        \item Whether it has flexible control over compilation granularity.
+    \end{itemize}
+    \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
+    See Table~\ref{tab:feature-comparison} for more information.
+    \begin{table}[h]
+        \centering
+        \renewcommand{\arraystretch}{1.5} % Add spacing between rows
+        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
+            \begin{tabular}{|l|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Feature}          & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
+                \hline
+                Platform Agnostic         & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
+                Gate Lineage Traceability & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
+                Configurable Gate Type    & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
+                \hline
+            \end{tabular}
+        }
+        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
+        A gray check mark is associated with the Qiskit for its partial control over the gate types in the end result.}\label{tab:feature-comparison}
+    \end{table}
+
 
     \section{Method}\label{sec:method}
     The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits through a multi-stage decomposition framework.
@@ -219,32 +245,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Initial benchmarks demonstrate that the compiler generates correct and consistent quantum circuits across multiple backends.
     These results highlight the compiler’s potential to accelerate quantum software development,
     circuit optimization, and experimentation across diverse quantum computing platforms.
-
-    We compared \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in terms of the following aspects:
-    \begin{itemize}
-        \item Whether tied to a specific platform;
-        \item Whether the compilation process is traceable;
-        \item Whether it has flexible control over compilation granularity.
-    \end{itemize}
-    \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
-    See Table~\ref{tab:feature-comparison} for more information.
-    \begin{table}[h]
-        \centering
-        \renewcommand{\arraystretch}{1.5} % Add spacing between rows
-        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
-            \begin{tabular}{|l|c|c|c|c|c|c|c|}
-                \hline
-                \textbf{Feature}          & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
-                \hline
-                Platform Agnostic         & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
-                Gate Lineage Traceability & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
-                Configurable Gate Type    & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
-                \hline
-            \end{tabular}
-        }
-        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{tket,quilc,qfast,staq}.
-        A gray check mark is associated with the Qiskit for its partial control over the gate types in the end result.}\label{tab:feature-comparison}
-    \end{table}
 
     \subsection{Examples}\label{subsec:examples}
     For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix

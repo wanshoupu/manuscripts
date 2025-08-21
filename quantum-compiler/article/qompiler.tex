@@ -70,12 +70,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in the following criteria:
     \begin{itemize}
-        \item Whether tied to a specific platform;
-        \item Whether the compilation process is traceable;
-        \item Whether it has flexible control over compilation granularity.
+        \item Cross-platform support;
+        \item Traceability \& Verifiability;
+        \item Compilation granularity control.
     \end{itemize}
-    \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
-    See Table~\ref{tab:feature-comparison} for more information.
+    As we will present in the paper, \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
     \begin{table}[h]
         \centering
         \renewcommand{\arraystretch}{1.5} % Add spacing between rows
@@ -180,7 +179,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The major compilation workflow in details in~\ref{fig:workflow}.
     The entry point is `Unitary`.
     If the configuration prescribed a granularity of \texttt{MULTI\_TARGET}, the decomposition will end with multi-target operators.
-    Otherwise, the unitary operator will be decomposed, in turn, into 2-level unitary, singlet qubit, and control-pruned gates.
+    Otherwise, the unitary operator will be decomposed, in turn, into two-level unitary, singlet qubit, and control-pruned gates.
     Then a granularity probe of type \texttt{PRINCIPAL} is performed to determine if the target granularity has been reached.
     If yes, output Principal rotational operators.
     Otherwise, continue to break down the operators into either Clifford+T gate sets or customer-defined Universal gate sets.
@@ -203,7 +202,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{eq:parent-child-relation}
         \hat{P} = \prod_{i=1}^{n}{\hat{C}_{i}}.
     \end{equation}
-    Generally speaking, the nodes in a B-Tree data structure are layered as---2level unitary,
+    Generally speaking, the nodes in a B-Tree data structure are layered as---two-level unitary,
     single-qubit operators, control-pruned operators, and universal gates (including Clifford+T gates).
 
     \begin{figure}[htbp]

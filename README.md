@@ -48,6 +48,6 @@ Put the following cmd in the `Script text`
 ```bash
 latexmk -pdf main; open main.pdf; exit
 ```
-### c. `Working directory`
+### c. For `Working directory`
 Put the folder containing main `.tex` file.
-### d. Check `Execute in the terminal`
+### d. Check the box `Execute in the terminal`

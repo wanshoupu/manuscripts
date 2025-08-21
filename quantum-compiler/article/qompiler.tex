@@ -72,16 +72,45 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Method}\label{sec:method}
     The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits
     through a multi-stage decomposition framework.
-    This framework integrates several key techniques, including two-level decomposition (2L), swap gate decomposition (CX),
-    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum,dawson2005solovaykitaevalgorithm}.
-    The decomposition process is highly configurable, offering users fine-grained control over decomposition granularity
-    and optimization levels to suit the native constraints of targeted quantum hardware.
-    The intermediate and final circuit representations are captured using a B-Tree data structure,
-    which encodes gate-level lineage via parent-child relationships among tree nodes, enabling robust traceability
-    and verifiability throughout the compilation process.
+    As a recap, given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
+    \begin{equation}
+        \label{eq:hamiltonian}
+        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}
+    \end{equation}
+    In Schrödinger's representation, for example, the system state is given as
+    \begin{equation}
+        \label{eq:sysstate}
+        \left\| \psi\left( t \right) \right> = \hat{U}\left( t \right)\left\| \psi_{0} \right>
+    \end{equation}
+    where $\left\| \psi_{0} \right>$ is the initial state ket.
+    Whereas, most observable operators remain constant unless they are explicitly time-dependent.
+    Equivalently, the formulation of the dynamics in Heisenberg's representation are
+    \begin{equation}
+        \label{eq:heisenberg}
+        \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
+    \end{equation}
+    where $\hat{A}_{0}$ is the initial operator for the observable.
+    Whereas, the state kets remain constants.
 
-    The compiler’s intermediate language (IL) is platform-independent and can be rendered into executable circuits for specific quantum platforms
-    as well as platform-independent standards such as OpenQASM for broader compatibility~\cite{openqasm2,openqasm3}.
+    For computational purposes, we express the evolution operator as a unitary matrix \( U \) on a suitably chosen basis, and this will be our starting point for this paper.
+    We divide the overall workflow into two stages: compilation and interpretation.
+    During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed using an intermediate language (IL)
+    designed by us.
+
+    The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
+    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.
+    All the decomposition processes are configurable, offering granularity control.
+
+    Next are the optimization passes.
+    These are the built-in processes that reduce and consolidate the redundant gates, overly fragmented circuits, and other non-optimal parts of the code.
+    Think of the decomposition processes as `push` whereas these processes as `pull`.
+    Through the optimization processes, we `pull back` some of the decomposition actions.
+    By the actions in both the `push` and pull processes, we hope to find the optimal compilation result to suit the native constraints of targeted quantum hardware.
+
+    The final compiled code (quantum circuit) is represented in a B-Tree data structure,
+    which encodes gate-level lineage via parent-child relationships among tree nodes and thus robust traceability
+    and verifiability which will be the topic of Section~\ref{sec:traceability-and-verifiability}.
+
     A key feature of \texttt{qompiler} is its configurable compilation granularity,
     which allows users to tailor the resulting circuit to the gate sets best suited for the target hardware.
     For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually, offering zero-error and zero-latency execution;
@@ -90,6 +119,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
     This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
     while maintaining traceability and cross-platform compatibility.
+
+    Coming next is the interpretation stage.
+    The compiler’s intermediate language (IL) is platform-independent and can be interpreted and rendered into executable circuits for specific quantum platforms.
+    The IL can also be translated into other quantum software standards such as OpenQASM for broader compatibility~\cite{openqasm2,openqasm3}.
+    This stage is designed to be open and highly adaptable to new platforms.
+    We have demonstrated the interpretation with some existing quantum computing platforms such as Qiskit and Cirq.
+    Support for other platforms may be added easily with minimal required programming.
 
 
     \section{Architecture}\label{sec:architecture}
@@ -119,9 +155,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
-    When using quantum computing on real world applications, the size of quantum circuit can be easily huge.
+    When using quantum computing on real world applications, such as quantum chemistry, the size of quantum circuit can be easily huge.
     A quantum program for simulating a simple molecule like LiH in STO-3G solution would require $1000$ quantum gates~\cite{Hong_2022}.
-    Simulation programs for moderately large molecules could consist of millions of quantum gates~\cite{poulin2014trotterstepsizerequired}.
+    Simulation programs for moderately large molecules could consist of millions of quantum gates~\cite{poulin2014,google_science_2020}.
     It's daunting to keep track of all of these quantum gates and be sure of the correctness.
     \texttt{qompiler} is designed with traceability and verifiability in mind upfront.
     We organized the compiled code as a B-Tree data structure in the intermediate language.

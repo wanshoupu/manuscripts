@@ -160,6 +160,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{High-Level Design}\label{sec:design}
     In Figure~\ref{fig:impl}, we present the design of the compilation framework of \texttt{Qompiler}.
     The main flow is ``Compiler configuration → Operator decomposition → Optimization → Circuit rendering''.
+%    TODO
+    We employed creational pattern and all the major classes are created by
+    \texttt{QFactory}---\texttt{Qompiler}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
 
     \begin{figure}[tbhp]
         \centering
@@ -204,7 +207,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
             \end{tabular}
         }
-        \caption{Terminologies used in this paper and their meaning.
+        \caption{Granularity terminologies and their meaning.
         }\label{tab:terminology}
     \end{table}
     If the configuration specifies a granularity of \texttt{MULTI\_TARGET},
@@ -241,6 +244,41 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     See Fig.~\ref{fig:btree} for details.
 
 
+    \section{Unitary Matrices and Controlled Gates}\label{sec:um-and-cgate}
+%    TODO
+    Representation of unitary matrices and controlled gates are the key of quantum compiler design.
+    \texttt{CtrlGate}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
+
+    \texttt{CtrlGate} has a couple of important methods such as
+    \begin{itemize}
+        \item     convert(UnitaryM)
+        \item     inflate()
+        \item     matmul(CtrlGate)
+        \item     expand(qspace)
+    \end{itemize}
+
+
+    \section{Decompositions}\label{sec:decomp}
+%    TODO
+    In this section, we summarize some aspects of the decomposition methods used by \texttt{qompiler}.
+    \begin{itemize}
+        \item \texttt{cnot\_decompose}
+        \item \texttt{ctrl\_decompose}
+        \item \texttt{euler\_decompose}
+        \item \texttt{mat2l\_decompose}
+        \item \texttt{std\_decompose}
+    \end{itemize}
+
+    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
+    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
+
+
+    \section{Solovay and Kitaev Approximation}\label{sec:sk-approx}
+%    TODO
+    To work with the Solovay \& Kitaev approximation, we created various constructs of SU2 nets,
+    based on different types of gate distance metrics.
+
+
     \section{Optimizers}\label{sec:optimization}
     \texttt{Qompiler} compiles the input unitary operator into a sequence of target quantum gates
     through successive decomposition processes, analogous to a digestion process.
@@ -249,7 +287,15 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     combining multiple operators into fewer, more efficient gates.
 
     The optimizer class follows the sliding window design.
-    Within a certain window size, the optimizer considers the overall effect of the gates and looks for simpler representations.
+%    TODO
+    With a given size, the optimizer considers the overall operation of the gates within
+    the window and looks for simpler representations.
+    \begin{figure}[tbhp]
+        \centerline{\includegraphics[width=0.8\textwidth]{optimizer}}
+        \caption{Optimizer class design.}
+        \label{fig:optimizer-class}
+    \end{figure}
+
 
 
     This push-and-pull design not only maximizes the efficiency of the resulting circuit
@@ -271,6 +317,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Keeping track of all these gates and ensuring correctness is challenging.
     \texttt{Qompiler} is designed with traceability and verifiability in mind from the outset.
     We organize the compiled code as a B-Tree data structure in the intermediate language.
+%    TODO
+    To that end, we created \texttt{ByteCode} to represent the tree node.
     Traceability is encoded in the parent-child relationships.
     Each gate in the final program can be traced back to the specific operation that produced it.
     The built-in optimizers applied in later stages of compilation also record tracing information for their operations
@@ -278,6 +326,29 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     Overall, debugging the quantum circuit is made easier in \texttt{qompiler}
     thanks to the traceability and verifiability integral to the design.
+
+
+    \section{Circuit Rendering}\label{sec:rendering}
+%    TODO
+    Qubit allocation and mapping can be a big topic.
+    Instead of adopting a sophisticated qubit allocation strategy, we used very simple ones to illustrate the concept.
+    \begin{figure}[tbhp]
+        \centerline{\includegraphics[width=0.8\textwidth]{render}}
+        \caption{Renderer class design.}
+        \label{fig:renderer}
+    \end{figure}
+
+
+    \section{Tests}\label{sec:tests}
+%    TODO
+    We endeavered high unit test coverage.
+    To verify that the breakdown of a composed gate into its components is equivalent to the original,
+    we extended the Kronecker product concept to \texttt{mesh\_product},
+    a type of matrix multiplication operation of special Tracy–Singh product type~\cite{TracySingh1972}.
+
+    Matrix A is first divided up into n x n number of m x m sized blocks;
+    Then B is mesh multiplied between the n x n number of m x m sized blocks.
+    For example, with a block size of 2x2.
 
 
     \section{Results}\label{sec:results}
@@ -358,10 +429,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     output across supported platforms, including Qiskit and Cirq.
     Future work will focus on distributed computation and parallelization to enable the
     compilation of large input matrices and to improve overall efficiency.
-    We also plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
+    We plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
     with the broader goal of streamlining quantum algorithm development across the heterogeneous quantum
     computing landscape~\cite{braket-zenodo,pennylane}.
-    In addition, we aim to incorporate quantum error correction techniques to enhance the reliability of synthesized circuits.
+    We are also considering implementing sophisticated qubit allocation algorithms
+    to adapt to given topologies and interaction strategies such as $1$D linear chain,
+    $2$D grid, star, all-to-all, etc.
+    Furthermore, we aim to incorporate quantum error correction techniques to enhance the reliability of synthesized circuits.
     We welcome collaboration and feedback from the quantum software community.
 
     \bibliographystyle{unsrt}

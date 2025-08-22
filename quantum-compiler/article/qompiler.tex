@@ -305,14 +305,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         caption={Generated OpenQASM 3.0 code.},
         label={lst:qasm},firstline=1,lastline=20]{code.qasm}
 
-    \begin{figure}[htbp]
-        \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
-        \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
-        \label{fig:random-unitary}
-    \end{figure}
-    \lstinputlisting[
-        caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
-        label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
 
 
     As another example, we compiled a randomly generated $8 \times 8$ unitary operator
@@ -329,6 +321,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{equation}
     Using \texttt{qompiler}, we compiled and rendered it in Qiskit format,
     and the first page of gates is displayed in Figure~\ref{fig:random-unitary} and Listing~\ref{lst:random-unitary}.
+    \begin{figure}[htbp]
+        \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
+        \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
+        \label{fig:random-unitary}
+    \end{figure}
+    \lstinputlisting[
+        caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
+        label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}

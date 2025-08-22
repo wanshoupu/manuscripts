@@ -56,15 +56,17 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation offers significant advantages for applications in chemistry, pharmaceuticals, and biological processes.
+    Quantum simulation offer significant advantages for applications in chemistry, pharmaceuticals, and biological processes.
     Despite this potential, developing quantum software remains highly challenging, requiring expertise in physics, mathematics, and software engineering.
     This steep learning curve limits access for many users and professionals who could benefit from quantum computing.
     Furthermore, existing quantum transpilers are often platform-specific, implemented in an ad hoc manner, and provide limited control over compilation granularity.
+
 
     To address these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
     It decomposes Hamiltonians into circuits using a multi-stage framework, including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
     The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and platform independence, and it supports major frameworks such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
     Notably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example, using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
+
 
     Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
     \begin{itemize}
@@ -95,6 +97,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Method}\label{sec:method}
+
     The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits through a multi-stage decomposition framework.
     As a recap, given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
     \begin{equation}
@@ -115,28 +118,31 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{equation}
     where $\hat{A}_{0}$ is the initial operator for an arbitrary observable.
     Whereas, the state kets remain constants.
-
     For computational purposes, we express the evolution operator as a unitary matrix \( U \) on a suitably chosen basis,
     which serves as the starting point for this paper.
-    We divide the overall workflow into two stages: compilation and interpretation.
-    During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed
-    using an intermediate language (IL) designed by us.
 
-    The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
-    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.
-    All decomposition processes are configurable, offering control over compilation granularity.
+    \subsection{High-Level Design}\label{subsec:design}
 
-    Next are the optimization passes.
-    These built-in processes reduce and consolidate redundant gates, overly fragmented circuits,
-    and other non-optimal components of the code.
-    Think of the decomposition processes as `push`, whereas these processes act as `pull`.
-    Through the optimization processes, we `pull back` some of the decomposition actions.
-    By combining the actions in both the `push` and `pull` processes, we aim to find an optimal compilation result
-    that respects the native constraints of the targeted quantum hardware.
+    \begin{figure}[tbhp]
+        \centering
+        \includegraphics[width=.8\linewidth]{architecture}
+        \caption{The high-level design of the `\texttt{Qompiler}' system.
+        Rectangles (blue) represent major class constructs.
+        Rectangles with a jagged bottom (purple) represent file input/output (file I/O).
+        Parallelograms (pink) represent in-memory data structure.
+        The computer icon represents user input.
+        }
+        \label{fig:impl}
+    \end{figure}
 
-    The final compiled code (quantum circuit) is represented in a B-Tree data structure,
-    which encodes gate-level lineage via parent-child relationships among tree nodes, thereby providing robust traceability
-    and verifiability, which will be discussed in Section~\ref{sec:traceability-and-verifiability}.
+
+    Here we provide an overview of the high-level design.
+    The system is organized into the following functional parts:
+    ``Compiler configuration'', ``Matrix decomposition'', ``Optimization'', ``Circuit rendering''.
+    This is illustrated in Figure~\ref{fig:impl}.
+    We will briefly describe each of these steps here, while more detailed discussions of selected components
+    are presented in subsequent sections.
+
 
     A key feature of \texttt{qompiler} is its configurable compilation granularity,
     allowing users to tailor the resulting circuit to the gate sets best suited for the target hardware.
@@ -148,33 +154,92 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
     while maintaining traceability and cross-platform compatibility.
 
+
+    The compiler configuration is the sole responsibility of \texttt{ConfigManager}.
+    \texttt{ConfigManager} can read configuration inputs from several sources:
+    \begin{itemize}
+        \item Default settings JSON file,
+        \item Custom overrides JSON file,
+        \item Command line settings.
+    \end{itemize}
+    Rich controls of the compilation processes are made possible through the sophisticated configuration system,
+    offering control over almost all aspects of the compilation process,
+    including but not limited to the granularity control, target platform, error tolerances,
+    quantum device space allocation, optimization level, etc.
+
+    Once all configuration sources are loaded and combined,
+    the final settings are used to create a singleton instance of \texttt{QFactory},
+    which is a creational design pattern, the factory pattern ~\cite{Gamma1994DesignPattern}.
+    From the \texttt{QFactory}, other compilation constructs are created as
+    needed---\texttt{Qompiler}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
+
+
+    Now that all the needed constructs are in place, \texttt{Qompiler} can start to take orders---\( U\left(t\right) \) as input and
+    compile it into gate-level quantum code.
+    The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
+    control gate decomposition (CTRL), Euler rotation decomposition (EA),
+    and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.
+    This is done recursively by the \texttt{Qompiler} class.
+    We will spend the entire Section~\ref{sec:decomp} to discuss this as well as future development.
+
+
+    The final compiled code (quantum circuit) is represented in a B-Tree data structure,
+    an intermediate language (IL) designed specifically for the task.
+    IL encodes gate-level lineage via parent-child relationships among tree nodes, thereby providing robust traceability
+    and verifiability, which will be discussed in Section~\ref{sec:traceability-and-verifiability}.
+
+
+    Nearing the end of the compilation process are the optimization passes
+    where multiple passes may be taken to simplify the circuit output,
+    including gate annihilation, reduction, and consolidation.
+    Think of the decomposition processes as `push`, whereas the optimization processes as `pull`.
+    Through the optimization processes, we `pull back` some of the decomposition actions.
+    By combining the actions in both the `push` and `pull` processes, we aim to find an optimal compilation result
+    that respects the native constraints of the targeted quantum hardware.
+    This will be the topic for Section~\ref{sec:optimization}.
+
+
+    Once the compilation process is finished, the end result is binary code written to disk as `.qco' files.
     Finally, the interpretation stage.
+    The circuit interpretation and rendering part is in the curation of \texttt{QRenderer} and \texttt{CircuitBuilder}.
     The compiler’s intermediate language (IL) is platform-independent and can be interpreted and rendered
     into executable circuits for specific quantum platforms.
     The IL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
+    Note that the compilation is done once, but the circuit interpreting and rendering may be done any number of times,
+    for any supported platforms.
     This stage is designed to be highly adaptable and open to new platforms.
-    We have demonstrated interpretation with quantum computing platforms such as Qiskit and Cirq.
-    Support for other platforms can be added easily with minimal programming effort.
+    Currently supported quantum computing platforms include Qiskit and Cirq.
+    Support for other platforms can be added easily by writing a circuit builder extending the base class \texttt{CircuitBuilder}.
+    We will visit this in Section~\ref{sec:rendering}.
 
 
-    \section{High-Level Design}\label{sec:design}
-    In Figure~\ref{fig:impl}, we present the design of the compilation framework of \texttt{Qompiler}.
-    The main flow is ``Compiler configuration → Operator decomposition → Optimization → Circuit rendering''.
+    \section{Unitary Matrices and Controlled Gates}\label{sec:um-and-cgate}
 %    TODO
-    We employed creational pattern and all the major classes are created by
-    \texttt{QFactory}---\texttt{Qompiler}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
+    Representation of unitary matrices and controlled gates are the key of quantum compiler design.
+    \texttt{CtrlGate}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
 
-    \begin{figure}[tbhp]
-        \centering
-        \includegraphics[width=.8\linewidth]{architecture}
-        \caption{The design diagram of `\texttt{Qompiler}'.
-        Rectangles (blue) represent major class constructs.
-        Rectangles with a jagged bottom (purple) represent file input/output (I/O).
-        Parallelograms (pink) represent data.
-        The computer icon represents user inputs.
-        }
-        \label{fig:impl}
-    \end{figure}
+    \texttt{CtrlGate} has a couple of important methods such as
+    \begin{itemize}
+        \item     convert(UnitaryM)
+        \item     inflate()
+        \item     matmul(CtrlGate)
+        \item     expand(qspace)
+    \end{itemize}
+
+
+    \section{Decompositions}\label{sec:decomp}
+%    TODO
+    In this section, we summarize some aspects of the decomposition methods used by \texttt{qompiler}.
+    \begin{itemize}
+        \item \texttt{cnot\_decompose}
+        \item \texttt{ctrl\_decompose}
+        \item \texttt{euler\_decompose}
+        \item \texttt{mat2l\_decompose}
+        \item \texttt{std\_decompose}
+    \end{itemize}
+
+    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
+    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
 
     \begin{figure}[tbhp]
         \centering
@@ -219,58 +284,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     If so, the output consists of principal rotational operators.
     If not, the decomposition continues into either Clifford+T gate sets or user-defined universal gate sets.
     For ease of reference, the terminology used in this paper is summarized in Table~\ref{tab:terminology}.
-
-
-
-    \begin{figure}[tbhp]
-        \centering
-        \includegraphics[width=0.6\linewidth]{btree}
-        \caption{The end result as a B-Tree data structure.
-        The B-Tree is layered, starting from the input unitary matrix at the root,
-            followed by intermediate layers two-level unitary, single-qubit, control-pruned, and finally universal gates
-            (including Clifford+T gates) as the leaves.
-        }
-        \label{fig:btree}
-    \end{figure}
-
-    The resulting IL is represented as a B-Tree data structure and stored in \textit{.qco} files.
-    In the B-Tree structure, parent nodes generally correspond to coarser-grained operators,
-    while child nodes represent the decomposed operators whose product recovers the parent node, e.g.,
-    \begin{equation}
-        \label{eq:parent-child-relation}
-        \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
-    \end{equation}
-    In general, the nodes of a B-Tree are layered hierarchically.
-    See Fig.~\ref{fig:btree} for details.
-
-
-    \section{Unitary Matrices and Controlled Gates}\label{sec:um-and-cgate}
-%    TODO
-    Representation of unitary matrices and controlled gates are the key of quantum compiler design.
-    \texttt{CtrlGate}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
-
-    \texttt{CtrlGate} has a couple of important methods such as
-    \begin{itemize}
-        \item     convert(UnitaryM)
-        \item     inflate()
-        \item     matmul(CtrlGate)
-        \item     expand(qspace)
-    \end{itemize}
-
-
-    \section{Decompositions}\label{sec:decomp}
-%    TODO
-    In this section, we summarize some aspects of the decomposition methods used by \texttt{qompiler}.
-    \begin{itemize}
-        \item \texttt{cnot\_decompose}
-        \item \texttt{ctrl\_decompose}
-        \item \texttt{euler\_decompose}
-        \item \texttt{mat2l\_decompose}
-        \item \texttt{std\_decompose}
-    \end{itemize}
-
-    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
-    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
 
 
     \section{Solovay and Kitaev Approximation}\label{sec:sk-approx}
@@ -319,6 +332,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We organize the compiled code as a B-Tree data structure in the intermediate language.
 %    TODO
     To that end, we created \texttt{ByteCode} to represent the tree node.
+
+    \begin{figure}[tbhp]
+        \centering
+        \includegraphics[width=0.6\linewidth]{btree}
+        \caption{The end result as a B-Tree data structure.
+        The B-Tree is layered, starting from the input unitary matrix at the root,
+            followed by intermediate layers two-level unitary, single-qubit, control-pruned, and finally universal gates
+            (including Clifford+T gates) as the leaves.
+        }
+        \label{fig:btree}
+    \end{figure}
+
+    The resulting IL is represented as a B-Tree data structure and stored in \textit{.qco} files.
+    In the B-Tree structure, parent nodes generally correspond to coarser-grained operators,
+    while child nodes represent the decomposed operators whose product recovers the parent node, e.g.,
+    \begin{equation}
+        \label{eq:parent-child-relation}
+        \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
+    \end{equation}
+    In general, the nodes of a B-Tree are layered hierarchically.
+    See Fig.~\ref{fig:btree} for details.
+
     Traceability is encoded in the parent-child relationships.
     Each gate in the final program can be traced back to the specific operation that produced it.
     The built-in optimizers applied in later stages of compilation also record tracing information for their operations

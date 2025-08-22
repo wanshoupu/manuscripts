@@ -161,7 +161,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     In Figure~\ref{fig:impl}, we present the design of the compilation framework of \texttt{Qompiler}.
     The main flow is ``Compiler configuration → Operator decomposition → Optimization → Circuit rendering''.
 
-    \begin{figure}[htbp]
+    \begin{figure}[tbhp]
         \centering
         \includegraphics[width=.8\linewidth]{architecture}
         \caption{The design diagram of `\texttt{Qompiler}'.
@@ -173,7 +173,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:impl}
     \end{figure}
 
-    \begin{figure}[htbp]
+    \begin{figure}[tbhp]
         \centering
         \includegraphics[width=.8\linewidth]{workflow}
         \caption{The major compilation workflow in details.
@@ -219,7 +219,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
 
-    \begin{figure}[htbp]
+    \begin{figure}[tbhp]
         \centering
         \includegraphics[width=0.6\linewidth]{btree}
         \caption{The end result as a B-Tree data structure.
@@ -295,7 +295,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{bmatrix}
     \end{equation}
     into universal quantum circuit in Qiskit.
-    \begin{figure}[htbp]
+    \begin{figure}[tbhp]
         \centerline{\includegraphics[width=0.8\textwidth]{circuit-example}}
         \caption{Qiskit circuit diagram (partial) compiled from a cyclic permutation matrix.}
         \label{fig:cyclic-permute-circuit}
@@ -325,7 +325,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{equation}
     Using \texttt{qompiler}, we compiled and rendered it in Qiskit format,
     and the first page of gates is displayed in Figure~\ref{fig:random-unitary} and Listing~\ref{lst:random-unitary}.
-    \begin{figure}[htbp]
+    \begin{figure}[tbhp]
         \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
         \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
         \label{fig:random-unitary}

@@ -157,7 +157,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Support for other platforms can be added easily with minimal programming effort.
 
 
-    \section{Design \& Implementation}\label{sec:impl}
+    \section{High-Level Design}\label{sec:design}
     In Figure~\ref{fig:impl}, we present the design of the compilation framework of \texttt{Qompiler}.
     The main flow is ``Compiler configuration → Operator decomposition → Optimization → Circuit rendering''.
 
@@ -241,12 +241,17 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     See Fig.~\ref{fig:btree} for details.
 
 
-    \section{Optimization}\label{sec:optimization}
+    \section{Optimizers}\label{sec:optimization}
     \texttt{Qompiler} compiles the input unitary operator into a sequence of target quantum gates
-    through successive decomposition processes, analogous to a digestion.
-    This often produces duplicate gates or gates smaller than the desired granularity.
-    The optimization passes act as a synthesis process, cancelling redundant gates and consolidating
-    multiple operations into fewer, more efficient gates.
+    through successive decomposition processes, analogous to a digestion process.
+    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
+    To compensate for this, we included the optimization passes act as a synthesis process to simplify the output circuit,
+    combining multiple operators into fewer, more efficient gates.
+
+    The optimizer class follows the sliding window design.
+    Within a certain window size, the optimizer considers the overall effect of the gates and looks for simpler representations.
+
+
     This push-and-pull design not only maximizes the efficiency of the resulting circuit
     but also provides precise control over gate granularity.
     Furthermore, our compiler design can easily accommodate custom optimizers.
@@ -335,16 +340,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
 
 
+    \section{Limitations}\label{sec:limitations}
+    The entire compiler project was implemented in Python with numerical libraries such as NumPy and SciPy.
+    Consequently, the underlying numerical errors limit the precision of the compiled quantum circuit.
+    However, when the Solovay--Kitaev approximation is employed,
+    the dominant source of error is the residual approximation error itself.
+
+    As the size of the input increases, practical system limitations arise.
+    The program becomes computationally intensive for large unitary matrices.
+    The memory footprint may also become a bottleneck once the number of qubits reaches a certain threshold.
+    It is expected that the pressure on computational resources can be alleviated through distributed computation.
+
+
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
-    Initial benchmarks confirm the correctness and consistency of \texttt{qompiler}'s
+    We presented a configurable, cross-platform quantum compiler, \texttt{Qompiler}, with built-in gate traceability.
+    Initial benchmarks confirm the correctness and consistency of \texttt{Qompiler}'s
     output across supported platforms, including Qiskit and Cirq.
-    Future work will focus on incorporating parallelization to improve
-    compilation efficiency for higher-dimensional Hamiltonians.
+    Future work will focus on distributed computation and parallelization to enable the
+    compilation of large input matrices and to improve overall efficiency.
     We also plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
-    with the broader goal of streamlining quantum algorithm development across the heterogeneous
-    quantum computing landscape~\cite{braket-zenodo,pennylane}.
-    In addition, we aim to integrate quantum error correction capabilities to
-    enhance the reliability of synthesized circuits.
+    with the broader goal of streamlining quantum algorithm development across the heterogeneous quantum
+    computing landscape~\cite{braket-zenodo,pennylane}.
+    In addition, we aim to incorporate quantum error correction techniques to enhance the reliability of synthesized circuits.
     We welcome collaboration and feedback from the quantum software community.
 
     \bibliographystyle{unsrt}

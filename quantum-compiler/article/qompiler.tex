@@ -56,25 +56,23 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation offers exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
-    Despite its potential, developing quantum software remains highly challenging, demanding deep expertise in physics, mathematics, and software engineering.
-    This steep learning curve limits access for many users and professionals who could potentially benefit.
-    Additionally, existing quantum transpilers are often platform-specific, done in ad hoc, and lack flexible control over compilation granularity.
+    Quantum simulation offers significant advantages for applications in chemistry, pharmaceuticals, and biological processes.
+    Despite this potential, developing quantum software remains highly challenging, requiring expertise in physics, mathematics, and software engineering.
+    This steep learning curve limits access for many users and professionals who could benefit from quantum computing.
+    Furthermore, existing quantum transpilers are often platform-specific, implemented in an ad hoc manner, and provide limited control over compilation granularity.
 
-    To overcome these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
-    It decomposes Hamiltonians into circuits using a multi-stage framework including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
-    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and is platform-independent, supporting major frameworks
-    such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    Noticeably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
-    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
+    To address these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
+    It decomposes Hamiltonians into circuits using a multi-stage framework, including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
+    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and platform independence, and it supports major frameworks such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
+    Notably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example, using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
 
-    Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with many existing quantum compilers/transpilers/synthesizers in the following criteria:
+    Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
     \begin{itemize}
         \item Cross-platform support;
-        \item Traceability \& Verifiability;
-        \item Compilation granularity control.
+        \item Traceability \& verifiability;
+        \item Control over compilation granularity.
     \end{itemize}
-    As we will present in the paper, \texttt{qompiler} stands out with its combined traceability, platform agnosticism, and configurable granularity control.
+    As we will show in the following sections, \texttt{qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control.
     \begin{table}[h]
         \centering
         \renewcommand{\arraystretch}{1.5} % Add spacing between rows
@@ -90,7 +88,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \end{tabular}
         }
         \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
-        A gray check mark is associated with the Qiskit for its partial control over the gate types in the end result.}\label{tab:feature-comparison}
+        Green check marks indicate support, whereas a red cross mark indicates lack of support.
+        A gray check mark is associated with Qiskit, reflecting its partial control over gate types in the final result.
+        }\label{tab:feature-comparison}
     \end{table}
 
 
@@ -117,47 +117,44 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Whereas, the state kets remain constants.
 
     For computational purposes, we express the evolution operator as a unitary matrix \( U \) on a suitably chosen basis,
-    and this will be our starting point for this paper.
+    which serves as the starting point for this paper.
     We divide the overall workflow into two stages: compilation and interpretation.
     During compilation, \texttt{Qompiler} takes \( U \) as input and decomposes it into gate-level circuits expressed
-    using an intermediate language (IL)
-    designed by us.
+    using an intermediate language (IL) designed by us.
 
     The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
-    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation
-    (SK)~\cite{nielsen2010q,dawson2005sk}.
-    All the decomposition processes are configurable, offering granularity control.
+    control gate decomposition (CTRL), Euler rotation decomposition (EA), and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.
+    All decomposition processes are configurable, offering control over compilation granularity.
 
     Next are the optimization passes.
-    These are the built-in processes that reduce and consolidate the redundant gates, overly fragmented circuits,
-    and other non-optimal parts of the code.
-    Think of the decomposition processes as `push` whereas these processes as `pull`.
+    These built-in processes reduce and consolidate redundant gates, overly fragmented circuits,
+    and other non-optimal components of the code.
+    Think of the decomposition processes as `push`, whereas these processes act as `pull`.
     Through the optimization processes, we `pull back` some of the decomposition actions.
-    By the actions in both the `push` and pull processes, we hope to find the optimal compilation result
-    to suit the native constraints of targeted quantum hardware.
+    By combining the actions in both the `push` and `pull` processes, we aim to find an optimal compilation result
+    that respects the native constraints of the targeted quantum hardware.
 
     The final compiled code (quantum circuit) is represented in a B-Tree data structure,
-    which encodes gate-level lineage via parent-child relationships among tree nodes and thus robust traceability
-    and verifiability which will be the topic of Section~\ref{sec:traceability-and-verifiability}.
+    which encodes gate-level lineage via parent-child relationships among tree nodes, thereby providing robust traceability
+    and verifiability, which will be discussed in Section~\ref{sec:traceability-and-verifiability}.
 
     A key feature of \texttt{qompiler} is its configurable compilation granularity,
-    which allows users to tailor the resulting circuit to the gate sets best suited for the target hardware.
+    allowing users to tailor the resulting circuit to the gate sets best suited for the target hardware.
     For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually,
     offering zero-error and zero-latency execution;
     in this case, the compiler can be configured to prioritize Pauli gates.
     Conversely, trapped-ion platforms such as IonQ natively support arbitrary single-qubit rotations,
-    such as $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
+    including $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
     This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
     while maintaining traceability and cross-platform compatibility.
 
     Finally, the interpretation stage.
     The compiler’s intermediate language (IL) is platform-independent and can be interpreted and rendered
     into executable circuits for specific quantum platforms.
-    The IL can also be translated into other quantum software standards such as OpenQASM for broader
-    compatibility~\cite{openqasm2,openqasm3}.
+    The IL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
     This stage is designed to be highly adaptable and open to new platforms.
-    We have demonstrated the interpretation with quantum computing platforms such as Qiskit and Cirq.
-    Support for other platforms may be added easily with minimal programming.
+    We have demonstrated interpretation with quantum computing platforms such as Qiskit and Cirq.
+    Support for other platforms can be added easily with minimal programming effort.
 
 
     \section{Design \& Implementation}\label{sec:impl}
@@ -176,13 +173,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:impl}
     \end{figure}
 
-    The major compilation workflow in details in~\ref{fig:workflow}.
-    The entry point is `Unitary`.
-    If the configuration prescribed a granularity of \texttt{MULTI\_TARGET}, the decomposition will end with multi-target operators.
-    Otherwise, the unitary operator will be decomposed, in turn, into two-level unitary, singlet qubit, and control-pruned gates.
-    Then a granularity probe of type \texttt{PRINCIPAL} is performed to determine if the target granularity has been reached.
-    If yes, output Principal rotational operators.
-    Otherwise, continue to break down the operators into either Clifford+T gate sets or customer-defined Universal gate sets.
     \begin{figure}[htbp]
         \centering
         \includegraphics[width=.8\linewidth]{workflow}
@@ -193,60 +183,101 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         }
         \label{fig:workflow}
     \end{figure}
+    The major compilation workflow is illustrated in Fig.~\ref{fig:workflow}.
+    The entry point is \texttt{Unitary}.
+    \begin{table}[htbp]
+        \centering
+        \renewcommand{\arraystretch}{1} % Add spacing between rows
+        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
+            \begin{tabular}{|l|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Term}   & \textbf{Description}                                                                       & \textbf{Enum}          \\
+                \hline
+                Unitary         & Any $n$-qubit unitary operator                                                             & \texttt{UNITARY}       \\
+                2level          & Unitary operator with no more than two non-identity rows/columns                           & \texttt{TWO\_LEVEL}    \\
+                Multi-Target    & Controlled gate with more than one target qubit                                            & \texttt{MULTI\_TARGET} \\
+                Singlet         & Controlled gate with a single-qubit target                                                 & \texttt{SINGLET}       \\
+                Ctrl-pruned     & Controlled gate with a single target and at most one control qubit                         & \texttt{CTRL\_PRUNED}  \\
+                Principal       & Single-qubit operators of the form $R_n(\theta)$ with $n=x,y,z$ and $0 \leq \theta < 2\pi$ & \texttt{PRINCIPAL} \\
+                Universal gate  & Standard controlled universal gate                                                         & \texttt{UNIV\_GATE}    \\
+                Clifford+T gate & Controlled gates among the Clifford+T set, namely $\{X, H, S, T\}$ & \texttt{CLIFFORD\_T} \\
+                \hline
+            \end{tabular}
+        }
+        \caption{Terminologies used in this paper and their meaning.
+        }\label{tab:terminology}
+    \end{table}
+    If the configuration specifies a granularity of \texttt{MULTI\_TARGET}, the decomposition terminates with multi-target operators.
+    Otherwise, the unitary operator is sequentially decomposed into two-level unitary operators, single-qubit gates, and control-pruned gates.
+    A granularity probe of type \texttt{PRINCIPAL} is then performed to determine whether the target granularity has been reached.
+    If so, the output consists of principal rotational operators.
+    If not, the decomposition continues into either Clifford+T gate sets or user-defined universal gate sets.
+    For ease of reference, the terminology used in this paper is summarized in Table~\ref{tab:terminology}.
 
-    The resulting IL is a B-Tree data structure and is written to \textit{.qco} files~\ref{fig:btree}.
-    In the B-Tree data structure, parent nodes generally represent the coarser grained operators
-    and child nodes represent the decomposed operators,
-    the products of which are just the parent nodes, e.g.,
-    \begin{equation}
-        \label{eq:parent-child-relation}
-        \hat{P} = \prod_{i=1}^{n}{\hat{C}_{i}}.
-    \end{equation}
-    Generally speaking, the nodes in a B-Tree data structure are layered as---two-level unitary,
-    single-qubit operators, control-pruned operators, and universal gates (including Clifford+T gates).
+
 
     \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.6\linewidth]{btree}
-        \caption{The end result as a B-Tree data structure.}
+        \caption{The end result as a B-Tree data structure.
+        The B-Tree is layered, starting from the input unitary matrix at the root,
+            followed by intermediate layers two-level unitary, single-qubit, control-pruned, and finally universal gates
+            (including Clifford+T gates) as the leaves.
+        }
         \label{fig:btree}
     \end{figure}
 
+    The resulting IL is represented as a B-Tree data structure and stored in \textit{.qco} files.
+    In the B-Tree structure, parent nodes generally correspond to coarser-grained operators,
+    while child nodes represent the decomposed operators whose product recovers the parent node, e.g.,
+    \begin{equation}
+        \label{eq:parent-child-relation}
+        \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
+    \end{equation}
+    In general, the nodes of a B-Tree are layered hierarchically.
+    See Fig.~\ref{fig:btree} for details.
+
 
     \section{Optimization}\label{sec:optimization}
-    The qompiler breaks down the input unitary operator to the designed quantum gates
-    in a series of decomposition processes.
-    This may be analogous to a forward digestion process.
-    Often this produces duplicate gates and/or smaller than desired quantum gates.
-    The optimization passes aim to correct this with a backward synthesis process---cancelling
-    consecutive gates or consolidating multiple gates into fewer gates.
+    \texttt{Qompiler} compiles the input unitary operator into a sequence of target quantum gates
+    through successive decomposition processes, analogous to a digestion.
+    This often produces duplicate gates or gates smaller than the desired granularity.
+    The optimization passes act as a synthesis process, cancelling redundant gates and consolidating
+    multiple operations into fewer, more efficient gates.
+    This push-and-pull design not only maximizes the efficiency of the resulting circuit
+    but also provides precise control over gate granularity.
+    Furthermore, our compiler design can easily accommodate custom optimizers.
+    For example, if a particular gate type is more efficient on a specific platform,
+    an optimizer can be added to the compiler to exploit this advantage.
 
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
 
     One of the key features of the current implementation of \texttt{qompiler} is
-    its built-in feature---traceability and verifiability.
-    When using quantum computing on real world applications, such as quantum chemistry,
-    the size of quantum circuit can be easily huge.
-    A quantum program for simulating a simple molecule like LiH in STO-3G solution
-    would require $1000$ quantum gates~\cite{Hong_2022}.
-    Simulation programs for moderately large molecules could consist of millions
-    of quantum gates~\cite{poulin2014,google_science_2020}.
-    It's daunting to keep track of all of these quantum gates and be sure of the correctness.
-    \texttt{qompiler} is designed with traceability and verifiability in mind upfront.
-    We organized the compiled code as a B-Tree data structure in the intermediate language.
-    The traceability is built in the parent-child relationship.
-    Each and every gate in the final program may be traced back to the specific part that produced it.
-    The built-in optimizers used in the later stages of compilation also add tracing information regarding their operations.
+    its built-in support for traceability and verifiability.
+    When applying quantum computing to real-world problems, such as quantum chemistry,
+    the size of the quantum circuit can become very large.
+    A quantum program for simulating a simple molecule like LiH in the STO-3G basis
+    may require approximately $1000$ gates~\cite{Hong_2022}.
+    Simulation programs for moderately large molecules can consist of millions~\cite{poulin2014,google_science_2020}.
+    Keeping track of all these gates and ensuring correctness is challenging.
+    \texttt{Qompiler} is designed with traceability and verifiability in mind from the outset.
+    We organize the compiled code as a B-Tree data structure in the intermediate language.
+    Traceability is encoded in the parent-child relationships.
+    Each gate in the final program can be traced back to the specific operation that produced it.
+    The built-in optimizers applied in later stages of compilation also record tracing information for their operations
+    and preserve the original lineage.
+
+    Overall, debugging the quantum circuit is made easier in \texttt{qompiler}.
 
 
     \section{Results}\label{sec:results}
-    Initial benchmarks demonstrate that the compiler generates correct and consistent quantum circuits across multiple backends.
-    These results highlight the compiler’s potential to accelerate quantum software development,
-    circuit optimization, and experimentation across diverse quantum computing platforms.
+    Initial benchmarks show that the compiler produces correct and consistent quantum circuits across multiple backends.
+    These results underscore the compiler’s potential to accelerate quantum software development,
+    optimize circuits, and facilitate experimentation across diverse quantum computing platforms.
 
     \subsection{Examples}\label{subsec:examples}
-    For the first example, we compiled a $ 8 \times 8 $ cyclic permutation matrix
+    To demonstrate \texttt{qompiler} at work, let us compile a $ 8 \times 8 $ cyclic permutation matrix of the following form
     \begin{equation}
         \label{eq:cyclic-permute-mat}
         \begin{bmatrix}
@@ -259,25 +290,59 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
             0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
         \end{bmatrix}
-    \end{equation}.
-    We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
-    The resulting gate sequence contains 279 layers, and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
+    \end{equation}
+    into universal quantum circuit in Qiskit.
     \begin{figure}[htbp]
         \centerline{\includegraphics[width=0.8\textwidth]{circuit-example}}
-        \caption{Compiled Qiskit circuit (partial) from cyclic permutation matrix.}
+        \caption{Qiskit circuit diagram (partial) compiled from a cyclic permutation matrix.}
         \label{fig:cyclic-permute-circuit}
     \end{figure}
-    \lstinputlisting[caption={Generated OpenQASM 3.0 code.},label={lst:qasm},firstline=1,lastline=20]{code.qasm}
+    We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
+    The resulting gate sequence consists of 279 layers (a Qiskit term referring to groups of related gates),
+    and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
+    We also integrated our compiler so it can output quantum circuit in OpenQASM format.
+    See Listing~\ref{lst:qasm} for the resulting code.
+    \lstinputlisting[
+        caption={Generated OpenQASM 3.0 code.},
+        label={lst:qasm},firstline=1,lastline=20]{code.qasm}
+
+    \begin{figure}[htbp]
+        \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
+        \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
+        \label{fig:random-unitary}
+    \end{figure}
+    \lstinputlisting[
+        caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
+        label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
+
+
+    As another example, we compiled a randomly generated $8 \times 8$ unitary operator
+    \begin{equation}
+        \label{eq:random-mat}
+        U =
+        \begin{bmatrix}
+            0.2246+0.3674j & 0.0756+0.3213j & \dots & -0.0534-0.1667j & -0.3321-0.1199j \\
+            -0.2123-0.0162j & 0.115+0.4483j & \dots & -0.1772-0.1398j & -0.1267+0.3692j \\
+            \vdots & \vdots & \ddots & \vdots & \vdots \\
+            0.1554+0.0272j & -0.4272+0.5894j & \dots & 0.1361+0.1934j & 0.3972+0.3205j \\
+            -0.3795+0.3577j & -0.0237-0.1054j & \dots & 0.0838-0.4389j & 0.1242-0.0068j
+        \end{bmatrix}.
+    \end{equation}
+    Using \texttt{qompiler}, we compiled and rendered it in Qiskit format,
+    and the first page of gates is displayed in Figure~\ref{fig:random-unitary} and Listing~\ref{lst:random-unitary}.
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
-    Initial benchmarks confirm the correctness and consistency of the output across supported platforms, including Qiskit and Cirq.
-    Future work includes incorporating parallelization to improve compilation efficiency for higher-dimensional Hamiltonians.
+    Initial benchmarks confirm the correctness and consistency of \texttt{qompiler}'s
+    output across supported platforms, including Qiskit and Cirq.
+    Future work will focus on incorporating parallelization to improve
+    compilation efficiency for higher-dimensional Hamiltonians.
     We also plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
-    with the broader goal of streamlining quantum algorithm development across the heterogeneous quantum computing
-    landscape~\cite{braket-zenodo,pennylane}.
-    In addition, we aim to integrate quantum error correction capabilities to enhance the reliability of synthesized circuits.
-    We invite collaboration and feedback from the quantum software community.
+    with the broader goal of streamlining quantum algorithm development across the heterogeneous
+    quantum computing landscape~\cite{braket-zenodo,pennylane}.
+    In addition, we aim to integrate quantum error correction capabilities to
+    enhance the reliability of synthesized circuits.
+    We welcome collaboration and feedback from the quantum software community.
 
     \bibliographystyle{unsrt}
     \bibliography{qompiler}

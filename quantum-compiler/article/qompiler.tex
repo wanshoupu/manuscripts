@@ -57,15 +57,43 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Introduction}\label{sec:introduction}
 
     Quantum simulation offer significant advantages for applications in chemistry, pharmaceuticals, and biological processes.
-    Despite this potential, developing quantum software remains highly challenging, requiring expertise in physics, mathematics, and software engineering.
+    Given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
+    \begin{equation}
+        \label{eq:hamiltonian}
+        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}
+    \end{equation}
+    In Schrödinger picture, for example, the time-dependent state ket of the system is given as
+    \begin{equation}
+        \label{eq:sysstate}
+        \left\| \psi\left( t \right) \right> = \hat{U}\left( t \right)\left\| \psi_{0} \right>
+    \end{equation}
+    where $\left\| \psi_{0} \right>$ is the initial ket of an arbitrary system state.
+    Whereas, most observable operators remain constant unless they are explicitly time-dependent.
+    Equivalently in Heisenberg picture, the dynamics may be formulated as
+    \begin{equation}
+        \label{eq:heisenberg}
+        \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
+    \end{equation}
+    where $\hat{A}_{0}$ is the initial operator for an arbitrary observable.
+    Whereas, the state kets remain constants.
+    By choosing a suitable basis, the evolution operator, $\hat{U}\left( t \right)$, may be represented as a unitary matrix $U$.
+
+    Despite its potential in quantum simulation, developing quantum computing software remains highly challenging,
+    requiring expertise in physics, mathematics, and software engineering.
     This steep learning curve limits access for many users and professionals who could benefit from quantum computing.
-    Furthermore, existing quantum transpilers are often platform-specific, implemented in an ad hoc manner, and provide limited control over compilation granularity.
+    Existing quantum transpilers are often platform-specific, implemented in an ad hoc manner,
+    and provide limited control over compilation granularity.
 
 
-    To address these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer designed for traceability, verifiability, and configurable gate control.
-    It decomposes Hamiltonians into circuits using a multi-stage framework, including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
-    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and platform independence, and it supports major frameworks such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    Notably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example, using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating hardware-aware optimization and broad applicability.
+    To address these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer
+    designed for traceability, verifiability, and configurable gate control.
+    \texttt{Qompiler} decomposes time slices of evolution operator, $U$, into circuits using a multi-stage framework,
+    including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
+    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and platform independence,
+    and it supports major frameworks such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
+    Notably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
+    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating
+    hardware-aware optimization and broad applicability.
 
 
     Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
@@ -74,8 +102,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item Traceability \& verifiability;
         \item Control over compilation granularity.
     \end{itemize}
-    As we will show in the following sections, \texttt{qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control.
-    \begin{table}[h]
+    \texttt{Qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control,
+    as it will be shown in the following sections.
+    \begin{table}[tbhp]
         \centering
         \renewcommand{\arraystretch}{1.5} % Add spacing between rows
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
@@ -96,32 +125,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
 
-    \section{Method}\label{sec:method}
-
-    The proposed compiler, \texttt{qompiler}, decomposes user-defined Hamiltonians into executable quantum circuits through a multi-stage decomposition framework.
-    As a recap, given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
-    \begin{equation}
-        \label{eq:hamiltonian}
-        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}
-    \end{equation}
-    In Schrödinger's representation, for example, the system state is given as
-    \begin{equation}
-        \label{eq:sysstate}
-        \left\| \psi\left( t \right) \right> = \hat{U}\left( t \right)\left\| \psi_{0} \right>
-    \end{equation}
-    where $\left\| \psi_{0} \right>$ is the initial ket of an arbitrary system state.
-    Whereas, most observable operators remain constant unless they are explicitly time-dependent.
-    Equivalently, the formulation of the dynamics in Heisenberg's representation are
-    \begin{equation}
-        \label{eq:heisenberg}
-        \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
-    \end{equation}
-    where $\hat{A}_{0}$ is the initial operator for an arbitrary observable.
-    Whereas, the state kets remain constants.
-    For computational purposes, we express the evolution operator as a unitary matrix \( U \) on a suitably chosen basis,
-    which serves as the starting point for this paper.
-
-    \subsection{High-Level Design}\label{subsec:design}
+    \section{High-Level Design}\label{sec:design}
 
     \begin{figure}[tbhp]
         \centering
@@ -214,17 +218,52 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Unitary Matrices and Controlled Gates}\label{sec:um-and-cgate}
-%    TODO
-    Representation of unitary matrices and controlled gates are the key of quantum compiler design.
-    \texttt{CtrlGate}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
 
-    \texttt{CtrlGate} has a couple of important methods such as
-    \begin{itemize}
-        \item     convert(UnitaryM)
-        \item     inflate()
-        \item     matmul(CtrlGate)
-        \item     expand(qspace)
-    \end{itemize}
+    \begin{figure}[tbhp]
+        \centering
+        \includegraphics[width=.8\linewidth]{matrices-gates}
+        \caption{The class diagrams for \texttt{UnitaryM} and \texttt{CtrlGate}.}
+        \label{fig:um-and-cgate}
+    \end{figure}
+
+    Design of unitary matrices and controlled gates are the central part of the compiler design.
+    We created \texttt{UnitaryM} to represent unitary matrices.
+    Given the sparse nature of the evolution operator, $\hat{U}\left( t \right)$,
+    we designed \texttt{UnitaryM} readily accommodate sparsity and still be efficient.
+    For example, for a $10$-qubit Hamiltonian system, it's rarely the case that all $10$ qubits interact with one another.
+    More often, qubits next to one another interact.
+    Reflected in the evolution operator, these correspond to the off-diagonal elements.
+
+
+    Accordingly, we store only the rows and columns where off-diagonal elements are non-zeros.
+    We call the indices of these rows and columns the ``core-indices''
+    and the submatrix corresponding to these rows and columns the ``core-matrix''.
+    We implemented the \texttt{matmul} method for matrix multiplication operations between \texttt{UnitaryM}'s.
+    The class method \texttt{deflate} converts a NumPy array ($2$D) into \texttt{UnitaryM}.
+    The method \texttt{inflate} (and \texttt{numpy.array}) does the opposite---returns
+    the matrix in the format of \texttt{numpy} $2$D array.
+
+
+    Quantum gates consist of a central part of a quantum compiler design.
+    We design the \texttt{CtrlGate} class as a flexible class for a variety of gates:
+    single qubit or multi-qubit, with or without control qubits.
+    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operator, $S$, $T$,
+    rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or arbitrary unitary matrices.
+    The \texttt{CtrlGate} class is also the workhorse of most operations involving controlled gates:
+    matrix multiplications, `\texttt{matmul}', expanding into extra Hilbert space, qubit sorting,
+    trace operation, and direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate}.
+
+
+    Expansion into extra Hilbert space is an important operation
+    when multiplying multi-qubit operators spanning different qubit spaces.
+    By performing successive Kronecker product operations, one can inject idler qubits in between the original qubit spaces.
+
+
+    Another operation, useful especially for circuit verification, is the trace operation.
+    Because of the use of ancilla qubits, we sometimes want to eliminate these qubits from the multi-qubit gates
+    and compare the remaining gate reproduce the input.
+    Without the trace operation, verification of the compilation process would be challenging.
+    Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
 
 
     \section{Decompositions}\label{sec:decomp}

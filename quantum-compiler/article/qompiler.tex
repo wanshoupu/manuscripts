@@ -135,6 +135,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         Rectangles with a jagged bottom (purple) represent file input/output (file I/O).
         Parallelograms (pink) represent in-memory data structure.
         The computer icon represents user input.
+        The lines specify the relationships between the entities.
+        The relationships are one of the following---\texttt{hasa}, \texttt{usea}, \texttt{createa}.
         }
         \label{fig:impl}
     \end{figure}
@@ -262,31 +264,30 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Quantum Gates}\label{subsec:quantum-gates}
 
     \begin{table}[htbp]
-        \label{tab:terminology}
         \centering
         \renewcommand{\arraystretch}{1} % Add spacing between rows
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
             \begin{tabular}{|l|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Term}   & \textbf{Description}                                                                      & \textbf{Enum}          \\
+                \textbf{Term} & \textbf{Description}                                                                           & \textbf{Enum}          \\
                 \hline
-                Unitary         & Any $n$-qubit unitary operator                                                            & \texttt{UNITARY}       \\
-                2level          & Unitary operator with no more than two non-identity rows/columns                          & \texttt{TWO\_LEVEL}    \\
-                Multi-Target    & Controlled gate with more than one target qubit                                           & \texttt{MULTI\_TARGET} \\
-                Singlet         & Controlled gate with a single-qubit target                                                & \texttt{SINGLET}       \\
-                Ctrl-pruned     & Controlled gate with a single target and at most one control qubit                        & \texttt{CTRL\_PRUNED}  \\
-                Principal       & Single-qubit operators of the form $R_n(\theta)$with $n=x,y,z$ and $0 \leq \theta < 2\pi$ & \texttt{PRINCIPAL} \\
-                Universal gate  & Standard controlled universal gate                                                        & \texttt{UNIV\_GATE}    \\
-                Clifford+T gate & Controlled gates among the Clifford+T set, namely $\{X, H, S, T\}$ & \texttt{CLIFFORD\_T} \\
+                Unitary       & Any $n$-qubit unitary operator                                                                 & \texttt{UNITARY}       \\
+                2level        & Unitary operator with no more than two non-identity rows/columns                               & \texttt{TWO\_LEVEL}    \\
+                Multi-Target  & Controlled gate with more than one target qubit                                                & \texttt{MULTI\_TARGET} \\
+                Singlet       & Controlled gate with a single-qubit target                                                     & \texttt{SINGLET}       \\
+                Ctrl-pruned   & Controlled gate with a single target and at most one control qubit                             & \texttt{CTRL\_PRUNED}  \\
+                Principal     & Single-qubit operators of the form $R_n(\theta)$with $n=x,y,z$ and $0 \leq \theta < 2\pi$      & \texttt{PRINCIPAL} \\
+                Universal     & Gate set of $X$, $Y$, $Z$, $H$, $S$, $T$ and their Hermite conjugates with or without controls & \texttt{UNIV\_GATE}    \\
+                Clifford+T    & Gate set of $\{CNOT, H, S, T\}$ and their Hermite conjugates                                   & \texttt{CLIFFORD\_T}   \\
                 \hline
             \end{tabular}
         }
-        \caption{Classification of quantum gates according to their granularity and the terminologies used for this.
-        }
+        \caption{Classification of quantum gates according to their granularity and the terminologies used for this.}
+        \label{tab:terminology}
     \end{table}
 
     As stated earlier, what distinguish a quantum gate from a unitary operator is
-    that a quantum gate is allocated with a domain, a \texttt{qspace}.
+    that a quantum gate is associated with an allocated \texttt{qspace} whereas a unitary operator is not.
     Each qubit in a \texttt{qspace} can assume one of three roles:
     \begin{itemize}
         \item \texttt{TARGET}, whose quantum state may be altered.
@@ -302,12 +303,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item The roles played by each qubit
     \end{itemize}
 
-    In Table~\ref{tab:terminology}, we listed all the major types of quantum gates.
+    We listed all the major types of quantum gates in Table~\ref{tab:terminology} for ease of reference.
     For all the types of quantum gates, we designed one class `\texttt{CtrlGate}'---single qubit or
     multi-qubit, single-target or multi-target, with or without control qubits.
 
-    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operator, $S$, $T$,
-    rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or arbitrary unitary matrices.
+    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operators, $S$, $T$,
+    and their Hermite conjugates, rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or any arbitrary unitary matrices.
     The \texttt{CtrlGate} class is also the workhorse of most operations involving controlled gates:
     matrix multiplications, `\texttt{matmul}', expanding into extra Hilbert space, qubit sorting,
     trace operation, and direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate}.
@@ -330,50 +331,56 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Decompositions}\label{sec:decomp}
 
-    The compilation process encodes the dynamics into a network of quantum gates, allocates and assigns qubits to each gate,
-    and by the latter, we attempt to attain the overall quantum dynamics precisely or approximately.
+    The compilation process transfers the encoding of the dynamics from the $n \times n$ unitary
+    matrix into a network of quantum gates, allocates and assigns qubits to each gate.
     In this section, we go over the decomposition process of the \texttt{qompiler}.
 
 
-    Starting from an arbitrary $n \times n$-dimensional unitary operator,
-    the encoded quantum formulation undergoes a number of decomposition processes.
-%    TODO
-    From an arbitrary $n \times n$-dimensional unitary operator to single-qubit gates and/or \texttt{XNOT} two-qubit interaction gates,
-    Given a unitary operator as input, the decomposition process breaks it down into a sequence of gates of the desirable type
-    so that the matrix product of the latter recovers the former.
-    In this section, we detail some aspects of the decomposition processes used by \texttt{qompiler}, including
-    \begin{itemize}
-        \item \texttt{mat2l\_decompose}: decompose an arbitrary $n \times n$ unitary matrix into two-level unitary matrices.
-        \item \texttt{cnot\_decompose}: decompose a two-level unitary matrix into single-target operators in universal gates.
-        \item \texttt{ctrl\_decompose}: given a single-qubit \texttt{CtrlGate}, decompose its control sequences to no more than a certain length, usually one or two qubits.
-        \item \texttt{euler\_decompose}: given a controlled unitary matrix, decompose it into Euler rotation operators and optionally a phase shift.
-        \item \texttt{cliffordt\_decompose}: given a standard gate, decompose it into \texttt{Clifford} + \texttt{T} gates.
-    \end{itemize}
+    Starting from an arbitrary $n$-dimensional unitary operator,
+    the encoded quantum formulation undergoes a number of decomposition processes
+    until they become quantum gates of desirable granularity,
+    like principal single-qubit gates, \texttt{CNOT} gates, etc.
+%    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
 
-    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
-    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
+    The main decomposition processes used by \texttt{qompiler} are listed here:
+    \begin{itemize}
+        \item \texttt{mat2l\_decompose}: decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.
+        \item \texttt{cnot\_decompose}: decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.
+        \item \texttt{ctrl\_decompose}: given a controlled gate, break its control sequence down to shorter controls,
+        usually with the help of ancilla qubits.
+        \item \texttt{euler\_decompose}: decomposes a single-qubit gate into Euler rotation operators and optionally a phase shift.
+        \item \texttt{cliffordt\_decompose}: given a universal gate, decomposes it into \texttt{Clifford} + \texttt{T} gates.
+        \item \texttt{Solovay-Kitaev\_decompose}: approximate a single-qubit gate into universal gates
+        or a subset like the \texttt{Clifford} + \texttt{T} gates.
+    \end{itemize}
 
     \begin{figure}[tbhp]
         \centering
+        % TODO redraw the graph to inlcude the decomposition processes
         \includegraphics[width=.8\linewidth]{workflow}
-        \caption{The major compilation workflow in details.
+        \caption{The compilation workflow in details.
+        The entry point is \texttt{Unitary}.
         Each parallelogram (pink) represents a stage of the compiled data.
         Each rhombus (green) represents a granularity test.
-        There are probes for three major granularity types---\texttt{MULTI\_TARGET}, \texttt{PRINCIPAL}, and \texttt{CLIFFORD\_T}.
+        There are tests for three major granularities---\texttt{MULTI\_TARGET}, \texttt{PRINCIPAL}, and \texttt{CLIFFORD\_T}.
         }
         \label{fig:workflow}
     \end{figure}
-    The major compilation workflow is illustrated in Fig.~\ref{fig:workflow}.
-    The entry point is \texttt{Unitary}.
-    If the configuration specifies a granularity of \texttt{MULTI\_TARGET},
-    the decomposition terminates with multi-target operators.
-    Otherwise, the unitary operator is sequentially decomposed into two-level unitary operators,
-    single-qubit gates, and control-pruned gates.
-    A granularity probe of type \texttt{PRINCIPAL} is then performed to determine
-    whether the target granularity has been reached.
-    If so, the output consists of principal rotational operators.
-    If not, the decomposition continues into either Clifford+T gate sets or user-defined universal gate sets.
-    For ease of reference, the terminology used in this paper is summarized in Table~\ref{tab:terminology}.
+    These decomposition processes are orchestrated by the class \texttt{Qompiler} recursively in a depth-first fashion
+    as illustrated in Figure~\ref{fig:workflow}.
+    The granularity of the final quantum gate is specified in the \texttt{QConfig}.
+    Unless the configuration specifies a granularity of \texttt{MULTI\_TARGET},
+    the \texttt{qompiler} will perform \texttt{mat2l\_decompose} and \texttt{cnot\_decompose},
+    to decompose the gates into \texttt{2level} unitary operators and single-qubit gates, correspondingly.
+    Next, the \texttt{qompiler} will determine if the granularity specification requires pruning the control sequence.
+    If so, it will perform the \texttt{ctrl\_decompose}.
+    Following that, the \texttt{euler\_decompose} is performed to break down into \texttt{PRINCIPAL} rotational gates.
+    If \texttt{PRINCIPAL} gate types are acceptable, the decomposition process will end.
+    Otherwise, if the gate is already one of the universal gates, the \texttt{cliffordt\_decompose} may be performed
+    to conform to the required subset of gate types.
+    Otherwise, the \texttt{Solovay-Kitaev\_decompose} is used to approximate the single-qubit gate with
+    a sequence of universal gates to a configurable tolerance of residual error.
+    The \texttt{Solovay-Kitaev\_decompose} will be discussed in more details in the next section.
 
 
     \section{Solovay and Kitaev Approximation}\label{sec:sk-approx}

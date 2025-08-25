@@ -217,7 +217,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We will visit this in Section~\ref{sec:rendering}.
 
 
-    \section{Unitary Matrices and Controlled Gates}\label{sec:um-and-cgate}
+    \section{Design of Elements}\label{sec:design-of-elements}
 
     \begin{figure}[tbhp]
         \centering
@@ -226,7 +226,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:um-and-cgate}
     \end{figure}
 
-    Design of unitary matrices and controlled gates are the central part of the compiler design.
+    In this section, we will lay the foundation of terminologies for discussions in this article.
+    We will not go over all the elements for quantum simulation.
+    Instead, we will focus on a few key elements of quantum circuit and refer readers to references such as~\cite{nielsen2010q}
+    for the basics.
+    Representations of unitary matrices and quantum gates, especially, controlled quantum gates,
+    are the central part of the compiler design.
+    A unitary matrix refers to a multidimensional unitary matrix of complex type.
+    It captures the dynamics of a specific quantum system.
+    It usually has no reference to any specific qubit for the simulation.
+    A quantum gate, on the other hand, is a predefined unit of quantum operation acting on a specific domain of qubits.
+    We call the specific domain of qubits a ``quantum space'' and refer to it as \texttt{qspace} in this article.
+    The compilation process, which will be discussed in another section in more details,
+    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
+
+    \subsection{Unitary Matrices}\label{subsec:unitary-matrices}
+
     We created \texttt{UnitaryM} to represent unitary matrices.
     Given the sparse nature of the evolution operator, $\hat{U}\left( t \right)$,
     we designed \texttt{UnitaryM} readily accommodate sparsity and still be efficient.
@@ -235,7 +250,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Reflected in the evolution operator, these correspond to the off-diagonal elements.
 
 
-    Accordingly, we store only the rows and columns where off-diagonal elements are non-zeros.
+    Accordingly, we only store the rows and columns with non-identity diagonal elements and/or
+    with non-zero off-diagonal elements.
     We call the indices of these rows and columns the ``core-indices''
     and the submatrix corresponding to these rows and columns the ``core-matrix''.
     We implemented the \texttt{matmul} method for matrix multiplication operations between \texttt{UnitaryM}'s.
@@ -243,56 +259,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The method \texttt{inflate} (and \texttt{numpy.array}) does the opposite---returns
     the matrix in the format of \texttt{numpy} $2$D array.
 
+    \subsection{Quantum Gates}\label{subsec:quantum-gates}
 
-    Quantum gates consist of a central part of a quantum compiler design.
-    We design the \texttt{CtrlGate} class as a flexible class for a variety of gates:
-    single qubit or multi-qubit, with or without control qubits.
-    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operator, $S$, $T$,
-    rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or arbitrary unitary matrices.
-    The \texttt{CtrlGate} class is also the workhorse of most operations involving controlled gates:
-    matrix multiplications, `\texttt{matmul}', expanding into extra Hilbert space, qubit sorting,
-    trace operation, and direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate}.
-
-
-    Expansion into extra Hilbert space is an important operation
-    when multiplying multi-qubit operators spanning different qubit spaces.
-    By performing successive Kronecker product operations, one can inject idler qubits in between the original qubit spaces.
-
-
-    Another operation, useful especially for circuit verification, is the trace operation.
-    Because of the use of ancilla qubits, we sometimes want to eliminate these qubits from the multi-qubit gates
-    and compare the remaining gate reproduce the input.
-    Without the trace operation, verification of the compilation process would be challenging.
-    Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
-
-
-    \section{Decompositions}\label{sec:decomp}
-%    TODO
-    In this section, we summarize some aspects of the decomposition methods used by \texttt{qompiler}.
-    \begin{itemize}
-        \item \texttt{cnot\_decompose}
-        \item \texttt{ctrl\_decompose}
-        \item \texttt{euler\_decompose}
-        \item \texttt{mat2l\_decompose}
-        \item \texttt{std\_decompose}
-    \end{itemize}
-
-    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
-    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
-
-    \begin{figure}[tbhp]
-        \centering
-        \includegraphics[width=.8\linewidth]{workflow}
-        \caption{The major compilation workflow in details.
-        Each parallelogram (pink) represents a stage of the compiled data.
-        Each rhombus (green) represents a granularity test.
-        There are probes for three major granularity types---\texttt{MULTI\_TARGET}, \texttt{PRINCIPAL}, and \texttt{CLIFFORD\_T}.
-        }
-        \label{fig:workflow}
-    \end{figure}
-    The major compilation workflow is illustrated in Fig.~\ref{fig:workflow}.
-    The entry point is \texttt{Unitary}.
     \begin{table}[htbp]
+        \label{tab:terminology}
         \centering
         \renewcommand{\arraystretch}{1} % Add spacing between rows
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
@@ -311,9 +281,90 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
             \end{tabular}
         }
-        \caption{Granularity terminologies and their meaning.
-        }\label{tab:terminology}
+        \caption{Classification of quantum gates according to their granularity and the terminologies used for this.
+        }
     \end{table}
+
+    As stated earlier, what distinguish a quantum gate from a unitary operator is
+    that a quantum gate is allocated with a domain, a \texttt{qspace}.
+    Each qubit in a \texttt{qspace} can assume one of three roles:
+    \begin{itemize}
+        \item \texttt{TARGET}, whose quantum state may be altered.
+        \item \texttt{CONTROL}, whose quantum state undergoes no change.
+        It comes with two subtypes \texttt{CONTROL0} with activation value of zero ($0$) and \texttt{CONTROL1} with activation value of one ($1$).
+        \item \texttt{IDLER}, who does not participate in the gate operation at all.
+    \end{itemize}
+    For ease of reference, we introduce `granularity' as a classification of quantum gates
+    which is roughly characterized by the following:
+    \begin{itemize}
+        \item The number of involved qubits
+        \item The interactions among the qubits
+        \item The roles played by each qubit
+    \end{itemize}
+
+    In Table~\ref{tab:terminology}, we listed all the major types of quantum gates.
+    For all the types of quantum gates, we designed one class `\texttt{CtrlGate}'---single qubit or
+    multi-qubit, single-target or multi-target, with or without control qubits.
+
+    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operator, $S$, $T$,
+    rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or arbitrary unitary matrices.
+    The \texttt{CtrlGate} class is also the workhorse of most operations involving controlled gates:
+    matrix multiplications, `\texttt{matmul}', expanding into extra Hilbert space, qubit sorting,
+    trace operation, and direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate}.
+
+
+    As keen readers have noticed, \texttt{IDLER} qubits are degrees of freedom that can be added into
+    or taken away from the formulation of \texttt{CtrlGate}.
+    Expansion into extra Hilbert space is an important operation
+    when multiplying multi-qubit operators spanning different qubit spaces.
+    Adding extra qubits to \texttt{CtrlGate} is implemented by the method \texttt{expand}.
+    By performing successive Kronecker product operations, one can inject idler qubits in between the original qubit spaces.
+
+
+    Another operation, useful especially for circuit verification, is the \texttt{trace} operation.
+    Because of the use of ancilla qubits, we sometimes want to eliminate these qubits from the multi-qubit gates
+    and compare the remaining gate reproduce the input.
+    Without the trace operation, verification of the compilation process would be challenging.
+    Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
+
+
+    \section{Decompositions}\label{sec:decomp}
+
+    The compilation process encodes the dynamics into a network of quantum gates, allocates and assigns qubits to each gate,
+    and by the latter, we attempt to attain the overall quantum dynamics precisely or approximately.
+    In this section, we go over the decomposition process of the \texttt{qompiler}.
+
+
+    Starting from an arbitrary $n \times n$-dimensional unitary operator,
+    the encoded quantum formulation undergoes a number of decomposition processes.
+%    TODO
+    From an arbitrary $n \times n$-dimensional unitary operator to single-qubit gates and/or \texttt{XNOT} two-qubit interaction gates,
+    Given a unitary operator as input, the decomposition process breaks it down into a sequence of gates of the desirable type
+    so that the matrix product of the latter recovers the former.
+    In this section, we detail some aspects of the decomposition processes used by \texttt{qompiler}, including
+    \begin{itemize}
+        \item \texttt{mat2l\_decompose}: decompose an arbitrary $n \times n$ unitary matrix into two-level unitary matrices.
+        \item \texttt{cnot\_decompose}: decompose a two-level unitary matrix into single-target operators in universal gates.
+        \item \texttt{ctrl\_decompose}: given a single-qubit \texttt{CtrlGate}, decompose its control sequences to no more than a certain length, usually one or two qubits.
+        \item \texttt{euler\_decompose}: given a controlled unitary matrix, decompose it into Euler rotation operators and optionally a phase shift.
+        \item \texttt{cliffordt\_decompose}: given a standard gate, decompose it into \texttt{Clifford} + \texttt{T} gates.
+    \end{itemize}
+
+    These decomposition methods are orchestrated by the class \texttt{Qompiler}.
+    \texttt{QDevice} is used for allocating qubits and ancilla qubits.
+
+    \begin{figure}[tbhp]
+        \centering
+        \includegraphics[width=.8\linewidth]{workflow}
+        \caption{The major compilation workflow in details.
+        Each parallelogram (pink) represents a stage of the compiled data.
+        Each rhombus (green) represents a granularity test.
+        There are probes for three major granularity types---\texttt{MULTI\_TARGET}, \texttt{PRINCIPAL}, and \texttt{CLIFFORD\_T}.
+        }
+        \label{fig:workflow}
+    \end{figure}
+    The major compilation workflow is illustrated in Fig.~\ref{fig:workflow}.
+    The entry point is \texttt{Unitary}.
     If the configuration specifies a granularity of \texttt{MULTI\_TARGET},
     the decomposition terminates with multi-target operators.
     Otherwise, the unitary operator is sequentially decomposed into two-level unitary operators,

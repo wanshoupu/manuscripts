@@ -8,8 +8,10 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{hyperref}
-\usepackage{subfig}
 \usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage{minted}
+\usepackage{subcaption}
 \usepackage{pifont}  % For handwritten-style cross
 \newcommand{\cmark}{{\color{green!60!black} \ding{52}}}
 \newcommand{\xmark}{\color{red} \ding{56}} % Handwritten-style cross
@@ -392,23 +394,81 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Solovay and Kitaev Approximation}\label{sec:sk-approx}
-%    TODO
-    To work with the Solovay \& Kitaev approximation, we created various constructs of SU2 nets,
-    based on different types of gate distance metrics.
-    to a configurable error margin
+
+    Solovay and Kitaev Theorem is a piece of foundational work in the quantum computation field~\cite{kitaev1997quantum,dawson2005sk}.
+    Thanks to this theorem, it becomes possible to efficiently approximate an arbitrary single-qubit operator out of the \texttt{SU(2)} group.
+    with a set of universal gates.
+    With a predefined error margin $\epsilon$, both the number of gates to approximate the operator
+    and the runtime to calculate them as a function of $\epsilon$ are
+    polylogarithmic, $~O(\log^{c}(1/\epsilon))$ with $c$ a constant.
+
+
+    The basic idea behind Solovay \& Kitaev approximation from the above references is understandably simple.
+    Over the operator space in the \texttt{SU(2)} group, create a point net such that the distance between adjacent points is bound by $\epsilon_{0}$,
+    an error margin of a certain threshold (referred to as \texttt{SU2Net}).
+    On a zero-th order, operators in the neighborhood of a point in the \texttt{SU2Net} are approximated by the sequence of gates at that point.
+    Then call the function \mintinline{python}{def sk_decompose(self, U: NDArray, depth: int) -> Bytecode:}
+    with a recursion depth according to the desired error margin $\epsilon$.
+    \texttt{sk\_decompose} is a recursive function whose base case is simply the zero-th order approximation provided by the \texttt{SU2Net}.
+    For each recursion, the group commutator of the residual operator is calculated and used for better approximation
+    until it is close enough to the identity operator $I$.
+
+    \begin{minipage}{\linewidth}
+        \lstinputlisting[
+            caption={The Solovay-Kitaev decomposition function.
+            It is a recursive function with the base case of  \texttt{SU2Net} approximation.
+            In each recursion, it calculates the group commutators of the residual operator.
+            },
+            label={lst:sk_decomp},firstline=1,lastline=20]{solovay.py}
+    \end{minipage}
+
+
+    The caveat of the Solovay--Kitaev decomposition lies in selecting a properly constructed \texttt{SU2Net}.
+    For experimentation, we built several variants of SU2 nets, each based on different operator distance metrics,
+    including \texttt{kD-tree}, \texttt{nearest-neighbor} with ball-tree, and a custom Kolmogorov distance.
+    Despite our attempts to balance accuracy and runtime, our SK decomposition
+    implementation is not yet efficient enough for production use.
+    Improving this remains a potential direction for future work.
 
 
     \section{Optimizers}\label{sec:optimization}
-    \texttt{Qompiler} compiles the input unitary operator into a sequence of target quantum gates
-    through successive decomposition processes, analogous to a digestion process.
-    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
-    To compensate for this, we included the optimization passes act as a synthesis process to simplify the output circuit,
-    combining multiple operators into fewer, more efficient gates.
 
-    The optimizer class follows the sliding window design.
-%    TODO
-    With a given size, the optimizer considers the overall operation of the gates within
-    the window and looks for simpler representations.
+    \begin{figure}[h]
+        \centering
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{unoptimized}
+            \caption{Unoptimized circuit diagram (partial) compiled from a cyclic permutation matrix.}
+            \label{fig:unoptimized-circuit}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{optimized-circuit}
+            \caption{Same circuit diagram with basic optimization passes.
+            Multiple annihilation and consolidation cases are visible.}
+            \label{fig:optimized-circuit}
+        \end{subfigure}
+        \caption{Side-by-side comparison of the same circuit diagram with and without the optimization passes
+        \texttt{AnniliationOptimizer} and \texttt{ConsolidationOptimizer}.}
+        \label{fig:optimize-comparison}
+    \end{figure}
+
+
+    Early we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
+    We elaborate on this now.
+
+
+    In the decomposition processes, the \texttt{Qompiler} aims to ensure the resulting gates are $\geq$ the designated granularity.
+    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
+    To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
+    combining multiple operators into fewer, more efficient gates.
+    As shown in Figure~\ref{fig:optimize-comparison}, a side-by-side comparison of the same circuit diagram
+    highlights the optimization effects.
+    This push-and-pull design not only maximizes the efficiency of the resulting circuit
+    but also provides precise control over gate granularity.
+
+
     \begin{figure}[tbhp]
         \centerline{\includegraphics[width=0.6\textwidth]{optimizer}}
         \caption{Optimizer class design.}
@@ -416,12 +476,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
+    Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
+    and \texttt{ConsolidationOptimizer}, both of the \texttt{SlidingWindowOptimizer} family
+    which detects optimization opportunities among the gates within a window of certain size
+    and performs such optimizations.
+    The \texttt{SlidingWindowOptimizer} is derived from the \texttt{Optimizer} interface
+    which declares the optimization level and the optimize method.
+    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-class}.
 
-    This push-and-pull design not only maximizes the efficiency of the resulting circuit
-    but also provides precise control over gate granularity.
+
     Furthermore, our compiler design can easily accommodate custom optimizers.
-    For example, if a particular gate type is more efficient on a specific platform,
-    an optimizer can be added to the compiler to exploit this advantage.
+    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
+    like IonQ Forte\textregistered,
+    an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
+    After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
+    the resulting \texttt{ByteCode} is written to a binary-format output file `\texttt{.qco}'.
 
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
@@ -457,8 +526,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{eq:parent-child-relation}
         \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
     \end{equation}
-    In general, the nodes of a B-Tree are layered hierarchically.
-    See Fig.~\ref{fig:btree} for details.
+    In general, the nodes of a B-Tree are layered as shown in Figure~\ref{fig:btree} for details.
+
 
     Traceability is encoded in the parent-child relationships.
     Each gate in the final program can be traced back to the specific operation that produced it.
@@ -522,10 +591,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
     We also integrated our compiler so it can output quantum circuit in OpenQASM format.
     See Listing~\ref{lst:qasm} for the resulting code.
-    \lstinputlisting[
-        caption={Generated OpenQASM 3.0 code.},
-        label={lst:qasm},firstline=1,lastline=20]{code.qasm}
 
+
+    \begin{minipage}{\linewidth}
+        \lstinputlisting[
+            caption={Generated OpenQASM 3.0 code.},
+            label={lst:qasm},firstline=1,lastline=20]{code.qasm}
+    \end{minipage}
 
 
     As another example, we compiled a randomly generated $8 \times 8$ unitary operator
@@ -547,9 +619,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
         \label{fig:random-unitary}
     \end{figure}
-    \lstinputlisting[
-        caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
-        label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
+
+    \begin{minipage}{\linewidth}
+        \lstinputlisting[
+            caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
+            label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
+    \end{minipage}
 
 
     \section{Limitations}\label{sec:limitations}

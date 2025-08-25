@@ -27,3 +27,4 @@ out
 *.snm
 *.fls
 *.fdb_latexmk
+*.minted

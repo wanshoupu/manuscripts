@@ -38,6 +38,11 @@ clean(){
            $mainsrc.out \
            $mainsrc.brf \
            $mainsrc.pdf \
+           $mainsrc.fls \
+           $mainsrc.minted \
+           $mainsrc.snm \
+           $mainsrc.nav \
+           $mainsrc.fdb_latexmk \
            $mainsrc.loclisting \
            $mainsrc.loalisting \
            $mainsrc.toc   2>/dev/null

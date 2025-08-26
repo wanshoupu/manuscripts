@@ -575,23 +575,31 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     The end product of the compilation process is the code file `\texttt{.qco}'.
-    Rendering the code file into a quantum circuit on the target platform is the responsibility of \texttt{Renderer} and related circuit building classes.
+    Rendering the code file into a quantum circuit on the target platform is the responsibility of
+    \texttt{Renderer} and related circuit building classes.
     The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and use everywhere.''
-    Accordingly, the \texttt{Renderer} class is designed to accommodate polymorphic implementations of the \texttt{CircuitBuilder} interface.
-    We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered
-    platforms.
+    Accordingly, the \texttt{Renderer} class is designed to accommodate polymorphic implementations
+    of the \texttt{CircuitBuilder} interface.
+    We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for
+    Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered platforms.
     The UML diagram for the rendering classes is shown in Figure~\ref{fig:renderer}.
     More support for other platforms can be easily added simply by new implementations of the \texttt{CircuitBuilder} interface.
 
 
-    Qubit allocation and mapping can be a big topic.
-    Next, we touch on the topic of qubit allocation and mapping virtual \texttt{qspace}    to physical qubits.
-    The \texttt{QDevice} used in the compilation process is in charge of allocating virtual \texttt{qspace}   .
-    But actual physical qubits are not allocated or mapped until the quantum circuit for the target platform is rendered.
-    The allocation of qubits and their mapping to the virtual \texttt{qspace} is a crucial step in quantum computing,
-    as it underpins the very feasibility of computability and impacts overall performance.
-    Instead of adopting a sophisticated qubit allocation strategy, we have, in this article, used an overly simplified algorithm to illustrate the concept.
-    Future work includes optimization in qubit mapping taking into qubit interaction into consideration.
+    Qubit allocation and mapping are central topics in quantum computing.
+    We distinguish between two types of \texttt{qspace} allocation.
+    The first is the allocation of virtual \texttt{qspace}, and the second is the allocation of physical \texttt{qspace}.
+    The mapping between them is carried out during circuit rendering.
+%    When we compile the unitary operator into QIL, we allocated virtual qubits.
+    Allocation of virtual \texttt{qspace} is performed at compilation time and managed by the \texttt{QDevice}.
+    Allocation of physical qubits, together with the mapping of virtual qubits onto them, on the other hand,
+    is tied to a specific target platform and can only take place at circuit render time.
+    Qubit allocation is a crucial step and can be highly sophisticated, as it underpins the feasibility of computation
+    and strongly affects performance.
+    An effective physical qubit allocation algorithm should take qubit interactions into account.
+    In this article, however, we are not focusing on this aspect.
+    Instead, we adopt a simplified approach to illustrate the concept.
+    The study of advanced qubit allocation algorithms is left for future work.
 
 
     \section{Tests}\label{sec:tests}

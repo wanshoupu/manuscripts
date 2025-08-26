@@ -34,6 +34,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     frame=single,
     language=qasm
 }
+
+\lstdefinestyle{pythoncode}{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    breaklines=true,
+    showstringspaces=false
+}
+
 \begin{document}
 
     \title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
@@ -271,16 +285,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
             \begin{tabular}{|l|l|l|}
                 \hline
-                \textbf{Term} & \textbf{Description}                                                & \textbf{Enum}          \\
+                \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum}          \\
                 \hline
-                Unitary       & Any $n$-qubit unitary operator                                      & \texttt{UNITARY}       \\
-                2level        & Unitary operator with no more than two non-identity rows/columns    & \texttt{TWO\_LEVEL}    \\
-                Multi-Target  & Gates with $2+$ target qubit and any number of control qubits       & \texttt{MULTI\_TARGET} \\
-                Singlet       & Gates with a single target and any number of control qubits         & \texttt{SINGLET}       \\
-                Ctrl-pruned   & Controlled gates with a single target and at most one control qubit & \texttt{CTRL\_PRUNED}  \\
-                Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$          & \texttt{PRINCIPAL}     \\
+                Unitary       & Any $n$-qubit unitary operator                                                 & \texttt{UNITARY}       \\
+                2level        & Unitary operator with no more than two non-identity rows/columns               & \texttt{TWO\_LEVEL}    \\
+                Multi-Target  & Gates with $2+$ target qubit and any number of control qubits                  & \texttt{MULTI\_TARGET} \\
+                Singlet       & Gates with a single target and any number of control qubits                    & \texttt{SINGLET}       \\
+                Ctrl-pruned   & Controlled gates with a single target and at most one control qubit            & \texttt{CTRL\_PRUNED}  \\
+                Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$                     & \texttt{PRINCIPAL}     \\
                 Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
-                Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                & \texttt{CLIFFORD\_T}   \\
+                Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                  & \texttt{CLIFFORD\_T}   \\
                 \hline
             \end{tabular}
         }
@@ -414,14 +428,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     For each recursion, the group commutator of the residual operator is calculated and used for better approximation
     until it is close enough to the identity operator $I$.
 
-    \begin{minipage}{\linewidth}
-        \lstinputlisting[
-            caption={The Solovay-Kitaev decomposition function.
-            It is a recursive function with the base case of  \texttt{SU2Net} approximation.
-            In each recursion, it calculates the group commutators of the residual operator.
-            },
-            label={lst:sk_decomp},firstline=1,lastline=20]{solovay.py}
-    \end{minipage}
+    \begin{listing}[h]
+        \caption{The Solovay-Kitaev decomposition function.
+        It is a recursive function with the base case of  \texttt{SU2Net} approximation.
+        In each recursion, it calculates the group commutators of the residual operator.}
+        \inputminted[
+            linenos,           % show line numbers
+%            fontsize=\small,   % font size
+%            bgcolor=lightgray  % background color
+        ]{python}{solovay.py}
+    \end{listing}
 
 
     The caveat of the Solovay--Kitaev decomposition lies in selecting a properly constructed \texttt{SU2Net}.

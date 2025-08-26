@@ -658,14 +658,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{listing}[h]
         \caption{Generated OpenQASM 3.0 code from the cyclic permutation matrix operator.
-        Only the first $20$ lines are shown.}
+        The first $40$ lines are shown.}
         \label{lst:qasm}
-        \inputminted[
-            linenos,
-            xleftmargin=8em,
-            firstline=1,
-            lastline=20,
-        ]{asm}{code.qasm}
+        % Top horizontal line
+        \noindent\rule{\linewidth}{0.5pt}
+        \vspace{0.5em}
+        \begin{minipage}{0.48\linewidth}
+            \inputminted[
+                linenos,
+                xleftmargin=2em,
+                firstline=1,
+                lastline=20,
+            ]{asm}{code.qasm}
+        \end{minipage}\hfill
+        \begin{minipage}{0.48\linewidth}
+            \inputminted[
+                linenos,
+                xleftmargin=2em,
+                firstline=21,
+                lastline=40,
+            ]{asm}{code.qasm}
+        \end{minipage}
+        \noindent\rule{\linewidth}{0.5pt}
     \end{listing}
 
 

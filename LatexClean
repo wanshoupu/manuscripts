@@ -37,7 +37,6 @@ clean(){
            $mainsrc.ps \
            $mainsrc.out \
            $mainsrc.brf \
-           $mainsrc.pdf \
            $mainsrc.fls \
            $mainsrc.minted \
            $mainsrc.snm \

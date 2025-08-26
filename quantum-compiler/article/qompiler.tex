@@ -243,7 +243,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We will visit this in Section~\ref{sec:rendering}.
 
 
-    \section{Design of Elements}\label{sec:design-of-elements}
+    \section{Design of Elementary Classes}\label{sec:design-of-elements}
 
     \begin{figure}[tbhp]
         \centering
@@ -358,7 +358,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
 
 
-    \section{Decompositions}\label{sec:decomp}
+    \section{Operator Decomposition}\label{sec:decomp}
 
     The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
     matrix into a network of quantum gates, allocates and assigns qubits to each gate.
@@ -416,7 +416,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and that's the subject of Section~\ref{sec:optimization}.
 
 
-    \section{Solovay and Kitaev Approximation}\label{sec:sk-approx}
+    \section{Solovay--Kitaev Approximation}\label{sec:sk-approx}
 
     Solovay and Kitaev Theorem is a piece of foundational work in the quantum computation field~\cite{kitaev1997quantum,dawson2005sk}.
     Thanks to this theorem, it becomes possible to efficiently approximate an arbitrary single-qubit operator out of the \texttt{SU(2)} group.
@@ -458,7 +458,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Improving this remains a potential direction for future work.
 
 
-    \section{Optimizers}\label{sec:optimization}
+    \section{Optimization}\label{sec:optimization}
 
     \begin{figure}[h]
         \centering
@@ -610,7 +610,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The study of advanced qubit allocation algorithms is left for future work.
 
 
-    \section{Tests}\label{sec:tests}
+    \section{Testing}\label{sec:tests}
 
     Correctness is the foundation of the \texttt{Qompiler} project.
     We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
@@ -619,18 +619,18 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The overall unit test coverage of the whole project also reaches $90\%$.
 
 
-    To facilitate testing, we designed many utility classes and functions, like the \texttt{MatrixFormatter},
-    the numerous functions in the module \texttt{mgen}, .
-    To verify that the breakdown of a composed gate into its components is equivalent to the original,
-    we extended the Kronecker product concept to \texttt{mesh\_product},
-    a type of matrix multiplication operation of special Tracy–Singh product type~\cite{TracySingh1972}.
+    To facilitate testing, we designed a couple of utility classes and functions such as the \texttt{MatrixFormatter}
+    and the numerous functions in the module \texttt{mgen}, etc.
+    It is worth mentioning the \texttt{inter\_product} function,
+    a special case of the Tracy–Singh product that generalizes the Kronecker product~\cite{TracySingh1972}.
+%    With \mintinline{python}{inter_product(A, B, m)}, the matrix $A$ is first partitioned into $n \times n$ blocks,
+%    each of size $m \times m$, where $n$ is chosen such that $n m$ equals the size of the matrix.
+%    Then, for each block, we compute the Kronecker product $B \otimes \text{block}_{i}$.
+    The \texttt{inter\_product} function is proven to be a very helpful tool when verifying the equivalence between
+    a quantum operator and its decomposed components.
 
-    Matrix A is first divided up into n x n number of m x m sized blocks;
-    Then B is mesh multiplied between the n x n number of m x m sized blocks.
-    For example, with a block size of 2x2.
 
-
-    \section{Results}\label{sec:results}
+    \section{Results and Discussions}\label{sec:results}
     Initial benchmarks show that the compiler produces correct and consistent quantum circuits across multiple quantum computing platforms.
     These results underscore the compiler’s potential to accelerate quantum software development,
     optimize circuits, and facilitate experimentation across diverse quantum computing platforms.
@@ -706,9 +706,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The generated \texttt{QASM} code is similar to Listing~\ref{lst:qasm} which we will not repeat.
 
 
-    \section{Limitations}\label{sec:limitations}
-    The entire compiler project was implemented in Python with numerical libraries such as NumPy and SciPy.
-    Consequently, the underlying numerical errors limit the precision of the compiled quantum circuit.
+    Despite the abovementioned successes, the \texttt{Qompiler} project comes with its limitations.
+    For example, the project was implemented in Python with numerical libraries, including NumPy and SciPy.
+    Therefore, the underlying numerical errors limit the precision of the compiled quantum circuit.
     However, when the Solovay--Kitaev approximation is employed,
     the dominant source of error is the residual approximation error itself.
 

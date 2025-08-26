@@ -279,8 +279,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 Singlet       & Gates with a single target and any number of control qubits         & \texttt{SINGLET}       \\
                 Ctrl-pruned   & Controlled gates with a single target and at most one control qubit & \texttt{CTRL\_PRUNED}  \\
                 Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$          & \texttt{PRINCIPAL}     \\
-                Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, SD, TD\}$        & \texttt{UNIV\_GATE}    \\
-                Clifford+T    & Gates in the set $\{CNOT, H, S, T\}$                                & \texttt{CLIFFORD\_T}   \\
+                Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
+                Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                & \texttt{CLIFFORD\_T}   \\
                 \hline
             \end{tabular}
         }
@@ -450,8 +450,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             Multiple annihilation and consolidation cases are visible.}
             \label{fig:optimized-circuit}
         \end{subfigure}
-        \caption{Side-by-side comparison of the same circuit diagram with and without the optimization passes
-        \texttt{AnniliationOptimizer} and \texttt{ConsolidationOptimizer}.}
+        \caption{Side-by-side comparison of the same circuit diagram with and without the optimization passes.}
         \label{fig:optimize-comparison}
     \end{figure}
 

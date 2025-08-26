@@ -269,7 +269,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \centering
         \renewcommand{\arraystretch}{1} % Add spacing between rows
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
-            \begin{tabular}{|l|c|c|c|c|c|c|c|}
+            \begin{tabular}{|l|l|l|}
                 \hline
                 \textbf{Term} & \textbf{Description}                                                & \textbf{Enum}          \\
                 \hline
@@ -298,15 +298,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{itemize}
         \item \texttt{TARGET}, whose quantum state may be altered.
         \item \texttt{CONTROL}, whose quantum state undergoes no change.
-        It comes with two subtypes \texttt{CONTROL0} with activation value of zero ($0$) and \texttt{CONTROL1} with activation value of one ($1$).
+        It comes with two subtypes \texttt{CONTROL0} with activation value of zero ($0$) and \texttt{CONTROL1}
+        with activation value of one ($1$).
         \item \texttt{IDLER}, who does not participate in the gate operation at all.
     \end{itemize}
-    For ease of reference, we introduce `granularity' as a classification of quantum gates
-    which is roughly characterized by the following:
+    For clarity, we introduce the notion of `granularity' as a classification of quantum gates,
+    which can be roughly characterized by the following factors:
     \begin{itemize}
-        \item The number of involved qubits
-        \item The interactions among the qubits
-        \item The roles played by each qubit
+        \item The number of qubits involved
+        \item The roles assigned to each qubit, e.g., \texttt{TARGET} vs.\ \texttt{CONTROL}.
+        \item Core operator features, including standard vs.\ nonstandard types and the types of formulation, e.g., rotation around principal axis
     \end{itemize}
 
     We listed all the major types of quantum gates in Table~\ref{tab:terminology} for ease of reference.
@@ -549,6 +550,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Circuit Rendering}\label{sec:rendering}
 %    TODO
+    Compile once, rendered toward multiple targets, used everywhere.
     Qubit allocation and mapping can be a big topic.
     Instead of adopting a sophisticated qubit allocation strategy, we used very simple ones to illustrate the concept.
     \begin{figure}[tbhp]
@@ -557,10 +559,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:renderer}
     \end{figure}
 
+    Future work includes optimization in qubit mapping taking into qubit interaction into consideration.
+
 
     \section{Tests}\label{sec:tests}
 %    TODO
-    We endeavered high unit test coverage.
+    We endeavered ~$90\%$ unit test coverage.
     To verify that the breakdown of a composed gate into its components is equivalent to the original,
     we extended the Kronecker product concept to \texttt{mesh\_product},
     a type of matrix multiplication operation of special Tracy–Singh product type~\cite{TracySingh1972}.

@@ -5,7 +5,9 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{svg}
 \usepackage{textcomp}
+\usepackage{adjustbox}
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -30,8 +32,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     commentstyle=\color{gray},
     stringstyle=\color{orange},
     showstringspaces=false,
-    breaklines=true,
+    breaklines=false,
     frame=single,
+    columns=fullflexible,
     language=qasm
 }
 
@@ -60,11 +63,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{abstract}
         We present a quantum system software framework that bridges the gap between physics modeling and quantum software development.
-        At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits, represented using a platform-independent B-Tree intermediate language (IL).
+        At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
+        represented using a platform-independent B-Tree-based quantum intermediate language (QIL).
         The B-Tree structure provides essential lineage information for circuit gate traceability and code verification.
-        The IL offers a universal, hardware-agnostic representation that enables flexible translation and optimization across diverse quantum hardware backends.
-        We demonstrate implementations that render the IL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
-        Additionally, we provide a transpiler that converts the IL into OpenQASM for broader compatibility.
+        The QIL offers a universal, hardware-agnostic representation that enables flexible translation and optimization across diverse quantum hardware backends.
+        We demonstrate implementations that render the QIL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
+        Additionally, we provide a transpiler that converts the QIL into OpenQASM for broader compatibility.
     \end{abstract}
 
     \keywords{Quantum Computing \and Quantum Compilation \and Hamiltonian Decomposition \and Cross-Platform \and Circuit Synthesis \and Solovay-Kitaev Theorem}
@@ -101,18 +105,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and provide limited control over compilation granularity.
 
 
-    To address these challenges, we developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer
+    To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
     designed for traceability, verifiability, and configurable gate control.
-    \texttt{Qompiler} decomposes time slices of evolution operator, $U$, into circuits using a multi-stage framework,
-    including two-level, swap, control, Euler angle decompositions, and Solovay-Kitaev approximations.
-    The intermediate representation (IL) is structured as a B-Tree, enabling gate-level lineage and platform independence,
-    and it supports major frameworks such as Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    Notably, the compiler allows fine-grained gate selection to match native hardware capabilities—for example,
-    using Pauli gates on superconducting hardware or rotation gates on trapped-ion devices—facilitating
-    hardware-aware optimization and broad applicability.
+    \texttt{Qompiler} decomposes time slices of evolution operator, $U$, into quantum circuits
+    using multi-stage decomposition processes.
+    The final compiled code (quantum circuit) is represented as a B-Tree data structure,
+    an intermediate language (QIL) which is the key for compilation lineage and platform independence.
+    Through polymorphically implemented \texttt{CircuitBuilder}, we can realize cross-platform support including but not limited to
+    Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
+    Notably, \texttt{Qompiler}'s powerful configuration capabilities enable fine-grained gate selection
+    that aligns with the native hardware.
+    For example, on superconducting hardware, standard Pauli gates may be more preferable than more complicated gates,
+    whereas on trapped-ion devices, rotation gates can be efficiently implemented.
+    This hardware-aware optimization is designed into the foundation of the cross-platform \texttt{Qompiler}.
 
 
-    Table~\ref{tab:feature-comparison} compares \texttt{qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
+    Table~\ref{tab:feature-comparison} compares \texttt{Qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
     \begin{itemize}
         \item Cross-platform support;
         \item Traceability \& verifiability;
@@ -134,7 +142,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
             \end{tabular}
         }
-        \caption{Feature comparison between \texttt{qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
+        \caption{Feature comparison between \texttt{Qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
         Green check marks indicate support, whereas a red cross mark indicates lack of support.
         A gray check mark is associated with Qiskit, reflecting its partial control over gate types in the final result.
         }\label{tab:feature-comparison}
@@ -166,7 +174,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     are presented in subsequent sections.
 
 
-    A key feature of \texttt{qompiler} is its configurable compilation granularity,
+    A key feature of \texttt{Qompiler} is its configurable compilation granularity,
     allowing users to tailor the resulting circuit to the gate sets best suited for the target hardware.
     For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually,
     offering zero-error and zero-latency execution;
@@ -205,9 +213,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We will spend the entire Section~\ref{sec:decomp} to discuss this as well as future development.
 
 
-    The final compiled code (quantum circuit) is represented in a B-Tree data structure,
-    an intermediate language (IL) designed specifically for the task.
-    IL encodes gate-level lineage via parent-child relationships among tree nodes, thereby providing robust traceability
+    The final compiled code (quantum circuit) is represented as a B-Tree data structure,
+    an intermediate language (QIL) designed specifically for the task.
+    QIL encodes gate-level lineage via parent-child relationships among tree nodes, thereby providing robust traceability
     and verifiability, which will be discussed in Section~\ref{sec:traceability-and-verifiability}.
 
 
@@ -224,9 +232,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Once the compilation process is finished, the end result is binary code written to disk as `.qco' files.
     Finally, the interpretation stage.
     The circuit interpretation and rendering part is in the curation of \texttt{QRenderer} and \texttt{CircuitBuilder}.
-    The compiler’s intermediate language (IL) is platform-independent and can be interpreted and rendered
+    The compiler’s intermediate language (QIL) is platform-independent and can be interpreted and rendered
     into executable circuits for specific quantum platforms.
-    The IL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
+    The QIL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
     Note that the compilation is done once, but the circuit interpreting and rendering may be done any number of times,
     for any supported platforms.
     This stage is designed to be highly adaptable and open to new platforms.
@@ -354,7 +362,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
     matrix into a network of quantum gates, allocates and assigns qubits to each gate.
-    In this section, we go over the decomposition process of the \texttt{qompiler}.
+    In this section, we go over the decomposition process of the \texttt{Qompiler}.
 
 
     Starting from the $n$-dimensional unitary operator,
@@ -362,7 +370,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     until the quantum gates reach the intended granularity, such as
     principal gates, \texttt{CNOT}, etc.
 %    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
-    The main decomposition processes used by \texttt{qompiler} are listed here:
+    The main decomposition processes used by \texttt{Qompiler} are listed here:
     \begin{itemize}
         \item \texttt{mat2l\_decompose}: decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.
         \item \texttt{cnot\_decompose}: decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.
@@ -389,16 +397,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The granularity of the final quantum gate is specified in the \texttt{QConfig}.
     As illustrated in Figure~\ref{fig:workflow},
     unless the configuration specifies a granularity of \texttt{MULTI\_TARGET},
-    the \texttt{qompiler} will perform \texttt{mat2l\_decompose} and \texttt{cnot\_decompose},
+    the \texttt{Qompiler} will perform \texttt{mat2l\_decompose} and \texttt{cnot\_decompose},
     to decompose the gates into \texttt{2level} unitary operators and \texttt{Singlet} gates, correspondingly.
-    Next, the \texttt{qompiler} will determine if the granularity specification requires pruning the control sequence.
+    Next, the \texttt{Qompiler} will determine if the granularity specification requires pruning the control sequence.
     If so, it will perform \texttt{ctrl\_decompose} followed by \texttt{euler\_decompose}
     to break down into \texttt{PRINCIPAL} gates.
     If \texttt{PRINCIPAL} gate types are acceptable, the decomposition process will end.
     Otherwise, the \texttt{sk\_decompose} may be performed to approximate the single-qubit gate
     with a sequence of universal gates.
     (The \texttt{sk\_decompose} will be discussed in Section~\ref{sec:sk-approx} in more details.)
-    Then the \texttt{qompiler} will continue to test if \texttt{Clifford+T} gate is required, and
+    Then the \texttt{Qompiler} will continue to test if \texttt{Clifford+T} gate is required, and
     if so, the \texttt{cliffordt\_decompose} is performed to conform to the required gate types.
 
 
@@ -562,7 +570,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     to faithfully store and load the B-Tree data structure to and from \textit{.qco} files.
 
     With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
-    and program debugging is made easier in \texttt{qompiler}.
+    and program debugging is made easier in \texttt{Qompiler}.
 
 
     \section{Circuit Rendering}\label{sec:rendering}
@@ -603,8 +611,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Tests}\label{sec:tests}
-%    TODO
-    We endeavered ~$90\%$ unit test coverage.
+
+    Correctness is the foundation of the \texttt{Qompiler} project.
+    We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
+    To achieve this goal, we vigorously test the project against all encountered edge cases.
+    Most of the major constructs used for the \texttt{Qompiler} have close to $100\%$ coverage.
+    The overall unit test coverage of the whole project also reaches $90\%$.
+
+
+    To facilitate testing, we designed many utility classes and functions, like the \texttt{MatrixFormatter},
+    the numerous functions in the module \texttt{mgen}, .
     To verify that the breakdown of a composed gate into its components is equivalent to the original,
     we extended the Kronecker product concept to \texttt{mesh\_product},
     a type of matrix multiplication operation of special Tracy–Singh product type~\cite{TracySingh1972}.
@@ -615,11 +631,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \section{Results}\label{sec:results}
-    Initial benchmarks show that the compiler produces correct and consistent quantum circuits across multiple backends.
+    Initial benchmarks show that the compiler produces correct and consistent quantum circuits across multiple quantum computing platforms.
     These results underscore the compiler’s potential to accelerate quantum software development,
     optimize circuits, and facilitate experimentation across diverse quantum computing platforms.
 
-    To demonstrate \texttt{qompiler} at work, let us compile a $ 8 \times 8 $ cyclic permutation matrix of the following form
+    To demonstrate \texttt{Qompiler} at work, we compiled a $ 8 \times 8 $ cyclic permutation matrix
     \begin{equation}
         \label{eq:cyclic-permute-mat}
         \begin{bmatrix}
@@ -634,17 +650,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{bmatrix}
     \end{equation}
     into universal quantum circuit in Qiskit.
-    \begin{figure}[tbhp]
-        \centerline{\includegraphics[width=0.6\textwidth]{circuit-example}}
-        \caption{Qiskit circuit diagram (partial) compiled from a cyclic permutation matrix.
-        Note the desired granularity was set to \texttt{PRINCIPAL}.}
-        \label{fig:cyclic-permute-circuit}
-    \end{figure}
-    We choose a modest granularity level, \texttt{PRINCIPAL}.
-    The resulting gate sequence consists of 279 layers (a Qiskit term referring to groups of related gates),
-    and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
-    We also integrated our compiler so it can output quantum circuit in OpenQASM format.
-    See Listing~\ref{lst:qasm} for the resulting code.
+    We have chosen the finest granularity level, \texttt{CLIFFORD\_T}, for this demonstration.
+    The resulting quantum circuit consists of 279 layers (a Qiskit term referring to groups of related gates),
+    and the first dozen are shown in Figure ~\ref{fig:optimized-circuit}.
+    We also transpiled our QIL can output quantum circuit in OpenQASM format
+    and included in Listing~\ref{lst:qasm} for reference.
 
     \begin{listing}[h]
         \caption{Generated OpenQASM 3.0 code from the cyclic permutation matrix operator.
@@ -659,6 +669,26 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{listing}
 
 
+    \begin{figure}[tbhp]
+        \centering
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,clip,trim=0 13100 0 30]{random-unitary.pdf}
+            \caption{Circuit diagram (partial) in Qiskit\textregistered.}
+            \label{fig:qiskit-circuit}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{cirq-circuit.pdf}
+            \caption{Circuit diagram (partial) in Cirq\textregistered.}
+            \label{fig:cirq-circuit}
+        \end{subfigure}
+        \caption{Circuit diagrams rendered for different platforms based on the same QIL
+        that was compiled from a randomly generated unitary matrix and stored in file.
+        }
+        \label{fig:random-unitary}
+    \end{figure}
     As another example, we compiled a randomly generated $8 \times 8$ unitary operator
     \begin{equation}
         \label{eq:random-mat}
@@ -671,14 +701,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             -0.3795+0.3577j & -0.0237-0.1054j & \dots & 0.0838-0.4389j & 0.1242-0.0068j
         \end{bmatrix}.
     \end{equation}
-    Using \texttt{qompiler}, we compiled and rendered it in Qiskit format,
-    and the first page of gates is displayed in Figure~\ref{fig:random-unitary}.
-    It also generates similar \texttt{QASM} code.
-    \begin{figure}[tbhp]
-        \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
-        \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
-        \label{fig:random-unitary}
-    \end{figure}
+    We have chosen a modest granularity, \texttt{PRINCIPAL}, for this demonstration.
+    We rendered the resulting quantum circuits in both Qiskit and Cirq, as shown in Figure~\ref{fig:random-unitary}.
+    The generated \texttt{QASM} code is similar to Listing~\ref{lst:qasm} which we will not repeat.
 
 
     \section{Limitations}\label{sec:limitations}
@@ -709,6 +734,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We welcome collaboration and feedback from the quantum software community.
 
     \bibliographystyle{unsrt}
-    \bibliography{qompiler}
+    \bibliography{Qompiler}
 
 \end{document}

@@ -495,47 +495,56 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
 
-    One of the key features of the current implementation of \texttt{qompiler} is
-    its built-in support for traceability and verifiability.
     When applying quantum computing to real-world problems, such as quantum chemistry,
     the size of the quantum circuit can become very large.
     A quantum program for simulating a simple molecule like LiH in the STO-3G basis
     may require approximately $1000$ gates~\cite{Hong_2022}.
     Simulation programs for moderately large molecules can consist of millions~\cite{poulin2014,google_science_2020}.
     Keeping track of all these gates and ensuring correctness is challenging.
-    \texttt{Qompiler} is designed with traceability and verifiability in mind from the outset.
-    We organize the compiled code as a B-Tree data structure in the intermediate language.
-%    TODO
-    To that end, we created \texttt{ByteCode} to represent the tree node.
+
 
     \begin{figure}[tbhp]
         \centering
         \includegraphics[width=0.6\linewidth]{btree}
-        \caption{The end result as a B-Tree data structure.
-        The B-Tree is layered, starting from the input unitary matrix at the root,
-            followed by intermediate layers two-level unitary, single-qubit, control-pruned, and finally universal gates
-            (including Clifford+T gates) as the leaves.
+        \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
+        The root of the tree is the input unitary matrix,
+            followed by intermediate layers: two-level unitary, single-qubit, control-pruned.
+            At the leave layer, are the components of the quantum circuit.
         }
         \label{fig:btree}
     \end{figure}
 
-    The resulting IL is represented as a B-Tree data structure and stored in \textit{.qco} files.
-    In the B-Tree structure, parent nodes generally correspond to coarser-grained operators,
-    while child nodes represent the decomposed operators whose product recovers the parent node, e.g.,
+
+    We highlighted the built-in support for traceability and verifiability of our quantum compiler system
+    in Section~\ref{sec:introduction}.
+    Here, we examine how this is achieved.
+    To store and organize compiled code in the intermediate language, we designed a data structure called \texttt{ByteCode}.
+    \texttt{ByteCode} is a B-Tree, where each node represents a stage of the compiled quantum operator
+    along with associated metadata.
+    Traceability is encoded in the parent--child relationships:
+    each gate in the final program can be traced back to the specific operation that produced it.
+    The built-in optimizers applied in later stages of compilation also record tracing information for their operations,
+    preserving the original lineage.
+
+
+    In the B-Tree data structure, parent nodes generally correspond to coarser-grained operators,
+    whereas child nodes are finer-grained operators whose matrix product recovers the parent node, e.g.,
     \begin{equation}
         \label{eq:parent-child-relation}
         \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
     \end{equation}
-    In general, the nodes of a B-Tree are layered as shown in Figure~\ref{fig:btree} for details.
+    An example of a B-Tree is shown in Figure~\ref{fig:btree} for illustration of the layered nature.
 
 
-    Traceability is encoded in the parent-child relationships.
-    Each gate in the final program can be traced back to the specific operation that produced it.
-    The built-in optimizers applied in later stages of compilation also record tracing information for their operations
-    and preserve the original lineage.
+    Convenient methods such as \texttt{is\_leaf} and \texttt{herm} (Hermitian conjugate) are provided
+    to simplify programming with tree nodes.
+    Two iterators, \texttt{PreorderIterator} and \texttt{ReversePreorderIterator}, are also implemented
+    to traverse the tree.
+    In addition, we support serialization/deserialization (\texttt{serde}) of this data structure,
+    to faithfully store and load the B-Tree data structure to and from \textit{.qco} files.
 
-    Overall, debugging the quantum circuit is made easier in \texttt{qompiler}
-    thanks to the traceability and verifiability integral to the design.
+    With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
+    and program debugging is made easier in \texttt{qompiler}.
 
 
     \section{Circuit Rendering}\label{sec:rendering}

@@ -427,11 +427,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \texttt{sk\_decompose} is a recursive function whose base case is simply the zero-th order approximation provided by the \texttt{SU2Net}.
     For each recursion, the group commutator of the residual operator is calculated and used for better approximation
     until it is close enough to the identity operator $I$.
+    The function \texttt{sk\_decompose} is shown in Listing~\ref{lst:sk-decomp}.
 
     \begin{listing}[h]
         \caption{The Solovay-Kitaev decomposition function.
         It is a recursive function with the base case of  \texttt{SU2Net} approximation.
         In each recursion, it calculates the group commutators of the residual operator.}
+        \label{lst:sk-decomp}
         \inputminted[
             linenos,           % show line numbers
 %            fontsize=\small,   % font size
@@ -626,21 +628,27 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     into universal quantum circuit in Qiskit.
     \begin{figure}[tbhp]
         \centerline{\includegraphics[width=0.8\textwidth]{circuit-example}}
-        \caption{Qiskit circuit diagram (partial) compiled from a cyclic permutation matrix.}
+        \caption{Qiskit circuit diagram (partial) compiled from a cyclic permutation matrix.
+        Note the desired granularity was set to \texttt{PRINCIPAL}.}
         \label{fig:cyclic-permute-circuit}
     \end{figure}
-    We choose the highest level of granularity, \texttt{CLIFFORD\_T}.
+    We choose a modest granularity level, \texttt{PRINCIPAL}.
     The resulting gate sequence consists of 279 layers (a Qiskit term referring to groups of related gates),
     and the first few are shown in Figure ~\ref{fig:cyclic-permute-circuit}.
     We also integrated our compiler so it can output quantum circuit in OpenQASM format.
     See Listing~\ref{lst:qasm} for the resulting code.
 
-
-    \begin{minipage}{\linewidth}
-        \lstinputlisting[
-            caption={Generated OpenQASM 3.0 code.},
-            label={lst:qasm},firstline=1,lastline=20]{code.qasm}
-    \end{minipage}
+    \begin{listing}[h]
+        \caption{Generated OpenQASM 3.0 code from the cyclic permutation matrix operator.
+        Only the first $20$ lines are shown.}
+        \label{lst:qasm}
+        \inputminted[
+            linenos,
+            xleftmargin=8em,
+            firstline=1,
+            lastline=20,
+        ]{asm}{code.qasm}
+    \end{listing}
 
 
     As another example, we compiled a randomly generated $8 \times 8$ unitary operator
@@ -656,18 +664,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{bmatrix}.
     \end{equation}
     Using \texttt{qompiler}, we compiled and rendered it in Qiskit format,
-    and the first page of gates is displayed in Figure~\ref{fig:random-unitary} and Listing~\ref{lst:random-unitary}.
+    and the first page of gates is displayed in Figure~\ref{fig:random-unitary}.
+    It also generates similar \texttt{QASM} code.
     \begin{figure}[tbhp]
         \centerline{\includegraphics[width=0.8\textwidth]{random-unitary}}
         \caption{Qiskit circuit diagram (partial) compiled from a randomly generated unitary matrix.}
         \label{fig:random-unitary}
     \end{figure}
-
-    \begin{minipage}{\linewidth}
-        \lstinputlisting[
-            caption={Generated OpenQASM 3.0 code from the same randomly generated unitary matrix.},
-            label={lst:random-unitary},firstline=1,lastline=20]{random_unitary.qasm}
-    \end{minipage}
 
 
     \section{Limitations}\label{sec:limitations}

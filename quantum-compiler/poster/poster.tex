@@ -2,6 +2,7 @@
 \usepackage[size=a0,scale=1.0]{beamerposter}
 \usetheme{ConfPoster} % You can change to other poster themes if you like
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{amsmath, amssymb}
 \usepackage{pifont}  % For handwritten-style cross
 \usepackage{tikz}
@@ -9,6 +10,7 @@
 \usepackage{blkarray} % optional for QR codes
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{minted}
 \newcommand{\cmark}{{\color{green!60!black} \ding{52}}}
 \newcommand{\xmark}{\color{red} \ding{56}} % Handwritten-style cross
 
@@ -86,6 +88,11 @@
                     circuit generation while preserving cross-platform compatibility.
                 \end{block}
 
+            \end{column}
+
+            % Column 2
+            \begin{column}{0.33\textwidth}
+
                 \begin{block}{4. Architecture}
                     In Figure~\ref{fig:architecture}, we present the diagram of \texttt{Qompiler} architecture.
                     \begin{figure}[htbp]
@@ -95,23 +102,23 @@
                         The main flow is ``compiler configuration → Hamiltonian decomposition → Circuit optimization → Quantum circuit rendering''.}
                         \label{fig:architecture}
                     \end{figure}
-                \end{block}
-            \end{column}
 
-            % Column 2
-            \begin{column}{0.33\textwidth}
-
-                \begin{block}{4. Architecture (Continued)}
-                    \begin{figure}[htbp]
-                        \centering
-                        \includegraphics[width=.8\linewidth]{qompiler}
-                        \caption{The compilation workflow.}
-                        \label{fig:qompiler}
-                    \end{figure}
                     The resulting IL is basically a B-Tree data structure and is written to \textit{.qco} files.
-                    \begin{figure}[htbp]
+                    \begin{figure}[tbhp]
                         \centering
-                        \includegraphics[width=0.6\linewidth]{btree}
+                        \begin{subfigure}{0.45\textwidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{workflow}
+                            \caption{The compilation workflow.}
+                            \label{fig:workflow}
+                        \end{subfigure}
+                        \hfill
+                        \begin{subfigure}{0.45\textwidth}
+                            \centering
+                            \includegraphics[width=.7\textwidth]{btree}
+                            \caption{The compilation workflow.}
+                            \label{fig:qompiler}
+                        \end{subfigure}
                         \caption{The end result as a B-Tree data structure.}
                         \label{fig:btree}
                     \end{figure}
@@ -136,16 +143,6 @@
                     \end{equation*}
                     The granularity of \texttt{CLIFFORD\_T} is chosen for the end result.
 
-                    % Top horizontal line
-                    \noindent\rule{\linewidth}{0.5pt}
-                    \vspace{0.5em}
-                    \begin{minipage}{0.48\linewidth}
-                        \lstinputlisting[firstline=1, lastline=10,label={lst:qasm1},caption={Compiled quantum circuit in QASM.}]{code.qasm}
-                    \end{minipage}\hfill
-                    \begin{minipage}{0.48\linewidth}
-                        \lstinputlisting[firstline=11,label={lst:qasm2}]{code.qasm}
-                    \end{minipage}
-                    \noindent\rule{\linewidth}{0.5pt}
                 \end{block}
             \end{column}
 
@@ -153,12 +150,46 @@
             \begin{column}{0.33\textwidth}
                 \begin{block}{6. Results (Continued)}
 
-                    \begin{figure}[htbp]
+                    \begin{figure}[tbhp]
                         \centering
-                        \includegraphics[width=.9\linewidth]{circuit-example}
-                        \caption{The compiled quantum circuit drawn in \textit{matplotlib}.}
+                        \begin{subfigure}{0.45\textwidth}
+                            \centering
+                            \includegraphics[width=\linewidth,clip,trim=0 13100 0 30]{random-unitary.pdf}
+                            \caption{Circuit diagram (partial) in Qiskit\textregistered.}
+                            \label{fig:qiskit-circuit}
+                        \end{subfigure}
+                        \hfill
+                        \begin{subfigure}{0.45\textwidth}
+                            \centering
+                            \includegraphics[width=\textwidth]{cirq-circuit.pdf}
+                            \caption{Circuit diagram (partial) in Cirq\texttrademark.}
+                            \label{fig:cirq-circuit}
+                        \end{subfigure}
+                        \caption{Circuit diagrams rendered for different platforms based on the same QIL
+                        that was compiled from a randomly generated unitary matrix and stored in file.
+                        }
                         \label{fig:circuit-example}
                     \end{figure}
+
+                    % Top horizontal line
+                    \noindent\rule{\linewidth}{0.5pt}
+                    \vspace{0.5em}
+                    \begin{minipage}{0.48\linewidth}
+                        \inputminted[
+                            linenos,
+                            xleftmargin=2em,
+                            firstline=1,
+                            lastline=10,
+                        ]{asm}{code.qasm}
+                    \end{minipage}\hfill
+                    \begin{minipage}{0.48\linewidth}
+                        \inputminted[
+                            linenos,
+                            xleftmargin=2em,
+                            firstline=11,
+                        ]{asm}{code.qasm}
+                    \end{minipage}
+                    \noindent\rule{\linewidth}{0.5pt}
                 \end{block}
 
                 \begin{block}{7. Conclusion}

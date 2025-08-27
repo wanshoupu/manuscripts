@@ -65,8 +65,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         We present a quantum system software framework that bridges the gap between physics modeling and quantum software development.
         At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
         represented using a platform-independent B-Tree-based quantum intermediate language (QIL).
-        The B-Tree structure provides essential lineage information for circuit gate traceability and code verification.
-        The QIL offers a universal, hardware-agnostic representation that enables flexible translation and optimization across diverse quantum hardware backends.
+        The B-Tree structure encodes lineage information, enabling detailed traceability of circuit gates and facilitating code verification.
+        The QIL provides a universal, hardware-agnostic representation, allowing flexible translation and optimization across different quantum hardware backends.
         We demonstrate implementations that render the QIL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
         Additionally, we provide a transpiler that converts the QIL into OpenQASM for broader compatibility.
     \end{abstract}
@@ -76,7 +76,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation offer significant advantages for applications in chemistry, pharmaceuticals, and biological processes.
+    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals, and biological processes.
     Given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
     \begin{equation}
         \label{eq:hamiltonian}
@@ -85,10 +85,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     In Schrödinger picture, for example, the time-dependent state ket of the system is given as
     \begin{equation}
         \label{eq:sysstate}
-        \left\| \psi\left( t \right) \right> = \hat{U}\left( t \right)\left\| \psi_{0} \right>
+        \left\| \psi\left( t \right) \right\rangle = \hat{U}\left( t \right)\left\| \psi_{0} \right\rangle
     \end{equation}
-    where $\left\| \psi_{0} \right>$ is the initial ket of an arbitrary system state.
-    Whereas, most observable operators remain constant unless they are explicitly time-dependent.
+    where $\left\| \psi_{0} \right\rangle$ is the initial ket of an arbitrary system state.
+    In contrast, most observable operators remain constant unless explicitly time-dependent.
     Equivalently in Heisenberg picture, the dynamics may be formulated as
     \begin{equation}
         \label{eq:heisenberg}
@@ -102,7 +102,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     requiring expertise in physics, mathematics, and software engineering.
     This steep learning curve limits access for many users and professionals who could benefit from quantum computing.
     Existing quantum transpilers are often platform-specific, implemented in an ad hoc manner,
-    and provide limited control over compilation granularity.
+    and offer limited control over compilation granularity.
 
 
     To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
@@ -209,7 +209,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
     control gate decomposition (CTRL), Euler rotation decomposition (EA),
     and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.
-    This is done recursively by the \texttt{Qompiler} class.
+    The \texttt{Qompiler} class performs these steps recursively.
     We will spend the entire Section~\ref{sec:decomp} to discuss this as well as future development.
 
 
@@ -222,7 +222,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Nearing the end of the compilation process are the optimization passes
     where multiple passes may be taken to simplify the circuit output,
     including gate annihilation, reduction, and consolidation.
-    Think of the decomposition processes as `push`, whereas the optimization processes as `pull`.
+    Think of the decomposition processes as a `push' and the optimization processes as a `pull'.
     Through the optimization processes, we `pull back` some of the decomposition actions.
     By combining the actions in both the `push` and `pull` processes, we aim to find an optimal compilation result
     that respects the native constraints of the targeted quantum hardware.
@@ -230,8 +230,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     Once the compilation process is finished, the end result is binary code written to disk as `.qco' files.
-    Finally, the interpretation stage.
-    The circuit interpretation and rendering part is in the curation of \texttt{QRenderer} and \texttt{CircuitBuilder}.
+    Finally, the interpretation stage involves the \texttt{QRenderer} and \texttt{CircuitBuilder},
+    which handle circuit interpretation and rendering.
     The compiler’s intermediate language (QIL) is platform-independent and can be interpreted and rendered
     into executable circuits for specific quantum platforms.
     The QIL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
@@ -258,7 +258,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     for the basics.
     Representations of unitary matrices and quantum gates, especially, controlled quantum gates,
     are the central part of the compiler design.
-    A unitary matrix refers to a multidimensional unitary matrix of complex type.
+    A unitary matrix refers to a multidimensional complex matrix that is unitary.
     It captures the dynamics of a specific quantum system.
     It usually has no reference to any specific qubit for the simulation.
     A quantum gate, on the other hand, is a predefined unit of quantum operation acting on a specific domain of qubits.
@@ -314,8 +314,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{tab:terminology}
     \end{table}
 
-    As stated earlier, what distinguish a quantum gate from a unitary operator is
-    that a quantum gate is associated with an allocated \texttt{qspace} whereas a unitary operator is not.
+    As stated earlier, a quantum gate differs from a unitary operator in that it is associated with a specific \texttt{qspace},
+    whereas a unitary operator is not tied to any qubits.
     Each qubit in a \texttt{qspace} can assume one of three roles:
     \begin{itemize}
         \item \texttt{TARGET}, whose quantum state may be altered.
@@ -345,8 +345,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     As keen readers have noticed, \texttt{IDLER} qubits are degrees of freedom that can be added into
     or taken away from the formulation of \texttt{CtrlGate}.
-    Expansion into extra Hilbert space is an important operation
-    when multiplying multi-qubit operators spanning different qubit spaces.
+    Expanding into additional Hilbert space is crucial when multiplying multi-qubit operators that span different qubit spaces.
     Adding extra qubits to \texttt{CtrlGate} is implemented by the method \texttt{expand}.
     By performing successive Kronecker product operations, one can inject idler qubits in between the original qubit spaces.
 
@@ -365,10 +364,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     In this section, we go over the decomposition process of the \texttt{Qompiler}.
 
 
-    Starting from the $n$-dimensional unitary operator,
-    the encoded quantum formulation undergoes a number of decomposition processes
-    until the quantum gates reach the intended granularity, such as
-    principal gates, \texttt{CNOT}, etc.
+    Starting from an $n$-dimensional unitary operator, the quantum formulation undergoes several decomposition processes
+    until the resulting quantum gates reach the desired granularity, such as principal gates or \texttt{CNOT}.
 %    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
     The main decomposition processes used by \texttt{Qompiler} are listed here:
     \begin{itemize}
@@ -393,7 +390,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         }
         \label{fig:workflow}
     \end{figure}
-    All the decomposition processes are orchestrated by the class \texttt{Qompiler} recursively in a depth-first fashion.
+    The class \texttt{Qompiler} orchestrates all decomposition processes recursively in a depth-first manner.
     The granularity of the final quantum gate is specified in the \texttt{QConfig}.
     As illustrated in Figure~\ref{fig:workflow},
     unless the configuration specifies a granularity of \texttt{MULTI\_TARGET},
@@ -419,8 +416,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Solovay--Kitaev Approximation}\label{sec:sk-approx}
 
     Solovay and Kitaev Theorem is a piece of foundational work in the quantum computation field~\cite{kitaev1997quantum,dawson2005sk}.
-    Thanks to this theorem, it becomes possible to efficiently approximate an arbitrary single-qubit operator out of the \texttt{SU(2)} group.
-    with a set of universal gates.
+    Thanks to this theorem, it is possible to efficiently approximate any single-qubit operator
+    from the \texttt{SU(2)} group using a set of universal gates.
     With a predefined error margin $\epsilon$, both the number of gates to approximate the operator
     and the runtime to calculate them as a function of $\epsilon$ are
     polylogarithmic, $~O(\log^{c}(1/\epsilon))$ with $c$ a constant.
@@ -429,7 +426,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The basic idea behind Solovay \& Kitaev approximation from the above references is understandably simple.
     Over the operator space in the \texttt{SU(2)} group, create a point net such that the distance between adjacent points is bound by $\epsilon_{0}$,
     an error margin of a certain threshold (referred to as \texttt{SU2Net}).
-    On a zero-th order, operators in the neighborhood of a point in the \texttt{SU2Net} are approximated by the sequence of gates at that point.
+    At zeroth order, operators near a point in the \texttt{SU2Net} are approximated using the gate sequence associated with that point.
     Then call the function \mintinline{python}{def sk_decompose(self, U: NDArray, depth: int) -> Bytecode:}
     with a recursion depth according to the desired error margin $\epsilon$.
     \texttt{sk\_decompose} is a recursive function whose base case is simply the zero-th order approximation provided by the \texttt{SU2Net}.
@@ -476,12 +473,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             Multiple annihilation and consolidation cases are visible.}
             \label{fig:optimized-circuit}
         \end{subfigure}
-        \caption{Side-by-side comparison of the same circuit diagram with and without the optimization passes.}
         \label{fig:optimize-comparison}
     \end{figure}
 
 
-    Early we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
+    Earlier, we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
     We elaborate on this now.
 
 
@@ -489,8 +485,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
     To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
     combining multiple operators into fewer, more efficient gates.
-    As shown in Figure~\ref{fig:optimize-comparison}, a side-by-side comparison of the same circuit diagram
-    highlights the optimization effects.
+    Shown in Figure~\ref{fig:optimize-comparison} is a side-by-side comparison of the same circuit diagram
+    with and without the optimization passes.
     This push-and-pull design not only maximizes the efficiency of the resulting circuit
     but also provides precise control over gate granularity.
 
@@ -516,7 +512,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     like IonQ Forte\textregistered,
     an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
     After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
-    the resulting \texttt{ByteCode} is written to a binary-format output file `\texttt{.qco}'.
+    the resulting \texttt{ByteCode} is written to a binary-format output file \texttt{.qco}.
 
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
@@ -612,10 +608,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Testing}\label{sec:tests}
 
-    Correctness is the foundation of the \texttt{Qompiler} project.
+    Ensuring correctness is fundamental to the success of \texttt{Qompiler} project.
     We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
     To achieve this goal, we vigorously test the project against all encountered edge cases.
-    Most of the major constructs used for the \texttt{Qompiler} have close to $100\%$ coverage.
+    Most major constructs in \texttt{Qompiler} have nearly $100\%$ test coverage.
     The overall unit test coverage of the whole project also reaches $90\%$.
 
 
@@ -720,20 +716,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The generated \texttt{QASM} code is similar to Listing~\ref{lst:qasm} which we will not repeat.
 
 
-    Despite the abovementioned successes, the \texttt{Qompiler} project comes with its limitations.
+    Despite these successes, the \texttt{Qompiler} project has certain limitations.
     For example, the project was implemented in Python with numerical libraries, including NumPy and SciPy.
     Therefore, the underlying numerical errors limit the precision of the compiled quantum circuit.
     However, when the Solovay--Kitaev approximation is employed,
     the dominant source of error is the residual approximation error itself.
 
     As the size of the input increases, practical system limitations arise.
-    The program becomes computationally intensive for large unitary matrices.
+    The program can become computationally intensive for large unitary matrices
     The memory footprint may also become a bottleneck once the number of qubits reaches a certain threshold.
     It is expected that the pressure on computational resources can be alleviated through distributed computation.
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
-    We presented a configurable, cross-platform quantum compiler, \texttt{Qompiler}, with built-in gate traceability.
+    We presented a configurable, cross-platform quantum compiler, \texttt{Qompiler}, featuring built-in gate traceability.
     Initial benchmarks confirm the correctness and consistency of \texttt{Qompiler}'s
     output across supported platforms, including Qiskit and Cirq.
     Future work will focus on distributed computation and parallelization to enable the

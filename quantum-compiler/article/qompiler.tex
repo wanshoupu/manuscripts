@@ -13,6 +13,7 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{tabularx}
 \usepackage[T1]{fontenc}
 \usepackage{minted}
 \usepackage{subcaption}
@@ -64,13 +65,15 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        We present a quantum system software framework that bridges the gap between physics modeling and quantum software development.
+        We present a quantum software framework that bridges the gap between physics modeling and quantum software development.
         At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
-        represented using a platform-independent B-Tree-based quantum intermediate language (QIL).
-        The B-Tree structure encodes lineage information, enabling detailed traceability of circuit gates and facilitating code verification.
-        The QIL provides a universal, hardware-agnostic representation, allowing flexible translation and optimization across different quantum hardware backends.
-        We demonstrate implementations that render the QIL into executable quantum circuits targeting platforms such as Qiskit and Cirq.
-        Additionally, we provide a transpiler that converts the QIL into OpenQASM for broader compatibility.
+        represented using a platform-independent B-Tree-based intermediate language.
+        The B-Tree structure encodes information for gate lineage, enabling detailed traceability of quantum circuit gates and facilitating code verification.
+        The B-Tree-based intermediate language serves as a universal, hardware-agnostic carrier of compiled code,
+        readily adaptable to multiple quantum hardware backends as well as other universal languages.
+        We demonstrate rendering the compiled code into executable quantum circuits in Qiskit and Cirq.
+        We can also transpile the compiled intermediate language into OpenQASM,
+        a standard language for describing quantum circuits, for broader compatibility.
     \end{abstract}
 
     \keywords{Quantum Computing \and Quantum Compilation \and Hamiltonian Decomposition \and Cross-Platform \and Circuit Synthesis \and Solovay-Kitaev Theorem}
@@ -78,38 +81,45 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals, and biological processes.
-    Given an input Hamiltonian $\hat{H}$, the quantum dynamics are fully prescribed by the time-dependent evolution operator
+    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals, and biomedicine, materials science, etc.
+    Given a Hamiltonian $\hat{H}$ as input, one can calculate the time-dependent evolution operator as
     \begin{equation}
         \label{eq:hamiltonian}
-        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar}
+        \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar},
     \end{equation}
-    In Schrödinger picture, for example, the time-dependent state ket of the system is given as
+    where $t$ is time and $\hbar$ is Planck's constant.
+    In Schrödinger picture, the state ket of the system is a function of time and given by
     \begin{equation}
         \label{eq:sysstate}
         \left\| \psi\left( t \right) \right\rangle = \hat{U}\left( t \right)\left\| \psi_{0} \right\rangle
     \end{equation}
     where $\left\| \psi_{0} \right\rangle$ is the initial ket of an arbitrary system state.
-    In contrast, most observable operators remain constant unless explicitly time-dependent.
-    Equivalently in Heisenberg picture, the dynamics may be formulated as
+    Observables remain constant unless they are explicitly time-dependent.
+    Equivalently in Heisenberg picture, the observables are time-dependent and formulated as
     \begin{equation}
         \label{eq:heisenberg}
         \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
     \end{equation}
-    where $\hat{A}_{0}$ is the initial operator for an arbitrary observable.
-    Whereas, the state kets remain constants.
-    By choosing a suitable basis, the evolution operator, $\hat{U}\left( t \right)$, may be represented as a unitary matrix $U$.
+    where $\hat{A}_{0}$ is a constant operator for the observable at time $t=0$.
+    The state kets remain constant.
+    There are other presentation pictures than these two.
+    But in all pictures, the quantum dynamics of the system are fully encoded in $\hat{U}\left( t \right)$.
+    Simulation of a system is equivalent to simulate the operator $\hat{U}\left( t \right)$.
+    For numerical calculation, we can choose a suitable basis for the Hilbert space and convert
+    the evolution operator to a series of unitary matrix, $U_{t_i}$, for $i = 0, 1, 2, \dots$.
 
-    Despite its potential in quantum simulation, developing quantum computing software remains highly challenging,
+
+    Despite its potential in quantum simulation, developing quantum computing software is quite challenging and error-prone,
     requiring expertise in physics, mathematics, and software engineering.
-    This steep learning curve limits access for many users and professionals who could benefit from quantum computing.
+    The steep learning curve poses a barrier and limits access for potential users and professionals
+    who could benefit from quantum computing.
     Existing quantum transpilers are often platform-specific, implemented in an ad hoc manner,
     and offer limited control over compilation granularity.
 
 
     To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
-    designed for traceability, verifiability, and configurable gate control.
-    \texttt{Qompiler} decomposes time slices of evolution operator, $U$, into quantum circuits
+    featuring automation, mass-production, traceability, verifiability, and control.
+    \texttt{Qompiler} decomposes the evolution operator, $U$, into quantum circuits
     using multi-stage decomposition processes.
     The final compiled code (quantum circuit) is represented as a B-Tree data structure,
     an intermediate language (QIL) which is the key for compilation lineage and platform independence.
@@ -122,31 +132,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This hardware-aware optimization is designed into the foundation of the cross-platform \texttt{Qompiler}.
 
 
-    Table~\ref{tab:feature-comparison} compares \texttt{Qompiler} with existing quantum compilers, transpilers, and synthesizers according to the following criteria:
-    \begin{itemize}
-        \item Cross-platform support;
-        \item Traceability \& verifiability;
-        \item Control over compilation granularity.
-    \end{itemize}
+    Table~\ref{tab:feature-comparison} compares \texttt{Qompiler} with existing quantum compilers,
+    transpilers, and synthesizers according to the following criteria: cross-platform support,
+    gate traceability, and gate granularity control.
     \texttt{Qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control,
     as it will be shown in the following sections.
     \begin{table}[tbhp]
         \centering
         \renewcommand{\arraystretch}{1.5} % Add spacing between rows
         \resizebox{\textwidth}{!}{ % Resize to fit the full text width
-            \begin{tabular}{|l|c|c|c|c|c|c|c|}
+            \begin{tabularx}{.8\textwidth}{X|c|c|c|c|c|c|c}
                 \hline
-                \textbf{Feature}          & \textbf{Qompiler} & \textbf{Qiskit}             & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} \\
+                \textbf{Feature}          & \textbf{Qiskit} & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} & \textbf{Qompiler} \\
                 \hline
-                Platform Agnostic         & \cmark            & \cmark                      & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        \\
-                Gate Lineage Traceability & \cmark            & \xmark                      & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        \\
-                Configurable Gate Type    & \cmark            & \textcolor{gray}{\ding{52}} & \xmark        & \xmark        & \xmark         & \cmark         & \xmark        \\
+                Cross-platform support         & \cmark          & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        & \cmark \\
+                Gate traceability & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        & \cmark \\
+                Gate granularity control    & \textcolor{gray}{\ding{52}} & \xmark & \xmark & \xmark & \cmark & \xmark & \cmark \\
                 \hline
-            \end{tabular}
+            \end{tabularx}
         }
-        \caption{Feature comparison between \texttt{Qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
-        Green check marks indicate support, whereas a red cross mark indicates lack of support.
-        A gray check mark is associated with Qiskit, reflecting its partial control over gate types in the final result.
+        \caption{Comparing \texttt{Qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
+        Green check marks indicate support and red cross marks indicate lack of support.
+            (A gray check mark is associated with Qiskit for its partial control over gate types.)
         }\label{tab:feature-comparison}
     \end{table}
 
@@ -168,46 +175,40 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
-    Here we provide an overview of the high-level design.
-    The system is organized into the following functional parts:
-    ``Compiler configuration'', ``Matrix decomposition'', ``Optimization'', ``Circuit rendering''.
-    This is illustrated in Figure~\ref{fig:impl}.
-    We will briefly describe each of these steps here, while more detailed discussions of selected components
-    are presented in subsequent sections.
+    Let's go over the high-level design of \texttt{Qompiler}.
+    The major functionalities of the system are organized into the following core modules:
+    ``Configuration'', ``Decomposition'', ``Optimization'', and ``Rendering'' (See Figure~\ref{fig:impl}).
+    We will briefly describe each of these modules here, while leaving detailed discussions to later sections.
 
 
-    A key feature of \texttt{Qompiler} is its configurable compilation granularity,
-    allowing users to tailor the resulting circuit to the gate sets best suited for the target hardware.
+    Rich controls of \texttt{Qompiler} are made possible through the sophisticated configuration system,
+    offering control over almost all aspects of the compilation process,
+    including but not limited to the granularity control, target platform, error tolerances,
+    quantum device space allocation, optimization level, etc.
+    This makes it possible for users to precisely tailor the gate granularity of the quantum circuit
+    to best suit the targeted hardware.
     For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually,
     offering zero-error and zero-latency execution;
-    in this case, the compiler can be configured to prioritize Pauli gates.
-    Conversely, trapped-ion platforms such as IonQ natively support arbitrary single-qubit rotations,
-    including $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be adapted accordingly to produce rotation-based circuits.
+    So for superconducting quantum hardware, we can configure the compiler to prioritize Pauli gates.
+    On the other hand, trapped-ion platforms natively support arbitrary single-qubit rotations,
+    including $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be configured accordingly
+    to produce rotation-based circuits.
     This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
     while maintaining traceability and cross-platform compatibility.
 
 
-    The compiler configuration is the sole responsibility of \texttt{ConfigManager}.
-    \texttt{ConfigManager} can read configuration inputs from several sources:
-    \begin{itemize}
-        \item Default settings JSON file,
-        \item Custom overrides JSON file,
-        \item Command line settings.
-    \end{itemize}
-    Rich controls of the compilation processes are made possible through the sophisticated configuration system,
-    offering control over almost all aspects of the compilation process,
-    including but not limited to the granularity control, target platform, error tolerances,
-    quantum device space allocation, optimization level, etc.
-
+    In the current design, \texttt{ConfigManager} is at the center of the configuration module.
+    \texttt{ConfigManager} can read configuration inputs from several sources: default settings JSON file,
+    custom overrides JSON file, and command line settings.
     Once all configuration sources are loaded and combined,
     the final settings are used to create a singleton instance of \texttt{QFactory},
-    which is a creational design pattern, the factory pattern ~\cite{Gamma1994DesignPattern}.
+    following a factory design pattern ~\cite{Gamma1994DesignPattern}.
     From the \texttt{QFactory}, other compilation constructs are created as
     needed---\texttt{Qompiler}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
 
 
-    Now that all the needed constructs are in place, \texttt{Qompiler} can start to take orders---\( U\left(t\right) \) as input and
-    compile it into gate-level quantum code.
+    Now that all the needed objects of \texttt{Qompiler} are in place, it can start to process inputs and
+    compile gate-level quantum code.
     The compilation process comprises several key steps, including two-level decomposition (2L), swap gate decomposition (CX),
     control gate decomposition (CTRL), Euler rotation decomposition (EA),
     and the Solovay-Kitaev approximation (SK)~\cite{nielsen2010q,dawson2005sk}.

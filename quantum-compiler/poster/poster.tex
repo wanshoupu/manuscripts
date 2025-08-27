@@ -31,7 +31,7 @@
                     However, quantum software development remains challenging, requiring deep expertise in physics, mathematics, and software engineering.
                     Existing transpilers are often platform-specific and lack flexible control over circuit granularity.
 
-                    To address these challenges, we developed \texttt{qompiler}—a cross-platform quantum circuit synthesizer that emphasizes traceability,
+                    To address these challenges, we developed \texttt{Qompiler}—a cross-platform quantum circuit synthesizer that emphasizes traceability,
                     verifiability, and configurable gate selection.
                     It decomposes Hamiltonians using a multi-stage framework and represents the circuits
                     in a platform-independent B-Tree structure that supports gate-level lineage.
@@ -70,15 +70,31 @@
                 \end{block}
 
                 \begin{block}{3. Methodology}
-                    We developed \texttt{qompiler}, a cross-platform quantum circuit synthesizer that decomposes
-                    user-defined Hamiltonians into executable quantum circuits through a multi-stage framework.
-                    This process includes two-level decomposition (2L), swap gate decomposition (CX), control gate
-                    decomposition (CTRL), Euler angle decomposition (EA), and Solovay-Kitaev approximation (SK)~\cite{nielsen2010quantum}.
+                    The \texttt{Qompiler} decomposes user-defined Hamiltonians into executable quantum circuits
+                    through a multi-stage framework~\cite{nielsen2010quantum}.
+                    Starting from the $n$-dimensional unitary operator,
+                    the input undergoes a number of decomposition processes
+                    until the quantum gates reach the intended granularity, such as
+                    principal gates, \texttt{CNOT}, etc.
+                    The main decomposition processes used by \texttt{Qompiler} are listed in the next column.
+                    \begin{itemize}
+                        \label{lst:decomp}
+                        \item \texttt{mat2l\_decompose}: decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.
+                        \item \texttt{cnot\_decompose}: decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.
+                        \item \texttt{ctrl\_decompose}: given a controlled gate, break its control sequence down to shorter controls,
+                        usually with the help of ancilla qubits.
+                        \item \texttt{euler\_decompose}: decomposes a single-qubit gate into Euler rotation operators and optionally a phase shift.
+                        \item \texttt{cliffordt\_decompose}: given a universal gate, decomposes it into \texttt{Clifford+T} gates.
+                        \item \texttt{sk\_decompose}: Based on Solovay-Kitaev Theorem, approximates a single-qubit gate into \texttt{universal} gates
+                        or a subset of it, e.g., the \texttt{Clifford+T} gates.
+                    \end{itemize}
 
                     The compiler provides fine-grained control over decomposition granularity and optimization levels
                     to match the native constraints of specific quantum hardware.
+                    See Table~\ref{tab:terminology} for the terminologies used in this poster.
                     All intermediate and final circuits are captured in a B-Tree data structure, enabling gate-level lineage through parent-child
                     relationships, which supports traceability and verifiability.
+
 
                     The platform-independent intermediate language (IL) can be rendered into target-specific circuits
                     for Qiskit, Cirq, and OpenQASM~\cite{openqasm2,openqasm3}. \texttt{qompiler} allows users to configure
@@ -92,7 +108,34 @@
 
             % Column 2
             \begin{column}{0.33\textwidth}
-
+                \begin{block}{3. Methodology (continued)}
+                    \begin{table}[htbp]
+                        \centering
+                        \renewcommand{\arraystretch}{1} % Add spacing between rows
+                        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
+                            \begin{tabular}{|l|l|l|}
+                                \hline
+                                \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum}          \\
+                                \hline
+                                Unitary       & Any $n$-qubit unitary operator                                                 & \texttt{UNITARY}       \\
+                                2level        & Unitary operator with no more than two non-identity rows/columns               & \texttt{TWO\_LEVEL}    \\
+                                Multi-Target  & Gates with $2+$ target qubit and any number of control qubits                  & \texttt{MULTI\_TARGET} \\
+                                Singlet       & Gates with a single target and any number of control qubits                    & \texttt{SINGLET}       \\
+                                Ctrl-pruned   & Controlled gates with a single target and at most one control qubit            & \texttt{CTRL\_PRUNED}  \\
+                                Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$                     & \texttt{PRINCIPAL}     \\
+                                Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
+                                Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                  & \texttt{CLIFFORD\_T}   \\
+                                \hline
+                            \end{tabular}
+                        }
+                        \caption{Terminology for granularity classification of unitary operators and quantum gates.
+                        When a gate meets the requirements of multiple categories, the finest one is chosen.
+                        For example, if a single-target gate has one control qubit a core matrix \texttt{X},
+                            we classify it as \texttt{Clifford+T}.
+                        }
+                        \label{tab:terminology}
+                    \end{table}
+                \end{block}
                 \begin{block}{4. Architecture}
                     In Figure~\ref{fig:architecture}, we present the diagram of \texttt{Qompiler} architecture.
                     \begin{figure}[htbp]
@@ -126,8 +169,6 @@
                 \end{block}
 
                 \begin{block}{6. Results}
-
-
                     For illustration, we compiled a $ 8 \times 8 $ cyclic permutation matrix
                     \begin{equation*}
                         \begin{bmatrix}
@@ -141,7 +182,6 @@
                             0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
                         \end{bmatrix}
                     \end{equation*}
-                    The granularity of \texttt{CLIFFORD\_T} is chosen for the end result.
 
                 \end{block}
             \end{column}
@@ -149,6 +189,9 @@
             % Column 3
             \begin{column}{0.33\textwidth}
                 \begin{block}{6. Results (Continued)}
+                    The granularity of \texttt{CLIFFORD\_T} is chosen for the end result.
+                    The matrix operator is compiled once and rendered into Qiskit and Cirq, respectively.
+                    We also transpiled the compiled code from QIL to OpenQASM~\cite{openqasm2,openqasm3}
 
                     \begin{figure}[tbhp]
                         \centering

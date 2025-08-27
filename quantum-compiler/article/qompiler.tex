@@ -572,7 +572,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=0.6\linewidth]{btree.pdf}
+        \begin{overpic}[width=0.6\textwidth]{btree.pdf}
+            \put(0,70){\colorbox{white}{\makebox(20,15){}}}
+        \end{overpic}
         \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
         The root of the tree is the input unitary matrix,
             followed by intermediate layers: two-level unitary, single-qubit, control-pruned.

@@ -5,6 +5,8 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[percent]{overpic}  % allows relative coordinates 0-100
 \usepackage{svg}
 \usepackage{textcomp}
 \usepackage{adjustbox}
@@ -153,7 +155,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.8\linewidth]{architecture}
+        \includegraphics[width=.8\linewidth]{architecture.pdf}
         \caption{The high-level design of the `\texttt{Qompiler}' system.
         Rectangles (blue) represent major class constructs.
         Rectangles with a jagged bottom (purple) represent file input/output (file I/O).
@@ -247,7 +249,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.6\linewidth]{matrices-gates}
+        \includegraphics[width=.6\linewidth]{matrices-gates.pdf}
         \caption{The class diagrams for \texttt{UnitaryM} and \texttt{CtrlGate}.}
         \label{fig:um-and-cgate}
     \end{figure}
@@ -381,7 +383,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.8\linewidth]{workflow}
+        \includegraphics[width=.8\linewidth]{workflow.pdf}
         \caption{The compilation workflow in details.
         The entry point is \texttt{Unitary}.
         Each parallelogram (purple) represents a stage of the compiled operator.
@@ -459,18 +461,58 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[h]
         \centering
-        \begin{subfigure}{0.45\textwidth}
+        \begin{subfigure}{0.8\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{unoptimized}
-            \caption{Unoptimized circuit diagram (partial) compiled from a cyclic permutation matrix.}
+            \begin{overpic}[width=\linewidth,clip,trim=0 3000 0 30]{unoptimized.pdf}
+                \put(46.5,50.2){\color{orange}\framebox(8,3.5){}}  % T T
+
+                \put(46.5,46.3){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(47,32){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(95,39){\color{orange}\framebox(3.7,3.5){}}  % H
+                \put(6.5,20.5){\color{orange}\framebox(3,3.5){}}  % H
+
+                \put(50.5,28){\color{orange}\framebox(7.5,3.5){}}  % T X X T
+                \put(47,27.7){\color{orange}\framebox(15,4){}}  % X X
+
+                \put(50.5,13){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(58,5.7){\color{orange}\framebox(7.5,3.5){}}  % T X X T
+                \put(54,5.5){\color{orange}\framebox(15,4){}}     % X X
+
+                \put(6.5,2){\color{orange}\framebox(7,3.5){}}  % H H
+                \put(5.7,2){\color{orange}\framebox(11,14){}}  % H H CX
+
+                \put(17.5,2){\color{orange}\framebox(3.2,3.5){}} % TD
+                \put(91.5,20.5){\color{orange}\framebox(3.5,3.5){}} % TD
+            \end{overpic}
+            \caption{Unoptimized circuit diagram (partial) compiled from a cyclic permutation matrix.
+            Possible annihilations and consolidations are framed.}
             \label{fig:unoptimized-circuit}
         \end{subfigure}
-        \hfill
-        \begin{subfigure}{0.45\textwidth}
+
+        \vspace{1em}
+
+        \begin{subfigure}{0.8\textwidth}
             \centering
-            \includegraphics[width=\linewidth]{optimized-circuit}
+            \begin{overpic}[width=\linewidth,clip,trim=0 2070 0 30]{optimized-circuit.pdf}
+                \put(47,50.7){\color{orange}\framebox(3.5,3.3){}}  % S
+
+                \put(47,47){\color{orange}\framebox(3.5,3.3){}}  % Z
+
+                \put(39.7,32){\color{orange}\framebox(3.5,3.5){}}  % Z
+
+                \put(39.7,28){\color{orange}\framebox(3.5,3.5){}}  % S
+
+                \put(13.7,13.5){\color{orange}\framebox(3.5,3.5){}}  % Z
+
+                \put(17.3,6){\color{orange}\framebox(3.5,3.5){}}  % S
+
+                \put(73,21){\color{orange}\framebox(3.5,3.5){}} % SD
+            \end{overpic}
             \caption{Same circuit diagram with basic optimization passes.
-            Multiple annihilation and consolidation cases are visible.}
+            The consolidated and simplified gates are framed.}
             \label{fig:optimized-circuit}
         \end{subfigure}
         \label{fig:optimize-comparison}
@@ -492,9 +534,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \begin{figure}[tbhp]
-        \centerline{\includegraphics[width=0.6\textwidth]{optimizer}}
-        \caption{Optimizer class design.}
-        \label{fig:optimizer-class}
+        \centering
+        \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
+        \caption{Renderer and Optimizer class diagrams.}
+        \label{fig:optimizer-renderer-class-design}
     \end{figure}
 
 
@@ -504,7 +547,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and performs such optimizations.
     The \texttt{SlidingWindowOptimizer} is derived from the \texttt{Optimizer} interface
     which declares the optimization level and the optimize method.
-    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-class}.
+    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-renderer-class-design}.
 
 
     Furthermore, our compiler design can easily accommodate custom optimizers.
@@ -527,7 +570,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=0.6\linewidth]{btree}
+        \includegraphics[width=0.6\linewidth]{btree.pdf}
         \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
         The root of the tree is the input unitary matrix,
             followed by intermediate layers: two-level unitary, single-qubit, control-pruned.
@@ -571,13 +614,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Circuit Rendering}\label{sec:rendering}
 
-    \begin{figure}[tbhp]
-        \centerline{\includegraphics[width=0.6\textwidth]{render}}
-        \caption{Renderer class design.}
-        \label{fig:renderer}
-    \end{figure}
-
-
     The end product of the compilation process is the code file `\texttt{.qco}'.
     Rendering the code file into a quantum circuit on the target platform is the responsibility of
     \texttt{Renderer} and related circuit building classes.
@@ -586,7 +622,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     of the \texttt{CircuitBuilder} interface.
     We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for
     Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered platforms.
-    The UML diagram for the rendering classes is shown in Figure~\ref{fig:renderer}.
+    The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
     More support for other platforms can be easily added simply by new implementations of the \texttt{CircuitBuilder} interface.
 
 

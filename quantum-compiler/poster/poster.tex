@@ -148,9 +148,8 @@
 
 
                     \vspace{2em}
-                    \includegraphics[width=.8\linewidth]{architecture}
+                    \includegraphics[width=.8\linewidth]{architecture.pdf}
                     \vspace{2em}
-
 
 
                     The decomposition workflow and the resulting QIL, a B-Tree data structure, is written to a \textit{.qco} file.
@@ -159,16 +158,15 @@
                         \centering
                         \begin{subfigure}{0.45\textwidth}
                             \centering
-                            \includegraphics[width=.6\textwidth,scale=0.7]{btree}
-                            \caption{Compiled code as a B-Tree data structure.}
-                            \label{fig:btree}
-                        \end{subfigure}
-                        \hfill
-                        \begin{subfigure}{0.45\textwidth}
-                            \centering
-                            \includegraphics[width=\linewidth]{workflow}
+                            \includegraphics[width=\linewidth]{workflow.pdf}
                             \caption{The compilation workflow.}
                             \label{fig:workflow}
+                        \end{subfigure}
+                        \begin{subfigure}{0.45\textwidth}
+                            \centering
+                            \includegraphics[width=.6\textwidth,scale=0.7]{btree.pdf}
+                            \caption{Compiled code as a B-Tree data structure.}
+                            \label{fig:btree}
                         \end{subfigure}
                         \label{fig:Qompiler}
                     \end{figure}
@@ -180,6 +178,7 @@
 
                     \begin{figure}[tbhp]
                         \centering
+                        \caption{Quantum evolution compiled once and quantum circuit rendered multiple times.}
                         \begin{subfigure}{0.45\textwidth}
                             \centering
                             \includegraphics[width=\linewidth,clip,trim=0 13100 0 30]{random-unitary.pdf}
@@ -193,7 +192,6 @@
                             \caption{Circuit diagram (partial) in Cirq\texttrademark.}
                             \label{fig:cirq-circuit}
                         \end{subfigure}
-                        \caption{Quantum evolution compiled once and quantum circuit rendered multiple times.}
                         \label{fig:circuit-example}
                     \end{figure}
 

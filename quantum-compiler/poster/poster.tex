@@ -2,6 +2,7 @@
 \usepackage[size=a0,scale=1]{beamerposter}
 \usetheme{ConfPoster} % You can change to other poster themes if you like
 \usepackage{graphicx}
+\usepackage[percent]{overpic}  % allows relative coordinates 0-100
 \usepackage{subcaption}
 \usepackage{amsmath, amssymb}
 \usepackage{pifont}  % For handwritten-style cross
@@ -19,12 +20,12 @@
 \let\oldblock\block
 \let\endoldblock\endblock
 
-\renewenvironment{block}[1]{%
+\renewenvironment{block}[1]{
     \vspace{2em} % space above
-    \oldblock{#1}%
-    }{%
+    \oldblock{#1}
+    }{
     \endoldblock   % ends the original block
-    \vspace{2em} % space below
+%    \vspace{2em} % space below
 }
 
 
@@ -44,28 +45,27 @@
             \begin{column}{0.33\textwidth}
 
                 \begin{block}{Introduction}
-                    Quantum simulation provides exponential advantages for applications in chemistry, pharmaceuticals, and biological processes.
-                    However, quantum software development remains challenging, requiring deep expertise in physics, mathematics, and software engineering.
-                    Existing transpilers are often platform-specific and lack flexible control over circuit granularity.
+                    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals, and biomedicine, materials science, etc.
+                    Developing quantum computing software, however, is quite challenging and error-prone,
+                    requiring expertise in physics, mathematics, and software engineering.
 
-                    To address these challenges, we developed \texttt{Qompiler}—a cross-platform quantum circuit synthesizer that emphasizes traceability,
-                    verifiability, and configurable gate selection.
-                    It decomposes Hamiltonians using a multi-stage framework and represents the circuits
-                    in a platform-independent B-Tree structure that supports gate-level lineage.
 
-                    \texttt{Qompiler} enables hardware-aware circuit generation, supporting major frameworks such as Qiskit, Cirq, and OpenQASM,
-                    while allowing users to tailor the gate sets to match the native capabilities of different quantum devices.
+                    To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
+                    featuring automation, mass-production, traceability, verifiability, and control.
+                    \texttt{Qompiler} decomposes the evolution operator, $\hat{U}$, into quantum circuits
+                    using multi-stage decomposition processes~\cite{nielsen2010quantum}.
+                    The final compiled code (quantum circuit) is represented as a B-Tree data structure,
+                    an intermediate language (QIL) which is the key for compilation lineage and platform independence.
+                    Through polymorphically implemented \texttt{CircuitBuilder}, we can realize cross-platform support including but not limited to
+                    Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
                 \end{block}
 
 
                 \begin{block}{Methodology}
-                    The \texttt{Qompiler} decomposes user-defined Hamiltonians into executable quantum circuits
-                    through a multi-stage decomposition process~\cite{nielsen2010quantum}.
-                    Starting from the $n$-dimensional unitary operator,
-                    the input operator undergoes a number of decomposition processes
+                    The input operator undergoes a number of decomposition processes
                     until the quantum gates reach the intended granularity.
-                    The compiler provides fine-grained control over decomposition granularity and optimization levels
-                    to match the native constraints of specific quantum hardware.
+                    Notably, \texttt{Qompiler}'s provides fine-grained control over gate granularity and optimization levels
+                    to align with the native hardware.
                     We have listed the terminology for granularity classification of unitary operators and quantum gates below.
 
 
@@ -148,7 +148,8 @@
 
 
                     \vspace{2em}
-                    \includegraphics[width=.8\linewidth]{architecture.pdf}
+                    \centering
+                    \includegraphics[width=.6\linewidth]{architecture.pdf}
                     \vspace{2em}
 
 
@@ -164,7 +165,9 @@
                         \end{subfigure}
                         \begin{subfigure}{0.45\textwidth}
                             \centering
-                            \includegraphics[width=.6\textwidth,scale=0.7]{btree.pdf}
+                            \begin{overpic}[width=0.6\textwidth]{btree.pdf}
+                                \put(0,70){\colorbox{white}{\makebox(20,10){}}}
+                            \end{overpic}
                             \caption{Compiled code as a B-Tree data structure.}
                             \label{fig:btree}
                         \end{subfigure}
@@ -175,6 +178,18 @@
 
                 \begin{block}{Results}
 
+                    For illustration, we used \texttt{Qompiler} to compile a randomly generated $8 \times 8$ unitary matrix.
+                    \begin{equation}
+                        \label{eq:random-mat}
+                        U =
+                        \begin{bmatrix}
+                            0.2246+0.3674j & 0.0756+0.3213j & \dots & -0.0534-0.1667j & -0.3321-0.1199j \\
+                            -0.2123-0.0162j & 0.115+0.4483j & \dots & -0.1772-0.1398j & -0.1267+0.3692j \\
+                            \vdots & \vdots & \ddots & \vdots & \vdots \\
+                            0.1554+0.0272j & -0.4272+0.5894j & \dots & 0.1361+0.1934j & 0.3972+0.3205j \\
+                            -0.3795+0.3577j & -0.0237-0.1054j & \dots & 0.0838-0.4389j & 0.1242-0.0068j
+                        \end{bmatrix}.
+                    \end{equation}
 
                     \begin{figure}[tbhp]
                         \centering
@@ -201,19 +216,6 @@
             % Column 3
             \begin{column}{0.33\textwidth}
                 \begin{block}{Results}
-
-                    For illustration, we created an evolution operator from a randomly generating a $8 \times 8$ unitary matrix
-                    \begin{equation}
-                        \label{eq:random-mat}
-                        U =
-                        \begin{bmatrix}
-                            0.2246+0.3674j & 0.0756+0.3213j & \dots & -0.0534-0.1667j & -0.3321-0.1199j \\
-                            -0.2123-0.0162j & 0.115+0.4483j & \dots & -0.1772-0.1398j & -0.1267+0.3692j \\
-                            \vdots & \vdots & \ddots & \vdots & \vdots \\
-                            0.1554+0.0272j & -0.4272+0.5894j & \dots & 0.1361+0.1934j & 0.3972+0.3205j \\
-                            -0.3795+0.3577j & -0.0237-0.1054j & \dots & 0.0838-0.4389j & 0.1242-0.0068j
-                        \end{bmatrix}.
-                    \end{equation}
 
 
                     We choose \texttt{PRINCIPAL} as the compilation granularity.
@@ -247,15 +249,12 @@
                 \end{block}
 
                 \begin{block}{Conclusion}
-                    We have presented \texttt{Qompiler}, a traceable and verifiable quantum circuit synthesizer that bridges the gap between physics-based Hamiltonian modeling
-                    and cross-platform quantum software development.
-                    By leveraging a configurable, multi-stage decomposition framework and a B-Tree intermediate representation,
-                    \texttt{Qompiler} enables gate-level lineage tracking and hardware-aware circuit synthesis.
-                    The platform-agnostic design allows seamless rendering of circuits into backends such as Qiskit, Cirq,
-                    and OpenQASM, promoting broad compatibility and flexible deployment.
-                    Importantly, the compiler’s fine-grained control over gate type selection empowers users to optimize circuits for the unique characteristics of
-                    various quantum hardware platforms. \texttt{Qompiler} provides a scalable, transparent,
-                    and adaptable solution that supports efficient quantum algorithm development across the heterogeneous quantum computing landscape.
+                    We presented \texttt{Qompiler}, a configurable quantum circuit synthesizer with built-in gate traceability.
+                    It bridges physics-based Hamiltonian modeling and quantum software development.
+                    The system enables gate-level lineage tracking and hardware-aware synthesis through a B-Tree-based QIL.
+                    It also supports seamless rendering into backends such as Qiskit, Cirq, and OpenQASM for flexible deployment.
+                    Users can fine-tune gate selection to optimize circuits for diverse quantum hardware.
+                    Overall, \texttt{Qompiler} provides a scalable, transparent, and adaptable solution for efficient algorithm development across the heterogeneous quantum landscape.
 
 
                     \vspace{1em}
@@ -269,22 +268,19 @@
 
                 \begin{block}{References}
                     \begin{thebibliography}{99}
-                        \bibitem{tket} S. Sivarajah \textit{et al.}, ``t|ket⟩: A Retargetable Compiler for NISQ Devices,'' arXiv preprint arXiv.2003.10611, 2020.
-
-                        \bibitem{quilc} Rigetti Computing, ``An Open-Source, Industrial-Strength Optimizing Compiler for Quantum Programs,'' arXiv preprint arXiv:2003.13961, 2020.
-                        Available: https://github.com/rigetti/quilc.
-
-                        \bibitem{qfast} E. Younis \textit{et al.}, ``QFAST: Quantum Synthesis Using a Hierarchical Continuous Circuit Space,'' arXiv preprint arXiv.2003.04462, 2020.
-
-                        \bibitem{staq} M. Amy \textit{et al.}, ``Staq: A Full-Stack Quantum Processing Toolkit,'' in Quantum Science and Technology, Focus on Quantum Software, 5, 034016 (2020).
-                        arXiv preprint arXiv.1912.06070, 2020.
-
                         \bibitem{nielsen2010quantum}
                         M. A. Nielsen and I. L. Chuang, \textit{Quantum Computation and Quantum Information}, Cambridge Univ. Press, 2010.
-
+                        \bibitem{cirq2024} Google Quantum AI, ``Cirq,'' 2024. Online; available at \url{https://quantumai.google/cirq}.
+                        \bibitem{qiskit2023} H.~Abraham, AduOffei, I.~Y.~Akhalwaya, \emph{et al.}, ``Qiskit: An open-source framework for quantum computing,'' Zenodo, 2023.
                         \bibitem{openqasm2} A. W. Cross \textit{et al.}, ``Open Quantum Assembly Language,'' arXiv preprint arXiv:1707.03429, 2017.
 
                         \bibitem{openqasm3} A. W. Cross \textit{et al.}, ``OpenQASM 3: A broader and deeper quantum assembly language,'' arXiv preprint arXiv:2104.14722, 2021.
+                        \bibitem{tket} S. Sivarajah \textit{et al.}, ``t|ket⟩: A Retargetable Compiler for NISQ Devices,'' arXiv preprint arXiv.2003.10611, 2020.
+                        \bibitem{quilc} Rigetti Computing, ``An Open-Source, Industrial-Strength Optimizing Compiler for Quantum Programs,'' arXiv preprint arXiv:2003.13961, 2020.
+                        Available: https://github.com/rigetti/quilc.
+                        \bibitem{qfast} E. Younis \textit{et al.}, ``QFAST: Quantum Synthesis Using a Hierarchical Continuous Circuit Space,'' arXiv preprint arXiv.2003.04462, 2020.
+                        \bibitem{staq} M. Amy \textit{et al.}, ``Staq: A Full-Stack Quantum Processing Toolkit,'' in Quantum Science and Technology, Focus on Quantum Software, 5, 034016 (2020).
+                        arXiv preprint arXiv.1912.06070, 2020.
                     \end{thebibliography}
                 \end{block}
             \end{column}

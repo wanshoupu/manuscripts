@@ -230,7 +230,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Through the optimization processes, we `pull back` some of the decomposition actions.
     By combining the actions in both, we aim to find an optimal balance in the compilated code
     that best suits the targeted quantum hardware.
-    This is the topic for Section~\ref{sec:optimization}.
+    This is the topic for Subsection~\ref{subsec:optimization}.
     Once all the compilation and optimization steps are finished, the end result is serialized in the form of QIL
     and the binary code is written to a \texttt{.qco} file for later uses.
 
@@ -250,7 +250,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We will visit this in Section~\ref{sec:rendering}.
 
 
-    \section{Design of Elementary Classes}\label{sec:design-of-elements}
+    \section{Elementary Classes}\label{sec:design-of-elements}
 
     \begin{figure}[tbhp]
         \centering
@@ -366,8 +366,159 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Without the trace operation, verification of the compilation process would be challenging.
     Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
 
+    \subsection{Optimizers}\label{subsec:optimization}
+
+    \begin{figure}[h]
+        \centering
+        \begin{subfigure}{0.8\textwidth}
+            \centering
+            \begin{overpic}[width=\linewidth,clip,trim=0 3000 0 30]{unoptimized}
+                \put(46.5,50.2){\color{orange}\framebox(8,3.5){}}  % T T
+
+                \put(46.5,46.3){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(47,32){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(95,39){\color{orange}\framebox(3.7,3.5){}}  % H
+                \put(6.5,20.5){\color{orange}\framebox(3,3.5){}}  % H
+
+                \put(50.5,28){\color{orange}\framebox(7.5,3.5){}}  % T X X T
+                \put(47,27.7){\color{orange}\framebox(15,4){}}  % X X
+
+                \put(50.5,13){\color{orange}\framebox(8,3.5){}}  % S S
+
+                \put(58,5.7){\color{orange}\framebox(7.5,3.5){}}  % T X X T
+                \put(54,5.5){\color{orange}\framebox(15,4){}}     % X X
+
+                \put(6.5,2){\color{orange}\framebox(7,3.5){}}  % H H
+
+                \put(91.5,20.5){\color{orange}\framebox(3.5,3.5){}} % TD
+                \put(96,20.5){\color{orange}\framebox(3.5,14){}} % CX
+                \put(5.7,1.7){\color{orange}\framebox(11,14){}}  % H H CX
+                \put(17.5,2){\color{orange}\framebox(3.2,3.5){}} % TD
+            \end{overpic}
+            \caption{Unoptimized circuit diagram (partial) compiled from a cyclic permutation matrix.
+            Possible annihilations and consolidations are framed.}
+            \label{fig:unoptimized-circuit}
+        \end{subfigure}
+
+        \vspace{1em}
+
+        \begin{subfigure}{0.8\textwidth}
+            \centering
+            \begin{overpic}[width=\linewidth,clip,trim=0 2070 0 30]{optimized-circuit}
+                \put(47,50.7){\color{orange}\framebox(3.5,3.3){}}  % S
+
+                \put(47,47){\color{orange}\framebox(3.5,3.3){}}  % Z
+
+                \put(39.7,32){\color{orange}\framebox(3.5,3.5){}}  % Z
+
+                \put(39.7,28){\color{orange}\framebox(3.5,3.5){}}  % S
+
+                \put(13.7,13.5){\color{orange}\framebox(3.5,3.5){}}  % Z
+
+                \put(17.3,6){\color{orange}\framebox(3.5,3.5){}}  % S
+
+                \put(73,21){\color{orange}\framebox(3.5,3.5){}} % SD
+            \end{overpic}
+            \caption{Same circuit diagram with basic optimization passes.
+            Some gates are completely annihilated in the pass.
+            The consolidated gates are framed.}
+            \label{fig:optimized-circuit}
+        \end{subfigure}
+        \label{fig:optimize-comparison}
+    \end{figure}
+
+
+    Earlier, we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
+    We elaborate on this now.
+    The decomposition processes aim to ensure the resulting gates are $\geq$ the designated granularity.
+    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
+    To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
+    combining multiple operators into fewer, more efficient gates.
+    Shown in Figure~\ref{fig:optimize-comparison} is a side-by-side comparison of the same circuit diagram
+    with and without the optimization passes.
+    This push-and-pull design not only maximizes the efficiency of the resulting circuit
+    but also provides precise control over gate granularity.
+
+
+    \begin{figure}[tbhp]
+        \centering
+        \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
+        \caption{Renderer and Optimizer class diagrams.}
+        \label{fig:optimizer-renderer-class-design}
+    \end{figure}
+
+
+    Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
+    and \texttt{ConsolidationOptimizer}, both of the \texttt{SlidingWindowOptimizer} family
+    which detects optimization opportunities among the gates within a window of certain size
+    and performs such optimizations.
+    The \texttt{SlidingWindowOptimizer} is derived from the \texttt{Optimizer} interface
+    which declares the optimization level and the optimize method.
+    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-renderer-class-design}.
+
+
+    Furthermore, our compiler design can easily accommodate custom optimizers.
+    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
+    like IonQ Forte\textregistered,
+    an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
+    After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
+    the resulting \texttt{ByteCode} is written to a binary-format output file \texttt{.qco}.
+
+
+    \section{Circuit Renderer}\label{sec:rendering}
+
+    The end product of the compilation process is the code file `\texttt{.qco}'.
+    Rendering the code file into a quantum circuit on the target platform is the responsibility of
+    \texttt{Renderer} and related circuit building classes.
+    The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and use everywhere.''
+    Accordingly, the \texttt{Renderer} class is designed to accommodate polymorphic implementations
+    of the \texttt{CircuitBuilder} interface.
+    We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for
+    Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered platforms.
+    The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
+    More support for other platforms can be easily added simply by new implementations of the \texttt{CircuitBuilder} interface.
+
+
+    Additional hardware specific optimizations may be performed at this stage.
+
+    Qubit allocation and mapping are central topics in quantum computing.
+    We distinguish between two types of \texttt{qspace} allocation.
+    The first is the allocation of virtual \texttt{qspace}, and the second is the allocation of physical \texttt{qspace}.
+    The mapping between them is carried out during circuit rendering.
+%    When we compile the unitary operator into QIL, we allocated virtual qubits.
+    Allocation of virtual \texttt{qspace} is performed at compilation time and managed by the \texttt{QDevice}.
+    Allocation of physical qubits, together with the mapping of virtual qubits onto them, on the other hand,
+    is tied to a specific target platform and can only take place at circuit render time.
+    Qubit allocation is a crucial step and can be highly sophisticated, as it underpins the feasibility of computation
+    and strongly affects performance.
+    An effective physical qubit allocation algorithm should take qubit interactions into account.
+    In this article, however, we are not focusing on this aspect.
+    Instead, we adopt a simplified approach to illustrate the concept.
+    The study of advanced qubit allocation algorithms is left for future work.
+
 
     \section{Operator Decomposition}\label{sec:decomp}
+
+    \begin{table}[tbhp]
+        \label{tab:decomp}
+        \centering
+        \begin{tabularx}{.9\textwidth}{lX}
+            \hline
+            \textbf{Decomposition}        & \textbf{Description}                                                                                                                                        \\
+            \hline
+            \texttt{mat2l\_decompose}     & Decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.                                                                  \\
+            \texttt{cnot\_decompose}      & Decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.                                                                \\
+            \texttt{ctrl\_decompose}      & Given a controlled gate, breaks its control sequence down to shorter controls, usually with the help of ancilla qubits.                                     \\
+            \texttt{euler\_decompose}     & Decomposes a single-qubit gate into Euler rotation operators and optionally a phase shift.                                                                  \\
+            \texttt{cliffordt\_decompose} & Given a universal gate, decomposes it into \texttt{Clifford+T} gates.                                                                                       \\
+            \texttt{sk\_decompose}        & Based on the Solovay-Kitaev Theorem, approximates a single-qubit gate into \texttt{universal} gates or a subset of it, e.g., the \texttt{Clifford+T} gates. \\
+            \hline
+        \end{tabularx}
+        \caption{Main decomposition processes used by \texttt{Qompiler}.}
+    \end{table}
+
 
     The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
     matrix into a network of quantum gates, allocates and assigns qubits to each gate.
@@ -377,17 +528,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Starting from an $n$-dimensional unitary operator, the quantum formulation undergoes several decomposition processes
     until the resulting quantum gates reach the desired granularity, such as principal gates or \texttt{CNOT}.
 %    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
-    The main decomposition processes used by \texttt{Qompiler} are listed here:
-    \begin{itemize}
-        \item \texttt{mat2l\_decompose}: decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.
-        \item \texttt{cnot\_decompose}: decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.
-        \item \texttt{ctrl\_decompose}: given a controlled gate, break its control sequence down to shorter controls,
-        usually with the help of ancilla qubits.
-        \item \texttt{euler\_decompose}: decomposes a single-qubit gate into Euler rotation operators and optionally a phase shift.
-        \item \texttt{cliffordt\_decompose}: given a universal gate, decomposes it into \texttt{Clifford+T} gates.
-        \item \texttt{sk\_decompose}: Based on Solovay-Kitaev Theorem, approximates a single-qubit gate into \texttt{universal} gates
-        or a subset of it, e.g., the \texttt{Clifford+T} gates.
-    \end{itemize}
+    The main decomposition processes used by \texttt{Qompiler} are described in Table~\ref{tab:decomp}.
 
     \begin{figure}[tbhp]
         \centering
@@ -420,7 +561,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     By the end of decomposition processes, all the gates are guaranteed
     to meet or exceed the configured granularity level.
     It is the job of optimizers to tune back the over-decomposed gates,
-    and that's the subject of Section~\ref{sec:optimization}.
+    and that's the subject of Subsection~\ref{subsec:optimization}.
 
 
     \section{Solovay--Kitaev Approximation}\label{sec:sk-approx}
@@ -463,108 +604,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Despite our attempts to balance accuracy and runtime, our SK decomposition
     implementation is not yet efficient enough for production use.
     Improving this remains a potential direction for future work.
-
-
-    \section{Optimization}\label{sec:optimization}
-
-    \begin{figure}[h]
-        \centering
-        \begin{subfigure}{0.8\textwidth}
-            \centering
-            \begin{overpic}[width=\linewidth,clip,trim=0 3000 0 30]{unoptimized}
-                \put(46.5,50.2){\color{orange}\framebox(8,3.5){}}  % T T
-
-                \put(46.5,46.3){\color{orange}\framebox(8,3.5){}}  % S S
-
-                \put(47,32){\color{orange}\framebox(8,3.5){}}  % S S
-
-                \put(95,39){\color{orange}\framebox(3.7,3.5){}}  % H
-                \put(6.5,20.5){\color{orange}\framebox(3,3.5){}}  % H
-
-                \put(50.5,28){\color{orange}\framebox(7.5,3.5){}}  % T X X T
-                \put(47,27.7){\color{orange}\framebox(15,4){}}  % X X
-
-                \put(50.5,13){\color{orange}\framebox(8,3.5){}}  % S S
-
-                \put(58,5.7){\color{orange}\framebox(7.5,3.5){}}  % T X X T
-                \put(54,5.5){\color{orange}\framebox(15,4){}}     % X X
-
-                \put(6.5,2){\color{orange}\framebox(7,3.5){}}  % H H
-                \put(5.7,2){\color{orange}\framebox(11,14){}}  % H H CX
-
-                \put(17.5,2){\color{orange}\framebox(3.2,3.5){}} % TD
-                \put(91.5,20.5){\color{orange}\framebox(3.5,3.5){}} % TD
-            \end{overpic}
-            \caption{Unoptimized circuit diagram (partial) compiled from a cyclic permutation matrix.
-            Possible annihilations and consolidations are framed.}
-            \label{fig:unoptimized-circuit}
-        \end{subfigure}
-
-        \vspace{1em}
-
-        \begin{subfigure}{0.8\textwidth}
-            \centering
-            \begin{overpic}[width=\linewidth,clip,trim=0 2070 0 30]{optimized-circuit}
-                \put(47,50.7){\color{orange}\framebox(3.5,3.3){}}  % S
-
-                \put(47,47){\color{orange}\framebox(3.5,3.3){}}  % Z
-
-                \put(39.7,32){\color{orange}\framebox(3.5,3.5){}}  % Z
-
-                \put(39.7,28){\color{orange}\framebox(3.5,3.5){}}  % S
-
-                \put(13.7,13.5){\color{orange}\framebox(3.5,3.5){}}  % Z
-
-                \put(17.3,6){\color{orange}\framebox(3.5,3.5){}}  % S
-
-                \put(73,21){\color{orange}\framebox(3.5,3.5){}} % SD
-            \end{overpic}
-            \caption{Same circuit diagram with basic optimization passes.
-            Some gates are completely annihilated in the pass.
-            The consolidated gates are framed.}
-            \label{fig:optimized-circuit}
-        \end{subfigure}
-        \label{fig:optimize-comparison}
-    \end{figure}
-
-
-    Earlier, we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
-    We elaborate on this now.
-
-
-    In the decomposition processes, the \texttt{Qompiler} aims to ensure the resulting gates are $\geq$ the designated granularity.
-    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
-    To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
-    combining multiple operators into fewer, more efficient gates.
-    Shown in Figure~\ref{fig:optimize-comparison} is a side-by-side comparison of the same circuit diagram
-    with and without the optimization passes.
-    This push-and-pull design not only maximizes the efficiency of the resulting circuit
-    but also provides precise control over gate granularity.
-
-
-    \begin{figure}[tbhp]
-        \centering
-        \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
-        \caption{Renderer and Optimizer class diagrams.}
-        \label{fig:optimizer-renderer-class-design}
-    \end{figure}
-
-
-    Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
-    and \texttt{ConsolidationOptimizer}, both of the \texttt{SlidingWindowOptimizer} family
-    which detects optimization opportunities among the gates within a window of certain size
-    and performs such optimizations.
-    The \texttt{SlidingWindowOptimizer} is derived from the \texttt{Optimizer} interface
-    which declares the optimization level and the optimize method.
-    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-renderer-class-design}.
-
-
-    Furthermore, our compiler design can easily accommodate custom optimizers.
-    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
-    like IonQ Forte\textregistered,
-    an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
-    After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
-    the resulting \texttt{ByteCode} is written to a binary-format output file \texttt{.qco}.
 
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
@@ -621,38 +660,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
     and program debugging is made easier in \texttt{Qompiler}.
-
-
-    \section{Circuit Rendering}\label{sec:rendering}
-
-    The end product of the compilation process is the code file `\texttt{.qco}'.
-    Rendering the code file into a quantum circuit on the target platform is the responsibility of
-    \texttt{Renderer} and related circuit building classes.
-    The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and use everywhere.''
-    Accordingly, the \texttt{Renderer} class is designed to accommodate polymorphic implementations
-    of the \texttt{CircuitBuilder} interface.
-    We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for
-    Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered platforms.
-    The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
-    More support for other platforms can be easily added simply by new implementations of the \texttt{CircuitBuilder} interface.
-
-
-    Additional hardware specific optimizations may be performed at this stage.
-
-    Qubit allocation and mapping are central topics in quantum computing.
-    We distinguish between two types of \texttt{qspace} allocation.
-    The first is the allocation of virtual \texttt{qspace}, and the second is the allocation of physical \texttt{qspace}.
-    The mapping between them is carried out during circuit rendering.
-%    When we compile the unitary operator into QIL, we allocated virtual qubits.
-    Allocation of virtual \texttt{qspace} is performed at compilation time and managed by the \texttt{QDevice}.
-    Allocation of physical qubits, together with the mapping of virtual qubits onto them, on the other hand,
-    is tied to a specific target platform and can only take place at circuit render time.
-    Qubit allocation is a crucial step and can be highly sophisticated, as it underpins the feasibility of computation
-    and strongly affects performance.
-    An effective physical qubit allocation algorithm should take qubit interactions into account.
-    In this article, however, we are not focusing on this aspect.
-    Instead, we adopt a simplified approach to illustrate the concept.
-    The study of advanced qubit allocation algorithms is left for future work.
 
 
     \section{Testing}\label{sec:tests}

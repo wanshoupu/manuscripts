@@ -105,9 +105,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     There are other presentation pictures than these two.
     But in all pictures, the quantum dynamics of the system are fully encoded in $\hat{U}\left( t \right)$.
     Simulation of a system is equivalent to simulate the operator $\hat{U}\left( t \right)$.
-    For numerical calculation, we assume a suitable basis has chosen in the system Hilbert space
-    and the operator $\hat{U}\left( t \right)$ has been evaluated as
-    a series of unitary matrix, $U_{t_i}$, for $i = 0, 1, 2, \dots$.
+    In this article, we assume a suitable basis has chosen in the system Hilbert space
+    and the operator $\hat{U}\left( t \right)$ has been evaluated as unitary matrices, $U_{t_i}$, for $i = 0, 1, 2, \dots$.
     For references on ways to evaluate operator $\hat{U}$ see~\cite{Suzuki1991,AbramsLloyd1999QPE,Lloyd1996,Chuang1997QPT}.
 
 
@@ -269,25 +268,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     A unitary matrix refers to a multidimensional complex matrix that is unitary.
     It captures the dynamics of a specific quantum system.
-    It usually has no reference to any specific qubit for the simulation.
+    It has no reference to qubits in the simulation space.
     A quantum gate, on the other hand, is a predefined unit of quantum operation acting on a specific domain of qubits.
     We call the specific domain of qubits a ``quantum space'' and refer to it as \texttt{qspace} in this article.
     The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
     transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
 
 
-    We created \texttt{UnitaryM} to represent unitary matrices.
-    Given the sparse nature of the evolution operator, $\hat{U}\left( t \right)$,
-    we designed \texttt{UnitaryM} readily accommodate sparsity and still be efficient.
-    For example, for a $10$-qubit Hamiltonian system, it's rarely the case that all $10$ qubits interact with one another.
-    More often, qubits next to one another interact.
-    Reflected in the evolution operator, these correspond to the off-diagonal elements.
-
-
-    Accordingly, we only store the rows and columns with non-identity diagonal elements and/or
-    with non-zero off-diagonal elements.
-    We call the indices of these rows and columns the ``core-indices''
-    and the submatrix corresponding to these rows and columns the ``core-matrix''.
+    We developed \texttt{UnitaryM} to represent unitary matrices with two primary considerations.
+    First, it uses object-oriented programming to manage operations involving unitary matrices as inputs.
+    Second, it provides an efficient framework for handling sparse matrices.
+    For many cases, the evolution operator, $\hat{U}\left( t \right)$, is sparse.
+    For example, in the Ising model, interactions are restricted to nearest-neighbor spins (see Reference~\cite{shekaari2021} for an overview of the model).
+    In the corresponding evolution operator, these interactions manifest as off-diagonal elements.
+    Accordingly, we primarily store only the rows and columns with non-zero off-diagonal elements.
+    We call the submatrix corresponding to these rows and columns the ``core-matrix''
+    and the indices of them the ``core-indices''.
     We implemented the \texttt{matmul} method for matrix multiplication operations between \texttt{UnitaryM}'s.
     The class method \texttt{deflate} converts a NumPy array ($2$D) into \texttt{UnitaryM}.
     The method \texttt{inflate} (and \texttt{numpy.array}) does the opposite---returns

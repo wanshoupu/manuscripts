@@ -56,7 +56,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-    \title{Qompiler: A Traceable Quantum Circuit Synthesis from Arbitrary Hamiltonians}
+    \title{Qompiler: A Traceable Quantum Circuit Synthesiser from Arbitrary Hamiltonians}
 
     \author{Shoupu Wan \\
     Email: wanshoupu@gmail.com \thanks{Github link: \url{https://github.com/wanshoupu/quantum-simulations}}
@@ -65,7 +65,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        We present a quantum software framework that bridges the gap between physics modeling and quantum software development.
+        We present a system software framework that bridges the gap between physics modeling and quantum software development.
         At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
         represented using a platform-independent B-Tree-based intermediate language.
         The B-Tree structure encodes information for gate lineage, enabling detailed traceability of quantum circuit gates and facilitating code verification.
@@ -164,7 +164,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.8\linewidth]{architecture.pdf}
+        \includegraphics[width=.8\linewidth]{architecture}
         \caption{The high-level design of the `\texttt{Qompiler}' system.
         Rectangles (blue) represent major class constructs.
         Rectangles with a jagged bottom (purple) represent file input/output (file I/O).
@@ -254,7 +254,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.6\linewidth]{matrices-gates.pdf}
+        \includegraphics[width=.6\linewidth]{matrices-gates}
         \caption{The class diagrams for \texttt{UnitaryM} and \texttt{CtrlGate}.}
         \label{fig:um-and-cgate}
     \end{figure}
@@ -391,7 +391,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \includegraphics[width=.8\linewidth]{workflow.pdf}
+        \includegraphics[width=.8\linewidth]{workflow}
         \caption{The compilation workflow in details.
         The entry point is \texttt{Unitary}.
         Each parallelogram (purple) represents a stage of the compiled operator.
@@ -471,7 +471,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \centering
         \begin{subfigure}{0.8\textwidth}
             \centering
-            \begin{overpic}[width=\linewidth,clip,trim=0 3000 0 30]{unoptimized.pdf}
+            \begin{overpic}[width=\linewidth,clip,trim=0 3000 0 30]{unoptimized}
                 \put(46.5,50.2){\color{orange}\framebox(8,3.5){}}  % T T
 
                 \put(46.5,46.3){\color{orange}\framebox(8,3.5){}}  % S S
@@ -504,7 +504,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
         \begin{subfigure}{0.8\textwidth}
             \centering
-            \begin{overpic}[width=\linewidth,clip,trim=0 2070 0 30]{optimized-circuit.pdf}
+            \begin{overpic}[width=\linewidth,clip,trim=0 2070 0 30]{optimized-circuit}
                 \put(47,50.7){\color{orange}\framebox(3.5,3.3){}}  % S
 
                 \put(47,47){\color{orange}\framebox(3.5,3.3){}}  % Z
@@ -579,7 +579,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{figure}[tbhp]
         \centering
-        \begin{overpic}[width=0.6\textwidth]{btree.pdf}
+        \begin{overpic}[width=0.6\textwidth]{btree}
             \put(0,70){\colorbox{white}{\makebox(20,10){}}}
         \end{overpic}
         \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
@@ -732,14 +732,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \centering
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\linewidth,clip,trim=0 13100 0 30]{random-unitary.pdf}
+            \includegraphics[width=\linewidth,clip,trim=0 13100 0 30]{random-unitary}
             \caption{Circuit diagram (partial) in Qiskit\textregistered.}
             \label{fig:qiskit-circuit}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{cirq-circuit.pdf}
+            \includegraphics[width=\textwidth]{cirq-circuit}
             \caption{Circuit diagram (partial) in Cirq\texttrademark.}
             \label{fig:cirq-circuit}
         \end{subfigure}

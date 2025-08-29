@@ -267,15 +267,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Unitary Matrices}\label{subsec:unitary-matrices}
 
     A unitary matrix refers to a multidimensional complex matrix that is unitary.
-    It captures the dynamics of a specific quantum system.
-    It has no reference to qubits in the simulation space.
-    A quantum gate, on the other hand, is a predefined unit of quantum operation acting on a specific domain of qubits.
-    We call the specific domain of qubits a ``quantum space'' and refer to it as \texttt{qspace} in this article.
-    The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
-    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
-
-
-    We developed \texttt{UnitaryM} to represent unitary matrices with two primary considerations.
+    It captures the dynamics of a specific quantum system but has no reference to qubits in the simulation space.
+    We created the class \texttt{UnitaryM} to represent unitary matrices with two primary considerations.
     First, it uses object-oriented programming to manage operations involving unitary matrices as inputs.
     Second, it provides an efficient framework for handling sparse matrices.
     For many cases, the evolution operator, $\hat{U}\left( t \right)$, is sparse.
@@ -315,8 +308,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{tab:terminology}
     \end{table}
 
-    As stated earlier, a quantum gate differs from a unitary operator in that it is associated with a specific \texttt{qspace},
-    whereas a unitary operator is not tied to any qubits.
+    As mentioned earlier, the input unitary operator as represented in \texttt{UnitaryM}
+    has no reference to qubits in the simulation space.
+    A quantum gate, on the other hand, is the basic building block of a quantum circuit that performs a unitary operation on one or more qubits.
+    We refer to the qubits in the simulation domain as ``quantum space,'' or \texttt{qspace} for short.
+    So a quantum gate is necessarily associated with a \texttt{qspace}.
+    The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
+    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
+
     Each qubit in a \texttt{qspace} can assume one of three roles:
     \begin{itemize}
         \item \texttt{TARGET}, whose quantum state may be altered.
@@ -332,6 +331,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item The roles assigned to each qubit, e.g., \texttt{TARGET} vs.\ \texttt{CONTROL}.
         \item Core operator features, including standard vs.\ nonstandard types and the types of formulation, e.g., rotation around principal axis
     \end{itemize}
+
 
     We listed all the major types of quantum gates in Table~\ref{tab:terminology} for ease of reference.
     For all the types of quantum gates, we designed one class `\texttt{CtrlGate}'---single qubit or

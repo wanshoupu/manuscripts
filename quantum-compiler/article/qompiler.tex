@@ -56,7 +56,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-    \title{Qompiler: A Traceable Quantum Circuit Synthesiser from Arbitrary Hamiltonians}
+    \title{Qompiler: A Traceable Quantum Circuit Synthesizer from Arbitrary Hamiltonians}
 
     \author{Shoupu Wan \\
     Email: wanshoupu@gmail.com \thanks{Github link: \url{https://github.com/wanshoupu/quantum-simulations}}
@@ -65,7 +65,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        We present a system software framework that bridges the gap between physics modeling and quantum software development.
+        We present a quantum compiler framework that bridges the gap between physics modeling and quantum software development.
         At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
         represented using a platform-independent B-Tree-based intermediate language.
         The B-Tree structure encodes information for gate lineage, enabling detailed traceability of quantum circuit gates and facilitating code verification.
@@ -117,6 +117,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     who could benefit from quantum computing.
     Existing quantum transpilers are often platform-specific, implemented in an ad hoc manner,
     and offer limited control over compilation granularity.
+    We feel that there is a need of a system software to fill the gap.
 
 
     To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
@@ -140,23 +141,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \texttt{Qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control,
     as it will be shown in the following sections.
     \begin{table}[tbhp]
+        % TODO adjust the position of all the floats
         \centering
-        \renewcommand{\arraystretch}{1.5} % Add spacing between rows
-        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
-            \begin{tabularx}{.8\textwidth}{X|c|c|c|c|c|c|c}
-                \hline
-                \textbf{Feature}          & \textbf{Qiskit} & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} & \textbf{Qompiler} \\
-                \hline
-                Cross-platform support         & \cmark          & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        & \cmark \\
-                Gate traceability & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        & \cmark \\
-                Gate granularity control    & \textcolor{gray}{\ding{52}} & \xmark & \xmark & \xmark & \cmark & \xmark & \cmark \\
-                \hline
-            \end{tabularx}
-        }
         \caption{Comparing \texttt{Qompiler} and existing quantum compilation tools~\cite{sivarajah2020tket,smith2020quilc,younis2020qfast,amy2019staq}.
         Green check marks indicate support and red cross marks indicate lack of support.
             (A gray check mark is associated with Qiskit for its partial control over gate types.)
         }\label{tab:feature-comparison}
+        \begin{tabularx}{.8\textwidth}{X|c|c|c|c|c|c|c}
+            \hline
+            \textbf{Feature}          & \textbf{Qiskit} & \textbf{Tket} & \textbf{Cirq} & \textbf{Quilc} & \textbf{QFast} & \textbf{Staq} & \textbf{Qompiler} \\
+            \hline
+            Cross-platform support         & \cmark          & \cmark        & \cmark        & \xmark         & \xmark         & \cmark        & \cmark \\
+            Gate traceability & \xmark          & \xmark        & \xmark        & \xmark         & \xmark         & \xmark        & \cmark \\
+            Gate granularity control    & \textcolor{gray}{\ding{52}} & \xmark & \xmark & \xmark & \cmark & \xmark & \cmark \\
+            \hline
+        \end{tabularx}
     \end{table}
 
 
@@ -213,7 +212,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     compile gate-level quantum code.
     During the compilation process, the input operator undergoes a number of decomposition processes
     until the quantum gates reach the intended granularity~\cite{nielsen2010q,dawson2005sk}.
-    Key decomposition steps are listed in Table~\ref{tab}.
+    Key decomposition steps are listed in Table~\ref{tab:decomp}.
     The \texttt{Qompiler} class is designed to orchestrate the decomposition process recursively.
     Section~\ref{sec:decomp} has more on this.
     The final compiled quantum circuit is expressed in an intermediate language for quantum circuit (QIL).
@@ -247,7 +246,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This stage is designed to be highly adaptable and open to new platforms.
     Currently supported quantum computing platforms include Qiskit and Cirq.
     Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
-    We will visit this in Section~\ref{sec:rendering}.
+    We will visit this in Section~\ref{subsec:rendering}.
 
 
     \section{Elementary Classes}\label{sec:design-of-elements}
@@ -298,28 +297,25 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{table}[htbp]
         \centering
-        \renewcommand{\arraystretch}{1} % Add spacing between rows
-        \resizebox{\textwidth}{!}{ % Resize to fit the full text width
-            \begin{tabular}{|l|l|l|}
-                \hline
-                \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum}          \\
-                \hline
-                Unitary       & Any $n$-qubit unitary operator                                                 & \texttt{UNITARY}       \\
-                2level        & Unitary operator with no more than two non-identity rows/columns               & \texttt{TWO\_LEVEL}    \\
-                Multi-Target  & Gates with $2+$ target qubit and any number of control qubits                  & \texttt{MULTI\_TARGET} \\
-                Singlet       & Gates with a single target and any number of control qubits                    & \texttt{SINGLET}       \\
-                Ctrl-pruned   & Controlled gates with a single target and at most one control qubit            & \texttt{CTRL\_PRUNED}  \\
-                Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$                     & \texttt{PRINCIPAL}     \\
-                Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
-                Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                  & \texttt{CLIFFORD\_T}   \\
-                \hline
-            \end{tabular}
-        }
         \caption{Terminology for granularity classification of unitary operators and quantum gates.
         When a gate meets the requirements of multiple categories, the finest one is chosen.
         For example, if a single-target gate has one control qubit a core matrix \texttt{X},
             we classify it as \texttt{Clifford+T}.
         }
+        \begin{tabularx}{.9\textwidth}{l|X|l}
+            \hline
+            \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum}          \\
+            \hline
+            Unitary       & Any $n$-qubit unitary operator                                                 & \texttt{UNITARY}       \\
+            2level        & Unitary operator with no more than two non-identity rows/columns               & \texttt{TWO\_LEVEL}    \\
+            Multi-Target  & Gates with $2+$ target qubit and any number of control qubits                  & \texttt{MULTI\_TARGET} \\
+            Singlet       & Gates with a single target and any number of control qubits                    & \texttt{SINGLET}       \\
+            Ctrl-pruned   & Controlled gates with a single target and at most one control qubit            & \texttt{CTRL\_PRUNED}  \\
+            Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$                     & \texttt{PRINCIPAL}     \\
+            Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
+            Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                  & \texttt{CLIFFORD\_T}   \\
+            \hline
+        \end{tabularx}
         \label{tab:terminology}
     \end{table}
 
@@ -426,7 +422,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             The consolidated gates are framed.}
             \label{fig:optimized-circuit}
         \end{subfigure}
-        \label{fig:optimize-comparison}
+        \label{fig:optimized-comparison}
     \end{figure}
 
 
@@ -436,18 +432,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
     To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
     combining multiple operators into fewer, more efficient gates.
-    Shown in Figure~\ref{fig:optimize-comparison} is a side-by-side comparison of the same circuit diagram
+    Shown in Figure~\ref{fig:unoptimized-circuit} and Figure~\ref{fig:optimized-circuit} is a side-by-side comparison of the same circuit diagram
     with and without the optimization passes.
     This push-and-pull design not only maximizes the efficiency of the resulting circuit
     but also provides precise control over gate granularity.
-
-
-    \begin{figure}[tbhp]
-        \centering
-        \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
-        \caption{Renderer and Optimizer class diagrams.}
-        \label{fig:optimizer-renderer-class-design}
-    \end{figure}
 
 
     Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
@@ -466,8 +454,15 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
     the resulting \texttt{ByteCode} is written to a binary-format output file \texttt{.qco}.
 
+    \subsection{Circuit Renderer}\label{subsec:rendering}
 
-    \section{Circuit Renderer}\label{sec:rendering}
+    \begin{figure}[tbhp]
+        \centering
+        \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
+        \caption{Renderer and Optimizer class diagrams.}
+        \label{fig:optimizer-renderer-class-design}
+    \end{figure}
+
 
     The end product of the compilation process is the code file `\texttt{.qco}'.
     Rendering the code file into a quantum circuit on the target platform is the responsibility of
@@ -502,9 +497,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Operator Decomposition}\label{sec:decomp}
 
     \begin{table}[tbhp]
-        \label{tab:decomp}
         \centering
-        \begin{tabularx}{.9\textwidth}{lX}
+        \caption{Main decomposition processes used by \texttt{Qompiler}.}
+        \begin{tabularx}{.9\textwidth}{l|X}
             \hline
             \textbf{Decomposition}        & \textbf{Description}                                                                                                                                        \\
             \hline
@@ -516,7 +511,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \texttt{sk\_decompose}        & Based on the Solovay-Kitaev Theorem, approximates a single-qubit gate into \texttt{universal} gates or a subset of it, e.g., the \texttt{Clifford+T} gates. \\
             \hline
         \end{tabularx}
-        \caption{Main decomposition processes used by \texttt{Qompiler}.}
+        \label{tab:decomp}
     \end{table}
 
 

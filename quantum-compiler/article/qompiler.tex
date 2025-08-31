@@ -158,7 +158,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
 
-    \section{High-Level Design}\label{sec:design}
+    \section{High-Level Design}\label{sec:high-level-design}
 
     \begin{figure}[tbhp]
         \centering
@@ -214,7 +214,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Key decomposition steps are listed in Table~\ref{tab:decomp}.
     The \texttt{Qompiler} class is designed to orchestrate the decomposition process recursively.
     Section~\ref{sec:decomp} has more on this.
-    The final compiled quantum circuit is expressed in an intermediate language for quantum circuit (QIL).
+    The compiled quantum circuit is expressed in an intermediate language for quantum circuit (QIL).
     The QIL is a B-Tree data structure.
     Beyond storing gate information and qubit interaction specifications,
     it also tracks the parent--child relationships among the tree nodes, enabling rigorous circuit verification.
@@ -222,29 +222,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     Following the decomposition processes are the optimization passes.
-    where gate reductions and fine-tuning are performed to remove redundancies and improve efficiency.
-    The decomposition processes play a role analogous to disintegration,
-    whereas the optimization processes act in the opposite direction, akin to integration.
-    Through the optimization processes, we `pull back` some of the decomposition actions.
-    By combining the actions in both, we aim to find an optimal balance in the compilated code
-    that best suits the targeted quantum hardware.
-    This is the topic for Subsection~\ref{subsec:optimization}.
+    The abovementioned decomposition process ensures that all resulting gates meet \emph{or exceed} the target granularity.
+    This almost always brings inefficiency of some types.
+    For one, redundant gates that may be consolidated or annihilated.
+    For two, quantum gates that are suboptimal for the target quantum hardware.
+    To counter this, we introduce optimization passes to consolidate multiple gates into fewer, more efficient ones.
+    Figures~\ref{fig:unoptimized-circuit} and~\ref{fig:optimized-circuit} illustrate the effect of the optimization passes.
+    The optimizer design will be presented in Subsection~\ref{subsec:optimization}.
     Once all the compilation and optimization steps are finished, the end result is serialized in the form of QIL
     and the binary code is written to a \texttt{.qco} file for later uses.
 
 
-    At the quantum circuit rendering stage, the \texttt{.qco} file is loaded back and interpreted
-    against a target quantum computing backend, and transpiled into a suitable quantum circuit.
-    Additional platform-specific optimizations may be done at this stage to fine-tune the gate types, etc.
-    This functionality is designed into the classes \texttt{QRenderer} and \texttt{CircuitBuilder}.
+    At the rendering stage, the \texttt{.qco} file is loaded from the disk back into the B-tree data structure.
+    Some additional optimization passes may be performed directly targeting the specific quantum computing backend,
+    and transpiled into the final quantum circuits.
     Note that the compilation is done once, but the circuit interpreting and rendering may be done any number of times,
     for any supported platforms.
-    Through polymorphically implementing the \texttt{CircuitBuilder} interface, we realize cross-platform support including but not limited to
-    Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    The QIL can also be translated into other quantum software standards, such as OpenQASM, for broader compatibility~\cite{openqasm2,openqasm3}.
     This stage is designed to be highly adaptable and open to new platforms.
     Currently supported quantum computing platforms include Qiskit and Cirq.
-    Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
     We will visit this in Section~\ref{subsec:rendering}.
 
 
@@ -418,20 +413,17 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             The consolidated gates are framed.}
             \label{fig:optimized-circuit}
         \end{subfigure}
+        \caption{Side-by-side comparison of compiled circuits before and after optimization.}
         \label{fig:optimized-comparison}
     \end{figure}
 
 
-    Earlier, we briefly mentioned the use of optimizers to ``pull back'' some of the over-decomposed quantum gates.
-    We elaborate on this now.
-    The decomposition processes aim to ensure the resulting gates are $\geq$ the designated granularity.
-    This often produces consecutive gates that annihilate one another or gates with smaller-than-desired granularity.
-    To compensate for this, we included optimization passes that act as a synthesis process to simplify the output circuit,
-    combining multiple operators into fewer, more efficient gates.
-    Shown in Figure~\ref{fig:unoptimized-circuit} and Figure~\ref{fig:optimized-circuit} is a side-by-side comparison of the same circuit diagram
-    with and without the optimization passes.
-    This push-and-pull design not only maximizes the efficiency of the resulting circuit
-    but also provides precise control over gate granularity.
+    Before, we go into the details of the design of optimizer classes, I think
+    some additional words would help the understanding of the rationale.
+    In effect, decomposition resembles disintegration, breaking the circuit into finer components,
+    while the optimization process acts like integration, undoing the undesirable effect of decomposition.
+    These complementary processes work like opposing push-and-pull forces to provide us precise control over gate granularity
+    and help achieve an optimal balance in the compilated code that best suits the targeted quantum hardware.
 
 
     Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
@@ -460,34 +452,36 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
-    The end product of the compilation process is the code file `\texttt{.qco}'.
-    Rendering the code file into a quantum circuit on the target platform is the responsibility of
-    \texttt{Renderer} and related circuit building classes.
-    The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and use everywhere.''
-    Accordingly, the \texttt{Renderer} class is designed to accommodate polymorphic implementations
-    of the \texttt{CircuitBuilder} interface.
-    We provide two implementations of \texttt{CircuitBuilder}, namely, \texttt{QiskitBuilder} for
-    Qiskit\textregistered compatible platforms and \texttt{CirqBuilder} for Google Cirq\textregistered platforms.
+    As outlined in Section~\ref{sec:high-level-design}, the compilation process concludes with the creation of the \texttt{.qco} file.
+    What follows is the rendering stage.
+    The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and run everywhere.''
+    We followed this design principle and created a builder pattern consisting of the class \texttt{QRenderer} and the interface \texttt{CircuitBuilder}.
+    The \texttt{CircuitBuilder} interface defines the abstract methods that can accommodate circuit building needs on most known quantum computing platforms.
+    An implementation of the \texttt{CircuitBuilder} interface contains the platform-specific logic to handle qubits, ancilla qubits,
+    quantum gates, backend specific optimizations based on locality and hardware topology, etc.
+    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the QIL and delegate
+    quantum circuit rendering tasks to a concrete implementation of \texttt{CircuitBuilder}.
+    Through polymorphically implementing the \texttt{CircuitBuilder} interface, we realize the cross-platform feature of our system.
+    Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
     The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
-    More support for other platforms can be easily added simply by new implementations of the \texttt{CircuitBuilder} interface.
+
+    Rendering the code file into a quantum circuit on the target platform is the responsibility of
+    \texttt{QRenderer} and related circuit building classes.
+    For demonstration purposes, we provide implementations of \texttt{CircuitBuilder} for
+    Qiskit\textregistered and Cirq\textregistered platforms~\cite{cirq2024,qiskit2023}.
+    The QIL can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
 
 
-    Additional hardware specific optimizations may be performed at this stage.
+    Additional hardware-specific optimizations may be performed at this stage to fine-tune the gate types, virtual-physical qubit mapping, etc.
 
-    Qubit allocation and mapping are central topics in quantum computing.
-    We distinguish between two types of \texttt{qspace} allocation.
-    The first is the allocation of virtual \texttt{qspace}, and the second is the allocation of physical \texttt{qspace}.
-    The mapping between them is carried out during circuit rendering.
-%    When we compile the unitary operator into QIL, we allocated virtual qubits.
-    Allocation of virtual \texttt{qspace} is performed at compilation time and managed by the \texttt{QDevice}.
-    Allocation of physical qubits, together with the mapping of virtual qubits onto them, on the other hand,
-    is tied to a specific target platform and can only take place at circuit render time.
-    Qubit allocation is a crucial step and can be highly sophisticated, as it underpins the feasibility of computation
-    and strongly affects performance.
-    An effective physical qubit allocation algorithm should take qubit interactions into account.
-    In this article, however, we are not focusing on this aspect.
-    Instead, we adopt a simplified approach to illustrate the concept.
-    The study of advanced qubit allocation algorithms is left for future work.
+    Qubit allocation and mapping are advanced topics in quantum compilation.
+    The allocation of virtual \texttt{qspace} is done at compilation time and will be the subject of Section~\ref{sec:decomp}.
+    Allocation of physical qubits and the mapping between virtual and physical \texttt{qspace}
+    are tied to a specific target platform and can only take place at circuit render time.
+    Qubit allocation is crucial to the performance of the quantum circuit and underpins the feasibility of computation.
+    This usually requires highly sophisticated algorithms and heuristics which are beyond the focus of this article.
+    We adopt a simplified approach, instead, to illustrate the proof of concept and leave
+    the study of advanced qubit allocation algorithms for the future.
 
 
     \section{Operator Decomposition}\label{sec:decomp}
@@ -538,6 +532,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     unless the configuration specifies a granularity of \texttt{MULTI\_TARGET},
     the \texttt{Qompiler} will perform \texttt{mat2l\_decompose} and \texttt{cnot\_decompose},
     to decompose the gates into \texttt{2level} unitary operators and \texttt{Singlet} gates, correspondingly.
+    Allocation of virtual \texttt{qspace} is performed at during this decomposition and managed by the \texttt{QDevice}.
     Next, the \texttt{Qompiler} will determine if the granularity specification requires pruning the control sequence.
     If so, it will perform \texttt{ctrl\_decompose} followed by \texttt{euler\_decompose}
     to break down into \texttt{PRINCIPAL} gates.

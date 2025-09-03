@@ -1,4 +1,6 @@
 \documentclass[a4paper,titlepage]{article}
+\usepackage{setspace}
+\setstretch{2.3}   % scaling of line width to x the normal line width
 
 \usepackage{arxiv}
 \usepackage{cite}
@@ -67,13 +69,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{abstract}
         We present a quantum compiler framework that bridges the gap between physics modeling and quantum software development.
         At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
-        represented using a platform-independent B-Tree-based intermediate language.
+        represented using a platform-independent B-Tree-based intermediate representation.
         The B-Tree structure encodes information for gate lineage, enabling detailed traceability of quantum circuit gates and facilitating code verification.
-        The B-Tree-based intermediate language serves as a universal, hardware-agnostic carrier of compiled code,
-        readily adaptable to multiple quantum hardware backends as well as other universal languages.
+        The intermediate representation serves as a universal, hardware-agnostic carrier of compiled code,
+        allowing it to be readily rendered on most quantum hardware backends and transpiled into other quantum circuit languages.
         We demonstrate rendering the compiled code into executable quantum circuits in Qiskit and Cirq.
-        We can also transpile the compiled intermediate language into OpenQASM,
-        a standard language for describing quantum circuits, for broader compatibility.
+        We can also transpile the intermediate representation into OpenQASM for broader compatibility.
     \end{abstract}
 
     \keywords{Quantum Computing \and Quantum Compilation \and Hamiltonian Decomposition \and Cross-Platform \and Circuit Synthesis \and Solovay-Kitaev Theorem}
@@ -124,7 +125,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \texttt{Qompiler} decomposes the evolution operator, $\hat{U}$, into quantum circuits
     using multi-stage decomposition processes.
     The final compiled code (quantum circuit) is represented as a B-Tree data structure,
-    an intermediate language (QIL) which is the key for compilation lineage and platform independence.
+    an intermediate representation (QIR) which is the key for compilation lineage and platform independence.
     Through polymorphically implemented \texttt{CircuitBuilder}, we can realize cross-platform support including but not limited to
     Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
     Notably, \texttt{Qompiler}'s powerful configuration capabilities enable fine-grained gate selection
@@ -214,8 +215,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Key decomposition steps are listed in Table~\ref{tab:decomp}.
     The \texttt{Qompiler} class is designed to orchestrate the decomposition process recursively.
     Section~\ref{sec:decomp} has more on this.
-    The compiled quantum circuit is expressed in an intermediate language for quantum circuit (QIL).
-    The QIL is a B-Tree data structure.
+    The compilation output is a B-Tree data structure---QIR\@.
     Beyond storing gate information and qubit interaction specifications,
     it also tracks the parent--child relationships among the tree nodes, enabling rigorous circuit verification.
     The verifiability of quantum circuit is discussed in Section~\ref{sec:traceability-and-verifiability}.
@@ -229,7 +229,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     To counter this, we introduce optimization passes to consolidate multiple gates into fewer, more efficient ones.
     Figures~\ref{fig:unoptimized-circuit} and~\ref{fig:optimized-circuit} illustrate the effect of the optimization passes.
     The optimizer design will be presented in Subsection~\ref{subsec:optimization}.
-    Once all the compilation and optimization steps are finished, the end result is serialized in the form of QIL
+    Once all the compilation and optimization steps are finished, the end result is serialized in the form of QIR
     and the binary code is written to a \texttt{.qco} file for later uses.
 
 
@@ -459,7 +459,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The \texttt{CircuitBuilder} interface defines the abstract methods that can accommodate circuit building needs on most known quantum computing platforms.
     An implementation of the \texttt{CircuitBuilder} interface contains the platform-specific logic to handle qubits, ancilla qubits,
     quantum gates, backend specific optimizations based on locality and hardware topology, etc.
-    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the QIL and delegate
+    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the QIR and delegate
     quantum circuit rendering tasks to a concrete implementation of \texttt{CircuitBuilder}.
     Through polymorphically implementing the \texttt{CircuitBuilder} interface, we realize the cross-platform feature of our system.
     Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
@@ -469,7 +469,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \texttt{QRenderer} and related circuit building classes.
     For demonstration purposes, we provide implementations of \texttt{CircuitBuilder} for
     Qiskit\textregistered and Cirq\textregistered platforms~\cite{cirq2024,qiskit2023}.
-    The QIL can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
+    The QIR can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
 
 
     Additional hardware-specific optimizations may be performed at this stage to fine-tune the gate types, virtual-physical qubit mapping, etc.
@@ -506,14 +506,15 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
-    matrix into a network of quantum gates, allocates and assigns qubits to each gate.
+    matrix into a graph of quantum gates, allocates and assigns qubits to each gate.
     In this section, we go over the decomposition process of the \texttt{Qompiler}.
 
 
     Starting from an $n$-dimensional unitary operator, the quantum formulation undergoes several decomposition processes
-    until the resulting quantum gates reach the desired granularity, such as principal gates or \texttt{CNOT}.
+    until the resulting quantum gates reach the desired granularity, such as \texttt{Clifford+T} or \texttt{CNOT}
+    as listed in Table~\ref{tab:terminology}.
 %    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
-    The main decomposition processes used by \texttt{Qompiler} are described in Table~\ref{tab:decomp}.
+    The main decomposition processes used by this system are described in Table~\ref{tab:decomp}.
 
     \begin{figure}[tbhp]
         \centering
@@ -526,17 +527,19 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         }
         \label{fig:workflow}
     \end{figure}
-    The class \texttt{Qompiler} orchestrates all decomposition processes recursively in a depth-first manner.
-    The granularity of the final quantum gate is specified in the \texttt{QConfig}.
+    All decomposition processes are orchestrated by the class \texttt{Qompiler} recursively in a depth-first manner.
+    The granularity of the final quantum gate may be specified in the \texttt{QConfig}.
     As illustrated in Figure~\ref{fig:workflow},
-    unless the configuration specifies a granularity of \texttt{MULTI\_TARGET},
-    the \texttt{Qompiler} will perform \texttt{mat2l\_decompose} and \texttt{cnot\_decompose},
+    Starting with the input unitary matrix,
+    if the configuration specifies a granularity of \texttt{MULTI\_TARGET},
+    the \texttt{Qompiler} will simply assign a \texttt{qspace} and call it done.
+    Otherwise, \texttt{mat2l\_decompose} and \texttt{cnot\_decompose} will be performed
     to decompose the gates into \texttt{2level} unitary operators and \texttt{Singlet} gates, correspondingly.
-    Allocation of virtual \texttt{qspace} is performed at during this decomposition and managed by the \texttt{QDevice}.
-    Next, the \texttt{Qompiler} will determine if the granularity specification requires pruning the control sequence.
+    While performing this decomposition, the (virtual) \texttt{qspace} is also allocated which is curated by the class \texttt{QDevice}.
+    Next, the \texttt{Qompiler} will determine if the control sequence needs pruning.
     If so, it will perform \texttt{ctrl\_decompose} followed by \texttt{euler\_decompose}
     to break down into \texttt{PRINCIPAL} gates.
-    If \texttt{PRINCIPAL} gate types are acceptable, the decomposition process will end.
+    If \texttt{PRINCIPAL} gate types are acceptable, the decomposition process ends.
     Otherwise, the \texttt{sk\_decompose} may be performed to approximate the single-qubit gate
     with a sequence of universal gates.
     (The \texttt{sk\_decompose} will be discussed in Section~\ref{sec:sk-approx} in more details.)
@@ -552,29 +555,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Solovay--Kitaev Approximation}\label{sec:sk-approx}
 
-    Solovay and Kitaev Theorem is a piece of foundational work in the quantum computation field~\cite{kitaev1997quantum,dawson2005sk}.
-    Thanks to this theorem, it is possible to efficiently approximate any single-qubit operator
-    from the \texttt{SU(2)} group using a set of universal gates.
-    With a predefined error margin $\epsilon$, both the number of gates to approximate the operator
-    and the runtime to calculate them as a function of $\epsilon$ are
-    polylogarithmic, $~O(\log^{c}(1/\epsilon))$ with $c$ a constant.
+    Solovay and Kitaev Theorem is foundational to quantum computing because the feasibility of efficient expression of
+    unitary operators in quantum circuit hangs on this theorem~\cite{kitaev1997quantum,dawson2005sk}.
+    Namely, this theorem states that any single-qubit operator
+    from the \texttt{SU(2)} group can be efficiently approximated using a set of universal gates
+    within a chosen error margin $\epsilon$.
+    here efficiency means that both the number of gates of an approximation
+    and the runtime to calculate it are polylogarithmic in terms of $\epsilon$.
 
 
-    The basic idea behind Solovay \& Kitaev approximation from the above references is understandably simple.
-    Over the operator space in the \texttt{SU(2)} group, create a point net such that the distance between adjacent points is bound by $\epsilon_{0}$,
-    an error margin of a certain threshold (referred to as \texttt{SU2Net}).
-    At zeroth order, operators near a point in the \texttt{SU2Net} are approximated using the gate sequence associated with that point.
-    Then call the function \mintinline{python}{def sk_decompose(self, U: NDArray, depth: int) -> Bytecode:}
-    with a recursion depth according to the desired error margin $\epsilon$.
-    \texttt{sk\_decompose} is a recursive function whose base case is simply the zero-th order approximation provided by the \texttt{SU2Net}.
-    For each recursion, the group commutator of the residual operator is calculated and used for better approximation
-    until it is close enough to the identity operator $I$.
+    The basic idea behind Solovay \& Kitaev approximation is quite simple.
+    Over the \texttt{SU(2)} operator group, create a point net, e.g., \texttt{SU2Net},
+    such that the distance between adjacent points is bound by an error margin $\epsilon_{0}$.
+    Each point in \texttt{SU2Net} has a precalculated decomposition,
+    which also serves as the zeroth order approximation for its nearest-neighborhood operators.
+    Any higher order approximation is obtained by recursively
+    calling the function \mintinline{python}{sk_decompose(self, U: NDArray, depth: int)}.
+    In each recursion, the group commutator of the residual operator is calculated and used for the next round of approximation
+    until it is close enough to the identity operator $I$ or the recursion depth reaches zero.
     The function \texttt{sk\_decompose} is shown in Listing~\ref{lst:sk-decomp}.
 
     \begin{listing}[h]
-        \caption{The Solovay-Kitaev decomposition function.
-        It is a recursive function with the base case of  \texttt{SU2Net} approximation.
-        In each recursion, it calculates the group commutators of the residual operator.}
+        \caption{The Solovay-Kitaev decomposition function.}
         \label{lst:sk-decomp}
         \inputminted[
             linenos,           % show line numbers
@@ -619,7 +621,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We highlighted the built-in support for traceability and verifiability of our quantum compiler system
     in Section~\ref{sec:introduction}.
     Here, we examine how this is achieved.
-    To store and organize compiled code in the intermediate language, we designed a data structure called \texttt{ByteCode}.
+    To store and organize the compiled code as QIR, we designed a data structure called \texttt{ByteCode}.
     \texttt{ByteCode} is a B-Tree, where each node represents a stage of the compiled quantum operator
     along with associated metadata.
     Traceability is encoded in the parent--child relationships:
@@ -691,7 +693,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We have chosen the finest granularity level, \texttt{CLIFFORD\_T}, for this demonstration.
     The resulting quantum circuit consists of 279 layers (a Qiskit term referring to groups of related gates),
     and the first dozen are shown in Figure ~\ref{fig:optimized-circuit}.
-    We also transpiled our QIL can output quantum circuit in OpenQASM format
+    We also transpiled our QIR can output quantum circuit in OpenQASM format
     and included in Listing~\ref{lst:qasm} for reference.
 
     \begin{listing}[h]
@@ -736,7 +738,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \caption{Circuit diagram (partial) in Cirq\texttrademark.}
             \label{fig:cirq-circuit}
         \end{subfigure}
-        \caption{Circuit diagrams rendered for different platforms based on the same QIL
+        \caption{Circuit diagrams rendered for different platforms based on the same QIR
         that was compiled from a randomly generated unitary matrix and stored in file.
         }
         \label{fig:random-unitary}

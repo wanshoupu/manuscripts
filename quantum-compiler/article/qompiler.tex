@@ -1,6 +1,6 @@
 \documentclass[a4paper,titlepage]{article}
 \usepackage{setspace}
-\setstretch{2.3}   % scaling of line width to x the normal line width
+%\setstretch{2.3}   % scaling of line width to x the normal line width
 
 \usepackage{arxiv}
 \usepackage{cite}
@@ -596,11 +596,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
 
-    When applying quantum computing to real-world problems, such as quantum chemistry,
-    the size of the quantum circuit can become very large.
-    A quantum program for simulating a simple molecule like LiH in the STO-3G basis
-    may require approximately $1000$ gates~\cite{Hong_2022}.
-    Simulation programs for moderately large molecules can consist of millions~\cite{poulin2014,google_science_2020}.
+    When applying to real-world problems, the size of the quantum circuit can be very large.
+    In quantum chemistry, a quantum circuit to simulate a simple molecule like LiH in the STO-3G basis
+    may comprise approximately $1000$ gates~\cite{Hong_2022}.
+    Simulation programs for moderately large molecules can consist of millions of gates~\cite{poulin2014,google_science_2020}.
     Keeping track of all these gates and ensuring correctness is challenging.
 
 
@@ -618,11 +617,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
-    We highlighted the built-in support for traceability and verifiability of our quantum compiler system
+    We highlighted the feature of traceability and verifiability built in our quantum compiler system
     in Section~\ref{sec:introduction}.
     Here, we examine how this is achieved.
     To store and organize the compiled code as QIR, we designed a data structure called \texttt{ByteCode}.
-    \texttt{ByteCode} is a B-Tree, where each node represents a stage of the compiled quantum operator
+    \texttt{ByteCode} is a B-Tree structure, where each node represents a stage of the compiled quantum operator
     along with associated metadata.
     Traceability is encoded in the parent--child relationships:
     each gate in the final program can be traced back to the specific operation that produced it.
@@ -650,24 +649,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and program debugging is made easier in \texttt{Qompiler}.
 
 
-    \section{Testing}\label{sec:tests}
-
-    Ensuring correctness is fundamental to the success of \texttt{Qompiler} project.
-    We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
-    To achieve this goal, we vigorously test the project against all encountered edge cases.
-    Most major constructs in \texttt{Qompiler} have nearly $100\%$ test coverage.
-    The overall unit test coverage of the whole project also reaches $90\%$.
-
-
-    To facilitate testing, we designed a couple of utility classes and functions such as the \texttt{MatrixFormatter}
-    and the numerous functions in the module \texttt{mgen}, etc.
-    It is worth mentioning the \texttt{inter\_product} function,
-    a special case of the Tracy–Singh product that generalizes the Kronecker product~\cite{TracySingh1972}.
-%    With \mintinline{python}{inter_product(A, B, m)}, the matrix $A$ is first partitioned into $n \times n$ blocks,
-%    each of size $m \times m$, where $n$ is chosen such that $n m$ equals the size of the matrix.
-%    Then, for each block, we compute the Kronecker product $B \otimes \text{block}_{i}$.
-    The \texttt{inter\_product} function is proven to be a very helpful tool when verifying the equivalence between
-    a quantum operator and its decomposed components.
+%    \section{Testing}\label{sec:tests}
+%
+%    Ensuring correctness is fundamental to the success of \texttt{Qompiler} project.
+%    We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
+%    To achieve this goal, we vigorously test the project against all encountered edge cases.
+%    Most major constructs in \texttt{Qompiler} have nearly $100\%$ test coverage.
+%    The overall unit test coverage of the whole project also reaches $90\%$.
+%
+%
+%    To facilitate testing, we designed a couple of utility classes and functions such as the \texttt{MatrixFormatter}
+%    and the numerous functions in the module \texttt{mgen}, etc.
+%    It is worth mentioning the \texttt{inter\_product} function,
+%    a special case of the Tracy–Singh product that generalizes the Kronecker product~\cite{TracySingh1972}.
+%%    With \mintinline{python}{inter_product(A, B, m)}, the matrix $A$ is first partitioned into $n \times n$ blocks,
+%%    each of size $m \times m$, where $n$ is chosen such that $n m$ equals the size of the matrix.
+%%    Then, for each block, we compute the Kronecker product $B \otimes \text{block}_{i}$.
+%    The \texttt{inter\_product} function is proven to be a very helpful tool when verifying the equivalence between
+%    a quantum operator and its decomposed components.
 
 
     \section{Results and Discussions}\label{sec:results}

@@ -253,7 +253,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
     We use this section to review the elementary classes for the \texttt{Qompiler} system.
-%    In this section, we will lay the foundation of terminologies for discussions in this article.
     We will not go over all the elements for quantum simulation.
     Instead, we will focus on a few key elements of the system.
     Among them are the representation of unitary matrices, (controlled) quantum gates,
@@ -513,7 +512,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Starting from an $n$-dimensional unitary operator, the quantum formulation undergoes several decomposition processes
     until the resulting quantum gates reach the desired granularity, such as \texttt{Clifford+T} or \texttt{CNOT}
     as listed in Table~\ref{tab:terminology}.
-%    The quantum circuit attains the original quantum dynamics with $100\%$ fidelity.
     The main decomposition processes used by this system are described in Table~\ref{tab:decomp}.
 
     \begin{figure}[tbhp]
@@ -580,8 +578,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{lst:sk-decomp}
         \inputminted[
             linenos,           % show line numbers
-%            fontsize=\small,   % font size
-%            bgcolor=lightgray  % background color
         ]{python}{solovay.py}
     \end{listing}
 
@@ -647,26 +643,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
     and program debugging is made easier in \texttt{Qompiler}.
-
-
-%    \section{Testing}\label{sec:tests}
-%
-%    Ensuring correctness is fundamental to the success of \texttt{Qompiler} project.
-%    We want the compiled circuit to be $100\%$ correct and approximations to fall within the predetermined error margin.
-%    To achieve this goal, we vigorously test the project against all encountered edge cases.
-%    Most major constructs in \texttt{Qompiler} have nearly $100\%$ test coverage.
-%    The overall unit test coverage of the whole project also reaches $90\%$.
-%
-%
-%    To facilitate testing, we designed a couple of utility classes and functions such as the \texttt{MatrixFormatter}
-%    and the numerous functions in the module \texttt{mgen}, etc.
-%    It is worth mentioning the \texttt{inter\_product} function,
-%    a special case of the Tracy–Singh product that generalizes the Kronecker product~\cite{TracySingh1972}.
-%%    With \mintinline{python}{inter_product(A, B, m)}, the matrix $A$ is first partitioned into $n \times n$ blocks,
-%%    each of size $m \times m$, where $n$ is chosen such that $n m$ equals the size of the matrix.
-%%    Then, for each block, we compute the Kronecker product $B \otimes \text{block}_{i}$.
-%    The \texttt{inter\_product} function is proven to be a very helpful tool when verifying the equivalence between
-%    a quantum operator and its decomposed components.
 
 
     \section{Results and Discussions}\label{sec:results}

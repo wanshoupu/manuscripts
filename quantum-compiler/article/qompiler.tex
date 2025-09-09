@@ -1,6 +1,6 @@
 \documentclass[a4paper,titlepage]{article}
 \usepackage{setspace}
-%\setstretch{2.3}   % scaling of line width to x the normal line width
+\setstretch{2.3}   % scaling of line width to x the normal line width
 
 \usepackage{arxiv}
 \usepackage{cite}
@@ -58,7 +58,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-    \title{Qompiler: A Traceable Quantum Circuit Synthesizer from Arbitrary Hamiltonians}
+    \title{Qompiler: A Traceable Quantum Circuit Synthesizer for Arbitrary Hamiltonians}
 
     \author{Shoupu Wan \\
     Email: wanshoupu@gmail.com \thanks{Github link: \url{https://github.com/wanshoupu/quantum-simulations}}
@@ -68,12 +68,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{abstract}
         We present a quantum compiler framework that bridges the gap between physics modeling and quantum software development.
-        At the core of this framework is a versatile quantum compiler capable of decomposing arbitrary Hamiltonians into quantum circuits,
+        At the core of this framework is a versatile quantum circuit synthesizer capable of decomposing arbitrary Hamiltonians into quantum circuits,
         represented using a platform-independent B-Tree-based intermediate representation.
-        The B-Tree structure encodes information for gate lineage, enabling detailed traceability of quantum circuit gates and facilitating code verification.
+        The B-Tree structure encodes information for gate lineage, enabling detailed tracing information of quantum circuit gates and facilitating circuit verification.
         The intermediate representation serves as a universal, hardware-agnostic carrier of compiled code,
         allowing it to be readily rendered on most quantum hardware backends and transpiled into other quantum circuit languages.
-        We demonstrate rendering the compiled code into executable quantum circuits in Qiskit and Cirq.
+        We demonstrate rendering the intermediate representation into executable quantum circuits in Qiskit and Cirq.
         We can also transpile the intermediate representation into OpenQASM for broader compatibility.
     \end{abstract}
 
@@ -82,62 +82,61 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}\label{sec:introduction}
 
-    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals, and biomedicine, materials science, etc.
-    Given a Hamiltonian $\hat{H}$ as input, one can calculate the time-dependent evolution operator as
+    Quantum simulation offers significant advantages in fields such as chemistry, pharmaceuticals,  biomedicine, and materials science.
+    Given a Hamiltonian $\hat{H}$, the time-dependent evolution operator can be expressed as
     \begin{equation}
         \label{eq:hamiltonian}
         \hat{U}\left( t \right) = e^{-i\hat{H}t/\hbar},
     \end{equation}
     where $t$ is time and $\hbar$ is Planck's constant.
-    In Schrödinger picture, the state ket of the system is a function of time and given by
+    In Schrödinger picture, the state ket of the system as a function of time is
     \begin{equation}
         \label{eq:sysstate}
         \left\| \psi\left( t \right) \right\rangle = \hat{U}\left( t \right)\left\| \psi_{0} \right\rangle
     \end{equation}
-    where $\left\| \psi_{0} \right\rangle$ is the initial ket of an arbitrary system state.
-    Observables remain constant unless they are explicitly time-dependent.
-    Equivalently in Heisenberg picture, the observables are time-dependent and formulated as
+    where $\left\| \psi_{0} \right\rangle$ is the initial ket of a system state.
+    Equivalently in Heisenberg picture, the observables are time-dependent, namely,
     \begin{equation}
         \label{eq:heisenberg}
         \hat{A} \left( t \right) = \hat{U}^{\dagger} \left( t \right) \hat{A}_{0} \hat{U} \left( t \right)
     \end{equation}
     where $\hat{A}_{0}$ is a constant operator for the observable at time $t=0$.
-    The state kets remain constant.
     There are other presentation pictures than these two.
-    But in all pictures, the quantum dynamics of the system are fully encoded in $\hat{U}\left( t \right)$.
-    Simulation of a system is equivalent to simulate the operator $\hat{U}\left( t \right)$.
-    In this article, we assume a suitable basis has chosen in the system Hilbert space
-    and the operator $\hat{U}\left( t \right)$ has been evaluated as unitary matrices, $U_{t_i}$, for $i = 0, 1, 2, \dots$.
-    For references on ways to evaluate operator $\hat{U}$ see~\cite{Suzuki1991,AbramsLloyd1999QPE,Lloyd1996,Chuang1997QPT}.
+    Regardless of picture, the quantum dynamics of the system are fully encoded in $\hat{U}\left( t \right)$.
+    Therefore, as long as we can reproduce the operator $\hat{U}\left( t \right)$ in a quantum circuit, we can simulate the dynamics of the system.
+    In this article, we assume the operator $\hat{U}\left( t \right)$ has been evaluated as time series of unitary matrices,
+    $\left\{ U_{i} |i = 0, 1, \dots, n \right\}$ on a suitable basis has chosen in the system Hilbert space by Troterization
+    or other equivalent methods~\cite{Suzuki1991,AbramsLloyd1999QPE,Lloyd1996,Chuang1997QPT}.
 
 
-    Despite its potential in quantum simulation, developing quantum computing software is quite challenging and error-prone,
-    requiring expertise in physics, mathematics, and software engineering.
-    The steep learning curve poses a barrier and limits access for potential users and professionals
+    Despite its potential in quantum simulation, writing full-stack quantum computing software requires domain knowledge
+    in physics, mathematics, computer science, etc.
+    The steep learning curve poses a barrier and limits access for many potential users and professionals
     who could benefit from quantum computing.
     Existing quantum transpilers are often platform-specific, implemented in an ad hoc manner,
-    and offer limited control over compilation granularity.
-    We feel that there is a need of a system software to fill the gap.
+    and offer limited control.
+    There is clearly a need of a software system to fill the gap.
 
 
-    To address these challenges, we developed \texttt{Qompiler}, a cross-platform quantum circuit synthesizer
-    featuring automation, mass-production, traceability, verifiability, and control.
+    We hereby present \texttt{Qompiler}, a cross-platform quantum compiler
+    featuring automation, scalability, traceability, verifiability, and configurability that we attempt to address the abovementioned challenges.
     \texttt{Qompiler} decomposes the evolution operator, $\hat{U}$, into quantum circuits
     using multi-stage decomposition processes.
-    The final compiled code (quantum circuit) is represented as a B-Tree data structure,
-    an intermediate representation (QIR) which is the key for compilation lineage and platform independence.
-    Through polymorphically implemented \texttt{CircuitBuilder}, we can realize cross-platform support including but not limited to
-    Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
-    Notably, \texttt{Qompiler}'s powerful configuration capabilities enable fine-grained gate selection
+    The end result (quantum circuit) is saved into an
+    intermediate representation (IR), a B-Tree-based data structure.
+    This IR is the key for platform independence because out of it we can generate quantum circuits across multiple quantum platforms with varying hardware backend
+    through polymorphically implementing the base class \texttt{CircuitBuilder}.
+    We have realized support on platforms including Qiskit, Cirq, and OpenQASM~\cite{cirq2024,qiskit2023,openqasm2,openqasm3}.
+    Notably, \texttt{Qompiler}'s powerful configuration capabilities also enable fine-grained gate selection
     that aligns with the native hardware.
-    For example, on superconducting hardware, standard Pauli gates may be more preferable than more complicated gates,
-    whereas on trapped-ion devices, rotation gates can be efficiently implemented.
-    This hardware-aware optimization is designed into the foundation of the cross-platform \texttt{Qompiler}.
+    For example, on superconducting hardware, standard Pauli gates may be preferable than more complicated gates,
+    whereas on trapped-ion devices, parametric rotation gates can be more efficiently implemented.
+    This hardware-aware optimization is designed into the foundation of the \texttt{Qompiler}.
 
 
     Table~\ref{tab:feature-comparison} compares \texttt{Qompiler} with existing quantum compilers,
     transpilers, and synthesizers according to the following criteria: cross-platform support,
-    gate traceability, and gate granularity control.
+    gate traceability, and compilation control.
     \texttt{Qompiler} stands out due to its combination of traceability, platform agnosticism, and configurable granularity control,
     as it will be shown in the following sections.
     \begin{table}[tbhp]
@@ -158,6 +157,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{tabularx}
     \end{table}
 
+    This compiler may be integrated with software stacks like Munich Quantum Software Stack~\cite{}.
+
 
     \section{High-Level Design}\label{sec:high-level-design}
 
@@ -177,73 +178,66 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     Let's go over the high-level design of \texttt{Qompiler}.
-    The major functionalities of the system are organized into the following core modules:
+    The major functionalities of the system are organized into the following modules:
     ``Configuration'', ``Decomposition'', ``Optimization'', and ``Rendering'' (See Figure~\ref{fig:impl}).
-    We will briefly describe each of these modules here, while leaving detailed discussions to later sections.
+    We will briefly describe each of these modules here, while leaving detailed discussions of some of these to later sections.
 
 
-    Rich controls of \texttt{Qompiler} are made possible through the sophisticated configuration system,
+    Rich controls of \texttt{Qompiler} are made possible through the sophisticated configuration module,
     offering control over almost all aspects of the compilation process,
     including but not limited to the granularity control, target platform, error tolerances,
-    quantum device space allocation, optimization level, etc.
-    This makes it possible for users to precisely tailor the gate granularity of the quantum circuit
+    quantum space allocation, optimization level, etc.
+    This makes it possible for users to precisely tailor the resulting quantum circuit
     to best suit the targeted hardware.
     For instance, superconducting quantum hardware often implements Pauli gates ($X$, $Y$, $Z$) virtually,
     offering zero-error and zero-latency execution;
     So for superconducting quantum hardware, we can configure the compiler to prioritize Pauli gates.
-    On the other hand, trapped-ion platforms natively support arbitrary single-qubit rotations,
-    including $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the compiler can be configured accordingly
+    On the other hand, trapped-ion platforms natively support parametric rotation operators
+    like $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, and the \texttt{Qompiler} can be configured accordingly
     to produce rotation-based circuits.
     This hardware-aware configurability enables efficient, optimized circuit generation across diverse quantum backends
     while maintaining traceability and cross-platform compatibility.
 
 
-    In the current design, \texttt{ConfigManager} is at the center of the configuration module.
-    \texttt{ConfigManager} can read configuration inputs from several sources: default settings JSON file,
-    custom overrides JSON file, and command line settings.
-    Once all configuration sources are loaded and combined,
-    the final settings are used to create a singleton instance of \texttt{QFactory},
-    following a factory design pattern ~\cite{Gamma1994DesignPattern}.
+    The configuration module is centered around the class \texttt{ConfigManager}.
+    \texttt{ConfigManager} can read inputs from several sources: default settings, custom overrides (both JSON files),
+    and command line settings.
+    Once all configuration sources are loaded, \texttt{ConfigManager} combines and creates an overall configuration object
+    which is used to create a singleton instance of \texttt{QFactory}.
     From the \texttt{QFactory}, other compilation constructs are created as
     needed---\texttt{Qompiler}, \texttt{QRenderer}, \texttt{QDevice}, \texttt{QConfig}, \texttt{Optimizers}, etc.
+    All of these consciously follow the factory design pattern~\cite{Gamma1994DesignPattern}.
 
 
-    Now that all the needed objects of \texttt{Qompiler} are in place, it can start to process inputs and
-    compile gate-level quantum code.
-    During the compilation process, the input operator undergoes a number of decomposition processes
-    until the quantum gates reach the intended granularity~\cite{nielsen2010q,dawson2005sk}.
-    Key decomposition steps are listed in Table~\ref{tab:decomp}.
-    The \texttt{Qompiler} class is designed to orchestrate the decomposition process recursively.
-    Section~\ref{sec:decomp} has more on this.
-    The compilation output is a B-Tree data structure---QIR\@.
+    Now that all the needed module objects are in place, \texttt{Qompiler} can start to process inputs.
+    During the compilation process, the input operator undergoes a number of decomposition processes (see Table~\ref{tab:decomp}) recursively
+    until the quantum gates reach the intended granularity, and all these are orchestrated by the \texttt{Qompiler} class
+    as will be discussed in Section~\ref{sec:decomp}.
+    The compilation output is a B-Tree data structure---IR\@.
     Beyond storing gate information and qubit interaction specifications,
-    it also tracks the parent--child relationships among the tree nodes, enabling rigorous circuit verification.
-    The verifiability of quantum circuit is discussed in Section~\ref{sec:traceability-and-verifiability}.
+    IR also tracks the parent--child relationships among the tree nodes, which is the root of
+    the verifiability of quantum circuit to be discussed in Section~\ref{sec:traceability-and-verifiability}.
 
 
-    Following the decomposition processes are the optimization passes.
+    Following the decomposition processes are the recombination passes.
     The abovementioned decomposition process ensures that all resulting gates meet \emph{or exceed} the target granularity.
-    This almost always brings inefficiency of some types.
-    For one, redundant gates that may be consolidated or annihilated.
-    For two, quantum gates that are suboptimal for the target quantum hardware.
-    To counter this, we introduce optimization passes to consolidate multiple gates into fewer, more efficient ones.
-    Figures~\ref{fig:unoptimized-circuit} and~\ref{fig:optimized-circuit} illustrate the effect of the optimization passes.
-    The optimizer design will be presented in Subsection~\ref{subsec:optimization}.
-    Once all the compilation and optimization steps are finished, the end result is serialized in the form of QIR
-    and the binary code is written to a \texttt{.qco} file for later uses.
+    During the process, redundant gates and gates with exceedingly fine granularity become sources of inefficiency.
+    We need a process to undo the fragmentation of gates, and this is done through the recombination passes which
+    consolidates or annihilates gates into fewer, more efficient ones wherever possible.
+    Figures~\ref{fig:unoptimized-circuit} and~\ref{fig:optimized-circuit} illustrate the effect of the recombination passes side-by-side.
+    The design will be presented in Subsection~\ref{subsec:optimization} with more details.
 
-
+    Once all the decomposition and recombination steps are finished, the IR is serialized in
+    binary code and written to a \texttt{.qco} file for the rendering stages.
     At the rendering stage, the \texttt{.qco} file is loaded from the disk back into the B-tree data structure.
-    Some additional optimization passes may be performed directly targeting the specific quantum computing backend,
-    and transpiled into the final quantum circuits.
-    Note that the compilation is done once, but the circuit interpreting and rendering may be done any number of times,
-    for any supported platforms.
-    This stage is designed to be highly adaptable and open to new platforms.
-    Currently supported quantum computing platforms include Qiskit and Cirq.
+    Some additional optimization passes pertaining to the specific quantum computing backend may be performed.
+    Note that the compute-intensive, weight-lifting compilation is done only once.
+    Once we have the IR, circuit may be rendered as many times as needed for supported platforms.
+    The design of circuit rendering is highly adaptable and open to new platforms.
     We will visit this in Section~\ref{subsec:rendering}.
 
 
-    \section{Elementary Classes}\label{sec:design-of-elements}
+    \section{Elementary Class Designs}\label{sec:design-of-elements}
 
     \begin{figure}[tbhp]
         \centering
@@ -252,29 +246,60 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:um-and-cgate}
     \end{figure}
 
-    We use this section to review the elementary classes for the \texttt{Qompiler} system.
-    We will not go over all the elements for quantum simulation.
-    Instead, we will focus on a few key elements of the system.
-    Among them are the representation of unitary matrices, (controlled) quantum gates,
-    optimizers, renderer and circuit builders.
+    In this section, let's first review some key elementary classes of the \texttt{Qompiler} system.
+    Among them are the classes for unitary matrices, quantum gates, IR, recombiners, renderer and circuit builders.
 
     \subsection{Unitary Matrices}\label{subsec:unitary-matrices}
 
-    A unitary matrix refers to a multidimensional complex matrix that is unitary.
-    It captures the dynamics of a specific quantum system but has no reference to qubits in the simulation space.
-    We created the class \texttt{UnitaryM} to represent unitary matrices with two primary considerations.
-    First, it uses object-oriented programming to manage operations involving unitary matrices as inputs.
+    A multidimensional unitary matrix captures a snapshot of quantum dynamics of a specific system.
+    It therefore has no reference to qubits in the simulation space yet.
+    We created the class \texttt{UnitaryM} to represent a unitary matrix with two primary considerations.
+    First, it encapsulates many good operations.
+    It has a \texttt{matmul} method for matrix multiplication operations between \texttt{UnitaryM}'s,
+    It also has a \texttt{deflate} method to convert a NumPy array ($2$D) into \texttt{UnitaryM},
+    The \texttt{inflate} and \texttt{numpy.array} are created to convert \texttt{UnitaryM} objects back to NumPy arrays.
     Second, it provides an efficient framework for handling sparse matrices.
-    For many cases, the evolution operator, $\hat{U}\left( t \right)$, is sparse.
-    For example, in the Ising model, interactions are restricted to nearest-neighbor spins (see Reference~\cite{shekaari2021} for an overview of the model).
-    In the corresponding evolution operator, these interactions manifest as off-diagonal elements.
-    Accordingly, we primarily store only the rows and columns with non-zero off-diagonal elements.
-    We call the submatrix corresponding to these rows and columns the ``core-matrix''
-    and the indices of them the ``core-indices''.
-    We implemented the \texttt{matmul} method for matrix multiplication operations between \texttt{UnitaryM}'s.
-    The class method \texttt{deflate} converts a NumPy array ($2$D) into \texttt{UnitaryM}.
-    The method \texttt{inflate} (and \texttt{numpy.array}) does the opposite---returns
-    the matrix in the format of \texttt{numpy} $2$D array.
+    For some use cases, the evolution operator $\hat{U}\left( t \right)$ is sparse, e.g.,
+    the majority of the off-diagonal elements are zeros.
+    Accordingly, we may store only the rows and columns with non-zero off-diagonal elements.
+    We refer to the submatrix corresponding to these rows and columns the ``core-matrix''
+    and the corresponding indices the ``core-indices''.
+
+    \subsection{Quantum Space}\label{subsec:quantum-space}
+
+    \begin{table}[htbp]
+        \centering
+        \begin{tabularx}{\linewidth}{l|X}
+            \hline
+            \textbf{Qubit type} & \textbf{Description} \\
+            \hline
+            \texttt{TARGET} & A target qubit is the qubit on which a quantum gate performs an operation, namely, its quantum state may be altered as a result. \\
+            \texttt{CONTROL0} & A control qubit is one whose state determines whether an operation is applied to another qubit (\texttt{TARGET})
+            while its own state is intact.
+            A \texttt{CONTROL0} qubit is a control qubit with an activation value $0$. \\
+            \texttt{CONTROL1} & Same as \texttt{CONTROL0} except the activation value is $1$. \\
+            \texttt{IDLER} & A qubit that does not participate in the gate operation but may appears in the operator matrix as identity elements. \\
+            \hline
+        \end{tabularx}
+        \caption{Classification of qubits by the roles they played in a particular quantum gate.}
+        \label{tab:gate-role}
+    \end{table}
+
+
+%    As mentioned earlier, the input unitary operator as represented in \texttt{UnitaryM}
+%    has no reference to qubits in the simulation space.
+    In a quantum circuit, there are two types of qubits according to the roles they played: data qubits and ancilla qubits.
+    Data qubits are the working qubits that carry the computational states to be measured.
+    Ancilla qubits are auxiliary qubits introduced to assist a quantum computation (e.g., for temporary storage, gate construction, or error correction)
+    but not part of the final output, usually initialized in the fiducial state $\left\| 0 \right\rangle$.
+    We refer to the group of qubits involved in the quantum computation collectively as ``quantum space,'' or \texttt{qspace} for short.
+
+
+    A quantum gate may involve more than one qubits.
+    For example, in a \texttt{CNOT} gate, there is a control qubit and a target qubit.
+    So another way to classify qubits is by the roles they play in a particular quantum gate.
+    This is shown in Table~\ref{tab:gate-role}
+    We created a light-weight \texttt{Qubit} class for convenience.
 
     \subsection{Quantum Gates}\label{subsec:quantum-gates}
 
@@ -302,22 +327,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{tab:terminology}
     \end{table}
 
-    As mentioned earlier, the input unitary operator as represented in \texttt{UnitaryM}
-    has no reference to qubits in the simulation space.
     A quantum gate, on the other hand, is the basic building block of a quantum circuit that performs a unitary operation on one or more qubits.
-    We refer to the qubits in the simulation domain as ``quantum space,'' or \texttt{qspace} for short.
     So a quantum gate is necessarily associated with a \texttt{qspace}.
     The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
     transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
 
-    Each qubit in a \texttt{qspace} can assume one of three roles:
-    \begin{itemize}
-        \item \texttt{TARGET}, whose quantum state may be altered.
-        \item \texttt{CONTROL}, whose quantum state undergoes no change.
-        It comes with two subtypes \texttt{CONTROL0} with activation value of zero ($0$) and \texttt{CONTROL1}
-        with activation value of one ($1$).
-        \item \texttt{IDLER}, who does not participate in the gate operation at all.
-    \end{itemize}
     For clarity, we introduce the notion of `granularity' as a classification of quantum gates,
     which can be roughly characterized by the following factors:
     \begin{itemize}
@@ -458,7 +472,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The \texttt{CircuitBuilder} interface defines the abstract methods that can accommodate circuit building needs on most known quantum computing platforms.
     An implementation of the \texttt{CircuitBuilder} interface contains the platform-specific logic to handle qubits, ancilla qubits,
     quantum gates, backend specific optimizations based on locality and hardware topology, etc.
-    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the QIR and delegate
+    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the IR and delegate
     quantum circuit rendering tasks to a concrete implementation of \texttt{CircuitBuilder}.
     Through polymorphically implementing the \texttt{CircuitBuilder} interface, we realize the cross-platform feature of our system.
     Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
@@ -468,7 +482,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \texttt{QRenderer} and related circuit building classes.
     For demonstration purposes, we provide implementations of \texttt{CircuitBuilder} for
     Qiskit\textregistered and Cirq\textregistered platforms~\cite{cirq2024,qiskit2023}.
-    The QIR can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
+    The IR can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
 
 
     Additional hardware-specific optimizations may be performed at this stage to fine-tune the gate types, virtual-physical qubit mapping, etc.
@@ -487,7 +501,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \begin{table}[tbhp]
         \centering
-        \caption{Main decomposition processes used by \texttt{Qompiler}.}
+        \caption{Main decomposition processes used by \texttt{Qompiler}~\cite{nielsen2010q,dawson2005sk}.}
         \begin{tabularx}{.9\textwidth}{l|X}
             \hline
             \textbf{Decomposition}        & \textbf{Description}                                                                                                                                        \\
@@ -616,7 +630,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We highlighted the feature of traceability and verifiability built in our quantum compiler system
     in Section~\ref{sec:introduction}.
     Here, we examine how this is achieved.
-    To store and organize the compiled code as QIR, we designed a data structure called \texttt{ByteCode}.
+    To store and organize the compiled code as IR, we designed a data structure called \texttt{ByteCode}.
     \texttt{ByteCode} is a B-Tree structure, where each node represents a stage of the compiled quantum operator
     along with associated metadata.
     Traceability is encoded in the parent--child relationships:
@@ -668,7 +682,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We have chosen the finest granularity level, \texttt{CLIFFORD\_T}, for this demonstration.
     The resulting quantum circuit consists of 279 layers (a Qiskit term referring to groups of related gates),
     and the first dozen are shown in Figure ~\ref{fig:optimized-circuit}.
-    We also transpiled our QIR can output quantum circuit in OpenQASM format
+    We also transpiled our IR can output quantum circuit in OpenQASM format
     and included in Listing~\ref{lst:qasm} for reference.
 
     \begin{listing}[h]
@@ -713,7 +727,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \caption{Circuit diagram (partial) in Cirq\texttrademark.}
             \label{fig:cirq-circuit}
         \end{subfigure}
-        \caption{Circuit diagrams rendered for different platforms based on the same QIR
+        \caption{Circuit diagrams rendered for different platforms based on the same IR
         that was compiled from a randomly generated unitary matrix and stored in file.
         }
         \label{fig:random-unitary}

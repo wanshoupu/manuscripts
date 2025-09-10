@@ -219,11 +219,19 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     the verifiability of quantum circuit to be discussed in Section~\ref{sec:traceability-and-verifiability}.
 
 
+    Before, we go into the details of the design of optimizer classes, some additional words would help understand the rationale.
+    In effect, decomposition resembles disintegration, breaking the circuit into finer components,
+    while the optimization process acts like integration, undoing the undesirable effect of decomposition.
+    These complementary processes work like opposing push-and-pull forces to provide us precise control over gate granularity
+    and help achieve an optimal balance in the compilated code that best suits the targeted quantum hardware.
+
     Following the decomposition processes are the recombination passes.
-    The abovementioned decomposition process ensures that all resulting gates meet \emph{or exceed} the target granularity.
-    During the process, redundant gates and gates with exceedingly fine granularity become sources of inefficiency.
-    We need a process to undo the fragmentation of gates, and this is done through the recombination passes which
-    consolidates or annihilates gates into fewer, more efficient ones wherever possible.
+    The abovementioned decomposition process resembles disintegration, ensuring that all resulting gates meet \emph{or exceed} the target granularity.
+    During the process, redundant gates and gates with exceedingly fine granularity are inevitably generated and become sources of inefficiency.
+    We need a process to `undo' the overly fragmented gates, and this is done through the recombination passes.
+    Think of the decomposition processes as pushes while the recombination processes as pulls.
+    With both pushes and pulls, we achieve precise control over gate granularity.
+    During the recombination passes, gates within a sliding window of certain size are consolidated or annihilated wherever possible.
     Figures~\ref{fig:unoptimized-circuit} and~\ref{fig:optimized-circuit} illustrate the effect of the recombination passes side-by-side.
     The design will be presented in Subsection~\ref{subsec:optimization} with more details.
 
@@ -264,6 +272,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Accordingly, we may store only the rows and columns with non-zero off-diagonal elements.
     We refer to the submatrix corresponding to these rows and columns the ``core-matrix''
     and the corresponding indices the ``core-indices''.
+    Figure~\ref{fig:um-and-cgate} shows the class diagram for \texttt{UnitaryM}.
 
     \subsection{Quantum Space}\label{subsec:quantum-space}
 
@@ -271,17 +280,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \centering
         \begin{tabularx}{\linewidth}{l|X}
             \hline
-            \textbf{Qubit type} & \textbf{Description} \\
+            \textbf{Qubit type (enum \texttt{QType})} & \textbf{Description} \\
             \hline
             \texttt{TARGET} & A target qubit is the qubit on which a quantum gate performs an operation, namely, its quantum state may be altered as a result. \\
-            \texttt{CONTROL0} & A control qubit is one whose state determines whether an operation is applied to another qubit (\texttt{TARGET})
+            \texttt{CONTROL0} / \texttt{CONTROL1} & A control qubit is one whose state determines whether an operation is applied to another qubit (\texttt{TARGET})
             while its own state is intact.
-            A \texttt{CONTROL0} qubit is a control qubit with an activation value $0$. \\
-            \texttt{CONTROL1} & Same as \texttt{CONTROL0} except the activation value is $1$. \\
+            A \texttt{CONTROL0} (\texttt{CONTROL1}) qubit is a control qubit with an activation value $0$ ($1$). \\
             \texttt{IDLER} & A qubit that does not participate in the gate operation but may appears in the operator matrix as identity elements. \\
             \hline
         \end{tabularx}
-        \caption{Classification of qubits by the roles they played in a particular quantum gate.}
+        \caption{Enum type \texttt{QType} for the roles of qubits in a particular quantum gate.}
         \label{tab:gate-role}
     \end{table}
 
@@ -292,27 +300,29 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Data qubits are the working qubits that carry the computational states to be measured.
     Ancilla qubits are auxiliary qubits introduced to assist a quantum computation (e.g., for temporary storage, gate construction, or error correction)
     but not part of the final output, usually initialized in the fiducial state $\left\| 0 \right\rangle$.
+    We also have a light-weight \texttt{Qubit} class for convenience where it makes distinction between ancilla and data qubits.
     We refer to the group of qubits involved in the quantum computation collectively as ``quantum space,'' or \texttt{qspace} for short.
 
 
     A quantum gate may involve more than one qubits.
     For example, in a \texttt{CNOT} gate, there is a control qubit and a target qubit.
     So another way to classify qubits is by the roles they play in a particular quantum gate.
-    This is shown in Table~\ref{tab:gate-role}
-    We created a light-weight \texttt{Qubit} class for convenience.
+    We create an \texttt{enum QType} for the roles played in individual quantum gates as shown in Table~\ref{tab:gate-role}.
+    Note that we also introduce \texttt{IDLER} to denote that a qubit does not play a role in a gate operation and are simply present in the operator formulation as degrees of
+    freedom.
 
-    \subsection{Quantum Gates}\label{subsec:quantum-gates}
+    \subsection{Gate Granularity}\label{subsec:granularity}
 
     \begin{table}[htbp]
         \centering
-        \caption{Terminology for granularity classification of unitary operators and quantum gates.
+        \caption{Terminology for granularity types (\texttt{enum GateGrain}) of quantum gates, in increasing order of fineness.
         When a gate meets the requirements of multiple categories, the finest one is chosen.
         For example, if a single-target gate has one control qubit a core matrix \texttt{X},
             we classify it as \texttt{Clifford+T}.
         }
         \begin{tabularx}{.9\textwidth}{l|X|l}
             \hline
-            \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum}          \\
+            \textbf{Term} & \textbf{Description}                                                           & \textbf{Enum GateGrain}\\
             \hline
             Unitary       & Any $n$-qubit unitary operator                                                 & \texttt{UNITARY}       \\
             2level        & Unitary operator with no more than two non-identity rows/columns               & \texttt{TWO\_LEVEL}    \\
@@ -320,53 +330,54 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             Singlet       & Gates with a single target and any number of control qubits                    & \texttt{SINGLET}       \\
             Ctrl-pruned   & Controlled gates with a single target and at most one control qubit            & \texttt{CTRL\_PRUNED}  \\
             Principal     & Single-qubit gates of the form $R_n(\theta)$with $n=x,y,z$                     & \texttt{PRINCIPAL}     \\
-            Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$        & \texttt{UNIV\_GATE}    \\
+            Universal     & Single-qubit gates in the set $\{X, Y, Z, H, S, T, \mathit{SD}, \mathit{TD}\}$ & \texttt{UNIV\_GATE}    \\
             Clifford+T    & Gates in the set $\{\mathit{CNOT}, H, S, T\}$                                  & \texttt{CLIFFORD\_T}   \\
             \hline
         \end{tabularx}
         \label{tab:terminology}
     \end{table}
 
-    A quantum gate, on the other hand, is the basic building block of a quantum circuit that performs a unitary operation on one or more qubits.
-    So a quantum gate is necessarily associated with a \texttt{qspace}.
-    The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
-    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
-
-    For clarity, we introduce the notion of `granularity' as a classification of quantum gates,
-    which can be roughly characterized by the following factors:
+    We introduce the notion of `granularity' and enum type \texttt{GateGrain} to classify quantum gates based roughly on the following factors:
     \begin{itemize}
         \item The number of qubits involved
-        \item The roles assigned to each qubit, e.g., \texttt{TARGET} vs.\ \texttt{CONTROL}.
-        \item Core operator features, including standard vs.\ nonstandard types and the types of formulation, e.g., rotation around principal axis
+        \item The number of \texttt{TARGET} qubits and the number of \texttt{CONTROL0}/\texttt{CONTROL0} qubits
+        \item The operator features, e.g., Pauli operators, parametric rotation operator, \texttt{Clifford+T} operator, etc.
     \end{itemize}
+    We listed the gate granularity types along with the enum values in Table~\ref{tab:terminology} for ease of reference.
+
+    \subsection{Quantum Gates}\label{subsec:quantum-gates}
+
+    Now we are ready to talk about design for quantum gates.
+    A quantum gate is the basic building block of a quantum circuit that performs a unitary operation involving one or more qubits.
+    So a quantum gate is necessarily tied up with a subspace in the simulation domain.
+    We created the class `\texttt{CtrlGate}' as a general representation for quantum gates.
+    It captures all the aspects of a quantum gates---the \texttt{qspace} it operates on, the roles played by each qubit in the \texttt{qspace},
+    the core unitary operator to be applied to the target qubits.
+    Therefore, \texttt{CtrlGate} can represent all types of quantum gate---single qubit gate, multi-qubit gates,
+    single-target gates, multi-target gates, gates with or without control qubits, etc.
 
 
-    We listed all the major types of quantum gates in Table~\ref{tab:terminology} for ease of reference.
-    For all the types of quantum gates, we designed one class `\texttt{CtrlGate}'---single qubit or
-    multi-qubit, single-target or multi-target, with or without control qubits.
-
-
-    The \texttt{CtrlGate} can be built from Pauli operators, $X$, $Y$, $Z$, Hadamard operator $H$, phase operators, $S$, $T$,
-    and their Hermite conjugates, rotational matrices, $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or any arbitrary unitary matrices.
-    The \texttt{CtrlGate} class is also the workhorse of most operations involving controlled gates:
-    matrix multiplications, `\texttt{matmul}', expanding into extra Hilbert space, qubit sorting,
-    trace operation, and direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate}.
+    For the core operator, \texttt{CtrlGate} can be constructed from Pauli operators $X$, $Y$, $Z$, Hadamard operator $H$, phase operators $S$, $T$
+    and their Hermitian conjugates, parametric rotational operators $R_x(\phi)$, $R_y(\phi)$, and $R_z(\phi)$, or generic multi-target unitary matrices.
+    As a good practice for object-oriented-programming, the \texttt{CtrlGate} class encapsulates the workhorse of most operations concerning a quantum gate:
+    for matrix multiplications `\texttt{matmul}', for Hilbert space expansion \texttt{expand}, for sorting qubit \texttt{sorted},
+    for trace operation \texttt{trace}, for direct conversion of \texttt{UnitaryM} into \texttt{CtrlGate} \texttt{convert}, etc.
 
 
     As keen readers have noticed, \texttt{IDLER} qubits are degrees of freedom that can be added into
-    or taken away from the formulation of \texttt{CtrlGate}.
-    Expanding into additional Hilbert space is crucial when multiplying multi-qubit operators that span different qubit spaces.
+    or taken away from the formulation of \texttt{CtrlGate} with not effect on the gate operation whatsoever.
+    Expanding into additional Hilbert space is needed for verification when multiplying multi-qubit operators that span different qubit spaces.
     Adding extra qubits to \texttt{CtrlGate} is implemented by the method \texttt{expand}.
-    By performing successive Kronecker product operations, one can inject idler qubits in between the original qubit spaces.
+    By performing successive Kronecker product operations or Tracy-Singh matrix multiplication~\cite{TracySingh1972}, one can inject idler qubits in between the original qubit spaces.
 
 
-    Another operation, useful especially for circuit verification, is the \texttt{trace} operation.
-    Because of the use of ancilla qubits, we need to eliminate these qubits from the multi-qubit gates
-    in order to compare with the input gate.
-    Without the trace operation, verification of the compilation process would be challenging.
-    Class diagrams for the two classes are shown in Figure~\ref{fig:um-and-cgate}.
+    Another operation, useful especially for circuit verification, is the \texttt{trace} method.
+    Because of the use of ancilla qubits, the \texttt{qspace} of the resulting circuit is expanded upon that of the input data qubits.
+    We therefore need to eliminate these qubits from the multi-qubit gates in order to do direct comparisons with the input gate.
+    The \texttt{trace} method comes handy for this.
+    The class diagram for \texttt{CtrlGate} is also included in Figure~\ref{fig:um-and-cgate}.
 
-    \subsection{Optimizers}\label{subsec:optimization}
+    \subsection{Sliding Window Combiners}\label{subsec:optimization}
 
     \begin{figure}[h]
         \centering
@@ -431,69 +442,56 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{figure}
 
 
-    Before, we go into the details of the design of optimizer classes, I think
-    some additional words would help the understanding of the rationale.
-    In effect, decomposition resembles disintegration, breaking the circuit into finer components,
-    while the optimization process acts like integration, undoing the undesirable effect of decomposition.
-    These complementary processes work like opposing push-and-pull forces to provide us precise control over gate granularity
-    and help achieve an optimal balance in the compilated code that best suits the targeted quantum hardware.
-
-
-    Two optimizer classes are used to optimize the quantum circuit used in the figure, \texttt{AnnihilationOptimizer}
-    and \texttt{ConsolidationOptimizer}, both of the \texttt{SlidingWindowOptimizer} family
-    which detects optimization opportunities among the gates within a window of certain size
-    and performs such optimizations.
-    The \texttt{SlidingWindowOptimizer} is derived from the \texttt{Optimizer} interface
-    which declares the optimization level and the optimize method.
-    The class relationships for the optimizers are provided in UML diagram~\ref{fig:optimizer-renderer-class-design}.
-
-
-    Furthermore, our compiler design can easily accommodate custom optimizers.
-    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
-    like IonQ Forte\textregistered,
-    an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
-    After each of the optimizers takes a pass on the compiled data structure, \texttt{ByteCode},
-    the resulting \texttt{ByteCode} is written to a binary-format output file \texttt{.qco}.
+    We mentioned the necessity of the recombination steps to cutdown redundant gates and boost efficiency in Section~\ref{sec:high-level-design}.
+    To handle this inefficiency, we created the class \texttt{SlidingWindowCombiner} that implements the interface \texttt{Optimizer}
+    which is the general interface for optimizers with optimization level and the \texttt{optimize} method.
+    The class \texttt{SlidingWindowCombiner} has a list of objects that implement the interface \texttt{WindowOperator} for which
+    two concrete classes are implemented: \texttt{AnnihilationOptimizer} and \texttt{ConsolidationOptimizer}
+    which detects recombination opportunities among the gates within a window of certain size and performs such optimizations.
+    The UML diagram for all the related classes are shown in ~\ref{fig:optimizer-renderer-class-design}.
+    After each recombiner takes a pass on the compiled data structure, \texttt{ByteCode},
+    the resulting \texttt{ByteCode} is written to a binary file \texttt{.qco}.
 
     \subsection{Circuit Renderer}\label{subsec:rendering}
 
     \begin{figure}[tbhp]
         \centering
         \centerline{\includegraphics[width=0.6\textwidth]{optimizer-render}}
-        \caption{Renderer and Optimizer class diagrams.}
+        \caption{Renderer and Optimizer class diagrams.
+        The relations are \texttt{hasa} and \texttt{isa}.}
         \label{fig:optimizer-renderer-class-design}
     \end{figure}
 
 
-    As outlined in Section~\ref{sec:high-level-design}, the compilation process concludes with the creation of the \texttt{.qco} file.
-    What follows is the rendering stage.
-    The guiding paradigm of the \texttt{Qompiler} is: ``Compile once, render multiple times, and run everywhere.''
-    We followed this design principle and created a builder pattern consisting of the class \texttt{QRenderer} and the interface \texttt{CircuitBuilder}.
-    The \texttt{CircuitBuilder} interface defines the abstract methods that can accommodate circuit building needs on most known quantum computing platforms.
-    An implementation of the \texttt{CircuitBuilder} interface contains the platform-specific logic to handle qubits, ancilla qubits,
-    quantum gates, backend specific optimizations based on locality and hardware topology, etc.
-    The \texttt{QRenderer} class, on the other hand, is a concrete class and is responsible to iterate and parse the IR and delegate
-    quantum circuit rendering tasks to a concrete implementation of \texttt{CircuitBuilder}.
+    As outlined in Section~\ref{sec:high-level-design}, the decomposition process concludes with the creation of the \texttt{.qco} file.
+    The rendering stage then uses the \texttt{.qco} file to generate platform-specific quantum circuits.
+    The guiding paradigm of the \texttt{Qompiler} is ``Compile once, render multiple times, and run everywhere.''
+    We therefore follow the builder pattern to create the class \texttt{QRenderer} and the interface \texttt{CircuitBuilder}.
+    The \texttt{QRenderer} class is a concrete class and is responsible for iterating and parsing the IR while delegating
+    circuit rendering tasks to \texttt{CircuitBuilder}.
+%    Rendering the code file into a quantum circuit on the target platform is the responsibility of
+%    \texttt{QRenderer} and related circuit building classes.
+    The \texttt{CircuitBuilder} interface defines the abstract methods needed for circuit building by most known quantum computing platforms.
+    \texttt{CircuitBuilder} should be implemented with the platform-specific logic to handle qubits (including ancilla) registration and allocation,
+    adding and editing of quantum gates, backend specific circuit optimizations, e.g., based on locality and hardware topology, etc.
     Through polymorphically implementing the \texttt{CircuitBuilder} interface, we realize the cross-platform feature of our system.
+
+    For demonstration purposes, we implemented the \texttt{CircuitBuilder} interface with \texttt{QiskitBuilder} for Qiskit\textregistered\space
+    and \texttt{CirqBuilder} for Cirq\texttrademark~\cite{cirq2024,qiskit2023}.
+%    we provide implementations of \texttt{CircuitBuilder} for Qiskit\textregistered and Cirq\textregistered platforms.
+    Transpiling the IR to OpenQASM is also done by first building Qiskit circuit and then export.
     Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
     The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
 
-    Rendering the code file into a quantum circuit on the target platform is the responsibility of
-    \texttt{QRenderer} and related circuit building classes.
-    For demonstration purposes, we provide implementations of \texttt{CircuitBuilder} for
-    Qiskit\textregistered and Cirq\textregistered platforms~\cite{cirq2024,qiskit2023}.
-    The IR can also be translated into other open standards for broader compatibility which include OpenQASM~\cite{openqasm2,openqasm3}.
 
-
-    Additional hardware-specific optimizations may be performed at this stage to fine-tune the gate types, virtual-physical qubit mapping, etc.
-
-    Qubit allocation and mapping are advanced topics in quantum compilation.
-    The allocation of virtual \texttt{qspace} is done at compilation time and will be the subject of Section~\ref{sec:decomp}.
-    Allocation of physical qubits and the mapping between virtual and physical \texttt{qspace}
-    are tied to a specific target platform and can only take place at circuit render time.
-    Qubit allocation is crucial to the performance of the quantum circuit and underpins the feasibility of computation.
-    This usually requires highly sophisticated algorithms and heuristics which are beyond the focus of this article.
-    We adopt a simplified approach, instead, to illustrate the proof of concept and leave
+    Hardware-specific optimizations may be performed and is recommended at this stage to fine-tune the gate types, qubit mapping, etc.
+    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
+    like IonQ Forte\textregistered, an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
+    Another important topic at this stage is qubit allocation and mapping between virtual and physical qubits which
+    is crucial to the performance of the quantum circuit and underpins the feasibility of computation.
+    This usually requires highly sophisticated algorithms and heuristics.
+    Because it is such an advanced topic and is therefore beyond the focus of this article,
+    we adopt a simplified approach, instead, to illustrate the proof of concept and leave
     the study of advanced qubit allocation algorithms for the future.
 
 
@@ -518,6 +516,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
 
+%    The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
+%    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
     The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
     matrix into a graph of quantum gates, allocates and assigns qubits to each gate.
     In this section, we go over the decomposition process of the \texttt{Qompiler}.

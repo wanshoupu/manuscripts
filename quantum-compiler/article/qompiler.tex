@@ -216,7 +216,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The compilation output is a B-Tree data structure---IR\@.
     Beyond storing gate information and qubit interaction specifications,
     IR also tracks the parent--child relationships among the tree nodes, which is the root of
-    the verifiability of quantum circuit to be discussed in Section~\ref{sec:traceability-and-verifiability}.
+    the verifiability of quantum circuit to be discussed in Section~\ref{subsec:traceability-and-verifiability}.
 
 
     Before, we go into the details of the design of optimizer classes, some additional words would help understand the rationale.
@@ -377,6 +377,62 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The \texttt{trace} method comes handy for this.
     The class diagram for \texttt{CtrlGate} is also included in Figure~\ref{fig:um-and-cgate}.
 
+    \subsection{ByteCode and Verifiability}\label{subsec:traceability-and-verifiability}
+
+    As quantum circuits grow in size, verifiability becomes quite troublesome.
+    Even a relatively simple molecule like LiH in the STO-3G basis would translate to a quantum circuit
+%    When applying to real-world problems, the size of the quantum circuit can be very large.
+%    In quantum chemistry, a quantum circuit to simulate a simple molecule like LiH in the STO-3G basis
+    comprising approximately $1000$ gates~\cite{Hong_2022}.
+    Simulation of moderately large molecules can consist of millions of gates~\cite{poulin2014,google_science_2020}.
+    Keeping track of all these gates and ensuring correctness is challenging.
+
+
+    \begin{figure}[tbhp]
+        \centering
+        \begin{overpic}[width=0.6\textwidth]{btree}
+            \put(0,70){\colorbox{white}{\makebox(20,10){}}}
+        \end{overpic}
+        \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
+        The root of the tree is the input unitary matrix,
+            followed by intermediate layers: two-level unitary, single-qubit, control-pruned.
+            At the leave layer, are the components of the quantum circuit.
+        }
+        \label{fig:btree}
+    \end{figure}
+
+
+    A highlighted feature of our system is the built-in traceability and verifiability.
+%    We highlighted the feature of traceability and verifiability built in our quantum compiler system
+%    in Section~\ref{sec:introduction}.
+    Let's examine how it is achieved.
+    To store and organize the compiled code as IR, we designed a B-Tree data structure called \texttt{ByteCode}
+    where each node represents a compilation unit, a quantum operator, along with some associated metadata.
+    Traceability is encoded in the parent--child relationships:
+    each gate in the final program can be traced back to the specific operation that produced it.
+    The built-in optimizers applied in later stages of compilation also record tracing information for their operations,
+    preserving the original lineage.
+
+
+    In the B-Tree data structure, parent nodes generally correspond to coarser-grained operators,
+    whereas child nodes are finer-grained operators whose matrix product recovers the parent node, e.g.,
+    \begin{equation}
+        \label{eq:parent-child-relation}
+        \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
+    \end{equation}
+    Figure~\ref{fig:btree} illustrates the layered nature of the \texttt{ByteCode} data structure.
+
+
+    Convenient methods such as \texttt{is\_leaf} and \texttt{herm} (Hermitian conjugate) are provided
+    to simplify programming with tree nodes.
+    Two iterators, \texttt{PreorderIterator} and \texttt{ReversePreorderIterator}, are also implemented
+    to traverse the tree.
+    In addition, we support serialization/deserialization (\texttt{serde}) of this data structure,
+    to faithfully store and load the B-Tree data structure to and from \textit{.qco} files.
+
+    With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
+    and program debugging is made easier in \texttt{Qompiler}.
+
     \subsection{Sliding Window Combiners}\label{subsec:optimization}
 
     \begin{figure}[h]
@@ -479,23 +535,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     For demonstration purposes, we implemented the \texttt{CircuitBuilder} interface with \texttt{QiskitBuilder} for Qiskit\textregistered\space
     and \texttt{CirqBuilder} for Cirq\texttrademark~\cite{cirq2024,qiskit2023}.
 %    we provide implementations of \texttt{CircuitBuilder} for Qiskit\textregistered and Cirq\textregistered platforms.
-    Transpiling the IR to OpenQASM is also done by first building Qiskit circuit and then export.
+    The transpilation of IR to OpenQASM is realized by first rendering into Qiskit circuit and then export as QASM\@.
     Extending support to a new quantum computing platform is as simple as writing a new implementation of \texttt{CircuitBuilder}.
     The UML diagram for the rendering classes is shown in Figure~\ref{fig:optimizer-renderer-class-design}.
 
 
-    Hardware-specific optimizations may be performed and is recommended at this stage to fine-tune the gate types, qubit mapping, etc.
-    For example, if a particular gate type, like arbitrary single-qubit rotations, is more efficient on certain platforms,
-    like IonQ Forte\textregistered, an optimizer can be added to the compiler to consolidate gates into rotational gates to exploit this advantage.
-    Another important topic at this stage is qubit allocation and mapping between virtual and physical qubits which
-    is crucial to the performance of the quantum circuit and underpins the feasibility of computation.
-    This usually requires highly sophisticated algorithms and heuristics.
-    Because it is such an advanced topic and is therefore beyond the focus of this article,
-    we adopt a simplified approach, instead, to illustrate the proof of concept and leave
-    the study of advanced qubit allocation algorithms for the future.
+    Hardware-specific optimizations and adaptions may be performed and is recommended at this stage to accommodate for the need of error correction algorithms,
+    fine-tune the gate types, swapping qubits to meet connectivity requirements, etc.
+    Another important topic at this stage is qubit allocation and mapping based on the connectivity restraints of the physical qubits.
+    Proper handling of this is crucial to the performance of the quantum circuit and underpins the feasibility of computation.
+    This usually requires highly sophisticated algorithms and heuristics and is beyond the focus of this article.
+    We adopt a simplified approach for the proof of concept and leave the study of advanced qubit allocation algorithms for the future.
 
 
-    \section{Operator Decomposition}\label{sec:decomp}
+    \section{Decomposition Processes}\label{sec:decomp}
 
     \begin{table}[tbhp]
         \centering
@@ -504,8 +557,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \hline
             \textbf{Decomposition}        & \textbf{Description}                                                                                                                                        \\
             \hline
-            \texttt{mat2l\_decompose}     & Decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.                                                                  \\
-            \texttt{cnot\_decompose}      & Decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates.                                                                \\
+            \texttt{tl\_decompose}        & Decomposes an arbitrary $n \times n$ unitary matrix into \texttt{2level} unitary matrices.                                                                  \\
+            \texttt{gray\_decompose}      & Decomposes a \texttt{2level} unitary matrix into single-target operators in universal gates through gray codes.                                                                \\
             \texttt{ctrl\_decompose}      & Given a controlled gate, breaks its control sequence down to shorter controls, usually with the help of ancilla qubits.                                     \\
             \texttt{euler\_decompose}     & Decomposes a single-qubit gate into Euler rotation operators and optionally a phase shift.                                                                  \\
             \texttt{cliffordt\_decompose} & Given a universal gate, decomposes it into \texttt{Clifford+T} gates.                                                                                       \\
@@ -518,15 +571,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 %    The compilation process, which is discussed in Section~\ref{sec:decomp} in more details,
 %    transfers the encoded dynamics of the unitary matrix to that of a network of quantum gates.
-    The compilation process transfers the encoding of the dynamics from the input $n \times n$ unitary
-    matrix into a graph of quantum gates, allocates and assigns qubits to each gate.
-    In this section, we go over the decomposition process of the \texttt{Qompiler}.
-
-
-    Starting from an $n$-dimensional unitary operator, the quantum formulation undergoes several decomposition processes
-    until the resulting quantum gates reach the desired granularity, such as \texttt{Clifford+T} or \texttt{CNOT}
-    as listed in Table~\ref{tab:terminology}.
-    The main decomposition processes used by this system are described in Table~\ref{tab:decomp}.
 
     \begin{figure}[tbhp]
         \centering
@@ -539,14 +583,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         }
         \label{fig:workflow}
     \end{figure}
-    All decomposition processes are orchestrated by the class \texttt{Qompiler} recursively in a depth-first manner.
+
+
+    Starting from an $n$-dimensional unitary matrix, the quantum operators undergoes a number of decomposition processes
+    until the resulting quantum gates reach the desired granularity as listed in Table~\ref{tab:terminology}.
+    All decomposition processes are orchestrated by the class \texttt{Qompiler} recursively in a depth-first fashion.
+    The decomposition processes are listed in Table~\ref{tab:decomp}.
     The granularity of the final quantum gate may be specified in the \texttt{QConfig}.
-    As illustrated in Figure~\ref{fig:workflow},
-    Starting with the input unitary matrix,
-    if the configuration specifies a granularity of \texttt{MULTI\_TARGET},
-    the \texttt{Qompiler} will simply assign a \texttt{qspace} and call it done.
-    Otherwise, \texttt{mat2l\_decompose} and \texttt{cnot\_decompose} will be performed
-    to decompose the gates into \texttt{2level} unitary operators and \texttt{Singlet} gates, correspondingly.
+    The compilation process transfers the dynamics encoded in the input $n \times n$ unitary
+    matrix into the quantum circuit, consisting of a network of qubits with quantum gates edges and possibly some classical assets.
+    We elaborate the \texttt{Qompiler} decomposition process below.
+    Diagram to illustrate the workflow is in Figure~\ref{fig:workflow}.
+
+
+    If the configuration specifies a granularity of \texttt{MULTI\_TARGET},
+    the input unitary matrix does not need any further decomposition.
+    The \texttt{Qompiler} will simply assign the necessary \texttt{qspace} and the synthesis process is done.
+    Otherwise, \texttt{tl\_decompose} and \texttt{gray\_decompose} will be performed
+    to decompose the gates into \texttt{2level} unitary operators, \texttt{CNOT} and \texttt{Singlet} gates, respectively.
     While performing this decomposition, the (virtual) \texttt{qspace} is also allocated which is curated by the class \texttt{QDevice}.
     Next, the \texttt{Qompiler} will determine if the control sequence needs pruning.
     If so, it will perform \texttt{ctrl\_decompose} followed by \texttt{euler\_decompose}
@@ -560,23 +614,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     By the end of decomposition processes, all the gates are guaranteed
-    to meet or exceed the configured granularity level.
-    It is the job of optimizers to tune back the over-decomposed gates,
-    and that's the subject of Subsection~\ref{subsec:optimization}.
+    to meet or exceed the configured granularity.
+    It is the job of recombiners to fine tune the over-decomposed gates that is explained in Subsection~\ref{subsec:optimization}.
 
 
     \section{Solovay--Kitaev Approximation}\label{sec:sk-approx}
 
-    Solovay and Kitaev Theorem is foundational to quantum computing because the feasibility of efficient expression of
-    unitary operators in quantum circuit hangs on this theorem~\cite{kitaev1997quantum,dawson2005sk}.
-    Namely, this theorem states that any single-qubit operator
+    Solovay and Kitaev Theorem (SK) states that any single-qubit operator
     from the \texttt{SU(2)} group can be efficiently approximated using a set of universal gates
     within a chosen error margin $\epsilon$.
-    here efficiency means that both the number of gates of an approximation
-    and the runtime to calculate it are polylogarithmic in terms of $\epsilon$.
+    Here efficiency includes both the number of gates of the approximation
+    and the runtime to compute it, usually requiring them to be polylogarithmic in terms of $\epsilon$.
+    SK is the foundation to quantum computing because the feasibility of efficient expression of
+    unitary operators in quantum circuit hangs on this theorem~\cite{kitaev1997quantum,dawson2005sk}.
 
 
-    The basic idea behind Solovay \& Kitaev approximation is quite simple.
+    The basic idea behind SK approximation is as follows.
     Over the \texttt{SU(2)} operator group, create a point net, e.g., \texttt{SU2Net},
     such that the distance between adjacent points is bound by an error margin $\epsilon_{0}$.
     Each point in \texttt{SU2Net} has a precalculated decomposition,
@@ -588,7 +641,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The function \texttt{sk\_decompose} is shown in Listing~\ref{lst:sk-decomp}.
 
     \begin{listing}[h]
-        \caption{The Solovay-Kitaev decomposition function.}
+        \caption{The SK decomposition function.}
         \label{lst:sk-decomp}
         \inputminted[
             linenos,           % show line numbers
@@ -596,67 +649,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{listing}
 
 
-    The caveat of the Solovay--Kitaev decomposition lies in selecting a properly constructed \texttt{SU2Net}.
-    For experimentation, we built several variants of SU2 nets, each based on different operator distance metrics,
-    including \texttt{kD-tree}, \texttt{nearest-neighbor} with ball-tree, and a custom Kolmogorov distance.
-    Despite our attempts to balance accuracy and runtime, our SK decomposition
-    implementation is not yet efficient enough for production use.
+    The caveat of the SK approximation lies in selecting a properly constructed \texttt{SU2Net}.
+    For experimentation, we built a few variants of SU2 nets,
+    including \texttt{kD-tree}, \texttt{nearest-neighbor} with various metrics.
+    Despite our attempts to balance accuracy and runtime, our implementations remains computationally costly.
     Improving this remains a potential direction for future work.
-
-
-    \section{Traceability and Verifiability}\label{sec:traceability-and-verifiability}
-
-    When applying to real-world problems, the size of the quantum circuit can be very large.
-    In quantum chemistry, a quantum circuit to simulate a simple molecule like LiH in the STO-3G basis
-    may comprise approximately $1000$ gates~\cite{Hong_2022}.
-    Simulation programs for moderately large molecules can consist of millions of gates~\cite{poulin2014,google_science_2020}.
-    Keeping track of all these gates and ensuring correctness is challenging.
-
-
-    \begin{figure}[tbhp]
-        \centering
-        \begin{overpic}[width=0.6\textwidth]{btree}
-            \put(0,70){\colorbox{white}{\makebox(20,10){}}}
-        \end{overpic}
-        \caption{The layered structure of, \texttt{ByteCode}, B-Tree data structure.
-        The root of the tree is the input unitary matrix,
-            followed by intermediate layers: two-level unitary, single-qubit, control-pruned.
-            At the leave layer, are the components of the quantum circuit.
-        }
-        \label{fig:btree}
-    \end{figure}
-
-
-    We highlighted the feature of traceability and verifiability built in our quantum compiler system
-    in Section~\ref{sec:introduction}.
-    Here, we examine how this is achieved.
-    To store and organize the compiled code as IR, we designed a data structure called \texttt{ByteCode}.
-    \texttt{ByteCode} is a B-Tree structure, where each node represents a stage of the compiled quantum operator
-    along with associated metadata.
-    Traceability is encoded in the parent--child relationships:
-    each gate in the final program can be traced back to the specific operation that produced it.
-    The built-in optimizers applied in later stages of compilation also record tracing information for their operations,
-    preserving the original lineage.
-
-
-    In the B-Tree data structure, parent nodes generally correspond to coarser-grained operators,
-    whereas child nodes are finer-grained operators whose matrix product recovers the parent node, e.g.,
-    \begin{equation}
-        \label{eq:parent-child-relation}
-        \hat{P} = \prod_{i=1}^{n} \hat{C}_{i}.
-    \end{equation}
-    An example of a B-Tree is shown in Figure~\ref{fig:btree} for illustration of the layered nature.
-
-
-    Convenient methods such as \texttt{is\_leaf} and \texttt{herm} (Hermitian conjugate) are provided
-    to simplify programming with tree nodes.
-    Two iterators, \texttt{PreorderIterator} and \texttt{ReversePreorderIterator}, are also implemented
-    to traverse the tree.
-    In addition, we support serialization/deserialization (\texttt{serde}) of this data structure,
-    to faithfully store and load the B-Tree data structure to and from \textit{.qco} files.
-
-    With the tracking and tracing information of the \texttt{ByteCode} data structure by design, verification of the quantum circuit
-    and program debugging is made easier in \texttt{Qompiler}.
 
 
     \section{Results and Discussions}\label{sec:results}
@@ -679,7 +676,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{bmatrix}
     \end{equation}
     into universal quantum circuit in Qiskit.
-    We have chosen the finest granularity level, \texttt{CLIFFORD\_T}, for this demonstration.
+    We have chosen the finest granularity, \texttt{CLIFFORD\_T}, for this demonstration.
     The resulting quantum circuit consists of 279 layers (a Qiskit term referring to groups of related gates),
     and the first dozen are shown in Figure ~\ref{fig:optimized-circuit}.
     We also transpiled our IR can output quantum circuit in OpenQASM format
@@ -749,7 +746,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The generated \texttt{QASM} code is similar to Listing~\ref{lst:qasm} which we will not repeat.
 
 
-    Despite these successes, the \texttt{Qompiler} project has certain limitations.
+    Despite these successes, the \texttt{Qompiler} project has its limitations.
     For example, the project was implemented in Python with numerical libraries, including NumPy and SciPy.
     Therefore, the underlying numerical errors limit the precision of the compiled quantum circuit.
     However, when the Solovay--Kitaev approximation is employed,
@@ -759,22 +756,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     As the size of the input increases, practical system limitations arise.
     The program can become computationally intensive for large unitary matrices
     The memory footprint may also become a bottleneck once the number of qubits reaches a certain threshold.
-    It is expected that the pressure on computational resources can be alleviated through distributed computation.
 
 
     \section{Conclusion and Future Work}\label{sec:conclusion-and-future-work}
     We presented a configurable, cross-platform quantum compiler, \texttt{Qompiler}, featuring built-in gate traceability.
     Initial benchmarks confirm the correctness and consistency of \texttt{Qompiler}'s
     output across supported platforms, including Qiskit and Cirq.
-    Future work will focus on distributed computation and parallelization to enable the
-    compilation of large input matrices and to improve overall efficiency.
-    We plan to extend compatibility to additional frameworks, such as AWS Braket and PennyLane,
+    It is expected that the pressure on computational resources can be alleviated through distributed computation.
+    Future work will be to improve overall efficiency and alleviate the pressure on computational resources through parallelism and distributed system to enable the
+    compilation of large input matrices.
+    We also plan to add support for additional frameworks, such as AWS Braket and PennyLane,
     with the broader goal of streamlining quantum algorithm development across the heterogeneous quantum
     computing landscape~\cite{braket-zenodo,pennylane}.
-    We are also considering implementing sophisticated qubit allocation algorithms
+    Finally, we would like to implement sophisticated qubit allocation algorithms
     to adapt to given topologies and interaction strategies such as $1$D linear chain,
     $2$D grid, star, all-to-all, etc.
-    Furthermore, we aim to incorporate quantum error correction techniques to enhance the reliability of synthesized circuits.
+%    Furthermore, we aim to incorporate quantum error correction techniques to enhance the reliability of synthesized circuits.
     We welcome collaboration and feedback from the quantum software community.
 
     \bibliographystyle{unsrt}
